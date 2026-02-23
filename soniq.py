@@ -1,33 +1,38 @@
 #!/data/data/com.termux/files/usr/bin/env python3
-from __future__ import annotations
+"""
+python script to sort lines of a given
+file and write back unique lines
+- reads filename via sys.argv[1]
+- updates the file in-place
+- uses mmap for files larger than 10MB
+"""
 
-import argparse
-from pathlib import Path
-
-
-def sort_uniq_inplace(path: Path, by_length: bool) -> None:
-    data = path.read_text(encoding="utf-8")
-    unique_lines = set(data.splitlines())
-    sorted_lines = sorted(unique_lines, key=lambda s: (-len(s), s)) if by_length else sorted(unique_lines)
-    path.write_text("\n".join(sorted_lines) + "\n", encoding="utf-8")
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Sort and deduplicate a file in place.")
-    parser.add_argument("filename", type=Path)
-    parser.add_argument(
-        "-l",
-        "--length",
-        action="store_true",
-        help="sort by line length (longest first)",
-    )
-    return parser.parse_args()
+import sys
+import os
 
 
-def main() -> None:
-    args = parse_args()
-    sort_uniq_inplace(args.filename, args.length)
+def sort_uniq(filename):
+    unsorted_lines = []
+    file_size = os.path.getsize(filename)
+    if file_size > 10 * 1024 * 1024:  # If file is larger than 10MB
+        import mmap
+
+        with open(filename, "r") as f:
+            with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
+                lines = mm.read().decode("utf-8").splitlines()
+    else:
+        with open(filename, "r") as f:
+            lines = f.readlines()
+            # Remove whitespace and sort lines
+            unique_lines = sorted(set(line.strip() for line in lines))
+    # Write back unique lines to the file
+    with open(filename, "w") as f:
+        for line in unique_lines:
+            f.write(line + "\n")
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 2:
+        print("Usage: python sort_uniq.py <filename>")
+        sys.exit(1)
+    sort_uniq(sys.argv[1])

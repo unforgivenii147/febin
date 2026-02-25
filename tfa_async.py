@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 from deep_translator import GoogleTranslator
 

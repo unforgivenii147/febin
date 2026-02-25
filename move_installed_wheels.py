@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+import shutil
+import sys
 from importlib import metadata
 from pathlib import Path
-import sys
 
 from packaging.utils import parse_wheel_filename
 from packaging.version import Version
@@ -10,6 +11,22 @@ from termcolor import cprint
 WHL_DIR = Path("/sdcard/whl")
 DEST_DIR = Path("/sdcard/installed")
 DEST_DIR2 = Path("/sdcard/invalid")
+if not DEST_DIR.exists():
+    DEST_DIR.mkdir()
+if not DEST_DIR2.exists():
+    DEST_DIR2.mkdir()
+
+# List of packages to exclude from deletion
+EXCLUDED_PACKAGES = {
+    "pip",
+    "setuptools",
+    "wheel",
+    "packaging",
+    "importlib_metadata",
+    "scikit_build_core",
+    "setuptools_scm",
+    "setuptools_rust",
+}
 
 
 def ensure_venv():
@@ -37,13 +54,15 @@ def main():
     if not WHL_DIR.exists():
         print(f"Directory not found: {WHL_DIR}")
         return
-    DEST_DIR.mkdir(parents=True, exist_ok=True)
     installed_pkgs = get_installed_packages()
     moved = 0
     for wheel in WHL_DIR.rglob("*.whl"):
         try:
             dist_name, version, *_ = parse_wheel_filename(wheel.name)
             norm_name = normalize(dist_name)
+            if norm_name in EXCLUDED_PACKAGES:
+                print(f"[EXCLUDED] {dist_name}=={version} → skipped")
+                continue
             if norm_name in installed_pkgs:
                 installed_version = installed_pkgs[norm_name]
                 if installed_version == Version(str(version)):
@@ -57,7 +76,7 @@ def main():
         except Exception as e:
             print(f"[ERROR] {wheel.name}: {e}")
             shutil.move(str(wheel), DEST_DIR2 / wheel.name)
-    print(f"\nDone. ReMoved {moved} wheel(s).")
+    print(f"\nDone. Removed {moved} wheel(s).")
 
 
 if __name__ == "__main__":

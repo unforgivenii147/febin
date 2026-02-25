@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import ast
-from multiprocessing import Pool
 import os
+from multiprocessing import Pool
 from pathlib import Path
 
+import tree_sitter_python as tspython
 from dh import folder_size, format_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
-import tree_sitter_python as tspython
 
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
@@ -57,7 +57,10 @@ def strip_file(file_path):
             try:
                 ast.parse(working_code.strip())
             except SyntaxError:
-                cprint(f"Skipping {file_path}: Resulting code is syntactically invalid.", "blue")
+                cprint(
+                    f"Skipping {file_path}: Resulting code is syntactically invalid.",
+                    "blue",
+                )
                 return
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(working_code)

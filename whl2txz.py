@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python3
-from pathlib import Path
-from sys import argv
 import tarfile
 import zipfile
+from pathlib import Path
+from sys import argv
 
 from dh import unique_path
 from fastwalk import walk_files
@@ -36,7 +36,10 @@ def tar_xz_to_whl(tar_path: Path):
         target = unique_path(target)
     print(f"[TAR.XZ → WHL] {tar_path.name}")
     try:
-        with tarfile.open(tar_path, "r:xz") as tf, zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        with (
+            tarfile.open(tar_path, "r:xz") as tf,
+            zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as zf,
+        ):
             for member in tf.getmembers():
                 if member.isdir():
                     continue

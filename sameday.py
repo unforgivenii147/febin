@@ -1,0 +1,61 @@
+#!/data/data/com.termux/files/usr/bin/env python3
+import ctypes
+import ctypes.util
+import os
+from datetime import datetime
+
+
+class StatxTimestamp(ctypes.Structure):
+    _fields_ = [("tv_sec", ctypes.c_int64), ("tv_nsec", ctypes.c_uint32), ("__reserved", ctypes.c_int32)]
+
+
+class Statx(ctypes.Structure):
+    _fields_ = [
+        ("stx_mask", ctypes.c_uint32),
+        ("stx_blksize", ctypes.c_uint32),
+        ("stx_attributes", ctypes.c_uint64),
+        ("stx_nlink", ctypes.c_uint32),
+        ("stx_uid", ctypes.c_uint32),
+        ("stx_gid", ctypes.c_uint32),
+        ("stx_mode", ctypes.c_uint16),
+        ("__spare0", ctypes.c_uint16 * 1),
+        ("stx_ino", ctypes.c_uint64),
+        ("stx_size", ctypes.c_uint64),
+        ("stx_blocks", ctypes.c_uint64),
+        ("stx_attributes_mask", ctypes.c_uint64),
+        ("stx_atime", StatxTimestamp),
+        ("stx_btime", StatxTimestamp),  # Birth/creation time
+        ("stx_ctime", StatxTimestamp),
+        ("stx_mtime", StatxTimestamp),
+        ("stx_rdev_major", ctypes.c_uint32),
+        ("stx_rdev_minor", ctypes.c_uint32),
+        ("stx_dev_major", ctypes.c_uint32),
+        ("stx_dev_minor", ctypes.c_uint32),
+        ("__spare2", ctypes.c_uint64 * 14),
+    ]
+
+
+# Load libc
+libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
+
+# Define statx function
+AT_FDCWD = -100
+STATX_BTIME = 0x800  # Flag for birth time
+
+
+def get_creation_time_statx(path):
+    """Get file creation time using statx (Linux 4.11+)"""
+    statx_buf = Statx()
+
+    result = libc.statx(AT_FDCWD, path.encode(), 0, STATX_BTIME, ctypes.byref(statx_buf))
+
+    if result == 0:
+        if statx_buf.stx_mask & STATX_BTIME:
+            timestamp = statx_buf.stx_btime.tv_sec
+            return datetime.fromtimestamp(timestamp)
+    return None
+
+
+# Usage
+creation_time = get_creation_time_statx("filename.txt")
+print(f"Creation time: {creation_time}")

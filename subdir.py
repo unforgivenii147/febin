@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python3
-from pathlib import Path
 import shutil
 import sys
 import tarfile
 import zipfile
+from pathlib import Path
+
 import py7zr
 
 
@@ -63,7 +64,14 @@ def unzip_file(archive: Path, target_dir: Path) -> bool:
             except py7zr.exceptions.Bad7zFile:
                 return False
 
-    except (tarfile.TarError, zipfile.BadZipFile, py7zr.exceptions.Bad7zFile, OSError, EOFError, FileNotFoundError):
+    except (
+        tarfile.TarError,
+        zipfile.BadZipFile,
+        py7zr.exceptions.Bad7zFile,
+        OSError,
+        EOFError,
+        FileNotFoundError,
+    ):
         return False
 
 

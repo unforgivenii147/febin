@@ -5,6 +5,7 @@ import importlib.util
 import numbers
 import os
 import pathlib
+import sys
 
 from dh import STDLIB, get_installed_pkgs
 
@@ -68,8 +69,8 @@ def get_version(module_name):
 
 
 def main():
-    search_path = "."
-    output_file = "importz.txt"
+    search_path = sys.argv[1]
+    output_file = f"{search_path}/importz.txt"
     print(f"Scanning directory: {os.path.abspath(search_path)}...")
     modules = find_imports(search_path)
     results = []

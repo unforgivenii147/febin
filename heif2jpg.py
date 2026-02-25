@@ -3,9 +3,9 @@ from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
 
+import pillow_heif as ph
 from dh import folder_size
 from fastwalk import walk_files
-import pillow_heif as ph
 
 
 def process_file(fp):

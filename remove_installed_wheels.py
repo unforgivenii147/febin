@@ -9,7 +9,9 @@ VENV_PATH = os.path.expanduser("~/venv")
 def get_installed_version(pkg_name):
     try:
         result = subprocess.run(
-            [os.path.join(VENV_PATH, "bin", "pip"), "show", pkg_name], capture_output=True, text=True
+            [os.path.join(VENV_PATH, "bin", "pip"), "show", pkg_name],
+            capture_output=True,
+            text=True,
         )
         if result.returncode == 0:
             for line in result.stdout.splitlines():

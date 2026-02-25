@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import regex as re
 
 
 class RegexCommentRemover:
     def __init__(self):
-        self.pattern = re.compile(r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"', re.DOTALL | re.MULTILINE)
+        self.pattern = re.compile(
+            r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
+            re.DOTALL | re.MULTILINE,
+        )
 
     def remove_comments(self, source: str):
+
         def replacer(match):
             s = match.group(0)
             if s.startswith("/"):

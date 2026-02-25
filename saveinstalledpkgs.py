@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python3
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 OUTPUT_FILE = Path("/sdcard/installed_packages.txt")
 

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python3
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 PIP_LIST_FILE = "/sdcard/pip.list"
 

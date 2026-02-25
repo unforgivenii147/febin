@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-import pycld2
-from pathlib import Path
-from collections import Counter, defaultdict
-import sys
 import os
-from typing import Dict, List, Tuple, Optional
+import sys
+from collections import Counter, defaultdict
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+import pycld2
 from dh import TXT_EXT
 
 MIN_TEXT_LENGTH = 20
@@ -238,10 +239,18 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Find non-English files in directory recursively using pycld2")
-    parser.add_argument("directory", nargs="?", default=".", help="Directory to scan (default: current directory)")
+    parser.add_argument(
+        "directory",
+        nargs="?",
+        default=".",
+        help="Directory to scan (default: current directory)",
+    )
     parser.add_argument("-v", "--verbose", action="store_true", help="Show detailed file listing")
     parser.add_argument(
-        "-l", "--list-languages", action="store_true", help="List all detected languages and their counts"
+        "-l",
+        "--list-languages",
+        action="store_true",
+        help="List all detected languages and their counts",
     )
 
     args = parser.parse_args()

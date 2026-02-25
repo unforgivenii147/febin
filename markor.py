@@ -4,10 +4,10 @@ Markor - A Markdown/Text Editor for Termux using termux-gui-python-bindings
 Implements core features: file management, markdown editing, preview, and todo list management
 """
 
+import sys
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
-import sys
 from typing import Any
 
 import markdown
@@ -233,12 +233,12 @@ class Document:
         return {
             "name": self.file_path.name,
             "path": str(self.file_path),
-            "size_bytes": self.file_path.stat().st_size if self.file_path.exists() else 0,
+            "size_bytes": (self.file_path.stat().st_size if self.file_path.exists() else 0),
             "format": self.format_type,
             "words": self.get_word_count(),
             "characters": self.get_char_count(),
             "lines": self.get_line_count(),
-            "last_modified": self.last_modified.isoformat() if self.last_modified else None,
+            "last_modified": (self.last_modified.isoformat() if self.last_modified else None),
         }
 
 
@@ -371,7 +371,8 @@ class TextEditor:
         if not name:
             return
         format_choice = self.gui.show_menu(
-            "Select Format", ["Markdown (.md)", "Todo List (.txt)", "Plain Text (.txt)", "JSON (.json)"]
+            "Select Format",
+            ["Markdown (.md)", "Todo List (.txt)", "Plain Text (.txt)", "JSON (.json)"],
         )
         formats = ["markdown", "todo", "text", "json"]
         format_type = formats[format_choice] if 0 <= format_choice < len(formats) else "markdown"
@@ -408,7 +409,9 @@ class TextEditor:
             return
         search_content = (
             self.gui.show_dialog(
-                "Search Scope", "Search in filenames only or file content?", ["Filenames Only", "Content Too"]
+                "Search Scope",
+                "Search in filenames only or file content?",
+                ["Filenames Only", "Content Too"],
             )
             == 1
         )
@@ -579,7 +582,9 @@ Last Modified: {info["last_modified"]}
     def close_document(self):
         if self.is_modified:
             save_choice = self.gui.show_dialog(
-                "Save Changes?", "Document has unsaved changes", ["Save", "Don't Save", "Cancel"]
+                "Save Changes?",
+                "Document has unsaved changes",
+                ["Save", "Don't Save", "Cancel"],
             )
             if save_choice == 0:
                 self.save_document()
@@ -588,7 +593,14 @@ Last Modified: {info["last_modified"]}
         self.current_document = None
 
     def show_settings(self):
-        settings_menu = ["Theme (Dark/Light)", "Auto-save", "Font Size", "Word Wrap", "Show Line Numbers", "Back"]
+        settings_menu = [
+            "Theme (Dark/Light)",
+            "Auto-save",
+            "Font Size",
+            "Word Wrap",
+            "Show Line Numbers",
+            "Back",
+        ]
         choice = self.gui.show_menu("Settings", settings_menu)
         if choice >= 0 and choice < 5:
             self.gui.show_toast(f"Setting {choice}: Not yet implemented")

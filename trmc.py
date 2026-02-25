@@ -2,11 +2,11 @@
 import ast
 from pathlib import Path
 
+import tree_sitter_python as tspython
 from dh import folder_size, format_size
 from fastwalk import walk_files
 from termcolor import cprint
 from tree_sitter import Language, Parser
-import tree_sitter_python as tspython
 
 
 class TSRemover:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from pathlib import Path
 import stat
+from pathlib import Path
 
 
 def has_shebang(path: Path) -> bool:

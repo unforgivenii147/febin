@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import regex as re
 
@@ -24,6 +24,7 @@ def from_ms(ms: int) -> str:
 
 
 def shift_content(text: str, shift_ms: int) -> str:
+
     def repl(m):
         a, b = m.groups()
         return f"{from_ms(to_ms(a) + shift_ms)} --> {from_ms(to_ms(b) + shift_ms)}"

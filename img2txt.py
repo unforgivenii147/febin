@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import os
+import argparse
 from pathlib import Path
 
 from PIL import Image, ImageFilter, ImageOps
@@ -16,23 +17,40 @@ def preprocess_image(img):
 
 def extract_text(image_path):
     img = Image.open(image_path)
-    return image_to_string(img, lang="eng", config="--oem 1 --psm 6")
+    processed_img = preprocess_image(img)
+    return image_to_string(processed_img, lang="eng", config="--oem 1 --psm 6")
 
 
-def main() -> None:
-    dir = Path().cwd()
-    for pth in os.listdir(dir):
-        path = Path(pth)
-        if path.suffix in {".jpg", ".png"}:
-            print(f"processing {path.name}")
-            text = extract_text(path)
-            if text:
-                txtfile = path.with_suffix(".txt")
-                with open(txtfile, "w", encoding="utf-8") as f:
-                    f.write(text)
-                print(f"{txtfile} created.")
-            else:
-                print("no text")
+def process_file(file_path):
+    print(f"Processing {file_path.name}")
+    text = extract_text(file_path)
+    if text:
+        txtfile = file_path.with_suffix(".txt")
+        with open(txtfile, "w", encoding="utf-8") as f:
+            f.write(text)
+        print(f"{txtfile} created.")
+    else:
+        print("No text found.")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Extract text from images.")
+    parser.add_argument("file", nargs="?", help="Image file to process")
+    args = parser.parse_args()
+
+    if args.file:
+        file_path = Path(args.file)
+        if file_path.exists() and file_path.suffix in {".jpg", ".png"}:
+            process_file(file_path)
+        else:
+            print("Error: File does not exist or is not a supported image format.")
+    else:
+        dir = Path().cwd()
+        for root, _, files in os.walk(dir):
+            for file in files:
+                file_path = Path(root) / file
+                if file_path.suffix in {".jpg", ".png"}:
+                    process_file(file_path)
 
 
 if __name__ == "__main__":

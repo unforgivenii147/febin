@@ -1,65 +1,137 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import argparse
 import os
+import sys
 
 import regex as re
 
 
-def replace_in_files(search_text, replace_text, dry_run=False):
-    exclude_dirs = {".git", "build", "dist"}
-    pattern = re.compile(r"\b" + re.escape(search_text) + r"\b")
+def process_file(file_path, search_text, replace_text=None, dry_run=False):
+    """Process a single file and perform replacement/removal"""
+    try:
+        with open(file_path, encoding="utf-8") as f:
+            content = f.read()
+
+        # If replace_text is None, remove the search text (replace with empty string)
+        replacement = replace_text if replace_text is not None else ""
+
+        # For the search text, escape any regex special characters
+        escaped_search = re.escape(search_text)
+
+        # Don't use word boundaries for punctuation/special characters
+        # Just create a simple pattern that matches the exact text
+        pattern = re.compile(escaped_search)
+
+        if pattern.search(content):
+            if dry_run:
+                # Find all matches for preview
+                matches = list(pattern.finditer(content))
+                print(f"[DRY RUN] Found {len(matches)} match(es) in {file_path}")
+                # Show first few matches with context
+                for i, match in enumerate(matches[:3]):
+                    start = max(0, match.start() - 20)
+                    end = min(len(content), match.end() + 20)
+                    context = content[start:end]
+                    context = context.replace("\n", " ").strip()
+                    print(f"  Match {i + 1}: ...{context}...")
+                if len(matches) > 3:
+                    print(f"  ... and {len(matches) - 3} more matches")
+            else:
+                new_content = pattern.sub(replacement, content)
+                with open(file_path, "w", encoding="utf-8") as f:
+                    f.write(new_content)
+                print(f"Updated: {file_path}")
+            return True
+        return False
+
+    except (UnicodeDecodeError, PermissionError, IsADirectoryError) as e:
+        # Skip binary files and directories
+        return False
+    except Exception as e:
+        print(f"Error processing {file_path}: {e}", file=sys.stderr)
+        return False
+
+
+def replace_in_files(search_text, replace_text=None, target_file=None, dry_run=False):
+    """Main function to process files"""
+    exclude_dirs = {".git", "build", "dist", "__pycache__", "node_modules"}
+
+    # Track if any files were processed
+    files_processed = 0
+    files_changed = 0
+
+    # If a specific file is provided, process just that file
+    if target_file:
+        if os.path.isfile(target_file):
+            print(f"Processing file: {target_file}")
+            if process_file(target_file, search_text, replace_text, dry_run):
+                files_changed += 1
+            files_processed += 1
+        else:
+            print(f"Error: {target_file} is not a valid file", file=sys.stderr)
+        return files_processed, files_changed
+
+    # Otherwise process recursively
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         for filename in files:
             file_path = os.path.join(root, filename)
-            try:
-                with open(
-                    file_path,
-                    encoding="utf-8",
-                ) as f:
-                    lines = f.readlines()
-                new_lines = []
-                changed = False
-                for i, line in enumerate(lines):
-                    if pattern.search(line):
-                        new_line = pattern.sub(replace_text, line)
-                        if dry_run:
-                            print(f"[DRY RUN] Match found in {file_path} on line {i + 1}:")
-                            print(f"  - Old: {line.strip()}")
-                            print(f"  + New: {new_line.strip()}")
-                        new_lines.append(new_line)
-                        changed = True
-                    else:
-                        new_lines.append(line)
-                if changed and not dry_run:
-                    with open(
-                        file_path,
-                        "w",
-                        encoding="utf-8",
-                    ) as f:
-                        f.writelines(new_lines)
-                    print(f"Updated: {file_path}")
-            except (
-                UnicodeDecodeError,
-                PermissionError,
-            ):
-                continue
+            files_processed += 1
+            if process_file(file_path, search_text, replace_text, dry_run):
+                files_changed += 1
+
+            # Simple progress indicator for large directories
+            if files_processed % 100 == 0:
+                print(f"Processed {files_processed} files...", end="\r")
+
+    return files_processed, files_changed
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Recursively replace text in files.")
-    parser.add_argument("search", help="The text to search for")
-    parser.add_argument("replace", help="The replacement text")
+    parser = argparse.ArgumentParser(description="Recursively replace or remove text in files.")
+    parser.add_argument(
+        "strings",
+        nargs="+",
+        help="Search text and optional replacement text. If only one string is provided, it will be removed.",
+    )
     parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show changes without applying them",
     )
+    parser.add_argument(
+        "-f",
+        "--file",
+        help="Process only the specified file instead of recursive directory search",
+    )
+
     args = parser.parse_args()
+
+    # Handle the two possible cases: replacement (2 strings) or removal (1 string)
+    if len(args.strings) == 2:
+        search_text, replace_text = args.strings
+        action = f"REPLACING '{search_text}' WITH '{replace_text}'"
+    elif len(args.strings) == 1:
+        search_text = args.strings[0]
+        replace_text = None  # This triggers removal
+        action = f"REMOVING '{search_text}'"
+    else:
+        parser.error("Please provide either one string (to remove) or two strings (search and replace)")
+
+    # Handle quoted strings - remove surrounding quotes if present
+    if search_text.startswith(("'", '"')) and search_text.endswith(("'", '"')):
+        search_text = search_text[1:-1]
+
     if args.dry_run:
         print("--- RUNNING IN DRY RUN MODE (No files will be modified) ---")
-    replace_in_files(
-        args.search,
-        args.replace,
+
+    print(f"--- {action} ---")
+
+    files_processed, files_changed = replace_in_files(
+        search_text,
+        replace_text,
+        target_file=args.file,
         dry_run=args.dry_run,
     )
+
+    print(f"\n--- Complete: Processed {files_processed} files, modified {files_changed} files ---")

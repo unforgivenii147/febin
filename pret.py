@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python3
+import argparse
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
@@ -30,9 +31,9 @@ def format_file(file_path):
         if int(result) == 0:
             print("[OK] no change")
         elif result < 0:
-            print(f"[OK] {format_size(abs(result))} bigger")
+            print(f"[OK] + {format_size(abs(result))}")
         elif result > 0:
-            print(f"[OK] {format_size(result)} smaller")
+            print(f"[OK] - {format_size(result)}")
         return True
     else:
         print(f"[ERROR] {err}")
@@ -40,28 +41,44 @@ def format_file(file_path):
 
 
 def main() -> None:
-    start = folder_size(".")
-    jfiles = []
-    for pth in walk_files("."):
-        path = Path(pth)
-        if any(path.suffix == ext for ext in FILE_EXTENSIONS):
-            if ".min." in path.name:
-                continue
-            jfiles.append(path)
-    if not jfiles:
-        print("No files found.")
-        return
-    print(f"Formatting {len(jfiles)} files usin mp...")
-    with Pool(8) as p:
-        pending = deque()
-        for f in jfiles:
-            pending.append(p.apply_async(format_file, (f,)))
-            if len(pending) >= MAX_IN_FLIGHT:
+    parser = argparse.ArgumentParser(description="Format files using Prettier.")
+    parser.add_argument("file", nargs="?", help="File to format")
+    args = parser.parse_args()
+
+    if args.file:
+        # Process single file
+        file_path = Path(args.file)
+        if not file_path.exists():
+            print(f"Error: File '{args.file}' not found.")
+            return
+        if any(file_path.suffix == ext for ext in FILE_EXTENSIONS):
+            format_file(file_path)
+        else:
+            print(f"Error: File '{args.file}' has an unsupported extension.")
+    else:
+        # Process current directory recursively
+        start = folder_size(".")
+        jfiles = []
+        for pth in walk_files("."):
+            path = Path(pth)
+            if any(path.suffix == ext for ext in FILE_EXTENSIONS):
+                if ".min." in path.name:
+                    continue
+                jfiles.append(path)
+        if not jfiles:
+            print("No files found.")
+            return
+        print(f"Formatting {len(jfiles)} files using mp...")
+        with Pool(8) as p:
+            pending = deque()
+            for f in jfiles:
+                pending.append(p.apply_async(format_file, (f,)))
+                if len(pending) >= MAX_IN_FLIGHT:
+                    pending.popleft().get()
+            while pending:
                 pending.popleft().get()
-        while pending:
-            pending.popleft().get()
-    end = folder_size(".")
-    print(f"{format_size(start - end)}")
+        end = folder_size(".")
+        print(f"{format_size(start - end)}")
 
 
 if __name__ == "__main__":

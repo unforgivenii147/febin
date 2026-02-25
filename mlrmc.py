@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python3
+import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-import sys
 
-from tree_sitter import Language, Parser
 import tree_sitter_cpp
 import tree_sitter_python
 import tree_sitter_rust
+from tree_sitter import Language, Parser
 
 # -------------------------
 LANGUAGES = {
@@ -45,6 +45,7 @@ def _cleanup_blank_lines(text: str) -> str:
 
 
 def _collect_python_docstrings(node, deletions):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:

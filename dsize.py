@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 # file: get_download_size.py
 import argparse
-from pathlib import Path
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 
 def fetch_content_length(url: str) -> int | None:

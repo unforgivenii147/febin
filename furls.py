@@ -6,11 +6,11 @@ import os
 import sys
 import tarfile
 import tempfile
-from time import perf_counter
 import zipfile
+from time import perf_counter
 
-from dh import is_valid_url
 import regex as re
+from dh import is_valid_url
 
 try:
     import zstandard as zstd
@@ -286,7 +286,10 @@ def process_bytes_as_archive(
                 return
             try:
                 dctx = zstd.ZstdDecompressor()
-                with dctx.stream_reader(io.BytesIO(b)) as reader, tempfile.TemporaryFile() as tmpf:
+                with (
+                    dctx.stream_reader(io.BytesIO(b)) as reader,
+                    tempfile.TemporaryFile() as tmpf,
+                ):
                     while True:
                         chunk = reader.read(16384)
                         if not chunk:
@@ -482,6 +485,9 @@ def main():
                 recursion_limit=args.max_recursion,
             )
     sorted_urls = sorted(found)
+    if not found:
+        print("no url found")
+        sys.exit(0)
     try:
         if os.path.exists(args.output):
             print("urls.txt exists. appending new urls")

@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import argparse
-from collections import Counter
-from collections.abc import Generator
-from datetime import datetime
 import mmap
 import os
-from pathlib import Path
 import shutil
 import sys
 import tempfile
 import time
+from collections import Counter
+from collections.abc import Generator
+from datetime import datetime
+from pathlib import Path
 
 
 class LineProcessor:
@@ -83,7 +83,11 @@ class MmapReader(LineProcessor):
             raise OSError(f"Error reading file: {e!s}")
 
     def read_lines(
-        self, file_path: Path, encoding: str = "utf-8", skip_empty: bool = False, use_mmap: bool = True
+        self,
+        file_path: Path,
+        encoding: str = "utf-8",
+        skip_empty: bool = False,
+        use_mmap: bool = True,
     ) -> Generator[str, None, None]:
         if use_mmap:
             yield from self.read_lines_mmap(file_path, encoding, skip_empty)
@@ -245,10 +249,12 @@ class FileSorter(LineProcessor):
                 "final_size_bytes": final_size,
                 "final_size": self.format_size(final_size),
                 "duplicate_lines": unique_count if unique else 0,
-                "size_reduction": original_size - final_size if original_size > 0 else 0,
-                "size_reduction_pct": ((original_size - final_size) / original_size * 100) if original_size > 0 else 0,
+                "size_reduction": (original_size - final_size if original_size > 0 else 0),
+                "size_reduction_pct": (
+                    ((original_size - final_size) / original_size * 100) if original_size > 0 else 0
+                ),
                 "processing_time": elapsed_time,
-                "lines_per_second": original_lines / elapsed_time if elapsed_time > 0 else 0,
+                "lines_per_second": (original_lines / elapsed_time if elapsed_time > 0 else 0),
             }
         except Exception as e:
             raise RuntimeError(f"Error processing file: {e!s}")
@@ -309,7 +315,7 @@ class FileAnalyzer(LineProcessor):
             "total_lines": len(lines),
             "unique_lines": len(line_counts),
             "duplicate_lines": duplicate_count,
-            "duplicate_percentage": (duplicate_count / len(lines) * 100) if lines else 0,
+            "duplicate_percentage": ((duplicate_count / len(lines) * 100) if lines else 0),
             "max_line_length": max_length,
             "avg_line_length": avg_length,
             "most_common_lines": most_common,
@@ -370,8 +376,18 @@ Examples:
     parser.add_argument("--output", "-o", help="Output filename (default: overwrite input)")
     parser.add_argument("--sort", action="store_true", default=True, help="Sort lines (default: True)")
     parser.add_argument("--no-sort", dest="sort", action="store_false", help="Do not sort lines")
-    parser.add_argument("--unique", action="store_true", default=True, help="Remove duplicates (default: True)")
-    parser.add_argument("--no-unique", dest="unique", action="store_false", help="Do not remove duplicates")
+    parser.add_argument(
+        "--unique",
+        action="store_true",
+        default=True,
+        help="Remove duplicates (default: True)",
+    )
+    parser.add_argument(
+        "--no-unique",
+        dest="unique",
+        action="store_false",
+        help="Do not remove duplicates",
+    )
     parser.add_argument("--reverse", "-r", action="store_true", help="Sort in reverse order")
     parser.add_argument("--case-insensitive", "-i", action="store_true", help="Case-insensitive sorting")
     parser.add_argument("--skip-empty", action="store_true", help="Skip empty lines")

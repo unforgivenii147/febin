@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import ast
-from concurrent.futures import ProcessPoolExecutor, as_completed
 import os
-from pathlib import Path
 import shutil
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from pathlib import Path
 
 ERROR_DIR = Path("error")
 OK_DIR = Path("ok")

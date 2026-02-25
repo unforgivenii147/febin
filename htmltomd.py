@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import argparse
+import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-import sys
 
 from bs4 import BeautifulSoup
 from html_to_markdown import Options, convert
@@ -79,18 +79,40 @@ Examples:
         """,
     )
     parser.add_argument(
-        "path", nargs="?", default=".", help="HTML file or directory to process (default: current directory)"
+        "path",
+        nargs="?",
+        default=".",
+        help="HTML file or directory to process (default: current directory)",
     )
     parser.add_argument(
-        "-r", "--recursive", action="store_true", default=True, help="Process directories recursively (default: True)"
+        "-r",
+        "--recursive",
+        action="store_true",
+        default=True,
+        help="Process directories recursively (default: True)",
     )
-    parser.add_argument("--no-recursive", action="store_false", dest="recursive", help="Disable recursive processing")
     parser.add_argument(
-        "--workers", type=int, default=cpu_count(), help=f"Number of worker processes (default: {cpu_count()})"
+        "--no-recursive",
+        action="store_false",
+        dest="recursive",
+        help="Disable recursive processing",
     )
-    parser.add_argument("--keep-forms", action="store_true", help="Keep form elements (default: remove them)")
     parser.add_argument(
-        "--github-flavored", action="store_true", default=True, help="Use GitHub-flavored Markdown (default: True)"
+        "--workers",
+        type=int,
+        default=cpu_count(),
+        help=f"Number of worker processes (default: {cpu_count()})",
+    )
+    parser.add_argument(
+        "--keep-forms",
+        action="store_true",
+        help="Keep form elements (default: remove them)",
+    )
+    parser.add_argument(
+        "--github-flavored",
+        action="store_true",
+        default=True,
+        help="Use GitHub-flavored Markdown (default: True)",
     )
     args = parser.parse_args()
     options = Options(

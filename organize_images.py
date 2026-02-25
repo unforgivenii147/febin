@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -157,6 +157,12 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--directory", default=".", help="Source directory (default: current)")
     parser.add_argument("-k", "--clusters", type=int, default=10, help="Number of groups (default: 10)")
     parser.add_argument("-m", "--move", action="store_true", help="Move files instead of copy")
-    parser.add_argument("-t", "--threshold", type=float, default=0.7, help="Similarity threshold (default: 0.7)")
+    parser.add_argument(
+        "-t",
+        "--threshold",
+        type=float,
+        default=0.7,
+        help="Similarity threshold (default: 0.7)",
+    )
     args = parser.parse_args()
     organize_photos(args.directory, args.clusters, args.move, args.threshold)

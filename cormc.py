@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import glob
 import logging
-from multiprocessing import Pool, cpu_count
 import os
 import sys
+from multiprocessing import Pool, cpu_count
 
 try:
     from tree_sitter import Language, Parser
@@ -169,7 +169,12 @@ def main():
     parser = argparse.ArgumentParser(
         description="Remove comments and docstrings from Python files recursively using tree-sitter."
     )
-    parser.add_argument("directory", nargs="?", default=".", help="Directory to process (default: current directory)")
+    parser.add_argument(
+        "directory",
+        nargs="?",
+        default=".",
+        help="Directory to process (default: current directory)",
+    )
     parser.add_argument(
         "-w",
         "--workers",

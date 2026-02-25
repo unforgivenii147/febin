@@ -31,8 +31,24 @@ class JalaliDate:
         "بهمن",
         "اسفند",
     ]
-    JALALI_WEEKDAYS_EN = ["Shanbeh", "Yekshanbe", "Doshanbe", "Seshanbe", "Chaharshanbe", "Panjshanbe", "Jomeh"]
-    JALALI_WEEKDAYS_FA = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنج‌شنبه", "جمعه"]
+    JALALI_WEEKDAYS_EN = [
+        "Shanbeh",
+        "Yekshanbe",
+        "Doshanbe",
+        "Seshanbe",
+        "Chaharshanbe",
+        "Panjshanbe",
+        "Jomeh",
+    ]
+    JALALI_WEEKDAYS_FA = [
+        "شنبه",
+        "یکشنبه",
+        "دوشنبه",
+        "سه‌شنبه",
+        "چهارشنبه",
+        "پنج‌شنبه",
+        "جمعه",
+    ]
 
     def __init__(self, jalali_year: int, jalali_month: int, jalali_day: int):
         self.year = jalali_year

@@ -17,24 +17,25 @@ def remove_pyc_files(directory):
     path = Path(directory)
     pyc_count = 0
     space_freed = 0  # in bytes
+    pycache_count = 0
 
     for pyc_file in path.rglob("*.pyc"):
         file_size = pyc_file.stat().st_size
         pyc_file.unlink()
         pyc_count += 1
         space_freed += file_size
-    pycach = len(path.rglob("__pycache__"))
 
     for pycache_dir in path.rglob("__pycache__"):
         if not list(pycache_dir.iterdir()):
             pycache_dir.rmdir()
+            pycache_count += 1
 
     freed_size_str = format_size(space_freed)
 
     print("\n--- Report ---")
     print(f".pyc removed: {pyc_count}")
     print(f"Space freed: {freed_size_str}")
-    print(f"dir removed: {pycach}")
+    print(f"dir removed: {pycache_count}")
 
 
 if __name__ == "__main__":

@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import argparse
-from collections import deque
 import contextlib
+from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
 from time import perf_counter

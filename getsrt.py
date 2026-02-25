@@ -14,7 +14,15 @@ def extract_subtitles(input_file, output_file=None, subtitle_index=0):
         raise FileNotFoundError(f"Input file not found: {input_file}")
     if output_file is None:
         output_file = os.path.splitext(input_file)[0] + ".srt"
-    cmd = ["ffmpeg", "-i", input_file, "-map", f"0:s:{subtitle_index}", "-y", output_file]
+    cmd = [
+        "ffmpeg",
+        "-i",
+        input_file,
+        "-map",
+        f"0:s:{subtitle_index}",
+        "-y",
+        output_file,
+    ]
     try:
         subprocess.run(cmd, check=True)
         print(f"Subtitles extracted to: {output_file}")

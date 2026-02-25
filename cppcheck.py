@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python3
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 from fastwalk import walk_files
 
@@ -20,7 +20,16 @@ if __name__ == "__main__":
     dir = Path().cwd()
     for pth in walk_files(dir):
         path = Path(pth)
-        if path.is_file() and path.suffix in {".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx"}:
+        if path.is_file() and path.suffix in {
+            ".c",
+            ".cc",
+            ".cpp",
+            ".cxx",
+            ".h",
+            ".hh",
+            ".hpp",
+            ".hxx",
+        }:
             if not validate_cpp(path):
                 print(f"[\u2716] : {path.name}")
             else:

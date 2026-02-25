@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 # === One-cell Colab notebook: export site-packages ===
 import os
-from pathlib import Path
 import shutil
 import site
 import zipfile
+from pathlib import Path
 
 from google.colab import drive
 

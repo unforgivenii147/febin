@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python3
-from concurrent.futures import ThreadPoolExecutor
 import os
 import shutil
+from concurrent.futures import ThreadPoolExecutor
 
 import regex as re
 

@@ -1,14 +1,115 @@
-#!/data/data/com.termux/files/usr/bin/env python3
-from multiprocessing import Pool, cpu_count
-from pathlib import Path
+#!/usr/bin/env python3
+"""
+Remove normal Python comments from Python files recursively using tree-sitter.
+Preserves shebang, type hints, and formatter directives.
+
+Usage:
+    python script.py              # Process all Python files in current directory recursively
+    python script.py file1.py file2.py  # Process only specified files
+"""
+
+import os
 import sys
-
+import ast
+import logging
+from pathlib import Path
+from typing import Set, Tuple, List
 from tree_sitter import Language, Parser
-import tree_sitter_python
+import tree_sitter_python as tspython
 
-EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
-parser = Parser()
-parser.language = Language(tree_sitter_python.language())
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+logger = logging.getLogger(__name__)
+
+PY_LANGUAGE = Language(tspython.language())
+parser = Parser(PY_LANGUAGE)
+
+PRESERVE_PREFIXES = ("# type:", "# fmt:", "# ruff:", "# pylint:", "#!")
+
+
+def get_directory_size(path: str) -> int:
+    total_size = 0
+    for dirpath, _, filenames in os.walk(path):
+        for filename in filenames:
+            filepath = os.path.join(dirpath, filename)
+            if not os.path.islink(filepath):
+                try:
+                    total_size += os.path.getsize(filepath)
+                except OSError as e:
+                    logger.error(f"Error getting size of {filepath}: {e}")
+    return total_size
+
+
+def is_python_file(filepath: Path) -> bool:
+    if filepath.suffix == ".py":
+        return True
+    if filepath.suffix == "":
+        try:
+            with open(filepath, "rb") as f:
+                first_line = f.readline()
+                if first_line.startswith(b"#!") and b"python" in first_line:
+                    return True
+        except (OSError, UnicodeDecodeError):
+            pass
+    return False
+
+
+def should_preserve_comment(comment_text: str) -> bool:
+    stripped = comment_text.strip()
+    return any(stripped.startswith(prefix) for prefix in PRESERVE_PREFIXES)
+
+
+def remove_comments_from_source(source_code: str) -> Tuple[str, bool]:
+    tree = parser.parse(bytes(source_code, "utf8"))
+    root_node = tree.root_node
+    comments_to_remove = []
+
+    def traverse(node):
+        if node.type == "comment":
+            comment_text = source_code[node.start_byte : node.end_byte]
+            if not should_preserve_comment(comment_text):
+                comments_to_remove.append((node.start_byte, node.end_byte))
+        for child in node.children:
+            traverse(child)
+
+    traverse(root_node)
+    if not comments_to_remove:
+        return source_code, False
+    comments_to_remove.sort(reverse=True)
+    lines = source_code.split("\n")
+    source_bytes = source_code.encode("utf8")
+    for start_byte, end_byte in comments_to_remove:
+        start_line = source_code[:start_byte].count("\n")
+        end_line = source_code[:end_byte].count("\n")
+        if start_line == end_line:
+            line_start = source_code.rfind("\n", 0, start_byte) + 1
+            start_col = start_byte - line_start
+            end_col = end_byte - line_start
+
+            line = lines[start_line]
+
+            before_comment = line[:start_col].strip()
+
+            if before_comment:
+                lines[start_line] = line[:start_col].rstrip()
+            else:
+                lines[start_line] = ""
+        else:
+            for i in range(start_line, end_line + 1):
+                lines[i] = ""
+
+    result_lines = []
+    for line in lines:
+        if line or result_lines:
+            result_lines.append(line)
+
+    while result_lines and not result_lines[-1]:
+        result_lines.pop()
+
+    modified_code = "\n".join(result_lines)
+    if modified_code and not modified_code.endswith("\n"):
+        modified_code += "\n"
+
+    return modified_code, True
 
 
 def _cleanup_blank_lines(text: str) -> str:
@@ -26,47 +127,137 @@ def _cleanup_blank_lines(text: str) -> str:
     return "\n".join(cleaned) + "\n"
 
 
-def remove_comments_tree_sitter(path: Path) -> None:
+def validate_syntax(code: str) -> bool:
     try:
-        source = path.read_bytes()
-        tree = parser.parse(source)
-        deletions = []
+        ast.parse(code)
+        return True
+    except SyntaxError as e:
+        logger.error(f"Syntax error: {e}")
+        return False
 
-        def walk(node):
-            if node.type == "comment":
-                text = source[node.start_byte : node.end_byte]
-                if not text.lstrip().startswith(EXCLUDE_PREFIXES):
-                    deletions.append((node.start_byte, node.end_byte))
-            for child in node.children:
-                walk(child)
 
-        walk(tree.root_node)
-        cleaned_bytes = bytearray(source)
-        for start, end in sorted(deletions, reverse=True):
-            del cleaned_bytes[start:end]
-        cleaned_text = cleaned_bytes.decode("utf-8")
-        cleaned_text = _cleanup_blank_lines(cleaned_text)
-        cleaned_bytes = cleaned_text.encode("utf-8")
-        parser.parse(cleaned_bytes)
-        path.write_bytes(cleaned_bytes)
-        print(f"[OK] {path}")
+def process_file(filepath: Path) -> bool:
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            original_code = f.read()
+
+        modified_code, was_modified = remove_comments_from_source(original_code)
+
+        if not was_modified:
+            return False
+
+        modified_code = _cleanup_blank_lines(modified_code)
+
+        if not validate_syntax(modified_code):
+            logger.error(f"Syntax validation failed for {filepath}, skipping update")
+            return False
+
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(modified_code)
+
+        logger.info(f"Processed: {filepath}")
+        return True
+
     except Exception as e:
-        print(f"[FAIL] {path} -> {e}")
+        logger.error(f"Error processing {filepath}: {e}")
+        return False
 
 
-def collect_py_files(root: Path) -> list[Path]:
-    if root.is_file() and root.suffix == ".py":
-        return [root]
-    return [p for p in root.rglob("*.py") if p.is_file()]
+def process_files(file_paths: List[Path]) -> Tuple[int, int, int, int]:
+    """Process a list of files. Returns (processed_count, modified_count, initial_size, final_size)."""
+    processed_count = 0
+    modified_count = 0
+    initial_total_size = 0
+    final_total_size = 0
+
+    for filepath in file_paths:
+        if not filepath.exists():
+            logger.error(f"File not found: {filepath}")
+            continue
+
+        if filepath.is_symlink():
+            logger.warning(f"Skipping symlink: {filepath}")
+            continue
+
+        if not is_python_file(filepath):
+            logger.warning(f"Skipping non-Python file: {filepath}")
+            continue
+
+        try:
+            initial_size = filepath.stat().st_size
+        except OSError as e:
+            logger.error(f"Error getting size of {filepath}: {e}")
+            continue
+
+        processed_count += 1
+        if process_file(filepath):
+            modified_count += 1
+
+            try:
+                final_size = filepath.stat().st_size
+                initial_total_size += initial_size
+                final_total_size += final_size
+            except OSError as e:
+                logger.error(f"Error getting size of {filepath}: {e}")
+
+    return processed_count, modified_count, initial_total_size, final_total_size
 
 
-def main() -> None:
-    root = Path().cwd().resolve()
-    files = collect_py_files(root)
-    if not files:
-        sys.exit("No Python files found")
-    with Pool(cpu_count()) as pool:
-        pool.map(remove_comments_tree_sitter, files)
+def process_directory(directory: Path) -> Tuple[int, int, int, int]:
+    """Process all Python files in directory recursively."""
+    initial_total_size = get_directory_size(str(directory))
+    processed_count = 0
+    modified_count = 0
+
+    for root, dirs, files in os.walk(directory):
+        dirs[:] = [d for d in dirs if not os.path.islink(os.path.join(root, d))]
+
+        for filename in files:
+            filepath = Path(root) / filename
+
+            if filepath.is_symlink():
+                continue
+
+            if not is_python_file(filepath):
+                continue
+
+            processed_count += 1
+            if process_file(filepath):
+                modified_count += 1
+
+    final_total_size = get_directory_size(str(directory))
+    return processed_count, modified_count, initial_total_size, final_total_size
+
+
+def print_summary(processed_count: int, modified_count: int, initial_size: int, final_size: int):
+    """Print processing summary."""
+    size_reduction = initial_size - final_size
+    reduction_percent = (size_reduction / initial_size * 100) if initial_size > 0 else 0
+
+    logger.info(f"\n{'=' * 60}")
+    logger.info(f"Processing complete!")
+    logger.info(f"Files processed: {processed_count}")
+    logger.info(f"Files modified: {modified_count}")
+    logger.info(f"Initial size: {initial_size:,} bytes")
+    logger.info(f"Final size: {final_size:,} bytes")
+    logger.info(f"Size reduction: {size_reduction:,} bytes ({reduction_percent:.2f}%)")
+    logger.info(f"{'=' * 60}")
+
+
+def main():
+    """Main function to process files based on command line arguments."""
+
+    args = sys.argv[1:]
+
+    if args:
+        file_paths = [Path(arg) for arg in args]
+        processed, modified, initial_size, final_size = process_files(file_paths)
+        print_summary(processed, modified, initial_size, final_size)
+    else:
+        current_dir = Path.cwd()
+        logger.info(f"Processing all Python files in {current_dir} recursively...")
+        processed, modified, initial_size, final_size = process_directory(current_dir)
+        print_summary(processed, modified, initial_size, final_size)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python3
-from collections import defaultdict
 import json
+from collections import defaultdict
 from pathlib import Path
 
 from fastwalk import walk, walk_files
@@ -56,17 +56,27 @@ def find_duplicate_folders(root_dir):
 
 
 if __name__ == "__main__":
-    cleaned = defaultdict(list)
     root_dir = "."
     duplicates = find_duplicate_folders(root_dir)
+
     if duplicates:
+        print("Duplicate folder groups:")
+        for hsh, paths in duplicates.items():
+            print(f"\nGroup (Hash: {hsh}):")
+            for path in paths:
+                print(f"  - {path}")
+
+        # Optionally, save to file
+        cleaned = defaultdict(list)
         for hsh, paths in duplicates.items():
             for i in range(len(paths)):
                 for j in range(i + 1, len(paths)):
                     p1 = Path(paths[i])
                     p2 = Path(paths[j])
                     if not is_nested(p1, p2):
-                        print(f"{p1} should be removed.")
                         cleaned[hsh].append(str(p1))
+
         with open("/sdcard/dupdirs.json", "w") as fo:
             json.dump(cleaned, fo)
+    else:
+        print("No duplicate folders found.")

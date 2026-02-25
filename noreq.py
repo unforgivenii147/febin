@@ -71,7 +71,7 @@ def process_tar(path: str) -> None:
     tmp_dir = tempfile.mkdtemp()
     tmp_tar = tempfile.mktemp(suffix=".tar.gz")
     with tarfile.open(path, "r:*") as tar:
-        tar.extractall(tmp_dir)
+        tar.extractall(tmp_dir, filter="data")
     for root, _, files in os.walk(tmp_dir):
         for name in files:
             if name in TARGET_FILES:

@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python3
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from tree_sitter import Language, Parser, QueryCursor
 import tree_sitter_python as tspython
+from tree_sitter import Language, Parser, QueryCursor
 
 
 class TSRemover:

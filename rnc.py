@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python3
+import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-import sys
 
-from tree_sitter import Language, Parser
 import tree_sitter_python
+from tree_sitter import Language, Parser
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 parser = Parser()
@@ -27,6 +27,7 @@ def _cleanup_blank_lines(text: str) -> str:
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:

@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 from pathlib import Path
 
+import tree_sitter_cpp as tscpp
 from dh import run_command
 from termcolor import cprint
 from tree_sitter import Language, Parser
-import tree_sitter_cpp as tscpp
 
 
 class TSCppRemover:
@@ -89,7 +89,10 @@ def process_file(fp):
         return
     end_size = file_path.stat().st_size
     reduced = abs(init_size - end_size)
-    cprint(f"[OK] {file_path.name} - removed {removed} comments, reduced {reduced} bytes", "cyan")
+    cprint(
+        f"[OK] {file_path.name} - removed {removed} comments, reduced {reduced} bytes",
+        "cyan",
+    )
 
 
 if __name__ == "__main__":

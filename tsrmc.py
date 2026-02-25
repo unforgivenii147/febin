@@ -3,11 +3,11 @@ import ast
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
+import tree_sitter_python as tspython
 from dh import folder_size, format_size
 from fastwalk import walk_files
 from termcolor import cprint
 from tree_sitter import Language, Parser, Query, QueryCursor
-import tree_sitter_python as tspython
 
 ts_remover = None
 
@@ -46,7 +46,15 @@ class TSRemover:
                     if capture_name == "comment":
                         stripped = text.strip()
                         if stripped.startswith(
-                            ("# type:", "# black:", "# ruff:", "#!/", "# fmt:", "# pylint:", "# mypy:")
+                            (
+                                "# type:",
+                                "# black:",
+                                "# ruff:",
+                                "#!/",
+                                "# fmt:",
+                                "# pylint:",
+                                "# mypy:",
+                            )
                         ):
                             continue
                         comment_count += 1
@@ -107,7 +115,10 @@ def process_file(fp):
             ast.parse(result)
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(result)
-            cprint(f"[OK] {file_path.name}: {comments} comments, {docstrings} docstrings removed", "cyan")
+            cprint(
+                f"[OK] {file_path.name}: {comments} comments, {docstrings} docstrings removed",
+                "cyan",
+            )
             return ("changed", file_path, comments, docstrings)
         except Exception as e:
             cprint(f"[ERROR] {file_path.name} after strip: {e}", "yellow")

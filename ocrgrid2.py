@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import itertools
-from pathlib import Path
 import time
+from pathlib import Path
 
 import cv2
-from dh import IMG_EXT
 import pytesseract
+from dh import IMG_EXT
 
 OUTPUT_DIR = Path("ocr_results")
 OUTPUT_DIR.mkdir(exist_ok=True)

@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import argparse
-from multiprocessing import Pool, cpu_count
-from pathlib import Path
 import subprocess
 import sys
+from multiprocessing import Pool, cpu_count
+from pathlib import Path
 
 
 def convert_html_to_md(html_file: Path, executable: str = "html2md") -> tuple[Path, bool]:
@@ -21,7 +21,10 @@ def convert_html_to_md(html_file: Path, executable: str = "html2md") -> tuple[Pa
         print(f"✗ Error converting {html_file}: {e.stderr}", file=sys.stderr)
         return (html_file, False)
     except FileNotFoundError:
-        print(f"✗ Error: '{executable}' executable not found. Make sure it's in your PATH.", file=sys.stderr)
+        print(
+            f"✗ Error: '{executable}' executable not found. Make sure it's in your PATH.",
+            file=sys.stderr,
+        )
         sys.exit(1)
     except Exception as e:
         print(f"✗ Unexpected error converting {html_file}: {e}", file=sys.stderr)
@@ -55,15 +58,34 @@ Examples:
         """,
     )
     parser.add_argument(
-        "path", nargs="?", default=".", help="HTML file or directory to process (default: current directory)"
+        "path",
+        nargs="?",
+        default=".",
+        help="HTML file or directory to process (default: current directory)",
     )
     parser.add_argument(
-        "-r", "--recursive", action="store_true", default=True, help="Process directories recursively (default: True)"
+        "-r",
+        "--recursive",
+        action="store_true",
+        default=True,
+        help="Process directories recursively (default: True)",
     )
-    parser.add_argument("--no-recursive", action="store_false", dest="recursive", help="Disable recursive processing")
-    parser.add_argument("--executable", default="html2md", help="Path to html2md executable (default: html2md)")
     parser.add_argument(
-        "--workers", type=int, default=cpu_count(), help=f"Number of worker processes (default: {cpu_count()})"
+        "--no-recursive",
+        action="store_false",
+        dest="recursive",
+        help="Disable recursive processing",
+    )
+    parser.add_argument(
+        "--executable",
+        default="html2md",
+        help="Path to html2md executable (default: html2md)",
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=cpu_count(),
+        help=f"Number of worker processes (default: {cpu_count()})",
     )
     args = parser.parse_args()
     input_path = Path(args.path).resolve()

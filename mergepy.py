@@ -7,7 +7,11 @@ import regex as re
 def resolve_imports(content, current_dir):
     folder_name = os.path.basename(current_dir)
     content = re.sub(r"from \. import ([a-zA-Z0-9_]+)", f"from {folder_name} import \\1", content)
-    content = re.sub(r"from \.([a-zA-Z0-9_]+) import ([a-zA-Z0-9_]+)", f"from {folder_name}.\\1 import \\2", content)
+    content = re.sub(
+        r"from \.([a-zA-Z0-9_]+) import ([a-zA-Z0-9_]+)",
+        f"from {folder_name}.\\1 import \\2",
+        content,
+    )
     return re.sub(r"import \.", f"import {folder_name}", content)
 
 

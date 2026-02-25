@@ -6,11 +6,12 @@ Supports both HTTPS and SSH URLs.
 Warns if repo size is bigger than 10MB.
 """
 
-import sys
 import os
 import subprocess
-import requests
+import sys
+
 import regex as re
+import requests
 from tqdm import tqdm
 
 
@@ -35,7 +36,17 @@ def get_repo_size(repo_url):
 def clone_repo(repo, branch="main"):
     """Clone repository with detailed progress output."""
     print(f"[INFO] Cloning repository: {repo} (branch: {branch})")
-    cmd = ["git", "clone", "--depth", "1", "--single-branch", "--branch", branch, repo, "--progress"]
+    cmd = [
+        "git",
+        "clone",
+        "--depth",
+        "1",
+        "--single-branch",
+        "--branch",
+        branch,
+        repo,
+        "--progress",
+    ]
     try:
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         for line in process.stderr:

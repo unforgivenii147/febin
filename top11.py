@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def get_file_sizes(start_path="."):

@@ -3,11 +3,11 @@ import ast
 from multiprocessing import Pool
 from pathlib import Path
 
+import tree_sitter_python as tspython
 from dh import folder_size, format_size
 from fastwalk import walk_files
 from termcolor import cprint
 from tree_sitter import Language, Parser, Query, QueryCursor
-import tree_sitter_python as tspython
 
 
 class TSRemover:

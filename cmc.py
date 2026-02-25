@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-from collections.abc import Callable
-from dataclasses import dataclass
 import enum
 import itertools
+from collections.abc import Callable
+from dataclasses import dataclass
 
 
 @dataclass
@@ -120,7 +120,10 @@ def _c_state_transition(state: _CParseState, ch: str | None) -> tuple[_CParseSta
             _CParseState.MULTI_LINE_COMMENT_FINAL_STAR,
         ):
             return _CParseState.END, _CAction.COMMENT_DISMISSED
-        elif state in (_CParseState.SINGLE_LINE_COMMENT, _CParseState.MULTI_LINE_COMMENT_FINAL_SLASH):
+        elif state in (
+            _CParseState.SINGLE_LINE_COMMENT,
+            _CParseState.MULTI_LINE_COMMENT_FINAL_SLASH,
+        ):
             return _CParseState.END, _CAction.COMMENT_ENDS
         else:
             return _CParseState.END, _CAction.NOTHING
@@ -163,7 +166,10 @@ def _c_state_transition(state: _CParseState, ch: str | None) -> tuple[_CParseSta
             return _CParseState.MULTI_LINE_COMMENT, _CAction.NOTHING
     elif state == _CParseState.MULTI_LINE_COMMENT_FINAL_SLASH:
         if ch == "/":
-            return _CParseState.FIRST_SLASH, _CAction.COMMENT_ENDS_AND_COMMENT_MIGHT_START
+            return (
+                _CParseState.FIRST_SLASH,
+                _CAction.COMMENT_ENDS_AND_COMMENT_MIGHT_START,
+            )
         else:
             return _CParseState.NORMAL, _CAction.COMMENT_ENDS
     elif state == _CParseState.STRING_DOUBLE_QUOTES:
@@ -189,7 +195,10 @@ def _c_state_transition(state: _CParseState, ch: str | None) -> tuple[_CParseSta
 
 
 def _c_do_action(
-    action: _CAction, comment_state: tuple[str, int | None], pos: int, matches: list[CommentMatch]
+    action: _CAction,
+    comment_state: tuple[str, int | None],
+    pos: int,
+    matches: list[CommentMatch],
 ) -> tuple[tuple[str, int | None], list[CommentMatch]]:
     kind, start = comment_state
     if action == _CAction.NOTHING:
@@ -217,7 +226,12 @@ def _c_do_action(
 
 def find_c_comments(input_str: str) -> list[CommentMatch]:
     return find_comments_impl(
-        input_str, _c_state_transition, _c_do_action, _CParseState.START, _CParseState.END, ("not", None)
+        input_str,
+        _c_state_transition,
+        _c_do_action,
+        _CParseState.START,
+        _CParseState.END,
+        ("not", None),
     )
 
 
@@ -256,7 +270,10 @@ def _shell_state_transition(state: _ShellParseState, ch: str | None) -> tuple[_S
             return _ShellParseState.END, _ShellAction.NOTHING
     if state == _ShellParseState.START:
         if ch == "#":
-            return _ShellParseState.SHEBANG_OR_COMMENT, _ShellAction.SHEBANG_OR_COMMENT_START
+            return (
+                _ShellParseState.SHEBANG_OR_COMMENT,
+                _ShellAction.SHEBANG_OR_COMMENT_START,
+            )
         elif ch == '"':
             return _ShellParseState.STRING_DOUBLE_QUOTES, _ShellAction.NOTHING
         elif ch == "'":
@@ -316,7 +333,10 @@ def _shell_state_transition(state: _ShellParseState, ch: str | None) -> tuple[_S
 
 
 def _shell_do_action(
-    action: _ShellAction, comment_state: tuple[str, int | None], pos: int, matches: list[CommentMatch]
+    action: _ShellAction,
+    comment_state: tuple[str, int | None],
+    pos: int,
+    matches: list[CommentMatch],
 ) -> tuple[tuple[str, int | None], list[CommentMatch]]:
     kind, start = comment_state
     if action == _ShellAction.NOTHING:
@@ -400,7 +420,10 @@ def _xml_state_transition(state: _XMLParseState, ch: str | None) -> tuple[_XMLPa
             return _XMLParseState.END, _XMLAction.NOTHING
     if state in (_XMLParseState.START, _XMLParseState.NORMAL):
         if ch == "<":
-            return _XMLParseState.COMMENT_START_BRACKET, _XMLAction.COMMENT_OR_TAG_STARTS
+            return (
+                _XMLParseState.COMMENT_START_BRACKET,
+                _XMLAction.COMMENT_OR_TAG_STARTS,
+            )
         elif ch == '"':
             return _XMLParseState.STRING_DOUBLE_QUOTES, _XMLAction.NOTHING
         elif ch == "'":
@@ -441,7 +464,10 @@ def _xml_state_transition(state: _XMLParseState, ch: str | None) -> tuple[_XMLPa
             return _XMLParseState.COMMENT, _XMLAction.NOTHING
     elif state == _XMLParseState.COMMENT_END_BRACKET:
         if ch == "<":
-            return _XMLParseState.COMMENT_START_BRACKET, _XMLAction.COMMENT_ENDS_AND_COMMENT_OR_TAG_STARTS
+            return (
+                _XMLParseState.COMMENT_START_BRACKET,
+                _XMLAction.COMMENT_ENDS_AND_COMMENT_OR_TAG_STARTS,
+            )
         elif ch == '"':
             return _XMLParseState.STRING_DOUBLE_QUOTES, _XMLAction.COMMENT_ENDS
         elif ch == "'":
@@ -471,7 +497,10 @@ def _xml_state_transition(state: _XMLParseState, ch: str | None) -> tuple[_XMLPa
 
 
 def _xml_do_action(
-    action: _XMLAction, comment_state: tuple[str, int | None], pos: int, matches: list[CommentMatch]
+    action: _XMLAction,
+    comment_state: tuple[str, int | None],
+    pos: int,
+    matches: list[CommentMatch],
 ) -> tuple[tuple[str, int | None], list[CommentMatch]]:
     kind, start = comment_state
     if action == _XMLAction.NOTHING:
@@ -499,7 +528,12 @@ def _xml_do_action(
 
 def find_xml_comments(input_str: str) -> list[CommentMatch]:
     return find_comments_impl(
-        input_str, _xml_state_transition, _xml_do_action, _XMLParseState.START, _XMLParseState.END, ("not", None)
+        input_str,
+        _xml_state_transition,
+        _xml_do_action,
+        _XMLParseState.START,
+        _XMLParseState.END,
+        ("not", None),
     )
 
 
@@ -562,9 +596,15 @@ def _blank_state_transition(state: _BlankParseState, ch: str | None) -> tuple[_B
         if ch == "\n":
             return _BlankParseState.MULTI_BLANKLINE, _BlankAction.NOTHING
         elif ch == '"':
-            return _BlankParseState.STRING_DOUBLE_QUOTES, _BlankAction.MULTI_BLANKLINE_END
+            return (
+                _BlankParseState.STRING_DOUBLE_QUOTES,
+                _BlankAction.MULTI_BLANKLINE_END,
+            )
         elif ch == "'":
-            return _BlankParseState.STRING_SINGLE_QUOTES, _BlankAction.MULTI_BLANKLINE_END
+            return (
+                _BlankParseState.STRING_SINGLE_QUOTES,
+                _BlankAction.MULTI_BLANKLINE_END,
+            )
         else:
             return _BlankParseState.NORMAL, _BlankAction.MULTI_BLANKLINE_END
     elif state == _BlankParseState.STRING_DOUBLE_QUOTES:
@@ -590,7 +630,10 @@ def _blank_state_transition(state: _BlankParseState, ch: str | None) -> tuple[_B
 
 
 def _blank_do_action(
-    action: _BlankAction, blank_state: tuple[str, int | None], pos: int, matches: list[CommentMatch]
+    action: _BlankAction,
+    blank_state: tuple[str, int | None],
+    pos: int,
+    matches: list[CommentMatch],
 ) -> tuple[tuple[str, int | None], list[CommentMatch]]:
     kind, start = blank_state
     if action == _BlankAction.NOTHING:
@@ -642,14 +685,39 @@ class html:
 
 if __name__ == "__main__":
     test_cases = [
-        ("C normal", "int main() { /* comment */ }", strip_c_comments, "int main() {  }"),
+        (
+            "C normal",
+            "int main() { /* comment */ }",
+            strip_c_comments,
+            "int main() {  }",
+        ),
         ("C line", "main() // comment\n", strip_c_comments, "main() \n"),
         ("C multiline", "/* multi \nline\ncomment */", strip_c_comments, ""),
-        ("C string", r'printf("//not comment")', strip_c_comments, r'printf("//not comment")'),
-        ("Shell normal", "yes # line comment\n yes no\n", strip_shell_comments, "yes \n yes no\n"),
-        ("Shell shebang", "#!/bin/bash\necho hi\n", strip_shell_comments, "#!/bin/bash\necho hi\n"),
+        (
+            "C string",
+            r'printf("//not comment")',
+            strip_c_comments,
+            r'printf("//not comment")',
+        ),
+        (
+            "Shell normal",
+            "yes # line comment\n yes no\n",
+            strip_shell_comments,
+            "yes \n yes no\n",
+        ),
+        (
+            "Shell shebang",
+            "#!/bin/bash\necho hi\n",
+            strip_shell_comments,
+            "#!/bin/bash\necho hi\n",
+        ),
         ("XML normal", "<t /><!-- comment -->", strip_xml_comments, "<t />"),
-        ("XML in tag", "<tag <!-- comment -->></tag>", strip_xml_comments, "<tag ></tag>"),
+        (
+            "XML in tag",
+            "<tag <!-- comment -->></tag>",
+            strip_xml_comments,
+            "<tag ></tag>",
+        ),
         (
             "Blank lines",
             "\n\nhello\n\n\nworld\n\n",

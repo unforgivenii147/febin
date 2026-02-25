@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import ast
-from pathlib import Path
 import shutil
 import sys
+from pathlib import Path
 
 import regex as re
 
@@ -155,7 +155,12 @@ class DocstringValidator:
     @staticmethod
     def validate_directory(directory: str) -> dict:
         files = list(Path(directory).rglob("*.py"))
-        report = {"total_files": len(files), "valid_files": 0, "invalid_files": 0, "errors": []}
+        report = {
+            "total_files": len(files),
+            "valid_files": 0,
+            "invalid_files": 0,
+            "errors": [],
+        }
         for f in files:
             has_error, msg = DocstringValidator.has_syntax_errors(f)
             if has_error:

@@ -2,9 +2,10 @@
 
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-from termcolor import cprint
-from dh import BIN_EXT, TXT_EXT, is_binary, format_size, folder_size
+
 import regex as re
+from dh import BIN_EXT, TXT_EXT, folder_size, format_size, is_binary
+from termcolor import cprint
 
 # -------- CONFIG --------
 LIC_FILE = Path("/sdcard/lic")

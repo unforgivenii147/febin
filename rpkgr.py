@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 # file: repack_pkg_parallel.py
 import argparse
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
-from pathlib import Path
 import shutil
 import sysconfig
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 import regex as re
 from wheel.wheelfile import WheelFile

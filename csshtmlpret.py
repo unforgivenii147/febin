@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
+import itertools
+import os
+import sys
 from argparse import ArgumentParser
 from datetime import datetime
-import itertools
 from multiprocessing import Pool, cpu_count
-import os
 from subprocess import getoutput
-import sys
 from time import sleep
 
 import regex as re
@@ -155,8 +155,7 @@ def remove_empty_rules(css: str) -> str:
 
 def condense_zero_units(css: str) -> str:
     return re.sub(
-        r"([\s:])(0)(px|em|%|in|q|ch|cm|mm|pc|pt|ex|rem|s|ms|"
-        r"deg|grad|rad|turn|vw|vh|vmin|vmax|fr)",
+        r"([\s:])(0)(px|em|%|in|q|ch|cm|mm|pc|pt|ex|rem|s|ms|" r"deg|grad|rad|turn|vw|vh|vmin|vmax|fr)",
         r"\1\2",
         css,
     )
@@ -269,6 +268,7 @@ if BeautifulSoup:
         if extraline:
             html = "\n\n".join(html.replace("\t", "    ").splitlines()) + "\n"
         return html
+
 else:
 
     def html_prettify(html: str, extraline: bool = False) -> str:
@@ -360,16 +360,41 @@ def make_arguments_parser():
     Watch works for whole folders, with minimum of ~60 Secs between runs.""",
     )
     parser.add_argument("--version", action="version", version=__version__)
-    parser.add_argument("fullpath", metavar="fullpath", type=str, help="Full path to local file or folder.")
+    parser.add_argument(
+        "fullpath",
+        metavar="fullpath",
+        type=str,
+        help="Full path to local file or folder.",
+    )
     parser.add_argument("--prefix", type=str, help="Prefix string to prepend on output filenames.")
-    parser.add_argument("--timestamp", action="store_true", help="Add a Time Stamp on all CSS/SCSS output files.")
+    parser.add_argument(
+        "--timestamp",
+        action="store_true",
+        help="Add a Time Stamp on all CSS/SCSS output files.",
+    )
     parser.add_argument("--quiet", action="store_true", help="Quiet, Silent, force disable all Logging.")
     parser.add_argument("--after", type=str, help="Command to execute after run (Experimental).")
     parser.add_argument("--before", type=str, help="Command to execute before run (Experimental).")
-    parser.add_argument("--watch", action="store_true", help="Re-Compress if file changes (Experimental).")
-    parser.add_argument("--group", action="store_true", help="Group Alphabetically CSS Poperties by name.")
-    parser.add_argument("--justify", action="store_true", help="Right Justify CSS Properties (Experimental).")
-    parser.add_argument("--extraline", action="store_true", help="Add 1 New Line for each New Line (Experimental)")
+    parser.add_argument(
+        "--watch",
+        action="store_true",
+        help="Re-Compress if file changes (Experimental).",
+    )
+    parser.add_argument(
+        "--group",
+        action="store_true",
+        help="Group Alphabetically CSS Poperties by name.",
+    )
+    parser.add_argument(
+        "--justify",
+        action="store_true",
+        help="Right Justify CSS Properties (Experimental).",
+    )
+    parser.add_argument(
+        "--extraline",
+        action="store_true",
+        help="Add 1 New Line for each New Line (Experimental)",
+    )
     global args
     args = parser.parse_args()
     return args

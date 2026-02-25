@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 # file: save_debian_packages.py
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 OUTPUT_FILE = Path("installed_debian_packages.txt")
 

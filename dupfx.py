@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 
-from collections import defaultdict
 import concurrent.futures as cf
 import os
+from collections import defaultdict
 from pathlib import Path
 
-from dh import folder_size, format_size
 import xxhash
+from dh import folder_size, format_size
 
 SKIPPED_PATHS = []
 EXCLUDED_DIRS = {".git", ".venv", "venv"}
@@ -147,10 +147,10 @@ def main() -> None:
         display_duplicate_groups(duplicates)
         report_duplicates(duplicates)
 
-        if confirm_deletion():
-            auto_delete_duplicates(duplicates)
-        else:
-            print("\n❌ Deletion cancelled by user.")
+        #        if confirm_deletion():
+        auto_delete_duplicates(duplicates)
+    #        else:
+    #            print("\n❌ Deletion cancelled by user.")
     else:
         print("\n✅ No duplicates found.")
 

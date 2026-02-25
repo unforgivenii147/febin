@@ -1,16 +1,26 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import os
+from pathlib import Path
 
+from dh import BIN_EXT, TXT_EXT, is_binary
 from langdetect import DetectorFactory, detect
 from langdetect.lang_detect_exception import LangDetectException
 
 DetectorFactory.seed = 0
-TEXT_EXTENSIONS = [p.strip for p in open("/sdcard/txt").read().splitlines()]
+
 MAX_CHARS = 5000
 
 
-def is_text_file(path):
-    return os.path.splitext(path)[1].lower() in TEXT_EXTENSIONS
+def is_text_file(pth):
+    path = Path(pth)
+    if path.suffix.lower() in TXT_EXT:
+        return True
+    if path.suffix.lower() in BIN_EXT:
+        return False
+    if not is_binary(path):
+        return True
+    else:
+        return False
 
 
 def contains_non_english(path):

@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import ast
+import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-import sys
 
-from tree_sitter import Language, Parser, Query, QueryCursor
 import tree_sitter_python as tspython
+from tree_sitter import Language, Parser, Query, QueryCursor
 
 ts_remover = None
 
@@ -49,7 +49,16 @@ class TSRemover:
                     if capture_name == "comment":
                         stripped = text.strip()
                         if stripped.startswith(
-                            ("# type:", "# black:", "# ruff:", "#!/", "# fmt:", "# pylint:", "# mypy:", "# noqa")
+                            (
+                                "# type:",
+                                "# black:",
+                                "# ruff:",
+                                "#!/",
+                                "# fmt:",
+                                "# pylint:",
+                                "# mypy:",
+                                "# noqa",
+                            )
                         ):
                             continue
                         comment_count += 1

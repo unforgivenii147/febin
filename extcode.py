@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 from pathlib import Path
-from tree_sitter import Language, Parser
+
 import tree_sitter_python as tsp
+from tree_sitter import Language, Parser
 
 LANG = Language(tsp)
 parser = Parser()

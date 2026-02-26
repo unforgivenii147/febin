@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import os
 
-TARGET_SHEBANG = "#!/data/data/com.termux/files/usr/bin/python"
+
+TARGET_SHEBANG = "#!/data/data/com.termux/files/usr/bin/env python"
 
 
 def is_python_file(filepath):
@@ -14,7 +15,6 @@ def is_python_file(filepath):
             first_line = f.readline().strip()
             if first_line.startswith("#!") and "python" in first_line:
                 return True
-            # Check for common Python file markers (e.g., encoding, import, #noqa)
             if first_line.startswith("#") and (
                 "python" in first_line or "encoding" in first_line or "noqa" in first_line
             ):
@@ -56,6 +56,7 @@ def process_file(filepath):
         f.seek(0)
         f.writelines(lines)
         f.truncate()
+        print(f"{filepath} updated.")
     if "bin" in filepath.split(os.sep):
         os.chmod(filepath, 0o755)
 
@@ -64,6 +65,8 @@ def traverse_directory(directory):
     for root, _, files in os.walk(directory):
         for filename in files:
             filepath = os.path.join(root, filename)
+            if os.path.islink(filepath):
+                continue
             if is_python_file(filepath):
                 process_file(filepath)
 

@@ -8,14 +8,15 @@ Usage:
     python script.py file1.py file2.py  # Process only specified files
 """
 
-import os
-import sys
 import ast
 import logging
+import os
+import sys
 from pathlib import Path
-from typing import Set, Tuple, List
-from tree_sitter import Language, Parser
+from typing import List, Set, Tuple
+
 import tree_sitter_python as tspython
+from tree_sitter import Language, Parser
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)

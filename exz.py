@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
-import os
-import sys
-import lzma
-import shutil
-from pathlib import Path
-from multiprocessing import Pool, cpu_count
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import argparse
 import logging
+import lzma
+import os
+import shutil
+import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
+from multiprocessing import Pool, cpu_count
+from pathlib import Path
 
 
 def setup_logging(verbose=False):

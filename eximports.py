@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-from pathlib import Path
-from tree_sitter import Language, Parser
-import tree_sitter_python as tsp
 from collections import defaultdict
+from pathlib import Path
+
+import tree_sitter_python as tsp
+from tree_sitter import Language, Parser
 
 parser = Parser()
 parser.language = Language(tsp.language())
@@ -17,7 +18,6 @@ VALID = {
 
 
 def extract_file(src: bytes, tree):
-    """Extract import statements from a parsed tree."""
     root = tree.root_node
 
     chunks = []
@@ -51,7 +51,7 @@ for py in Path(".").rglob("*.py"):
         relative_folder = folder_path.relative_to(".")
 
         # Add imports with file comment
-        folder_imports[relative_folder].append(f"# From: {py.name}\n" + "\n".join(imports))
+        folder_imports[relative_folder].append(f"\n".join(imports))
 
 # Write collected imports to folder-specific files
 for folder, imports_list in folder_imports.items():
@@ -65,13 +65,7 @@ for folder, imports_list in folder_imports.items():
     # Combine all imports with proper spacing
     content = "\n\n".join(imports_list)
 
-    # Add a header
-    header = f"""# Auto-generated imports file for folder: {folder}
-# Generated from {len(imports_list)} Python file(s)
+    out_file.write_text(content)
 
-"""
-    out_file.write_text(header + content)
-
-    print(f"✅ saved: {out_file} ({len(imports_list)} files)")
 
 print(f"\n✨ Done! Processed {len(folder_imports)} folder(s)")

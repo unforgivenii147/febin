@@ -17,11 +17,11 @@ python shufeler.py input.txt -t
 
 """
 
-import random
-import sys
-import os
-import secrets
 import argparse
+import os
+import random
+import secrets
+import sys
 from datetime import datetime
 
 

@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-from pathlib import Path
-from tree_sitter import Language, Parser
-import tree_sitter_python as tsp
 from collections import defaultdict
 from datetime import datetime
+from pathlib import Path
+
+import tree_sitter_python as tsp
+from tree_sitter import Language, Parser
 
 parser = Parser()
 parser.language = Language(tsp.language())

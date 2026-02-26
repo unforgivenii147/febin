@@ -23,7 +23,9 @@ class FileSimilarityDetector:
         for root, dirs, files in os.walk(self.root_dir):
             dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
             for name in files:
-                yield Path(root) / name
+                path = Path(root) / name
+                if not path.is_symlink():
+                    yield path
 
     @staticmethod
     def hash_file(path: Path):

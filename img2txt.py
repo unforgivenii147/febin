@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python3
-import os
 import argparse
+import os
 from pathlib import Path
 
 from PIL import Image, ImageFilter, ImageOps

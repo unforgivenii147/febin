@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import os
-from markdownify import markdownify
 from pathlib import Path
+
+from markdownify import markdownify
 
 
 def convert_html_to_markdown(root_dir):

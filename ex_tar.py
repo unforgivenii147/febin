@@ -9,9 +9,10 @@ Deletes original archives after successful extraction and reports size change.
 import argparse
 import tarfile
 import tempfile
-from pathlib import Path
-import zstandard as zstd
 import time
+from pathlib import Path
+
+import zstandard as zstd
 
 
 def get_dir_size(path):

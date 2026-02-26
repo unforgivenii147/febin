@@ -11,12 +11,12 @@ from time import perf_counter
 def process_file(fp):
     if not fp.exists():
         return False
-    compileall.compile_file(fp, legacy=True, optimize=1)
+    compileall.compile_file(fp, legacy=True, optimize=2)
     return True
 
 
 def process_dir(dr):
-    compileall.compile_dir(dr, legacy=True, optimize=1)
+    compileall.compile_dir(dr, legacy=True, optimize=2)
 
 
 def main():

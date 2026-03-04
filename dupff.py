@@ -4,6 +4,8 @@ from collections import defaultdict
 from pathlib import Path
 import click
 from stringzilla import File, Sha256
+
+
 def get_file_hash(file_path):
     sha256 = Sha256()
     try:
@@ -12,6 +14,8 @@ def get_file_hash(file_path):
     except Exception as e:
         print(f"Error processing file {file_path}: {e}")
         return None
+
+
 def find_duplicates(path: Path):
     files_by_hash = defaultdict(list)
     duplicate_count = 0
@@ -29,8 +33,8 @@ def find_duplicates(path: Path):
                     print(f"Error processing file {file_path}: {e}")
                     continue
     for (
-            file_hash,
-            file_paths,
+        file_hash,
+        file_paths,
     ) in files_by_hash.items():
         if len(file_paths) > 1:
             duplicate_count += len(file_paths) - 1
@@ -40,6 +44,8 @@ def find_duplicates(path: Path):
                 print(f"  {relative_path}")
             print()
     return duplicate_count
+
+
 @click.command()
 @click.argument(
     "path",
@@ -56,5 +62,7 @@ def report_duplicates(path) -> None:
     print("\nSummary:")
     print(f"Number of duplicate groups found: {duplicate_count}")
     print("Duplicate detection process completed.")
+
+
 if __name__ == "__main__":
     report_duplicates()

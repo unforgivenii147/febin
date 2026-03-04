@@ -9,6 +9,8 @@ import dh
 from bs4 import BeautifulSoup
 from fastwalk import walk_files
 from termcolor import cprint
+
+
 def save_style(str1):
     fn = "css/"
     if not os.path.exists("css"):
@@ -24,6 +26,8 @@ def save_style(str1):
             f.write("\n".join(list(str1)))
         cprint(f"{[fn]} created.", "cyan")
     return True
+
+
 def process_file(fp):
     with open(fp, encoding="utf-8") as file:
         html_content = file.read()
@@ -37,6 +41,8 @@ def process_file(fp):
         for style in styles:
             save_style(style.contents)
     return True
+
+
 def main():
     files = []
     dir = Path.cwd()
@@ -51,5 +57,7 @@ def main():
     pool.join()
     end = dh.get_size(dir)
     print(f"{dh.format_size(end - start)}")
+
+
 if __name__ == "__main__":
     exit(main())

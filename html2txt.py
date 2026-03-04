@@ -1,15 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 import sys
+
+
 def strip_html_tags(input_file, output_file) -> None:
     inside_tag = False
     with (
-            open(
-                input_file,
-                encoding="utf-8",
-                errors="ignore",
-            ) as f,
-            open(output_file, "w", encoding="utf-8") as out,
+        open(
+            input_file,
+            encoding="utf-8",
+            errors="ignore",
+        ) as f,
+        open(output_file, "w", encoding="utf-8") as out,
     ):
         for line in f:
             buf = []
@@ -25,6 +27,8 @@ def strip_html_tags(input_file, output_file) -> None:
             cleaned = "".join(buf).strip()
             if cleaned:
                 out.write(cleaned + "\n")
+
+
 def main() -> None:
     if len(sys.argv) != 2:
         print("Usage: html2txt.py <input.html>")
@@ -37,5 +41,7 @@ def main() -> None:
     output_file = base + ".txt"
     strip_html_tags(input_file, output_file)
     print("Saved:", output_file)
+
+
 if __name__ == "__main__":
     main()

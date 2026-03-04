@@ -2,10 +2,11 @@
 import sys
 from multiprocessing import Pool
 from pathlib import Path
-from dh import (SOURCE_CODE_EXT, format_size, get_size, is_binary,
-                remove_blank_lines)
+from dh import SOURCE_CODE_EXT, format_size, get_size, is_binary, remove_blank_lines
 from fastwalk import walk_files
 from termcolor import cprint
+
+
 def process_file(fp):
     if is_binary(fp) or fp.suffix in SOURCE_CODE_EXT:
         print(f"[skip] {fp.name} is binary or source code")
@@ -35,6 +36,8 @@ def process_file(fp):
     endsize = get_size(fp)
     diffsize = endsize - initsize
     cprint(f"{format_size(diffsize)}", "yellow")
+
+
 def main() -> None:
     dir = Path.cwd()
     init_size = get_size(dir)
@@ -59,5 +62,7 @@ def main() -> None:
             f"{format_size(init_size - end_size)}",
             "cyan",
         )
+
+
 if __name__ == "__main__":
     main()

@@ -5,12 +5,17 @@ import time
 from pathlib import Path
 from deep_translator import GoogleTranslator
 from tqdm import tqdm
+
 MAX_CHARS = 5000
+
+
 def get_output_filename(input_file):
     path = Path(input_file)
     stem = path.stem
     suffix = path.suffix
     return path.parent / f"{stem}_fa{suffix}"
+
+
 def load_file(input_file):
     encodings = [
         "utf-8",
@@ -25,22 +30,26 @@ def load_file(input_file):
         except (OSError, UnicodeDecodeError):
             continue
     raise OSError(f"Could not read file {input_file} with any encoding")
+
+
 def save_file(output_file, content):
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(content)
+
+
 def find_chunk_boundary(text, max_chars):
     if len(text) <= max_chars:
         return len(text)
     search_area = text[:max_chars]
     for delimiter in [
-            "\n",
-            "\r\n",
-            ".  ",
-            "!  ",
-            "?  ",
-            "; ",
-            ", ",
-            " ",
+        "\n",
+        "\r\n",
+        ".  ",
+        "!  ",
+        "?  ",
+        "; ",
+        ", ",
+        " ",
     ]:
         last_pos = search_area.rfind(delimiter)
         if last_pos > 0:
@@ -49,6 +58,8 @@ def find_chunk_boundary(text, max_chars):
     if last_space > 0:
         return last_space + 1
     return max_chars
+
+
 def chunk_text(text, max_chars):
     chunks = []
     pos = 0
@@ -61,6 +72,8 @@ def chunk_text(text, max_chars):
         chunks.append(remaining[:chunk_end])
         pos += chunk_end
     return chunks
+
+
 def translate_chunk(text, source_lang="auto"):
     for attempt in range(3):
         try:
@@ -71,14 +84,15 @@ def translate_chunk(text, source_lang="auto"):
             print(f"[WARN] Translation failed (attempt {attempt + 1}/3): {e}")
             time.sleep(1 + attempt)
     raise Exception("Failed to translate chunk after 3 attempts")
+
+
 def translate_file(input_file, source_lang="auto"):
     print(f"[INFO] Reading file: {input_file}")
     content = load_file(input_file)
     content_length = len(content)
     print(f"[INFO] File size: {content_length} characters")
     if content_length <= MAX_CHARS:
-        print(
-            f"[INFO] Content fits in single request ({content_length} chars)")
+        print(f"[INFO] Content fits in single request ({content_length} chars)")
         print("[INFO] Translating...")
         translated, detected_lang = translate_chunk(content, source_lang)
         print(f"[INFO] Detected language: {detected_lang}")
@@ -96,9 +110,7 @@ def translate_file(input_file, source_lang="auto"):
     )
     try:
         for i, chunk in enumerate(chunks):
-            print(
-                f"\n[INFO] Translating chunk {i + 1}/{total_chunks} ({len(chunk)} chars)..."
-            )
+            print(f"\n[INFO] Translating chunk {i + 1}/{total_chunks} ({len(chunk)} chars)...")
             try:
                 (
                     translated_chunk,
@@ -115,6 +127,8 @@ def translate_file(input_file, source_lang="auto"):
     result = "".join(translated_chunks)
     print(f"\n[INFO] Detected language: {detected_lang}")
     return result
+
+
 def main():
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} <input_file> [source_language]")
@@ -122,9 +136,7 @@ def main():
         print(f"  {dys.argv[0]} document.txt")
         print(f"  {sys.argv[0]} file.txt de")
         print(f"  {sys.argv[0]}document.txt en")
-        print(
-            "\nSupported languages:  auto, en ,fa , fr, de, es, it, pt, ru, zh, ja, ko, ar, etc."
-        )
+        print("\nSupported languages:  auto, en ,fa , fr, de, es, it, pt, ru, zh, ja, ko, ar, etc.")
         sys.exit(1)
     input_file = sys.argv[1]
     source_lang = sys.argv[2] if len(sys.argv) > 2 else "auto"
@@ -134,9 +146,7 @@ def main():
     output_file = get_output_filename(input_file)
     if os.path.exists(output_file):
         print(f"[INFO] Output file already exists: {output_file}")
-        print(
-            f"[INFO] Skipping translation (delete {output_file} to re-translate)"
-        )
+        print(f"[INFO] Skipping translation (delete {output_file} to re-translate)")
         sys.exit(0)
     print(f"[INFO] Input:   {input_file}")
     print(f"[INFO] Output: {output_file}")
@@ -152,5 +162,7 @@ def main():
     except Exception as e:
         print(f"\n[ERROR] Translation failed: {e}")
         sys.exit(1)
+
+
 if __name__ == "__main__":
     main()

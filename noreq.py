@@ -4,11 +4,16 @@ import shutil
 import tarfile
 import tempfile
 import zipfile
+
 TARGET_FILES = {"METADATA", "PKGINFO", "PKG-INFO"}
 PREFIX = "Requires-Dist:"
 LOG_FILE = "/sdcard/reqdist.txt"
 removed_lines_accumulator = []
-def clean_text(text: str, ) -> tuple[str, list[str]]:
+
+
+def clean_text(
+    text: str,
+) -> tuple[str, list[str]]:
     with open("/sdcard/meta.txt", "a") as fmeta:
         fmeta.write(text)
     lines = text.splitlines()
@@ -21,12 +26,14 @@ def clean_text(text: str, ) -> tuple[str, list[str]]:
             cleaned.append(line)
     final_text = "\n".join(cleaned) + ("\n" if text.endswith("\n") else "")
     return final_text, removed
+
+
 def clean_file(path: str) -> None:
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             original = f.read()
     except Exception:
@@ -36,11 +43,13 @@ def clean_file(path: str) -> None:
         removed_lines_accumulator.extend(removed)
         with open(path, "w", encoding="utf-8") as f:
             f.write(cleaned)
+
+
 def process_zip(path: str) -> None:
     tmp = tempfile.mktemp(suffix=".zip")
     with (
-            zipfile.ZipFile(path, "r") as zin,
-            zipfile.ZipFile(tmp, "w") as zout,
+        zipfile.ZipFile(path, "r") as zin,
+        zipfile.ZipFile(tmp, "w") as zout,
     ):
         for item in zin.infolist():
             data = zin.read(item.filename)
@@ -56,6 +65,8 @@ def process_zip(path: str) -> None:
                     pass
             zout.writestr(item, data)
     shutil.move(tmp, path)
+
+
 def process_tar(path: str) -> None:
     tmp_dir = tempfile.mkdtemp()
     tmp_tar = tempfile.mktemp(suffix=".tar.gz")
@@ -69,38 +80,40 @@ def process_tar(path: str) -> None:
         tar.add(tmp_dir, arcname="")
     shutil.move(tmp_tar, path)
     shutil.rmtree(tmp_dir)
+
+
 def dispatch_archive(path: str) -> None:
     name = path.lower()
     if name.endswith(".whl"):
         process_zip(path)
     elif name.endswith((".tar.gz", ".tgz", ".tar")):
         process_tar(path)
+
+
 def main() -> None:
     for root, _, files in os.walk("."):
         for name in files:
             full_path = os.path.join(root, name)
             if name in TARGET_FILES:
                 clean_file(full_path)
-            elif name.lower().endswith((
+            elif name.lower().endswith(
+                (
                     ".zip",
                     ".whl",
                     ".tar.gz",
                     ".tgz",
                     ".tar",
-            )):
+                )
+            ):
                 dispatch_archive(full_path)
     if removed_lines_accumulator:
         try:
             with open(LOG_FILE, "a", encoding="utf-8") as f:
                 for line in removed_lines_accumulator:
                     f.write(line + "\n")
-            print(
-                f"--- Saved {len(removed_lines_accumulator)} lines to {LOG_FILE} ---"
-            )
+            print(f"--- Saved {len(removed_lines_accumulator)} lines to {LOG_FILE} ---")
         except PermissionError:
-            print(
-                f"Warning: Could not write to {LOG_FILE}. Check Termux storage permissions."
-            )
+            print(f"Warning: Could not write to {LOG_FILE}. Check Termux storage permissions.")
         print("\nRemoved Lines:")
         print("-" * 20)
         for line in removed_lines_accumulator:
@@ -108,5 +121,7 @@ def main() -> None:
         print("-" * 20)
     else:
         print("No matching lines were found or removed.")
+
+
 if __name__ == "__main__":
     main()

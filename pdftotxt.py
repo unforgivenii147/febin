@@ -3,6 +3,8 @@ import os
 import sys
 from pathlib import Path
 import pdfplumber
+
+
 def process_file(fp):
     i = 1
     with pdfplumber.open(fp) as pdf:
@@ -21,7 +23,11 @@ def process_file(fp):
                 fo.write(text)
             print(f"{txtfile} created")
             i += 1
+
+
 def main():
     process_file(sys.argv[1])
+
+
 if __name__ == "__main__":
     main()

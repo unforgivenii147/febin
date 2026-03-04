@@ -6,10 +6,13 @@ import pytesseract
 from deep_translator import GoogleTranslator
 from langdetect import DetectorFactory, detect
 from PIL import Image, ImageEnhance, ImageFilter
+
 DetectorFactory.seed = 0
 TEXT_EXT = {".txt", ".md", ".csv", ".json", ".py"}
 IMAGE_EXT = {".jpg", ".jpeg", ".png"}
 CHUNK_SIZE = 2000
+
+
 def detect_lang_from_text(text: str) -> str:
     if not text.strip():
         return "unknown"
@@ -17,17 +20,25 @@ def detect_lang_from_text(text: str) -> str:
         return detect(text[:500])
     except Exception:
         return "unknown"
+
+
 def read_text_file(path: Path) -> str:
     ext = path.suffix.lower()
     if ext not in TEXT_EXT:
         msg = f"Unsupported text file: {ext}"
         raise ValueError(msg)
     return path.read_text(encoding="utf-8")
-def preprocess_image(img: Image.Image, ) -> Image.Image:
+
+
+def preprocess_image(
+    img: Image.Image,
+) -> Image.Image:
     img = img.convert("L")
     img = ImageEnhance.Contrast(img).enhance(2.0)
     img = img.point(lambda x: 0 if x < 160 else 255)
     return img.filter(ImageFilter.MedianFilter(size=3))
+
+
 def read_image_ocr(path: Path) -> str:
     try:
         img = Image.open(path)
@@ -36,21 +47,32 @@ def read_image_ocr(path: Path) -> str:
     except Exception as e:
         msg = f"OCR failed: {e}"
         raise RuntimeError(msg)
+
+
 def chunk_text(text: str, size: int = CHUNK_SIZE) -> list:
-    return [text[i:i + size] for i in range(0, len(text), size)]
+    return [text[i : i + size] for i in range(0, len(text), size)]
+
+
 def translate_chunks(chunks, src_lang: str) -> str:
     translator = GoogleTranslator(source=src_lang, target="en")
     output = [translator.translate(chunk) for chunk in chunks]
     return "".join(output)
-def build_translated_output_path(input_path: Path, ) -> Path:
+
+
+def build_translated_output_path(
+    input_path: Path,
+) -> Path:
     if input_path.suffix.lower() in IMAGE_EXT:
         return input_path.with_name(f"{input_path.stem}_eng.txt")
     return input_path.with_name(f"{input_path.stem}_eng{input_path.suffix}")
+
+
 def build_raw_ocr_path(input_path: Path) -> Path:
     return input_path.with_name(f"{input_path.stem}_ocr.txt")
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Translate text or image to English.")
+    parser = argparse.ArgumentParser(description="Translate text or image to English.")
     parser.add_argument("input_path")
     parser.add_argument(
         "--lang",
@@ -87,5 +109,7 @@ def main() -> None:
         out_path.write_text(translated, encoding="utf-8")
     except Exception:
         sys.exit(1)
+
+
 if __name__ == "__main__":
     main()

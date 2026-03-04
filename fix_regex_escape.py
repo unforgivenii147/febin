@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
 from pathlib import Path
+
 TARGET_FUNCS = {
     "compile",
     "search",
@@ -12,17 +13,19 @@ TARGET_FUNCS = {
     "sub",
     "subn",
 }
+
+
 class RegexFixer(ast.NodeTransformer):
     def visit_Call(self, node: ast.Call):
         self.generic_visit(node)
-        if isinstance(node.func,
-                      ast.Attribute) and (isinstance(node.func.value, ast.Name)
-                                          and node.func.value.id == "re"
-                                          and node.func.attr in TARGET_FUNCS
-                                          and node.args):
+        if isinstance(node.func, ast.Attribute) and (
+            isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "re"
+            and node.func.attr in TARGET_FUNCS
+            and node.args
+        ):
             first_arg = node.args[0]
-            if isinstance(first_arg, ast.Constant) and isinstance(
-                    first_arg.value, str):
+            if isinstance(first_arg, ast.Constant) and isinstance(first_arg.value, str):
                 original = first_arg.value
                 fixed = original.encode("unicode_escape").decode("ascii")
                 fixed = fixed.replace("\\\\n", "\\n")
@@ -30,6 +33,8 @@ class RegexFixer(ast.NodeTransformer):
                 fixed = fixed.replace("\\\\r", "\\r")
                 node.args[0] = ast.Constant(value=fixed)
         return node
+
+
 def fix_file(path: Path):
     source = path.read_text(encoding="utf-8")
     try:
@@ -46,6 +51,8 @@ def fix_file(path: Path):
         print(f"[FIXED] {path}")
         return True
     return False
+
+
 def main():
     root = Path(".")
     files = list(root.rglob("*.py"))
@@ -54,5 +61,7 @@ def main():
         if fix_file(f):
             changed += 1
     print(f"\nDone. Modified {changed} files.")
+
+
 if __name__ == "__main__":
     main()

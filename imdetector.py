@@ -1,24 +1,29 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
 import os
+
 OUTPUT_FILE = "found.txt"
+
+
 def is_probably_python(path: str) -> bool:
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             head = f.read(2048)
         return "import " in head or "def " in head or "class " in head
     except Exception:
         return False
+
+
 def has_late_import(path: str) -> bool:
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             code = f.read()
         tree = ast.parse(code)
@@ -28,13 +33,14 @@ def has_late_import(path: str) -> bool:
     for node in tree.body:
         if isinstance(node, ast.Expr) and isinstance(node.value, ast.Str):
             continue
-        if isinstance(node,
-                      (ast.Import, ast.ImportFrom)) and not seen_non_import:
+        if isinstance(node, (ast.Import, ast.ImportFrom)) and not seen_non_import:
             continue
         if isinstance(node, (ast.Import, ast.ImportFrom)) and seen_non_import:
             return True
         seen_non_import = True
     return False
+
+
 def find_files(root: str) -> list[str]:
     results = []
     for dirpath, _, filenames in os.walk(root):
@@ -45,6 +51,8 @@ def find_files(root: str) -> list[str]:
             if has_late_import(path):
                 results.append(os.path.relpath(path, root))
     return sorted(results)
+
+
 def main() -> None:
     matches = find_files(os.getcwd())
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
@@ -52,5 +60,7 @@ def main() -> None:
             f.write(path + "\n")
     print(f"Found {len(matches)} files with late imports.")
     print(f"Results saved to {OUTPUT_FILE}")
+
+
 if __name__ == "__main__":
     main()

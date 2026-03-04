@@ -5,17 +5,24 @@ import regex as re
 from deep_translator import GoogleTranslator
 from dh import is_text_file
 from fastwalk import walk_files
+
 DIRECTORY = "."
 CHUNK_SIZE = 2000
 non_english_pattern = re.compile(r"[^\x00-\x7F]")
+
+
 def split_into_chunks(text: str, size: int):
-    return [text[i:i + size] for i in range(0, len(text), size)]
+    return [text[i : i + size] for i in range(0, len(text), size)]
+
+
 def translate_chunk(chunk: str) -> str:
     try:
         return GoogleTranslator(source="auto", target="en").translate(chunk)
     except Exception as e:
         print(f"Chunk translation error: {e}")
         return chunk
+
+
 def translate_file(path: Path):
     try:
         with open(path, encoding="utf-8") as f:
@@ -37,10 +44,14 @@ def translate_file(path: Path):
         print(f"Translated → {new_path.name}")
     except Exception as e:
         print(f"Error writing {new_path}: {e}")
+
+
 def process_directory(directory: str):
     for pth in walk_files(directory):
         path = Path(pth)
         if path.is_file() and is_text_file(path):
             translate_file(path)
+
+
 if __name__ == "__main__":
     process_directory(DIRECTORY)

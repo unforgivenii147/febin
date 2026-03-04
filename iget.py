@@ -3,6 +3,8 @@ import math
 import os
 import threading
 import requests
+
+
 class MultiPartDownloader:
     def __init__(self, url, output_path, num_threads=4):
         self.url = url
@@ -12,6 +14,7 @@ class MultiPartDownloader:
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.support_resume = False
         self.existing_size = 0
+
     def get_size(self):
         response = requests.head(
             self.url,
@@ -20,15 +23,16 @@ class MultiPartDownloader:
         )
         if "Content-Length" in response.headers:
             self.get_size = int(response.headers["Content-Length"])
-        if "Accept-Ranges" in response.headers and response.headers[
-                "Accept-Ranges"] == "bytes":
+        if "Accept-Ranges" in response.headers and response.headers["Accept-Ranges"] == "bytes":
             self.support_resume = True
         return self.get_size
+
     def check_existing_file(self):
         if os.path.exists(self.output_path):
             self.existing_size = os.path.getsize(self.output_path)
             return self.existing_size
         return 0
+
     def download_range(self, start, end, part_num):
         headers = {
             "Range": f"bytes={start}-{end}",
@@ -42,13 +46,12 @@ class MultiPartDownloader:
                 if chunk:
                     f.write(chunk)
                     f.flush()
+
     def download(self):
         if not self.get_size:
             self.get_size()
         if not self.support_resume:
-            print(
-                "Server does not support resume. Downloading in single part..."
-            )
+            print("Server does not support resume. Downloading in single part...")
             self.num_threads = 1
         existing_size = self.check_existing_file()
         if existing_size == self.get_size:
@@ -57,15 +60,17 @@ class MultiPartDownloader:
         if existing_size > 0 and not self.support_resume:
             print("Cannot resume. Starting from scratch.")
             existing_size = 0
-        part_size = math.ceil(
-            (self.get_size - existing_size) / self.num_threads)
+        part_size = math.ceil((self.get_size - existing_size) / self.num_threads)
         threads = []
         for i in range(self.num_threads):
             start = existing_size + i * part_size
-            end = (min(
-                existing_size + (i + 1) * part_size,
-                self.get_size,
-            ) - 1)
+            end = (
+                min(
+                    existing_size + (i + 1) * part_size,
+                    self.get_size,
+                )
+                - 1
+            )
             if start >= self.get_size:
                 break
             thread = threading.Thread(
@@ -77,6 +82,8 @@ class MultiPartDownloader:
         for thread in threads:
             thread.join()
         print("Download completed!")
+
+
 if __name__ == "__main__":
     url = input("Enter the file URL: ")
     output_path = input("Enter the output file path: ")

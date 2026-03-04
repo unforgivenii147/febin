@@ -8,6 +8,7 @@ from multiprocessing import Pool, cpu_count
 from subprocess import getoutput
 from time import sleep
 import regex as re
+
 try:
     from bs4 import BeautifulSoup
 except ImportError:
@@ -80,6 +81,8 @@ voice-pitch voice-range voice-rate voice-stress voice-volume volume
 white-space widows width word-break word-spacing word-wrap
 z-index
 """
+
+
 def _compile_props(props_text: str, grouped: bool = False) -> tuple:
     props, prefixes = (
         [],
@@ -110,6 +113,8 @@ def _compile_props(props_text: str, grouped: bool = False) -> tuple:
         else:
             g_id += 1
     return (final_props, groups)
+
+
 def _prioritify(
     line_of_css: str,
     css_props_text_as_list: tuple,
@@ -120,12 +125,13 @@ def _prioritify(
     ) = css_props_text_as_list
     priority_integer, group_integer = 9999, 0
     for css_property in sorted_css_properties:
-        if css_property.lower() == line_of_css.split(
-                ":", maxsplit=1)[0].lower().strip():
+        if css_property.lower() == line_of_css.split(":", maxsplit=1)[0].lower().strip():
             priority_integer = sorted_css_properties.index(css_property)
             group_integer = groups_by_alphabetic_order[priority_integer]
             break
     return (priority_integer, group_integer)
+
+
 def _props_grouper(props, pgs):
     if not props:
         return props
@@ -135,11 +141,8 @@ def _props_grouper(props, pgs):
         strict=False,
     )
     props_pg = sorted(props_pg, key=lambda item: item[0][1])
-    props_by_groups = (
-        list(item[1])
-        for item in itertools.groupby(props_pg, key=lambda item: item[0][1]))
-    props_by_groups = (sorted(item, key=lambda item: item[0][0])
-                       for item in props_by_groups)
+    props_by_groups = (list(item[1]) for item in itertools.groupby(props_pg, key=lambda item: item[0][1]))
+    props_by_groups = (sorted(item, key=lambda item: item[0][0]) for item in props_by_groups)
     props = []
     for group in props_by_groups:
         group = (item[1] for item in group)
@@ -147,7 +150,11 @@ def _props_grouper(props, pgs):
         props += ["\n"]
     props.pop()
     return props
-def sort_properties(css_unsorted_string: str, ) -> str:
+
+
+def sort_properties(
+    css_unsorted_string: str,
+) -> str:
     css_pgs = _compile_props(CSS_PROPS_TEXT, grouped=bool(args.group))
     pattern = re.compile(
         r"(.*?{\r?\n?)(.*?)(}.*?)|(.*)",
@@ -165,20 +172,25 @@ def sort_properties(css_unsorted_string: str, ) -> str:
     if len(matched_patterns) != 0:
         for matched_groups in matched_patterns:
             sorted_patterns += matched_groups[0].splitlines(True)
-            props = (line.lstrip("\n")
-                     for line in RE_prop.findall(matched_groups[1]))
-            props = list(filter(
-                lambda line: line.strip("\n "),
-                props,
-            ))
+            props = (line.lstrip("\n") for line in RE_prop.findall(matched_groups[1]))
+            props = list(
+                filter(
+                    lambda line: line.strip("\n "),
+                    props,
+                )
+            )
             props = _props_grouper(props, css_pgs)
             sorted_patterns += props
             sorted_patterns += matched_groups[2].splitlines(True)
             sorted_patterns += matched_groups[3].splitlines(True)
         sorted_buffer = "".join(sorted_patterns)
     return sorted_buffer
+
+
 def remove_empty_rules(css: str) -> str:
     return re.sub(r"[^\}\{]+\{\}", "", css)
+
+
 def condense_zero_units(css: str) -> str:
     return re.sub(
         r"([\s:])(0)(px|em|%|in|q|ch|cm|mm|pc|pt|ex|rem|s|ms|"
@@ -186,20 +198,28 @@ def condense_zero_units(css: str) -> str:
         r"\1\2",
         css,
     )
+
+
 def condense_semicolons(css: str) -> str:
     return re.sub(r";;+", ";", css)
+
+
 def wrap_css_lines(css: str, line_length: int = 80) -> str:
     print(f"Wrapping lines to ~{line_length} max line lenght.")
     lines, line_start = [], 0
     for i, char in enumerate(css):
         if char == "}" and (i - line_start >= line_length):
-            lines.append(css[line_start:i + 1])
+            lines.append(css[line_start : i + 1])
             line_start = i + 1
     if line_start < len(css):
         lines.append(css[line_start:])
     return "\n".join(lines)
+
+
 def add_encoding(css: str) -> str:
     return "@charset utf-8;\n\n\n" + css if "@charset" not in css else css
+
+
 def normalize_whitespace(css: str) -> str:
     css_no_trailing_whitespace = ""
     for line_of_css in css.splitlines():
@@ -215,6 +235,8 @@ def normalize_whitespace(css: str) -> str:
     css = css.replace(" ;\n", ";\n").replace("{\n", " {\n")
     css = re.sub("\\s{2,}{\n", " {\n", css)
     return css.replace("\t", "    ").rstrip() + "\n"
+
+
 def justify_right(css: str) -> str:
     max_indent, right_justified_css = 1, ""
     for css_line in css.splitlines():
@@ -241,22 +263,24 @@ def justify_right(css: str) -> str:
         else:
             right_justified_css += line_of_css + "\n"
     return right_justified_css if max_indent > 1 else css
+
+
 def split_long_selectors(css: str) -> str:
     result = ""
     for line in css.splitlines():
         cond_1 = len(line) > 80 and "," in line and line.strip().endswith("{")
         cond_2 = line.startswith(("*", ".", "#"))
         if cond_1 and cond_2:
-            result += line.replace(", ",
-                                   ",").replace(",",
-                                                ",\n").replace("{", "{\n")
+            result += line.replace(", ", ",").replace(",", ",\n").replace("{", "{\n")
         else:
             result += line + "\n"
     return result
+
+
 def simple_replace(css: str) -> str:
-    return css.replace("}\n#",
-                       "}\n\n#").replace("}\n.",
-                                         "}\n\n.").replace("}\n*", "}\n\n*")
+    return css.replace("}\n#", "}\n\n#").replace("}\n.", "}\n\n.").replace("}\n*", "}\n\n*")
+
+
 def css_prettify(
     css: str,
     justify: bool = False,
@@ -274,9 +298,12 @@ def css_prettify(
     if extraline:
         css = "\n\n".join(css.replace("\t", "    ").splitlines()) + "\n"
     return css
+
+
 if BeautifulSoup:
     orig_prettify = BeautifulSoup.prettify
     regez = re.compile(r"^(\s*)", re.MULTILINE)
+
     def prettify(
         self,
         encoding=None,
@@ -288,18 +315,23 @@ if BeautifulSoup:
             r"\1" * indent_width,
             orig_prettify(self, encoding, formatter),
         )
+
     BeautifulSoup.prettify = prettify
+
     def html_prettify(html: str, extraline: bool = False) -> str:
         html = BeautifulSoup(html).prettify()
         if extraline:
             html = "\n\n".join(html.replace("\t", "    ").splitlines()) + "\n"
         return html
 else:
+
     def html_prettify(html: str, extraline: bool = False) -> str:
         html = minidom.parseString(html).toprettyxml(indent="    ")[22:]
         if extraline:
             html = "\n\n".join(html.replace("\t", "    ").splitlines()) + "\n"
         return html
+
+
 def walk2list(
     folder: str,
     target: tuple,
@@ -316,10 +348,13 @@ def walk2list(
         followlinks=followlinks,
     )
     return [
-        os.path.abspath(os.path.join(r, f)) for r, d, fs in oswalk for f in fs
-        if not f.startswith(() if showhidden else ".") and not f.endswith(omit)
-        and f.endswith(target)
+        os.path.abspath(os.path.join(r, f))
+        for r, d, fs in oswalk
+        for f in fs
+        if not f.startswith(() if showhidden else ".") and not f.endswith(omit) and f.endswith(target)
     ]
+
+
 def process_multiple_files(file_path):
     print(f"Process {os.getpid()} is processing {file_path}.")
     if args.watch:
@@ -340,13 +375,19 @@ def process_multiple_files(file_path):
         process_single_css_file(file_path)
     else:
         process_single_html_file(file_path)
+
+
 def prefixer_extensioner(file_path: str) -> str:
     extension = os.path.splitext(file_path)[1].lower()
     filenames = os.path.splitext(os.path.basename(file_path))[0]
     filenames = args.prefix + filenames if args.prefix else filenames
     dir_names = os.path.dirname(file_path)
     return os.path.join(dir_names, filenames + extension)
-def process_single_css_file(css_file_path: str, ) -> str:
+
+
+def process_single_css_file(
+    css_file_path: str,
+) -> str:
     global args
     with open(css_file_path, encoding="utf-8-sig") as css_file:
         original_css = css_file.read()
@@ -358,13 +399,19 @@ def process_single_css_file(css_file_path: str, ) -> str:
     with open(min_css_file_path, "w", encoding="utf-8") as output_file:
         output_file.write(pretty_css)
     return pretty_css
-def process_single_html_file(html_file_path: str, ) -> str:
+
+
+def process_single_html_file(
+    html_file_path: str,
+) -> str:
     with open(html_file_path, encoding="utf-8-sig") as html_file:
         pretty_html = html_prettify(html_file.read(), args.extraline)
     html_file_path = prefixer_extensioner(html_file_path)
     with open(html_file_path, "w", encoding="utf-8") as output_file:
         output_file.write(pretty_html)
     return pretty_html
+
+
 def make_arguments_parser():
     parser = ArgumentParser(
         description=__doc__,
@@ -434,18 +481,18 @@ def make_arguments_parser():
     global args
     args = parser.parse_args()
     return args
+
+
 def main():
     make_arguments_parser()
     global log
     if args.before and getoutput:
         print(getoutput(str(args.before)))
-    if os.path.isfile(args.fullpath) and args.fullpath.endswith(
-        (".css", ".scss")):
+    if os.path.isfile(args.fullpath) and args.fullpath.endswith((".css", ".scss")):
         print("Target is a CSS / SCSS File.")
         list_of_files = str(args.fullpath)
         process_single_css_file(args.fullpath)
-    elif os.path.isfile(args.fullpath) and args.fullpath.endswith(
-        (".htm", ".html")):
+    elif os.path.isfile(args.fullpath) and args.fullpath.endswith((".htm", ".html")):
         print("Target is a HTML File.")
         list_of_files = str(args.fullpath)
         process_single_html_file(args.fullpath)
@@ -469,5 +516,7 @@ def main():
     print(f"\n {'-' * 80} \n Files Processed: {list_of_files}.")
     print(f"""Number of Files Processed:
           {len(list_of_files) if isinstance(list_of_files, tuple) else 1}""")
+
+
 if __name__ in "__main__":
     main()

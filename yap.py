@@ -8,11 +8,14 @@ from pathlib import Path
 from time import perf_counter
 from dh import format_size, get_size
 from fastwalk import walk_files
+
 MAX_IN_FLIGHT = 16
 IGNORED_DIRS = {
     ".git",
     "__pycache__",
 }
+
+
 def is_python_file(path: Path) -> bool:
     if path.suffix in {".py", ".pyi"}:
         return True
@@ -22,6 +25,8 @@ def is_python_file(path: Path) -> bool:
             return line.startswith(b"#!") and b"python" in line.lower()
     except Exception:
         return False
+
+
 def format_single_file(file_path: Path, args) -> bool:
     start_size = get_size(file_path)
     end_size = get_size(file_path)
@@ -30,6 +35,7 @@ def format_single_file(file_path: Path, args) -> bool:
         code = original_code
         if args.remove_all_unused_imports:
             import autoflake
+
             code = autoflake.fix_code(
                 code,
                 remove_all_unused_imports=True,
@@ -37,22 +43,25 @@ def format_single_file(file_path: Path, args) -> bool:
             )
         if args.isort:
             import isort
+
             code = isort.code(code)
         if args.black:
             import black
+
             with contextlib.suppress(black.NothingChanged):
                 code = black.format_str(code, mode=black.Mode(line_length=120))
         elif args.autopep:
             import autopep8
+
             code = autopep8.fix_code(code, options={"aggressive": 2})
         else:
             from yapf.yapflib import yapf_api
+
             code, _ = yapf_api.FormatCode(code)
         if len(code) != len(original_code):
             file_path.write_text(code, encoding="utf-8")
             end_size = get_size(file_path)
-            print(
-                f"[OK]  {file_path.name} {format_size(start_size - end_size)}")
+            print(f"[OK]  {file_path.name} {format_size(start_size - end_size)}")
             return True
         else:
             print(f"[NO CHNGE]  {file_path.name}")
@@ -60,9 +69,10 @@ def format_single_file(file_path: Path, args) -> bool:
     except Exception as e:
         print(f"[ERROR]  {file_path.name}: {e}")
         return False
+
+
 def main() -> None:
-    p = argparse.ArgumentParser(
-        description="Fast Python API-based formatter (Lazy Loading)")
+    p = argparse.ArgumentParser(description="Fast Python API-based formatter (Lazy Loading)")
     p.add_argument(
         "-b",
         "--black",
@@ -92,9 +102,12 @@ def main() -> None:
     files = []
     for pth in walk_files(dir):
         path = Path(pth)
-        if (path.is_file()
-                and not any(part in IGNORED_DIRS for part in path.parts)
-                and is_python_file(path) and not path.is_symlink()):
+        if (
+            path.is_file()
+            and not any(part in IGNORED_DIRS for part in path.parts)
+            and is_python_file(path)
+            and not path.is_symlink()
+        ):
             files.append(path)
     if not files:
         print("No Python files detected.")
@@ -110,10 +123,13 @@ def main() -> None:
                         (name),
                         (args),
                     ),
-                ))
+                )
+            )
             if len(pending) >= MAX_IN_FLIGHT:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
+
+
 if __name__ == "__main__":
     main()

@@ -3,16 +3,22 @@
 Move files created less than 5 minutes ago to a subdirectory called '5min'
 Recursively processes all files starting from current directory
 """
+
 import os
 import shutil
 import time
+
 TIME_THRESHOLD = 8 * 60
+
+
 def get_file_age(filepath):
     """Get file age in seconds"""
     current_time = time.time()
     file_stat = os.stat(filepath)
     file_creation_time = file_stat.st_ctime
     return current_time - file_creation_time
+
+
 def move_recent_files(start_dir="."):
     """Move files created in last 5 minutes to '5min' subdirectory"""
     target_dir = os.path.join(start_dir, "5min")
@@ -49,24 +55,26 @@ def move_recent_files(start_dir="."):
                     print(f"Moved: {filepath} -> {dest_path}")
                     moved_count += 1
             except (
-                    OSError,
-                    PermissionError,
+                OSError,
+                PermissionError,
             ) as e:
                 print(f"Error processing {filepath}: {e}")
     print(f"\nTotal files moved: {moved_count}")
+
+
 def main():
     """Main function"""
     try:
         start_dir = os.getcwd()
         print(f"Starting from directory: {start_dir}")
-        print(
-            f"Moving files created in last 5 minutes to '{os.path.join(start_dir, '5min')}'"
-        )
+        print(f"Moving files created in last 5 minutes to '{os.path.join(start_dir, '5min')}'")
         print("-" * 60)
         move_recent_files(start_dir)
     except KeyboardInterrupt:
         print("\nOperation cancelled by user")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+
 if __name__ == "__main__":
     main()

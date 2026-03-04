@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
+
 current_dir = os.getcwd()
 for root, _dirs, files in os.walk(current_dir):
     for file in files:

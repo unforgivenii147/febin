@@ -5,6 +5,7 @@ import sys
 import time
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
+
 DEST_DIR = os.path.expanduser("~/tmp/tgz")
 ALLOWED_EXTENSIONS = (
     ".tar.gz",
@@ -13,6 +14,8 @@ ALLOWED_EXTENSIONS = (
     ".zip",
     ".tar.bz2",
 )
+
+
 def copy_if_match(src_path) -> None:
     if src_path.endswith(ALLOWED_EXTENSIONS):
         try:
@@ -25,21 +28,27 @@ def copy_if_match(src_path) -> None:
             print(src_path)
         except Exception as e:
             print(f"Failed to copy {src_path}: {e}")
+
+
 def startup_scan(fpath) -> None:
     for root, _dirs, files in os.walk(fpath):
         for f in files:
             full_path = os.path.join(root, f)
             copy_if_match(full_path)
+
+
 class CopyEventHandler(FileSystemEventHandler):
     def on_created(self, event) -> None:
         if not event.is_directory:
             copy_if_match(event.src_path)
+
     def on_modified(self, event) -> None:
         if not event.is_directory:
             copy_if_match(event.src_path)
+
+
 if __name__ == "__main__":
-    path = sys.argv[1] if len(
-        sys.argv) > 1 else "/data/data/com.termux/files/usr/tmp"
+    path = sys.argv[1] if len(sys.argv) > 1 else "/data/data/com.termux/files/usr/tmp"
     startup_scan(path)
     event_handler = CopyEventHandler()
     observer = Observer()

@@ -4,18 +4,23 @@ import shutil
 import tarfile
 import tempfile
 import zipfile
+
 TARGET_FILES = {"WHEEL"}
 PREFIX = "Tag: py2-none-any"
+
+
 def clean_text(text: str) -> str:
-    return "\n".join(
-        line for line in text.splitlines()
-        if not line.startswith(PREFIX)) + ("\n" if text.endswith("\n") else "")
+    return "\n".join(line for line in text.splitlines() if not line.startswith(PREFIX)) + (
+        "\n" if text.endswith("\n") else ""
+    )
+
+
 def clean_file(path: str) -> None:
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             original = f.read()
     except Exception:
@@ -24,11 +29,13 @@ def clean_file(path: str) -> None:
     if cleaned != original:
         with open(path, "w", encoding="utf-8") as f:
             f.write(cleaned)
+
+
 def process_zip(path: str) -> None:
     tmp = tempfile.mktemp(suffix=".zip")
     with (
-            zipfile.ZipFile(path, "r") as zin,
-            zipfile.ZipFile(tmp, "w") as zout,
+        zipfile.ZipFile(path, "r") as zin,
+        zipfile.ZipFile(tmp, "w") as zout,
     ):
         for item in zin.infolist():
             data = zin.read(item.filename)
@@ -42,6 +49,8 @@ def process_zip(path: str) -> None:
                     pass
             zout.writestr(item, data)
     shutil.move(tmp, path)
+
+
 def process_tar(path: str) -> None:
     tmp_dir = tempfile.mkdtemp()
     tmp_tar = tempfile.mktemp(suffix=".tar.gz")
@@ -55,13 +64,16 @@ def process_tar(path: str) -> None:
         tar.add(tmp_dir, arcname="")
     shutil.move(tmp_tar, path)
     shutil.rmtree(tmp_dir)
+
+
 def dispatch_archive(path: str) -> None:
     name = path.lower()
     if name.endswith(".zip") or name.endswith(".whl"):
         process_zip(path)
-    elif name.endswith(".tar.gz") or name.endswith(".tgz") or name.endswith(
-            ".tar"):
+    elif name.endswith(".tar.gz") or name.endswith(".tgz") or name.endswith(".tar"):
         process_tar(path)
+
+
 def main() -> None:
     for root, _, files in os.walk("."):
         for name in files:
@@ -69,13 +81,17 @@ def main() -> None:
             if name in TARGET_FILES:
                 clean_file(full_path)
                 continue
-            if name.lower().endswith((
+            if name.lower().endswith(
+                (
                     ".zip",
                     ".whl",
                     ".tar.gz",
                     ".tgz",
                     ".tar",
-            )):
+                )
+            ):
                 dispatch_archive(full_path)
+
+
 if __name__ == "__main__":
     main()

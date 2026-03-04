@@ -3,6 +3,8 @@ import argparse
 import sys
 from pathlib import Path
 from deep_translator import GoogleTranslator
+
+
 def read_text_file(path: Path) -> str:
     allowed = {
         ".txt",
@@ -15,16 +17,23 @@ def read_text_file(path: Path) -> str:
     if path.suffix.lower() not in allowed:
         raise ValueError(f"Unsupported file type: {path.suffix}")
     return path.read_text(encoding="utf-8")
+
+
 def write_text_file(path: Path, data: str) -> None:
     path.write_text(data, encoding="utf-8")
+
+
 def translate_text(text: str) -> str:
     translator = GoogleTranslator(source="ja", target="en")
     return translator.translate(text)
+
+
 def build_output_path(input_path: Path) -> Path:
     return input_path.with_name(f"{input_path.stem}_eng{input_path.suffix}")
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Translate jap → English using deep-translator.")
+    parser = argparse.ArgumentParser(description="Translate jap → English using deep-translator.")
     parser.add_argument(
         "input_path",
         type=str,
@@ -65,5 +74,7 @@ def main() -> None:
         print(f"Write error: {exc}", file=sys.stderr)
         sys.exit(1)
     print(f"Saved translated file → {out_path}")
+
+
 if __name__ == "__main__":
     main()

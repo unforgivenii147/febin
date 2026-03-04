@@ -2,6 +2,8 @@
 import sys
 from pathlib import Path
 from fastwalk import walk_files
+
+
 def main() -> None:
     ext1 = input("ext 1 :").strip()
     ext2 = input("ext 2 :").strip()
@@ -22,5 +24,7 @@ def main() -> None:
                 else:
                     print(f"[✖] {twin}  (keeping {path})")
                     twin.unlink()
+
+
 if __name__ == "__main__":
     sys.exit(main())

@@ -1,5 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from sys import argv
+
+
 def main():
     fn = argv[1]
     template = """#!/usr/bin/env python
@@ -27,5 +29,7 @@ if __name__=='__main__':
     with open(fn, "w") as f:
         f.write(template)
     print(f"{fn} created.")
+
+
 if __name__ == "__main__":
     main()

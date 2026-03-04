@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import stat
 from pathlib import Path
+
+
 def has_shebang(path: Path) -> bool:
     try:
         with path.open("rb") as f:
@@ -8,11 +10,15 @@ def has_shebang(path: Path) -> bool:
             return first_three == b"#!/"
     except (OSError, PermissionError):
         return False
+
+
 def make_executable(path: Path) -> None:
     current_mode = path.stat().st_mode
     executable_bits = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
     new_mode = current_mode | executable_bits
     path.chmod(new_mode)
+
+
 def process_directory(root: Path) -> None:
     for path in root.rglob("*"):
         if not path.is_file():
@@ -24,5 +30,7 @@ def process_directory(root: Path) -> None:
                 print(f"[+] Made executable: {path}")
             else:
                 print(f"[=] Already executable: {path}")
+
+
 if __name__ == "__main__":
     process_directory(Path.cwd())

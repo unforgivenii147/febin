@@ -3,12 +3,15 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import dh
+
 try:
     import cv2
     import numpy as np
+
     USE_CV2 = True
 except ImportError:
     from PIL import Image
+
     USE_CV2 = False
 IGNORED_DIRS = {
     ".git",
@@ -18,6 +21,8 @@ IGNORED_DIRS = {
     ".venv",
     "node_modules",
 }
+
+
 def convert_file(file_path: str) -> bool:
     path = Path(file_path)
     if not path.is_file() or path.suffix.lower() not in dh.IMG_EXT:
@@ -27,8 +32,7 @@ def convert_file(file_path: str) -> bool:
         return True
     output_path = path.with_suffix(".png")
     if output_path.exists():
-        response = input(f"'{output_path.name}' exists. Overwrite? (y/n): "
-                         ).strip().lower()
+        response = input(f"'{output_path.name}' exists. Overwrite? (y/n): ").strip().lower()
         if response != "y":
             return False
     try:
@@ -45,12 +49,9 @@ def convert_file(file_path: str) -> bool:
                     dtype=np.uint8,
                 )
                 alpha = a.astype(float) / 255.0
-                img_b = (b.astype(float) * alpha + white_bg.astype(float) *
-                         (1 - alpha)).astype(np.uint8)
-                img_g = (g.astype(float) * alpha + white_bg.astype(float) *
-                         (1 - alpha)).astype(np.uint8)
-                img_r = (r.astype(float) * alpha + white_bg.astype(float) *
-                         (1 - alpha)).astype(np.uint8)
+                img_b = (b.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
+                img_g = (g.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
+                img_r = (r.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
                 final_img = cv2.merge((img_b, img_g, img_r))
             else:
                 final_img = img
@@ -86,12 +87,14 @@ def convert_file(file_path: str) -> bool:
     except Exception as e:
         print(f"Error converting '{path.name}': {e}")
         return False
+
+
 def main() -> None:
     start_size = dh.get_size(".")
     files = [
-        f for f in Path(".").rglob("*")
-        if f.is_file() and not any(part in IGNORED_DIRS
-                                   for part in f.parts) and dh.is_image(f)
+        f
+        for f in Path(".").rglob("*")
+        if f.is_file() and not any(part in IGNORED_DIRS for part in f.parts) and dh.is_image(f)
     ]
     if not files:
         print("No image files detected.")
@@ -106,5 +109,7 @@ def main() -> None:
         print(f"size reduced: - {dh.format_size(abs(result))} ")
     else:
         print(f"size increased: + {dh.format_size(abs(result))} ")
+
+
 if __name__ == "__main__":
     main()

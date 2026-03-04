@@ -8,9 +8,13 @@ import sys
 from datetime import datetime
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
+
+
 def setup_logging(verbose=True):
     level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(level=level, format="%(message)s")
+
+
 def extract_with_lzma(xz_path, remove_original=True):
     try:
         xz_path = Path(xz_path)
@@ -37,8 +41,8 @@ def extract_with_lzma(xz_path, remove_original=True):
                 "Output file already exists",
             )
         with (
-                lzma.open(xz_path, "rb") as compressed_file,
-                open(output_path, "wb") as output_file,
+            lzma.open(xz_path, "rb") as compressed_file,
+            open(output_path, "wb") as output_file,
         ):
             shutil.copyfileobj(compressed_file, output_file)
         if remove_original:
@@ -66,6 +70,8 @@ def extract_with_lzma(xz_path, remove_original=True):
             None,
             f"Unexpected error: {e}",
         )
+
+
 def extract_with_system_xz(xz_path, remove_original=False):
     try:
         xz_path = Path(xz_path)
@@ -107,6 +113,8 @@ def extract_with_system_xz(xz_path, remove_original=False):
             None,
             f"Unexpected error: {e}",
         )
+
+
 def find_xz_files(directory):
     directory = Path(directory)
     if not directory.exists():
@@ -117,12 +125,16 @@ def find_xz_files(directory):
         if path.is_file():
             xz_files.append(path)
     return xz_files
+
+
 def process_file(args):
     file_path, use_system, remove_original = args
     if use_system:
         return extract_with_system_xz(file_path, remove_original)
     else:
         return extract_with_lzma(file_path, remove_original)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Recursively extract all .xz files in a directory tree",
@@ -152,8 +164,7 @@ Examples:
         "-s",
         "--system",
         action="store_true",
-        help=
-        "Use system xz command instead of Python lzma (faster for large files)",
+        help="Use system xz command instead of Python lzma (faster for large files)",
     )
     parser.add_argument(
         "-w",
@@ -195,8 +206,8 @@ Examples:
     try:
         with Pool(processes=args.workers) as pool:
             for i, result in enumerate(
-                    pool.imap_unordered(process_file, process_args),
-                    1,
+                pool.imap_unordered(process_file, process_args),
+                1,
             ):
                 (
                     success,
@@ -212,18 +223,18 @@ Examples:
                     logging.info(status)
                 else:
                     error_count += 1
-                    logging.error(
-                        f"[{i}/{len(xz_files)}] ✗ {xz_path.name}: {error}")
+                    logging.error(f"[{i}/{len(xz_files)}] ✗ {xz_path.name}: {error}")
     except KeyboardInterrupt:
         logging.warning("\nExtraction interrupted by user")
         return 1
     elapsed_time = datetime.now() - start_time
     logging.info("=" * 50)
-    logging.info(
-        f"Extraction complete in {elapsed_time.total_seconds():.2f} seconds")
+    logging.info(f"Extraction complete in {elapsed_time.total_seconds():.2f} seconds")
     logging.info(f"Successfully extracted: {success_count} files")
     if error_count > 0:
         logging.warning(f"Failed to extract: {error_count} files")
     return 0 if error_count == 0 else 1
+
+
 if __name__ == "__main__":
     sys.exit(main())

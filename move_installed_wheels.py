@@ -6,6 +6,7 @@ from pathlib import Path
 from packaging.utils import parse_wheel_filename
 from packaging.version import Version
 from termcolor import cprint
+
 WHL_DIR = Path("/sdcard/whl")
 DEST_DIR = Path("/sdcard/installed")
 DEST_DIR2 = Path("/sdcard/invalid")
@@ -27,10 +28,14 @@ EXCLUDED_PACKAGES = {
     "setuptools_scm",
     "setuptools_rust",
 }
+
+
 def ensure_venv():
     if sys.prefix == sys.base_prefix:
         print("⚠ Not running inside a virtual environment.")
         sys.exit(1)
+
+
 def get_installed_packages():
     installed = {}
     for dist in metadata.distributions():
@@ -39,8 +44,12 @@ def get_installed_packages():
         if name:
             installed[name.lower().replace("-", "_")] = Version(version)
     return installed
+
+
 def normalize(name: str) -> str:
     return name.lower().replace("-", "_")
+
+
 def main():
     #    ensure_venv()
     if not WHL_DIR.exists():
@@ -58,19 +67,18 @@ def main():
             if norm_name in installed_pkgs:
                 installed_version = installed_pkgs[norm_name]
                 if installed_version == Version(str(version)):
-                    cprint(f"[MATCH] {dist_name}=={version} → removing",
-                           "cyan")
+                    cprint(f"[MATCH] {dist_name}=={version} → removing", "cyan")
                     wheel.unlink()
                     moved += 1
                 else:
                     wheel.unlink()
                     moved += 1
-                    print(
-                        f"[DIFF VERSION] {dist_name} (installed {installed_version}, wheel {version}) -> removed"
-                    )
+                    print(f"[DIFF VERSION] {dist_name} (installed {installed_version}, wheel {version}) -> removed")
         except Exception as e:
             print(f"[ERROR] {wheel.name}: {e}")
             shutil.move(str(wheel), DEST_DIR2 / wheel.name)
     print(f"\nDone. Removed {moved} wheel(s).")
+
+
 if __name__ == "__main__":
     main()

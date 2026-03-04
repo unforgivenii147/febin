@@ -3,6 +3,8 @@ import io
 import tarfile
 import zipfile
 from pathlib import Path
+
+
 def whl_to_tarxz(source_dir: str):
     source_path = Path(source_dir)
     if not source_path.exists():
@@ -16,8 +18,8 @@ def whl_to_tarxz(source_dir: str):
         tar_xz_file = zip_file.with_suffix(".tar.xz")
         print(f"Converting {zip_file} -> {tar_xz_file}")
         with (
-                zipfile.ZipFile(zip_file, "r") as zf,
-                tarfile.open(tar_xz_file, "w:xz") as tf,
+            zipfile.ZipFile(zip_file, "r") as zf,
+            tarfile.open(tar_xz_file, "w:xz") as tf,
         ):
             for member in zf.infolist():
                 if member.is_dir():
@@ -27,5 +29,7 @@ def whl_to_tarxz(source_dir: str):
                 tar_info.size = len(file_data)
                 tf.addfile(tar_info, fileobj=io.BytesIO(file_data))
         print(f"Created {tar_xz_file}")
+
+
 if __name__ == "__main__":
     whl_to_tarxz(".")

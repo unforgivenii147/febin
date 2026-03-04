@@ -5,14 +5,15 @@ from pathlib import Path
 from sys import argv
 from dh import unique_path
 from fastwalk import walk_files
+
+
 def whl_to_tar_xz(whl_path: Path):
     target = whl_path.with_suffix(".tar.xz")
     if target.exists():
         target = unique_path(target)
     print(f"[WHL → TAR.XZ] {whl_path.name}")
     try:
-        with zipfile.ZipFile(whl_path,
-                             "r") as zf, tarfile.open(target, "w:xz") as tf:
+        with zipfile.ZipFile(whl_path, "r") as zf, tarfile.open(target, "w:xz") as tf:
             for member in zf.infolist():
                 if member.is_dir():
                     continue
@@ -24,6 +25,8 @@ def whl_to_tar_xz(whl_path: Path):
         whl_path.unlink()
     except Exception as e:
         print(f"[ERROR] {whl_path.name}: {e}")
+
+
 def tar_xz_to_whl(tar_path: Path):
     target = tar_path.with_suffix(".whl")
     tt = str(target).replace(".tar", "")
@@ -33,9 +36,8 @@ def tar_xz_to_whl(tar_path: Path):
     print(f"[TAR.XZ → WHL] {tar_path.name}")
     try:
         with (
-                tarfile.open(tar_path, "r:xz") as tf,
-                zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED)
-                as zf,
+            tarfile.open(tar_path, "r:xz") as tf,
+            zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as zf,
         ):
             for member in tf.getmembers():
                 if member.isdir():
@@ -48,6 +50,8 @@ def tar_xz_to_whl(tar_path: Path):
         tar_path.unlink()
     except Exception as e:
         print(f"[ERROR] {tar_path.name}: {e}")
+
+
 def main():
     mode = argv[1]
     dir = Path().cwd()
@@ -57,5 +61,7 @@ def main():
             whl_to_tar_xz(path)
         elif mode == "2" and ".tar.xz" in path.name:
             tar_xz_to_whl(path)
+
+
 if __name__ == "__main__":
     main()

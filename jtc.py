@@ -4,6 +4,8 @@ from multiprocessing import Pool
 from pathlib import Path
 from dh import run_command
 from fastwalk import walk_files
+
+
 def process_file(path) -> bool:
     try:
         cmd = f"just-the-code -s --language=python {str(path)}"
@@ -20,6 +22,8 @@ def process_file(path) -> bool:
     except Exception as e:
         print(f"Error processing {path.name}: {e}")
         return False
+
+
 def walk_directory(root) -> list[str]:
     files = []
     for pth in walk_files(root):
@@ -27,10 +31,14 @@ def walk_directory(root) -> list[str]:
         if path.suffix == ".py":
             files.append(path)
     return files
+
+
 def main():
     dir = Path.cwd()
     files = walk_directory(dir)
     for f in files:
         print(process_file(f))
+
+
 if __name__ == "__main__":
     main()

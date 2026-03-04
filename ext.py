@@ -2,6 +2,7 @@
 import ast
 import multiprocessing as mp
 import os
+
 OUTPUT_DIR = "output"
 EXCLUDE_DIRS = {
     "test",
@@ -9,19 +10,23 @@ EXCLUDE_DIRS = {
     "examples",
     "output",
 }
+
+
 def is_python_script(path: str) -> bool:
     if path.endswith(".py"):
         return True
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             line = f.readline()
         return line.startswith("#!") and "python" in line.lower()
     except Exception:
         return False
+
+
 def discover_python_files() -> list[str]:
     files = []
     for root, dirs, fnames in os.walk("."):
@@ -31,27 +36,33 @@ def discover_python_files() -> list[str]:
             if is_python_script(p):
                 files.append(p)
     return files
+
+
 def mark_parents(node: ast.AST, parent=None):
     for child in ast.iter_child_nodes(node):
         child._parent = node
         mark_parents(child, node)
+
+
 def is_constant_name(name: str) -> bool:
     return name.isupper()
+
+
 def extract_from_file(
     path: str,
 ) -> tuple[
-        str,
-        dict[str, str],
-        dict[str, str],
-        dict[str, str],
-        dict[str, str],
-        dict[str, str],
+    str,
+    dict[str, str],
+    dict[str, str],
+    dict[str, str],
+    dict[str, str],
+    dict[str, str],
 ]:
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             source = f.read()
         tree = ast.parse(source)
@@ -82,12 +93,9 @@ def extract_from_file(
             parent = getattr(node, "_parent", None)
             if not isinstance(parent, ast.Module):
                 continue
-            if isinstance(node, ast.Assign) and len(
-                    node.targets) == 1 and isinstance(node.targets[0],
-                                                      ast.Name):
+            if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
                 name = node.targets[0].id
-            elif isinstance(node, ast.AnnAssign) and isinstance(
-                    node.target, ast.Name):
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
                 name = node.target.id
             else:
                 continue
@@ -104,10 +112,14 @@ def extract_from_file(
         nested_funcs,
         consts,
     )
+
+
 def write_output(path: str, data: dict[str, str]) -> None:
     with open(path, "w", encoding="utf-8") as f:
         for _name, src in sorted(data.items()):
             f.write(src.rstrip() + "\n\n")
+
+
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     files = discover_python_files()
@@ -161,5 +173,7 @@ def main():
     for n in sorted(const_map):
         print(" -", n)
     print("\nOutputs saved to:", OUTPUT_DIR)
+
+
 if __name__ == "__main__":
     main()

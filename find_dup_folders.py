@@ -4,6 +4,8 @@ from collections import defaultdict
 from pathlib import Path
 from fastwalk import walk, walk_files
 from xxhash import xxh64
+
+
 def is_nested(path1: Path, path2: Path) -> bool:
     try:
         path1.resolve().relative_to(path2.resolve())
@@ -16,6 +18,8 @@ def is_nested(path1: Path, path2: Path) -> bool:
     except ValueError:
         pass
     return False
+
+
 def hash_folder(folder_path):
     hasher = xxh64()
     files = []
@@ -37,6 +41,8 @@ def hash_folder(folder_path):
         except OSError:
             continue
     return hasher.hexdigest()
+
+
 def find_duplicate_folders(root_dir):
     folder_hashes = defaultdict(list)
     for ppth in walk(root_dir):
@@ -46,6 +52,8 @@ def find_duplicate_folders(root_dir):
             if folder_hash:
                 folder_hashes[str(folder_hash)].append(str(pth))
     return {h: paths for h, paths in folder_hashes.items() if len(paths) > 1}
+
+
 if __name__ == "__main__":
     root_dir = "."
     duplicates = find_duplicate_folders(root_dir)

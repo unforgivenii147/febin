@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pywebcopy import save_webpage
+
+
 def main() -> None:
     save_webpage(
         url=sys.argv[1],
@@ -12,5 +14,7 @@ def main() -> None:
         delay=None,
         threaded=False,
     )
+
+
 if __name__ == "__main__":
     main()

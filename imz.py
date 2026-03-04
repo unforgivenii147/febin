@@ -14,7 +14,10 @@ from pathlib import Path
 import regex as re
 from dh import PKG_MAPPING, STDLIB
 from tqdm import tqdm
+
 CACHE_FILE = ".reqcache.json"
+
+
 def fast_hash(path: Path) -> str:
     try:
         h = hashlib.sha256()
@@ -26,26 +29,32 @@ def fast_hash(path: Path) -> str:
         return h.hexdigest()
     except Exception:
         return "0"
+
+
 def load_json(path: Path) -> dict:
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             return json.load(f)
     except Exception:
         return {}
+
+
 def save_json(path: Path, obj: dict) -> None:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(obj, f, indent=2, sort_keys=True)
+
+
 def load_set_file(path: str) -> set[str]:
     out = set()
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             for line in f:
                 v = line.strip()
@@ -54,13 +63,15 @@ def load_set_file(path: str) -> set[str]:
     except Exception:
         pass
     return out
+
+
 def load_mapping(path: str) -> dict[str, str]:
     out: dict[str, str] = {}
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             for line in f:
                 line = line.strip()
@@ -72,8 +83,9 @@ def load_mapping(path: str) -> dict[str, str]:
     except Exception:
         pass
     return out
-def extract_from_ast(code: str,
-                     path_hint: str | None = None) -> dict[str, set[str]]:
+
+
+def extract_from_ast(code: str, path_hint: str | None = None) -> dict[str, set[str]]:
     result = {
         "imports": set(),
         "star_modules": set(),
@@ -84,8 +96,8 @@ def extract_from_ast(code: str,
         tree = ast.parse(code)
     except Exception:
         for m in re.finditer(
-                r"(?:import_module|__import__)\(\s*['\"]([\w\.]+)['\"]\s*\)",
-                code,
+            r"(?:import_module|__import__)\(\s*['\"]([\w\.]+)['\"]\s*\)",
+            code,
         ):
             result["dynamic"].add(m.group(1).split(".", 1)[0])
         return result
@@ -108,31 +120,36 @@ def extract_from_ast(code: str,
                 else:
                     result["imports"].add(base)
         elif isinstance(node, ast.Call):
-            if isinstance(node.func,
-                          ast.Name) and node.func.id == "__import__":
-                if node.args and isinstance(node.args[0],
-                                            ast.Constant) and isinstance(
-                                                node.args[0].value, str):
+            if isinstance(node.func, ast.Name) and node.func.id == "__import__":
+                if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
                     result["dynamic"].add(node.args[0].value.split(".", 1)[0])
             elif isinstance(node.func, ast.Attribute):
                 val = node.func
-                if (isinstance(val.value, ast.Name)
-                        and val.value.id == "importlib" and val.attr
-                        == "import_module") and (node.args and isinstance(
-                            node.args[0],
-                            ast.Constant,
-                        ) and isinstance(
-                            node.args[0].value,
-                            str,
-                        )):
+                if (
+                    isinstance(val.value, ast.Name) and val.value.id == "importlib" and val.attr == "import_module"
+                ) and (
+                    node.args
+                    and isinstance(
+                        node.args[0],
+                        ast.Constant,
+                    )
+                    and isinstance(
+                        node.args[0].value,
+                        str,
+                    )
+                ):
                     result["dynamic"].add(node.args[0].value.split(".", 1)[0])
     return result
-def process_py_file_content(code: str,
-                            path_hint: str | None = None
-                            ) -> dict[str, list[str]]:
+
+
+def process_py_file_content(code: str, path_hint: str | None = None) -> dict[str, list[str]]:
     d = extract_from_ast(code, path_hint)
     return {k: sorted(v) for k, v in d.items()}
-def process_py_file(path: Path, ) -> dict[str, list[str]]:
+
+
+def process_py_file(
+    path: Path,
+) -> dict[str, list[str]]:
     try:
         text = path.read_text(encoding="utf-8", errors="ignore")
     except Exception:
@@ -143,12 +160,16 @@ def process_py_file(path: Path, ) -> dict[str, list[str]]:
             "relative": [],
         }
     return process_py_file_content(text, str(path))
-def process_noext_python_script(path: Path, ) -> dict[str, list[str]]:
+
+
+def process_noext_python_script(
+    path: Path,
+) -> dict[str, list[str]]:
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             first = f.readline()
             if "#!" not in first or "python" not in first.lower():
@@ -167,7 +188,11 @@ def process_noext_python_script(path: Path, ) -> dict[str, list[str]]:
             "relative": [],
         }
     return process_py_file_content(code, str(path))
-def process_ipynb(path: Path, ) -> dict[str, list[str]]:
+
+
+def process_ipynb(
+    path: Path,
+) -> dict[str, list[str]]:
     out = {
         "imports": [],
         "star_modules": [],
@@ -176,9 +201,9 @@ def process_ipynb(path: Path, ) -> dict[str, list[str]]:
     }
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             nb = json.load(f)
     except Exception:
@@ -200,7 +225,11 @@ def process_ipynb(path: Path, ) -> dict[str, list[str]]:
     out["dynamic"] = sorted(dyn)
     out["relative"] = sorted(rel)
     return out
-def process_zip_file(path: Path, ) -> dict[str, list[str]]:
+
+
+def process_zip_file(
+    path: Path,
+) -> dict[str, list[str]]:
     imports = set()
     stars = set()
     dyn = set()
@@ -229,7 +258,11 @@ def process_zip_file(path: Path, ) -> dict[str, list[str]]:
         "dynamic": sorted(dyn),
         "relative": sorted(rel),
     }
-def process_tar_file(path: Path, ) -> dict[str, list[str]]:
+
+
+def process_tar_file(
+    path: Path,
+) -> dict[str, list[str]]:
     imports = set()
     stars = set()
     dyn = set()
@@ -265,7 +298,11 @@ def process_tar_file(path: Path, ) -> dict[str, list[str]]:
         "dynamic": sorted(dyn),
         "relative": sorted(rel),
     }
-def process_raw(path: str, ) -> dict[str, list[str]]:
+
+
+def process_raw(
+    path: str,
+) -> dict[str, list[str]]:
     p = Path(path)
     name = str(p).lower()
     if p.suffix == ".py":
@@ -276,8 +313,7 @@ def process_raw(path: str, ) -> dict[str, list[str]]:
         return process_noext_python_script(p)
     if name.endswith(".zip") or name.endswith(".whl"):
         return process_zip_file(p)
-    if name.endswith(".tar.gz") or name.endswith(".tgz") or name.endswith(
-            ".tar.xz"):
+    if name.endswith(".tar.gz") or name.endswith(".tgz") or name.endswith(".tar.xz"):
         return process_tar_file(p)
     return {
         "imports": [],
@@ -285,7 +321,11 @@ def process_raw(path: str, ) -> dict[str, list[str]]:
         "dynamic": [],
         "relative": [],
     }
-def build_project_module_map(sources: list[str], ) -> dict[str, list[str]]:
+
+
+def build_project_module_map(
+    sources: list[str],
+) -> dict[str, list[str]]:
     mapping: dict[str, list[str]] = {}
     for fp in sources:
         p = Path(fp)
@@ -296,19 +336,18 @@ def build_project_module_map(sources: list[str], ) -> dict[str, list[str]]:
         rel = os.path.normpath(fp).lstrip("./")
         parts = rel.split(os.sep)
         if parts[-1] == "__init__.py":
-            mod = ".".join(parts[:-1]) if parts[:-1] else (
-                parts[-2] if len(parts) > 1 else "")
+            mod = ".".join(parts[:-1]) if parts[:-1] else (parts[-2] if len(parts) > 1 else "")
         else:
-            mod = ".".join(parts)[:-3] if rel.endswith(".py") else ".".join(
-                parts)
+            mod = ".".join(parts)[:-3] if rel.endswith(".py") else ".".join(parts)
         if not mod:
             continue
         top = mod.split(".", 1)[0]
         mapping.setdefault(mod, []).append(fp)
         mapping.setdefault(top, [*mapping.get(top, []), fp])
     return mapping
-def trace_star_module(module: str, project_map: dict[str,
-                                                     list[str]]) -> set[str]:
+
+
+def trace_star_module(module: str, project_map: dict[str, list[str]]) -> set[str]:
     found_imports = set()
     candidates = []
     if module in project_map:
@@ -330,12 +369,11 @@ def trace_star_module(module: str, project_map: dict[str,
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign):
                     for target in node.targets:
-                        if isinstance(target,
-                                      ast.Name) and target.id == "__all__":
+                        if isinstance(target, ast.Name) and target.id == "__all__":
                             val = node.value
                             names = []
                             if isinstance(
-                                    val,
+                                val,
                                 (
                                     ast.List,
                                     ast.Tuple,
@@ -343,11 +381,11 @@ def trace_star_module(module: str, project_map: dict[str,
                             ):
                                 for elt in val.elts:
                                     if isinstance(
-                                            elt,
-                                            ast.Constant,
+                                        elt,
+                                        ast.Constant,
                                     ) and isinstance(
-                                            elt.value,
-                                            str,
+                                        elt.value,
+                                        str,
                                     ):
                                         names.append(elt.value)
                             for nm in names:
@@ -356,6 +394,8 @@ def trace_star_module(module: str, project_map: dict[str,
         except Exception:
             pass
     return found_imports
+
+
 def resolve_packages(
     imports: set[str],
     stdlib: set[str],
@@ -390,23 +430,33 @@ def resolve_packages(
                 continue
         out.add(out_name)
     return out
-def scan_sources(ignore_dirs: set[str], ) -> list[str]:
+
+
+def scan_sources(
+    ignore_dirs: set[str],
+) -> list[str]:
     out = []
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in ignore_dirs]
         for f in files:
             fp = os.path.join(root, f)
             lower = f.lower()
-            if (lower.endswith(".py") or lower.endswith(".ipynb")
-                    or lower.endswith(".whl") or lower.endswith(".zip")
-                    or lower.endswith(".tar.gz") or lower.endswith(".tgz")
-                    or lower.endswith(".tar.xz") or Path(fp).suffix == ""):
+            if (
+                lower.endswith(".py")
+                or lower.endswith(".ipynb")
+                or lower.endswith(".whl")
+                or lower.endswith(".zip")
+                or lower.endswith(".tar.gz")
+                or lower.endswith(".tgz")
+                or lower.endswith(".tar.xz")
+                or Path(fp).suffix == ""
+            ):
                 out.append(fp)
     return out
+
+
 def main() -> None:
-    p = argparse.ArgumentParser(
-        description="Offline requirements.txt generator (static + heuristics)."
-    )
+    p = argparse.ArgumentParser(description="Offline requirements.txt generator (static + heuristics).")
     p.add_argument(
         "--ignore",
         nargs="*",
@@ -447,8 +497,7 @@ def main() -> None:
         "--include-unknown",
         action="store_true",
         default=True,
-        help=
-        "Include packages not present in offline pip list (default: only include those in piplist)",
+        help="Include packages not present in offline pip list (default: only include those in piplist)",
     )
     args = p.parse_args()
     ignore_dirs = set(args.ignore)
@@ -461,8 +510,7 @@ def main() -> None:
     set(project_map.keys())
     project_top_only = {k.split(".", 1)[0] for k in project_map}
     cache_path = Path(args.cache_file)
-    cache = {} if args.no_cache else (
-        load_json(cache_path) if cache_path.exists() else {})
+    cache = {} if args.no_cache else (load_json(cache_path) if cache_path.exists() else {})
     if args.clear_cache:
         try:
             if cache_path.exists():
@@ -494,7 +542,8 @@ def main() -> None:
                             "dynamic": [],
                             "relative": [],
                         },
-                    ))
+                    )
+                )
                 needs = False
         if needs:
             tasks.append(path)
@@ -502,9 +551,9 @@ def main() -> None:
     if tasks:
         with mp.Pool(mp.cpu_count()) as pool:
             for res in tqdm(
-                    pool.imap_unordered(process_raw, tasks),
-                    total=len(tasks),
-                    desc="Processing",
+                pool.imap_unordered(process_raw, tasks),
+                total=len(tasks),
+                desc="Processing",
             ):
                 computed_results.append(res)
     if not args.no_cache:
@@ -534,8 +583,8 @@ def main() -> None:
     traced_from_star = set()
     if all_star_modules:
         for mod in tqdm(
-                sorted(all_star_modules),
-                desc="Tracing star imports",
+            sorted(all_star_modules),
+            desc="Tracing star imports",
         ):
             traced_from_star |= trace_star_module(mod, project_map)
     dynamic_tops = {d.split(".", 1)[0] for d in all_dynamic}
@@ -576,5 +625,7 @@ def main() -> None:
             print(pkg)
     else:
         print("(empty)")
+
+
 if __name__ == "__main__":
     main()

@@ -1,5 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
+
+
 def delete_multiline_string_from_files(search_string, directory=".") -> None:
     EXT = [
         ".txt",
@@ -15,12 +17,11 @@ def delete_multiline_string_from_files(search_string, directory=".") -> None:
     for dirpath, _, filenames in os.walk(directory):
         for filename in filenames:
             file_path = os.path.join(dirpath, filename)
-            if os.path.isfile(file_path) and os.path.splitext(
-                    file_path)[1] in EXT:
+            if os.path.isfile(file_path) and os.path.splitext(file_path)[1] in EXT:
                 try:
                     with open(
-                            file_path,
-                            encoding="utf-8",
+                        file_path,
+                        encoding="utf-8",
                     ) as file:
                         content = file.read()
                     if search_string in content:
@@ -30,13 +31,19 @@ def delete_multiline_string_from_files(search_string, directory=".") -> None:
                         print(f"Deleted string from {file_path}")
                 except Exception as e:
                     print(f"Error processing file {file_path}: {e}")
-def read_string_to_delete(filename="/sdcard/todel.txt", ):
+
+
+def read_string_to_delete(
+    filename="/sdcard/todel.txt",
+):
     try:
         with open(filename) as file:
             return file.read()
     except Exception as e:
         print(f"Error reading the file {filename}: {e}")
         return None
+
+
 if __name__ == "__main__":
     string_to_delete = read_string_to_delete()
     if string_to_delete:

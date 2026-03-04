@@ -7,7 +7,10 @@ from dh import format_size, get_size
 from fastwalk import walk_files
 from termcolor import cprint
 from tree_sitter import Language, Parser, Query, QueryCursor
+
 ts_remover = None
+
+
 class TSRemover:
     def __init__(self):
         self.language = Language(tspython.language())
@@ -24,6 +27,7 @@ class TSRemover:
     (string)) @docstring)
 """,
         )
+
     def remove_comments(self, source: str):
         source_bytes = source.encode("utf-8")
         tree = self.parser.parse(source_bytes)
@@ -40,7 +44,8 @@ class TSRemover:
                     text = source_bytes[start:end].decode("utf-8")
                     if capture_name == "comment":
                         stripped = text.strip()
-                        if stripped.startswith((
+                        if stripped.startswith(
+                            (
                                 "# type:",
                                 "# black:",
                                 "# ruff:",
@@ -48,13 +53,13 @@ class TSRemover:
                                 "# fmt:",
                                 "# pylint:",
                                 "# mypy:",
-                        )):
+                            )
+                        ):
                             continue
                         comment_count += 1
                     else:
                         docstring_count += 1
-                    if end < len(source_bytes) and source_bytes[end:end +
-                                                                1] == b"\n":
+                    if end < len(source_bytes) and source_bytes[end : end + 1] == b"\n":
                         end += 1
                     deletions.append((start, end))
         deletions = sorted(set(deletions), reverse=True)
@@ -68,6 +73,7 @@ class TSRemover:
         cleaned = new_source.decode("utf-8")
         cleaned = self._cleanup_blank_lines(cleaned)
         return cleaned, comment_count, docstring_count
+
     @staticmethod
     def _cleanup_blank_lines(text: str) -> str:
         lines = text.splitlines()
@@ -82,9 +88,13 @@ class TSRemover:
                 blank_streak = 0
                 cleaned.append(line.rstrip())
         return "\n".join(cleaned) + "\n"
+
+
 def ts_remover_initializer():
     global ts_remover
     ts_remover = TSRemover()
+
+
 def process_file(fp):
     global ts_remover
     file_path = Path(fp)
@@ -115,12 +125,11 @@ def process_file(fp):
     else:
         cprint(f"[NO CHANGE] {file_path.name}", "blue")
         return ("nochange", file_path, 0, 0)
+
+
 if __name__ == "__main__":
     dir_path = Path.cwd()
-    files = [
-        Path(p) for p in walk_files(dir_path)
-        if Path(p).is_file() and Path(p).suffix == ".py"
-    ]
+    files = [Path(p) for p in walk_files(dir_path) if Path(p).is_file() and Path(p).suffix == ".py"]
     init_size = get_size(dir_path)
     results = []
     nproc = min(cpu_count() or 1, 8)
@@ -131,9 +140,7 @@ if __name__ == "__main__":
     changed = sum(1 for r in results if r and r[0] == "changed")
     errors = [r for r in results if r and r[0] == "error"]
     nochg = sum(1 for r in results if r and r[0] == "nochange")
-    print(
-        f"\nProcessed: {len(files)} files: {changed} changed, {nochg} unchanged, {len(errors)} errors"
-    )
+    print(f"\nProcessed: {len(files)} files: {changed} changed, {nochg} unchanged, {len(errors)} errors")
     if errors:
         print("Files with errors:")
         for _, fn, *_ in errors:

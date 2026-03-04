@@ -4,7 +4,10 @@ from collections import Counter
 from pathlib import Path
 import regex as re
 from dh import unique_path
+
 USER_STOPWORDS_FILE = Path("/sdcard/stopwords")
+
+
 def load_user_stopwords(path):
     if not path.is_file():
         return set()
@@ -16,9 +19,15 @@ def load_user_stopwords(path):
                 continue
             stopwords.add(line)
     return stopwords
+
+
 EXCLUDE = load_user_stopwords(USER_STOPWORDS_FILE)
+
+
 def extract_words(text):
     return re.findall(r"[a-z]{3,}", text.lower())
+
+
 def main():
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} <file>")
@@ -39,5 +48,7 @@ def main():
     p = Path(src)
     dst = Path(str(dst)[:25] + p.suffix)
     dst = unique_path(dst)
+
+
 if __name__ == "__main__":
     main()

@@ -12,12 +12,16 @@ import zipfile
 from configparser import ConfigParser
 from email.parser import Parser
 from pathlib import Path
+
+
 def prefix_path():
     p = os.environ.get("PREFIX")
     if p:
         return Path(p)
     Path(sysconfig.get_paths()["purelib"])
     return Path(os.environ.get("PREFIX", sys.base_prefix))
+
+
 def site_packages_paths(prefix):
     pyver = f"python{sys.version_info.major}.{sys.version_info.minor}"
     candidates = [prefix / "lib" / pyver / "site-packages"]
@@ -35,15 +39,18 @@ def site_packages_paths(prefix):
             seen.add(c)
             out.append(c)
     return out
+
+
 def find_distributions(site_dirs):
     dists = {}
     for sd in site_dirs:
         for p in sd.iterdir():
-            if p.is_dir() and (p.name.endswith(".dist-info")
-                               or p.name.endswith(".egg-info")):
+            if p.is_dir() and (p.name.endswith(".dist-info") or p.name.endswith(".egg-info")):
                 key = p.name.rsplit(".", 1)[0].lower()
                 dists[key] = p
     return dists
+
+
 def parse_metadata_from_distinfo(distinfo_dir):
     md = {}
     for candidate in ("METADATA", "PKG-INFO"):
@@ -59,10 +66,13 @@ def parse_metadata_from_distinfo(distinfo_dir):
     if ep.exists():
         config = ConfigParser()
         try:
-            config.read_string("[DEFAULT]\n" + ep.read_text(
-                encoding="utf-8",
-                errors="ignore",
-            ))
+            config.read_string(
+                "[DEFAULT]\n"
+                + ep.read_text(
+                    encoding="utf-8",
+                    errors="ignore",
+                )
+            )
         except Exception:
             config.read(ep)
         lines = ep.read_text(encoding="utf-8", errors="ignore").splitlines()
@@ -78,31 +88,35 @@ def parse_metadata_from_distinfo(distinfo_dir):
                 console.append(left)
         md["console_scripts"] = console
     return md
+
+
 def read_record_list(distinfo_dir):
     rec = distinfo_dir / "RECORD"
     if rec.exists():
         return [
-            l.strip().split(",", 1)[0] for l in rec.read_text(
-                encoding="utf-8", errors="ignore").splitlines() if l.strip()
+            l.strip().split(",", 1)[0]
+            for l in rec.read_text(encoding="utf-8", errors="ignore").splitlines()
+            if l.strip()
         ]
     for p in (
-            distinfo_dir / "installed-files.txt",
-            distinfo_dir / "installed_files.txt",
+        distinfo_dir / "installed-files.txt",
+        distinfo_dir / "installed_files.txt",
     ):
         if p.exists():
             return [
-                l.strip() for l in p.read_text(
+                l.strip()
+                for l in p.read_text(
                     encoding="utf-8",
                     errors="ignore",
-                ).splitlines() if l.strip()
+                ).splitlines()
+                if l.strip()
             ]
     tt = distinfo_dir / "top_level.txt"
     if tt.exists():
-        return [
-            l.strip() for l in tt.read_text(
-                encoding="utf-8", errors="ignore").splitlines() if l.strip()
-        ]
+        return [l.strip() for l in tt.read_text(encoding="utf-8", errors="ignore").splitlines() if l.strip()]
     return None
+
+
 def find_script_paths(prefix, script_names):
     bin_dir = prefix / "bin"
     out = []
@@ -114,19 +128,23 @@ def find_script_paths(prefix, script_names):
             out.append(sp)
         else:
             for alt in (
-                    s,
-                    s + ".py",
-                    s + "-script.py",
-                    s + ".sh",
+                s,
+                s + ".py",
+                s + "-script.py",
+                s + ".sh",
             ):
                 ap = bin_dir / alt
                 if ap.exists():
                     out.append(ap)
                     break
     return out
+
+
 def safe_copy(src, dest) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     shutil.move(src, dest)
+
+
 def compute_hash_and_size(path):
     h = hashlib.sha256()
     with Path(path).open("rb") as f:
@@ -134,6 +152,8 @@ def compute_hash_and_size(path):
             h.update(chunk)
     digest = base64.urlsafe_b64encode(h.digest()).rstrip(b"=").decode("ascii")
     return "sha256=" + digest, str(path.stat().st_size)
+
+
 def detect_wheel_tags():
     impl = sys.implementation.name
     mj = sys.version_info.major
@@ -150,6 +170,8 @@ def detect_wheel_tags():
             abi_tag = "none"
     plat = sysconfig.get_platform().replace("-", "_").replace(".", "_")
     return py_tag, abi_tag, plat
+
+
 def collect_files_for_dist(distinfo_path, site_dirs, prefix):
     site_dirs[0] if site_dirs else Path()
     collected = []
@@ -171,19 +193,21 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
                     if c.exists():
                         if c.is_dir():
                             for (
-                                    root,
-                                    _,
-                                    files,
+                                root,
+                                _,
+                                files,
                             ) in os.walk(c):
                                 for fn in files:
                                     s = Path(root) / fn
                                     rel = s.relative_to(base)
                                     collected.append((s, rel))
                         else:
-                            collected.append((
-                                c,
-                                c.relative_to(base),
-                            ))
+                            collected.append(
+                                (
+                                    c,
+                                    c.relative_to(base),
+                                )
+                            )
         else:
             for rel in rec_list:
                 if not rel or rel.startswith(("..", "/")):
@@ -192,9 +216,9 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
                 if src.exists():
                     if src.is_dir():
                         for (
-                                root,
-                                _,
-                                files,
+                            root,
+                            _,
+                            files,
                         ) in os.walk(src):
                             for fn in files:
                                 s = Path(root) / fn
@@ -207,9 +231,9 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
                     if alt.exists():
                         if alt.is_dir():
                             for (
-                                    root,
-                                    _,
-                                    files,
+                                root,
+                                _,
+                                files,
                             ) in os.walk(alt):
                                 for fn in files:
                                     s = Path(root) / fn
@@ -234,6 +258,8 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
             seen.add(k)
             final.append((src, rel))
     return final, md
+
+
 def _has_native_extensions(tree_items) -> bool:
     native_exts = {
         ".so",
@@ -243,6 +269,8 @@ def _has_native_extensions(tree_items) -> bool:
         ".sl",
     }
     return any(src.suffix.lower() in native_exts for src, _ in tree_items)
+
+
 def build_wheel_from_tree(
     tree_items,
     dist_name,
@@ -300,9 +328,9 @@ def build_wheel_from_tree(
     )
     wheel_out_path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(
-            wheel_out_path,
-            "w",
-            compression=zipfile.ZIP_DEFLATED,
+        wheel_out_path,
+        "w",
+        compression=zipfile.ZIP_DEFLATED,
     ) as zf:
         for root, _, files in os.walk(workdir):
             for fn in files:
@@ -310,6 +338,8 @@ def build_wheel_from_tree(
                 rel = full.relative_to(workdir).as_posix()
                 zf.write(full, arcname=rel)
     return wheel_out_path
+
+
 def main() -> None:
     with open("all.xtx") as f:
         lines = f.readlines()
@@ -319,9 +349,7 @@ def main() -> None:
             cleaned = cleaned.strip("\n")
             if cleaned:
                 allxtx.append(cleaned)
-    parser = argparse.ArgumentParser(
-        description="Repack installed packages into .whl files (Termux-aware)."
-    )
+    parser = argparse.ArgumentParser(description="Repack installed packages into .whl files (Termux-aware).")
     parser.add_argument(
         "packages",
         nargs="*",
@@ -348,8 +376,7 @@ def main() -> None:
             key = name.lower()
             found = None
             for k, p in dists.items():
-                if k == key or k.startswith(key +
-                                            "-") or k.split("-")[0] == key:
+                if k == key or k.startswith(key + "-") or k.split("-")[0] == key:
                     found = p
                     break
             if not found:
@@ -371,8 +398,7 @@ def main() -> None:
                 base = base_name
             md = parse_metadata_from_distinfo(distinfo)
             dist_name = md.get("Name") or base.split("-", 1)[0]
-            version = md.get("Version") or (base.split("-", 1)[1]
-                                            if "-" in base else "0")
+            version = md.get("Version") or (base.split("-", 1)[1] if "-" in base else "0")
             items, md = collect_files_for_dist(distinfo, site_dirs, prefix)
             if not items:
                 continue
@@ -396,5 +422,7 @@ def main() -> None:
             )
         except Exception:
             pass
+
+
 if __name__ == "__main__":
     main()

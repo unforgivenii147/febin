@@ -3,34 +3,44 @@
 Convert JavaScript code to Python using AI-powered translation.
 Uses OpenAI API or local AST-based conversion with js2py library.
 """
+
 import argparse
 import os
 import sys
 from pathlib import Path
 import regex as re
+
+
 def install_js2py():
     try:
         import js2py
+
         return True
     except ImportError:
         print("📦 Installing js2py library...")
         import subprocess
+
         try:
-            subprocess.check_call([
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "js2py",
-            ])
+            subprocess.check_call(
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "js2py",
+                ]
+            )
             print("✅ js2py installed successfully")
             return True
         except subprocess.CalledProcessError:
             print("❌ Failed to install js2py")
             return False
+
+
 def convert_with_js2py(js_file: Path, outfile: Path) -> bool:
     try:
         import js2py
+
         js2py.translate_file(js_file, out_file)
         return True
     except Exception as e:
@@ -38,8 +48,9 @@ def convert_with_js2py(js_file: Path, outfile: Path) -> bool:
             False,
             f"js2py conversion error: {e!s}",
         )
-def convert_with_openai(js_code: str,
-                        api_key: str | None = None) -> tuple[bool, str]:
+
+
+def convert_with_openai(js_code: str, api_key: str | None = None) -> tuple[bool, str]:
     try:
         import openai
     except ImportError:
@@ -66,10 +77,8 @@ python code:"""
             model="gpt-4",
             messages=[
                 {
-                    "role":
-                    "system",
-                    "content":
-                    "You are an expert programmer who converts JavaScript to Python accurately.",
+                    "role": "system",
+                    "content": "You are an expert programmer who converts JavaScript to Python accurately.",
                 },
                 {
                     "role": "user",
@@ -99,6 +108,8 @@ python code:"""
         return (True, python_code.strip())
     except Exception as e:
         return (False, f"OpenAI API error: {e!s}")
+
+
 def simple_js_to_python(js_code: str) -> str:
     python_code = js_code
     python_code = re.sub(r"\b(let|const|var)\s+", "", python_code)
@@ -164,6 +175,8 @@ def simple_js_to_python(js_code: str) -> str:
         r"for \1 in range(\2, \3):",
         python_code,
     )
+
+
 def convert_file(
     input_file: Path,
     output_file: Path | None = None,
@@ -204,6 +217,8 @@ def convert_file(
     except Exception as e:
         print(f"❌ Error writing file: {e}")
         return False
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Convert JavaScript code to Python",
@@ -234,8 +249,7 @@ def main():
     )
     parser.add_argument(
         "--api-key",
-        help=
-        "OpenAI API key (for openai method, or set OPENAI_API_KEY env var)",
+        help="OpenAI API key (for openai method, or set OPENAI_API_KEY env var)",
     )
     args = parser.parse_args()
     if not args.input.exists():
@@ -249,6 +263,8 @@ def main():
         args.api_key,
     )
     sys.exit(0 if success else 1)
+
+
 if __name__ == "__main__":
     main()
 """

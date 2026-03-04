@@ -7,14 +7,18 @@ import tree_sitter_python as tspython
 from dh import clean_blank_lines, format_size, get_pyfiles, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
+
+
 class TSRemover:
     def __init__(self):
         self.parser = Parser()
         self.parser.language = Language(tspython.language())
+
     def remove_comments(self, source: str) -> str:
         tree = self.parser.parse(source.encode("utf-8"))
         root = tree.root_node
         to_delete = []
+
         def walk(node):
             if node.type == "comment":
                 to_delete.append((node.start_byte, node.end_byte))
@@ -24,12 +28,15 @@ class TSRemover:
                     to_delete.append((node.start_byte, node.end_byte))
             for child in node.children:
                 walk(child)
+
         walk(root)
         new_source = source.encode("utf-8")
         for start, end in sorted(to_delete, reverse=True):
             new_source = new_source[:start] + new_source[end:]
         cleaned = new_source.decode("utf-8")
         return clean_blank_lines(cleaned)
+
+
 def process_file(fp):
     file_path = Path(fp)
     init_size = file_path.stat().st_size
@@ -50,6 +57,8 @@ def process_file(fp):
     else:
         cprint(f"[NO CHANGE] {file_path.name}", "blue")
         return
+
+
 if __name__ == "__main__":
     dir = Path.cwd()
     initsize = get_size(dir)

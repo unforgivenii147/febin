@@ -10,12 +10,16 @@ from termcolor import cprint
 from tree_sitter import Language, Parser
 from pathlib import Path
 import regex as re
+
+
 def process_file(file_path: Path) -> None:
     content = file_path.read_text(encoding="utf-8")
     regex1 = re.compile(r"\"[^\"]*\"")
     regex2 = re.compile(r"'[^']*'")
-    matches=regex1.findall(content)
+    matches = regex1.findall(content)
     print(matches)
+
+
 def main():
     dir = Path.cwd()
     initsize = get_size(dir)
@@ -32,10 +36,12 @@ def main():
         files = get_pyfiles(dir)
         p = Pool(8)
         for f in files:
-            p.apply_async(process_file, (f, ))
+            p.apply_async(process_file, (f,))
         p.close()
         p.join()
     diff_size = initsize - get_size(dir)
     print(f"{format_size(diff_size)}")
+
+
 if __name__ == "__main__":
     main()

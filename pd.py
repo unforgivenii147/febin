@@ -2,11 +2,15 @@
 import argparse
 import requests
 from packaging import tags
+
+
 def is_pure_python(requires_python):
     """Check if the package is pure Python based on its metadata."""
     return requires_python is None or all(
-        tag.interpreter == "py" and tag.abi == "none" and tag.platform == "any"
-        for tag in tags.sys_tags())
+        tag.interpreter == "py" and tag.abi == "none" and tag.platform == "any" for tag in tags.sys_tags()
+    )
+
+
 def get_package_urls(pkg_name):
     """Fetch the download URLs for the package from PyPI."""
     url = f"https://pypi.org/pypi/{pkg_name}/json"
@@ -18,12 +22,12 @@ def get_package_urls(pkg_name):
     latest_version = sorted(releases.keys(), reverse=True)[0]
     release_files = releases[latest_version]
     return release_files, latest_version
+
+
 def download_package(pkg_name):
     """Download the appropriate package file."""
     release_files, _version = get_package_urls(pkg_name)
-    wheel_files = [
-        f for f in release_files if f["packagetype"] == "bdist_wheel"
-    ]
+    wheel_files = [f for f in release_files if f["packagetype"] == "bdist_wheel"]
     sdist_files = [f for f in release_files if f["packagetype"] == "sdist"]
     pure_python_wheel = None
     for wheel in wheel_files:
@@ -43,9 +47,10 @@ def download_package(pkg_name):
     with open(filename, "wb") as f:
         f.write(response.content)
     print(f"Downloaded {filename}")
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Download a Python package from PyPI.")
+    parser = argparse.ArgumentParser(description="Download a Python package from PyPI.")
     parser.add_argument("pkg_name", help="Name of the package to download")
     args = parser.parse_args()
     download_package(args.pkg_name)

@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 from PIL import Image
+
 for root, _dirs, files in os.walk("."):
     for file in files:
         if file.lower().endswith(".png"):

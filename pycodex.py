@@ -10,11 +10,14 @@ import requests
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
+
+
 @dataclass
 class CodeBlock:
     content: str
@@ -22,6 +25,8 @@ class CodeBlock:
     source_file: str
     block_index: int
     suggested_name: str | None = None
+
+
 class HTTPSession:
     def __init__(self, max_retries=3, timeout=10) -> None:
         self.session = requests.Session()
@@ -34,6 +39,7 @@ class HTTPSession:
         self.session.mount("http://", adapter)
         self.session.mount("https://", adapter)
         self.timeout = timeout
+
     def fetch(self, url: str) -> str | None:
         try:
             response = self.session.get(url, timeout=self.timeout)
@@ -42,19 +48,23 @@ class HTTPSession:
         except requests.RequestException as e:
             logger.error(f"Failed to fetch {url}: {e}")
             return None
+
     def close(self) -> None:
         self.session.close()
+
+
 class CodeBlockExtractor:
     def __init__(self) -> None:
         self.http_session = HTTPSession()
-    def extract_from_html(self, html_content: str,
-                          source_file: str) -> list[CodeBlock]:
+
+    def extract_from_html(self, html_content: str, source_file: str) -> list[CodeBlock]:
         soup = BeautifulSoup(html_content, "html.parser")
         code_blocks = []
         code_blocks.extend(self._extract_from_pre_code(soup, source_file))
         code_blocks.extend(self._extract_from_code_tags(soup, source_file))
         code_blocks.extend(self._extract_from_canvas(soup, source_file))
         return code_blocks
+
     def _extract_from_pre_code(
         self,
         soup: BeautifulSoup,
@@ -71,11 +81,11 @@ class CodeBlockExtractor:
                         language="python",
                         source_file=source_file,
                         block_index=idx,
-                        suggested_name=self._extract_filename_from_code(
-                            content),
+                        suggested_name=self._extract_filename_from_code(content),
                     )
                     blocks.append(block)
         return blocks
+
     def _extract_from_code_tags(
         self,
         soup: BeautifulSoup,
@@ -97,6 +107,7 @@ class CodeBlockExtractor:
                 )
                 blocks.append(block)
         return blocks
+
     def _extract_from_canvas(
         self,
         soup: BeautifulSoup,
@@ -105,8 +116,7 @@ class CodeBlockExtractor:
         blocks = []
         offset = len(soup.find_all("pre")) + len(soup.find_all("code"))
         for idx, script in enumerate(soup.find_all("script")):
-            if script.get("type") == "application/json" or "canvas" in str(
-                    script.get("id", "")).lower():
+            if script.get("type") == "application/json" or "canvas" in str(script.get("id", "")).lower():
                 try:
                     content = script.string
                     if content:
@@ -120,16 +130,16 @@ class CodeBlockExtractor:
                                         language="python",
                                         source_file=source_file,
                                         block_index=offset + idx,
-                                        suggested_name=self.
-                                        _extract_filename_from_code(py_code),
+                                        suggested_name=self._extract_filename_from_code(py_code),
                                     )
                                     blocks.append(block)
                 except (
-                        json.JSONDecodeError,
-                        TypeError,
+                    json.JSONDecodeError,
+                    TypeError,
                 ):
                     pass
         return blocks
+
     def _extract_from_json(self, data, depth=0, max_depth=5) -> list[str]:
         if depth > max_depth:
             return []
@@ -141,19 +151,23 @@ class CodeBlockExtractor:
                         value,
                         depth + 1,
                         max_depth,
-                    ))
+                    )
+                )
         elif isinstance(data, list):
             for item in data:
-                python_codes.extend(
-                    self._extract_from_json(item, depth + 1, max_depth))
-        elif isinstance(data, str) and any(keyword in data for keyword in [
+                python_codes.extend(self._extract_from_json(item, depth + 1, max_depth))
+        elif isinstance(data, str) and any(
+            keyword in data
+            for keyword in [
                 "def ",
                 "import ",
                 "class ",
                 "if __name__",
-        ]):
+            ]
+        ):
             python_codes.append(data)
         return python_codes
+
     def _is_python_code(self, content: str) -> bool:
         if not content.strip():
             return False
@@ -179,8 +193,7 @@ class CodeBlockExtractor:
             "self.",
         ]
         content_lower = content.lower()
-        keyword_count = sum(1 for keyword in python_keywords
-                            if keyword.lower() in content_lower)
+        keyword_count = sum(1 for keyword in python_keywords if keyword.lower() in content_lower)
         python_patterns = [
             r"\bdef\s+\w+\s*\(",
             r"\bclass\s+\w+",
@@ -190,9 +203,9 @@ class CodeBlockExtractor:
             r"\breturn\s+",
             r"\b(True|False|None)\b",
         ]
-        pattern_matches = sum(1 for pattern in python_patterns
-                              if re.search(pattern, content))
+        pattern_matches = sum(1 for pattern in python_patterns if re.search(pattern, content))
         return keyword_count >= 2 or pattern_matches >= 2
+
     def _extract_filename_from_code(self, content: str) -> str | None:
         lines = content.split("\n")
         for line in lines[:10]:
@@ -204,35 +217,37 @@ class CodeBlockExtractor:
             if match:
                 return match.group(1)
         return None
+
     def close(self) -> None:
         self.http_session.close()
+
+
 class FileProcessor:
     def __init__(self, output_dir: str = "./output") -> None:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.extractor = CodeBlockExtractor()
+
     def process_file(self, file_path: str) -> int:
         try:
             file_path = Path(file_path)
             if file_path.suffix.lower() != ".html":
                 return 0
             with open(
-                    file_path,
-                    encoding="utf-8",
-                    errors="ignore",
+                file_path,
+                encoding="utf-8",
+                errors="ignore",
             ) as f:
                 html_content = f.read()
-            code_blocks = self.extractor.extract_from_html(
-                html_content, str(file_path))
+            code_blocks = self.extractor.extract_from_html(html_content, str(file_path))
             if code_blocks:
                 self._save_code_blocks(code_blocks, file_path)
-                logger.info(
-                    f"Extracted {len(code_blocks)} code blocks from {file_path}"
-                )
+                logger.info(f"Extracted {len(code_blocks)} code blocks from {file_path}")
             return len(code_blocks)
         except Exception as e:
             logger.error(f"Error processing {file_path}: {e}")
             return 0
+
     def process_url(self, url: str) -> int:
         try:
             html_content = self.extractor.http_session.fetch(url)
@@ -241,19 +256,18 @@ class FileProcessor:
             code_blocks = self.extractor.extract_from_html(html_content, url)
             if code_blocks:
                 self._save_code_blocks(code_blocks, url)
-                logger.info(
-                    f"Extracted {len(code_blocks)} code blocks from {url}")
+                logger.info(f"Extracted {len(code_blocks)} code blocks from {url}")
             return len(code_blocks)
         except Exception as e:
             logger.error(f"Error processing URL {url}: {e}")
             return 0
+
     def _save_code_blocks(
         self,
         code_blocks: list[CodeBlock],
         source: str,
     ) -> None:
-        source_name = Path(
-            source).stem if not source.startswith("http") else "url_content"
+        source_name = Path(source).stem if not source.startswith("http") else "url_content"
         source_dir = self.output_dir / source_name
         source_dir.mkdir(parents=True, exist_ok=True)
         for block in code_blocks:
@@ -272,14 +286,19 @@ class FileProcessor:
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(block.content)
             logger.debug(f"Saved code block to {filepath}")
+
     def close(self) -> None:
         self.extractor.close()
+
+
 def find_html_files(directory: str) -> list[str]:
     html_files = []
     path = Path(directory)
     for html_file in path.rglob("*.html"):
         html_files.append(str(html_file))
     return html_files
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Extract Python code blocks from HTML files",
@@ -356,8 +375,7 @@ Examples:
             else:
                 logger.warning(f"No HTML files found in {args.path}")
         else:
-            logger.info(
-                "Processing HTML files in current directory recursively")
+            logger.info("Processing HTML files in current directory recursively")
             html_files = find_html_files(".")
             if html_files:
                 logger.info(f"Found {len(html_files)} HTML files")
@@ -377,5 +395,7 @@ Examples:
         logger.info(f"Results saved to: {processor.output_dir}")
     finally:
         processor.close()
+
+
 if __name__ == "__main__":
     main()

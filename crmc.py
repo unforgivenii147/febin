@@ -6,9 +6,12 @@ import tree_sitter_cpp
 from dh import format_size, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
-EXCLUDE_PREFIXES = (b"#!/", )
+
+EXCLUDE_PREFIXES = (b"#!/",)
 parser = Parser()
 parser.language = Language(tree_sitter_cpp.language())
+
+
 def _cleanup_blank_lines(text: str) -> str:
     lines = text.splitlines()
     cleaned = []
@@ -22,22 +25,28 @@ def _cleanup_blank_lines(text: str) -> str:
             blank_streak = 0
             cleaned.append(line.rstrip())
     return "\n".join(cleaned) + "\n"
+
+
 def remove_comments_cpp(path: Path) -> None:
     try:
         source = path.read_bytes()
         tree = parser.parse(source)
         deletions = []
+
         def walk(node):
             if node.type == "comment":
-                text = source[node.start_byte:node.end_byte]
+                text = source[node.start_byte : node.end_byte]
                 if text.lstrip().startswith(EXCLUDE_PREFIXES):
                     return
-                deletions.append((
-                    node.start_byte,
-                    node.end_byte,
-                ))
+                deletions.append(
+                    (
+                        node.start_byte,
+                        node.end_byte,
+                    )
+                )
             for child in node.children:
                 walk(child)
+
         walk(tree.root_node)
         if not deletions:
             return
@@ -52,6 +61,8 @@ def remove_comments_cpp(path: Path) -> None:
         print(f"[OK] {path.name}")
     except Exception as e:
         cprint(f"[FAIL] {path.name} -> {e}", "cyan")
+
+
 def collect_cpp_files(root: Path) -> list[Path]:
     exts = {
         ".cpp",
@@ -65,6 +76,8 @@ def collect_cpp_files(root: Path) -> list[Path]:
     if root.is_file() and root.suffix in exts:
         return [root]
     return [p for p in root.rglob("*") if p.is_file() and p.suffix in exts]
+
+
 def main() -> None:
     root = Path().cwd().resolve()
     init_size = get_size(root)
@@ -76,5 +89,7 @@ def main() -> None:
     end_size = get_size(root)
     difsize = init_size - end_size
     cprint(f"{format_size(difsize)}", "cyan")
+
+
 if __name__ == "__main__":
     main()

@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 import regex as re
+
+
 def replace_multiprocessing_patterns(content):
     replacements = [
         (
@@ -40,6 +42,8 @@ def replace_multiprocessing_patterns(content):
     for pattern, replacement in replacements:
         modified_content = re.sub(pattern, replacement, modified_content)
     return modified_content
+
+
 def process_python_file(file_path):
     try:
         with open(file_path, encoding="utf-8") as f:
@@ -56,6 +60,8 @@ def process_python_file(file_path):
     except Exception as e:
         print(f"✗ Error processing {file_path}: {e}")
         return False
+
+
 def find_and_replace_in_directory(directory="."):
     directory_path = Path(directory)
     python_files = list(directory_path.rglob("*.py"))
@@ -68,9 +74,9 @@ def find_and_replace_in_directory(directory="."):
         if process_python_file(py_file):
             modified_count += 1
     print(f"\n{'=' * 50}")
-    print(
-        f"Summary: Modified {modified_count} out of {len(python_files)} file(s)"
-    )
+    print(f"Summary: Modified {modified_count} out of {len(python_files)} file(s)")
+
+
 if __name__ == "__main__":
     print("Starting multiprocessing to concurrent.futures conversion...\n")
     find_and_replace_in_directory()

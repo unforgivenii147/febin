@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
+
 if __name__ == "__main__":
     try:
         with open(sys.argv[1], encoding="utf-8", errors="ignore") as f:

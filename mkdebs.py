@@ -8,15 +8,24 @@ import subprocess
 import tarfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 BASE_DIR = Path.home() / "tmp" / "debs"
 BASE_DIR.mkdir(parents=True, exist_ok=True)
+
+
 def run(cmd):
     return subprocess.check_output(cmd, shell=True, text=True)
+
+
 def get_installed_packages():
     return run("dpkg-query -W -f='${Package}\n'").split()
+
+
 def get_package_files(pkg):
     files = run(f"dpkg -L {pkg}").splitlines()
     return [f for f in files if os.path.exists(f)]
+
+
 def get_package_metadata(pkg):
     fmt = "${Package}\n${Version}\n${Architecture}\n${Maintainer}\n${Description}\n"
     out = run(f"dpkg-query -W -f='{fmt}' {pkg}").splitlines()
@@ -27,22 +36,32 @@ def get_package_metadata(pkg):
         "Maintainer": out[3],
         "Description": out[4],
     }
+
+
 def create_control_file(path, meta) -> None:
-    control_content = (f"Package: {meta['Package']}\n"
-                       f"Version: {meta['Version']}\n"
-                       f"Architecture: {meta['Architecture']}\n"
-                       f"Maintainer: {meta['Maintainer']}\n"
-                       f"Description: {meta['Description']}\n")
+    control_content = (
+        f"Package: {meta['Package']}\n"
+        f"Version: {meta['Version']}\n"
+        f"Architecture: {meta['Architecture']}\n"
+        f"Maintainer: {meta['Maintainer']}\n"
+        f"Description: {meta['Description']}\n"
+    )
     (path / "control").write_text(control_content)
+
+
 def copy_pkg_files(files, dest) -> None:
     for f in files:
         target = dest / f.lstrip("/")
         target.parent.mkdir(parents=True, exist_ok=True)
         with contextlib.suppress(Exception):
             shutil.copy2(f, target)
+
+
 def build_tar_xz(source_dir, output_path) -> None:
     with tarfile.open(output_path, "w:xz") as tar:
         tar.add(source_dir, arcname=".")
+
+
 def build_deb(pkg_dir, output_deb) -> None:
     debian_binary = pkg_dir / "debian-binary"
     debian_binary.write_text("2.0\n")
@@ -55,6 +74,8 @@ def build_deb(pkg_dir, output_deb) -> None:
         shell=True,
         check=True,
     )
+
+
 def process_package(pkg) -> str | None:
     try:
         pkg_dir = BASE_DIR / pkg
@@ -74,6 +95,8 @@ def process_package(pkg) -> str | None:
         return f"[✔] {pkg} → {output_deb}"
     except Exception as e:
         return f"[✖] {pkg} FAILED: {e}"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -89,5 +112,7 @@ def main() -> None:
         futures = {executor.submit(process_package, pkg): pkg for pkg in pkgs}
         for future in as_completed(futures):
             print(future.result())
+
+
 if __name__ == "__main__":
     main()

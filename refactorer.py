@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
+
 output_dir = Path("output")
 output_dir.mkdir(exist_ok=True)
 func_file = output_dir / "func.py"
@@ -7,19 +8,24 @@ classes_file = output_dir / "classes.py"
 const_file = output_dir / "const.py"
 init_file = output_dir / "__init__.py"
 for file in [
-        func_file,
-        classes_file,
-        const_file,
-        init_file,
+    func_file,
+    classes_file,
+    const_file,
+    init_file,
 ]:
     if file.exists():
         file.unlink()
+
+
 def is_constant(node):
-    return isinstance(node, ast.Assign) and all(
-        isinstance(t, ast.Name) for t in node.targets)
+    return isinstance(node, ast.Assign) and all(isinstance(t, ast.Name) for t in node.targets)
+
+
 def write_to_file(file_path, content) -> None:
     with Path(file_path).open("a", encoding="utf-8") as f:
         f.write(content + "\n\n")
+
+
 for root, _, files in os.walk("."):
     for file in files:
         if file.endswith(".py") and not file.startswith("output"):

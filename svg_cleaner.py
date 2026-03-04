@@ -3,6 +3,8 @@ import os
 import subprocess
 import sys
 import tempfile
+
+
 def clean_svg_inplace(in_file, svgcleaner_path="svgcleaner"):
     """
     Clean an SVG file in-place using the svgcleaner Rust executable.
@@ -31,6 +33,8 @@ def clean_svg_inplace(in_file, svgcleaner_path="svgcleaner"):
     finally:
         if os.path.exists(tmp_out_path):
             os.unlink(tmp_out_path)
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python svgcleaner_wrapper.py <input-svg-file>")

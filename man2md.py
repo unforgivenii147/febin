@@ -2,16 +2,20 @@
 import os
 import sys
 import regex as re
+
+
 def read_man_file(filename):
     try:
         with open(
-                filename,
-                encoding="utf-8",
-                errors="ignore",
+            filename,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             return f.read()
     except FileNotFoundError:
         sys.exit(f"Error: file {filename} not found")
+
+
 def man_to_markdown(content):
     lines = content.splitlines()
     md_lines = []
@@ -81,14 +85,12 @@ def man_to_markdown(content):
             pending_tp = False
             md_lines.append(f"- {term}:")
             continue
-        if line.startswith(".nf") or line.startswith(".RS") or line.startswith(
-                ".EX"):
+        if line.startswith(".nf") or line.startswith(".RS") or line.startswith(".EX"):
             if not in_code_block:
                 md_lines.append("```sh")
                 in_code_block = True
             continue
-        if line.startswith(".fi") or line.startswith(".RE") or line.startswith(
-                ".EE"):
+        if line.startswith(".fi") or line.startswith(".RE") or line.startswith(".EE"):
             if in_code_block:
                 md_lines.append("```")
                 in_code_block = False
@@ -96,8 +98,8 @@ def man_to_markdown(content):
         if line.startswith("."):
             continue
         if re.match(r"^\s*\$", line) or re.match(
-                r"^\s*(ls|cat|grep|echo|pwd|cd|mkdir|rm|touch|man)\b",
-                line,
+            r"^\s*(ls|cat|grep|echo|pwd|cd|mkdir|rm|touch|man)\b",
+            line,
         ):
             if not in_code_block:
                 md_lines.append("```sh")
@@ -116,6 +118,8 @@ def man_to_markdown(content):
     if in_code_block:
         md_lines.append("```")
     return "\n".join(md_lines)
+
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: python man2md.py <manfile>")
@@ -128,5 +132,7 @@ def main():
     with open(outname, "w", encoding="utf-8") as f:
         f.write(markdown)
     print(f"Converted {filename} → {outname}")
+
+
 if __name__ == "__main__":
     main()

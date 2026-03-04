@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from queue import Queue
 from fastwalk import walk_files
+
 pause_event = threading.Event()
 pause_event.set()
 results_queue = Queue()
@@ -25,9 +26,12 @@ ARCHIVE_EXTENSIONS = (
     ".whl",
     ".apk",
 )
+
+
 def setup_keyboard_listener():
     try:
         import keyboard
+
         def on_key_press(event):
             if event.name in ("space", "p") and pause_event.is_set():
                 pause_event.clear()
@@ -35,25 +39,33 @@ def setup_keyboard_listener():
             elif event.name == "c" and not pause_event.is_set():
                 pause_event.set()
                 print("\n[RESUMED] Searching...")
+
         keyboard.on_press(on_key_press)
         return True
     except ImportError:
         print("Warning: 'keyboard' not installed. Pause disabled.")
         return False
+
+
 def is_excluded(path: Path, excluded_dirs, excluded_patterns):
     for part in path.parts:
         if part in excluded_dirs:
             return True
-    return any(
-        fnmatch.fnmatch(path.name, pattern) for pattern in excluded_patterns)
+    return any(fnmatch.fnmatch(path.name, pattern) for pattern in excluded_patterns)
+
+
 def should_skip_file(path: Path):
     return path.suffix in DEFAULT_SKIPPED_EXTS
+
+
 def report_result(file_path, line_num=None):
     if line_num:
         print(f"[FOUND] {file_path} (Line: {line_num})")
     else:
         print(f"[FOUND] {file_path}")
     results_queue.put((file_path, line_num))
+
+
 def search_in_file(file_path, search_string, search_content):
     pause_event.wait()
     results = []
@@ -63,9 +75,9 @@ def search_in_file(file_path, search_string, search_content):
         return results
     try:
         with open(
-                file_path,
-                encoding="utf-8",
-                errors="ignore",
+            file_path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             for ln, line in enumerate(f, 1):
                 pause_event.wait()
@@ -74,11 +86,12 @@ def search_in_file(file_path, search_string, search_content):
     except Exception:
         pass
     return results
+
+
 def extract_and_search_archive(archive_path, search_string, search_content):
     results = []
     try:
-        if archive_path.suffix == ".zip" or archive_path.name.endswith(
-            (".whl", ".apk")):
+        if archive_path.suffix == ".zip" or archive_path.name.endswith((".whl", ".apk")):
             with zipfile.ZipFile(archive_path) as zf:
                 for member in zf.namelist():
                     pause_event.wait()
@@ -93,11 +106,11 @@ def extract_and_search_archive(archive_path, search_string, search_content):
                                 errors="ignore",
                             )
                             for (
-                                    ln,
-                                    line,
+                                ln,
+                                line,
                             ) in enumerate(
-                                    content.splitlines(),
-                                    1,
+                                content.splitlines(),
+                                1,
                             ):
                                 if search_string in line:
                                     results.append((ref, ln))
@@ -122,33 +135,37 @@ def extract_and_search_archive(archive_path, search_string, search_content):
                                     errors="ignore",
                                 )
                                 for (
-                                        ln,
-                                        line,
+                                    ln,
+                                    line,
                                 ) in enumerate(
-                                        content.splitlines(),
-                                        1,
+                                    content.splitlines(),
+                                    1,
                                 ):
                                     if search_string in line:
-                                        results.append((
-                                            ref,
-                                            ln,
-                                        ))
+                                        results.append(
+                                            (
+                                                ref,
+                                                ln,
+                                            )
+                                        )
                         except Exception:
                             pass
     except Exception:
         pass
     return results
+
+
 def process_file(path: Path, search_string, search_content):
     if path.name.endswith(ARCHIVE_EXTENSIONS):
-        results = extract_and_search_archive(path, search_string,
-                                             search_content)
+        results = extract_and_search_archive(path, search_string, search_content)
     else:
         results = search_in_file(path, search_string, search_content)
     for r in results:
         report_result(*r)
+
+
 def main():
-    parser = argparse.ArgumentParser(
-        description="Fast recursive string search")
+    parser = argparse.ArgumentParser(description="Fast recursive string search")
     parser.add_argument("search_string")
     parser.add_argument("-c", "--content", action="store_true")
     parser.add_argument("-d", "--directory", default=".")
@@ -160,14 +177,8 @@ def main():
         help="Exclude dir or glob (repeatable)",
     )
     args = parser.parse_args()
-    excluded_dirs = DEFAULT_EXCLUDED_DIRS | {
-        e
-        for e in args.exclude if not any(ch in e for ch in "*?[]")
-    }
-    excluded_patterns = {
-        e
-        for e in args.exclude if any(ch in e for ch in "*?[]")
-    }
+    excluded_dirs = DEFAULT_EXCLUDED_DIRS | {e for e in args.exclude if not any(ch in e for ch in "*?[]")}
+    excluded_patterns = {e for e in args.exclude if any(ch in e for ch in "*?[]")}
     setup_keyboard_listener()
     root = Path(args.directory).resolve()
     print(f"[INFO] Root: {root}")
@@ -183,9 +194,9 @@ def main():
         if should_skip_file(path):
             continue
         if is_excluded(
-                path,
-                excluded_dirs,
-                excluded_patterns,
+            path,
+            excluded_dirs,
+            excluded_patterns,
         ):
             continue
         files.append(path)
@@ -197,10 +208,13 @@ def main():
                 p,
                 args.search_string,
                 args.content,
-            ) for p in files
+            )
+            for p in files
         ]
         for _f in as_completed(futures):
             pass
     print(f"[INFO] Total results: {results_queue.qsize()}")
+
+
 if __name__ == "__main__":
     main()

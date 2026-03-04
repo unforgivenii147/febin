@@ -2,6 +2,8 @@
 import argparse
 import sys
 import requests
+
+
 def get_repos(username: str) -> None:
     url = f"https://api.github.com/users/{username}/repos"
     try:
@@ -20,9 +22,10 @@ def get_repos(username: str) -> None:
     except requests.RequestException as e:
         print(f"Error fetching repos: {e}")
         sys.exit(1)
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Get GitHub repositories for a user")
+    parser = argparse.ArgumentParser(description="Get GitHub repositories for a user")
     parser.add_argument(
         "username",
         type=str,
@@ -30,5 +33,7 @@ def main() -> None:
     )
     args = parser.parse_args()
     get_repos(args.username)
+
+
 if __name__ == "__main__":
     main()

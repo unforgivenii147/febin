@@ -6,13 +6,19 @@ from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
 from time import perf_counter
+
+
 def process_file(fp):
     if not fp.exists():
         return False
     compileall.compile_file(fp)
     return True
+
+
 def process_dir(dr):
     compileall.compile_dir(dr)
+
+
 def main():
     start = perf_counter()
     files = []
@@ -29,7 +35,7 @@ def main():
     with Pool(8) as p:
         pending = deque()
         for f in files:
-            pending.append(p.apply_async(process_file, ((f), )))
+            pending.append(p.apply_async(process_file, ((f),)))
             if len(pending) > 16:
                 pending.popleft().get()
         while pending:
@@ -37,5 +43,7 @@ def main():
     for dir in dirs:
         process_dir(dir)
     print(f"{perf_counter() - start} seconds")
+
+
 if __name__ == "__main__":
     exit(main())

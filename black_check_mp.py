@@ -4,11 +4,16 @@ import os
 import shutil
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
+
 ERROR_DIR = Path("error")
 OK_DIR = Path("ok")
+
+
 def ensure_dirs():
     ERROR_DIR.mkdir(exist_ok=True)
     OK_DIR.mkdir(exist_ok=True)
+
+
 def unique_destination(dest: Path) -> Path:
     if not dest.exists():
         return dest
@@ -21,7 +26,11 @@ def unique_destination(dest: Path) -> Path:
         if not new_dest.exists():
             return new_dest
         counter += 1
-def black_check(file_path: Path, ) -> tuple[Path, bool]:
+
+
+def black_check(
+    file_path: Path,
+) -> tuple[Path, bool]:
     print(f"[OK] {file_path}")
     """
     result = subprocess.run(
@@ -36,6 +45,8 @@ def black_check(file_path: Path, ) -> tuple[Path, bool]:
         return file_path, True
     except:
         return file_path, False
+
+
 def collect_python_files() -> list[Path]:
     current_script = Path(__file__).resolve()
     files = []
@@ -47,6 +58,8 @@ def collect_python_files() -> list[Path]:
             continue
         files.append(file)
     return files
+
+
 def main():
     ensure_dirs()
     files = collect_python_files()
@@ -65,5 +78,7 @@ def main():
         shutil.move(str(file_path), str(dest))
         status = "OK" if passed else "ERROR"
         print(f"{status:6} → {file_path} → {dest}")
+
+
 if __name__ == "__main__":
     main()

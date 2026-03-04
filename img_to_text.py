@@ -8,16 +8,22 @@ from dh import IMG_EXT
 from fastwalk import walk_files
 from PIL import Image, ImageFilter, ImageOps
 from pytesseract import image_to_string
+
+
 def preprocess_image(img):
     img = img.convert("L")
     img = ImageOps.autocontrast(img)
     img = img.filter(ImageFilter.MedianFilter(size=3))
     threshold = 150
     return img.point(lambda x: 255 if x > threshold else 0)
+
+
 def extract_text(image_path):
     img = Image.open(image_path)
     img = preprocess_image(img)
     return image_to_string(img, lang="eng", config="--oem 3 --psm 6")
+
+
 def process_file(fp):
     try:
         text = extract_text(fp)
@@ -29,6 +35,8 @@ def process_file(fp):
             return f"{fp.name} : no text"
     except Exception as e:
         return f"[ERROR] {e}"
+
+
 def main():
     start = perf_counter()
     files = []
@@ -41,11 +49,13 @@ def main():
     with Pool(8) as p:
         pending = deque()
         for f in files:
-            pending.append(p.apply_async(process_file, (f, )))
+            pending.append(p.apply_async(process_file, (f,)))
             if len(pending) > 16:
                 print(pending.popleft().get())
         while pending:
             print(pending.popleft().get())
     print(f"{perf_counter() - start} sec")
+
+
 if __name__ == "__main__":
     exit(main())

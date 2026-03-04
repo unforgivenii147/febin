@@ -3,9 +3,12 @@ import json
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from deep_translator import GoogleTranslator
+
 INPUT_FILE = "words.txt"
 OUTPUT_FILE = "dic_mp.json"
 MAX_WORKERS = 16
+
+
 def translate_word(word):
     for attempt in range(3):
         try:
@@ -14,6 +17,8 @@ def translate_word(word):
             print(f"[WARN] Failed '{word}' (attempt {attempt + 1}): {e}")
             time.sleep(0.5)
     return None
+
+
 def main():
     with open(INPUT_FILE, encoding="utf-8") as f:
         words = [w.strip() for w in f if w.strip()]
@@ -41,5 +46,7 @@ def main():
             indent=2,
         )
     print(f"\n[SAVED] Translation dictionary saved to {OUTPUT_FILE}")
+
+
 if __name__ == "__main__":
     main()

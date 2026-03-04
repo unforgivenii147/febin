@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 from fastwalk import walk_files
+
+
 def process_file(fp: Path):
     if not fp.exists():
         return False
@@ -21,8 +23,7 @@ def process_file(fp: Path):
         for tag in tags:
             idx = line.rfind(tag)
             if idx != -1:
-                last_tag_pos = sum(len(content[j])
-                                   for j in range(i)) + idx + len(tag)
+                last_tag_pos = sum(len(content[j]) for j in range(i)) + idx + len(tag)
                 break
         if last_tag_pos != -1:
             break
@@ -31,14 +32,16 @@ def process_file(fp: Path):
     trimmed = "".join(content)[:last_tag_pos]
     fp.write_text(trimmed, encoding="utf-8")
     return True
+
+
 if __name__ == "__main__":
     dir = Path().cwd().resolve()
     for pth in walk_files(dir):
         path = Path(pth)
         if path.suffix in {
-                ".html",
-                ".htm",
-                ".svg",
-                ".xml",
+            ".html",
+            ".htm",
+            ".svg",
+            ".xml",
         }:
             process_file(path)

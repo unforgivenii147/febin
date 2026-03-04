@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 from collections import defaultdict
+
+
 def scan_directory(path="."):
     total_size = 0
     file_count = 0
@@ -28,6 +30,8 @@ def scan_directory(path="."):
         extensions,
         size_by_ext,
     )
+
+
 def write_summary(filename=".dirinfo"):
     (
         total_size,
@@ -44,6 +48,8 @@ def write_summary(filename=".dirinfo"):
         f.write("size by extension:\n")
         for ext, size in sorted(size_by_ext.items()):
             f.write(f"  {ext}: {size} bytes\n")
+
+
 if __name__ == "__main__":
     write_summary()
     print("Summary saved to .dirinfo")

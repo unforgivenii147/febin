@@ -2,31 +2,41 @@
 import argparse
 from pathlib import Path
 import regex as re
-TIMESTAMP_RE = re.compile(
-    r"(\d{2}:\d{2}:\d{2},\d{3})\s-->\s(\d{2}:\d{2}:\d{2},\d{3})")
+
+TIMESTAMP_RE = re.compile(r"(\d{2}:\d{2}:\d{2},\d{3})\s-->\s(\d{2}:\d{2}:\d{2},\d{3})")
+
+
 def to_ms(ts: str) -> int:
     h, m, rest = ts.split(":")
     s, ms = rest.split(",")
     return int(h) * 3600000 + int(m) * 60000 + int(s) * 1000 + int(ms)
+
+
 def from_ms(ms: int) -> str:
     ms = max(ms, 0)
     h, ms = divmod(ms, 3600000)
     m, ms = divmod(ms, 60000)
     s, ms = divmod(ms, 1000)
     return f"{h:02}:{m:02}:{s:02},{ms:03}"
+
+
 def shift_content(text: str, shift_ms: int) -> str:
     def repl(m):
         start, end = m.groups()
         return f"{from_ms(to_ms(start) + shift_ms)} --> {from_ms(to_ms(end) + shift_ms)}"
+
     return TIMESTAMP_RE.sub(repl, text)
+
+
 def process_file(path: Path, shift_ms: int):
     data = path.read_text(encoding="utf-8")
     shifted = shift_content(data, shift_ms)
     path.write_text(shifted, encoding="utf-8")
     print(f"✔ {path}")
+
+
 def main():
-    ap = argparse.ArgumentParser(
-        description="Shift SRT subtitles inplace (batch folder supported)")
+    ap = argparse.ArgumentParser(description="Shift SRT subtitles inplace (batch folder supported)")
     ap.add_argument(
         "path",
         nargs="?",
@@ -61,5 +71,7 @@ def main():
         return
     for f in files:
         process_file(f, shift_ms)
+
+
 if __name__ == "__main__":
     main()

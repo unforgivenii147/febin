@@ -7,15 +7,24 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
+
 CHUNK_SIZE = 5 * 1024 * 1024
 MAX_RETRIES = 5
 RETRY_DELAY = 2
+
+
 class GracefulExit(Exception):
     pass
+
+
 def _signal_handler(signum, frame):
     raise GracefulExit()
+
+
 signal.signal(signal.SIGINT, _signal_handler)
 signal.signal(signal.SIGTERM, _signal_handler)
+
+
 def head_request(url: str) -> tuple[int, bool]:
     r = requests.head(url, allow_redirects=True, timeout=10)
     r.raise_for_status()
@@ -24,26 +33,36 @@ def head_request(url: str) -> tuple[int, bool]:
     if not ranges:
         raise RuntimeError("Server does not support byte-range requests.")
     return size, ranges
+
+
 def init_files(path: str, size: int):
     if not os.path.exists(path):
         with open(path, "wb") as f:
             f.truncate(size)
+
+
 def load_meta(meta_path: str) -> dict:
     if os.path.exists(meta_path):
         with open(meta_path) as f:
             return json.load(f)
     return {}
+
+
 def save_meta(meta_path: str, meta: dict):
     tmp = meta_path + ".tmp"
     with open(tmp, "w") as f:
         json.dump(meta, f)
     os.replace(tmp, meta_path)
+
+
 def build_chunks(size: int) -> list[tuple[int, int]]:
     chunks = []
     for i in range(0, size, CHUNK_SIZE):
         end = min(i + CHUNK_SIZE - 1, size - 1)
         chunks.append((i, end))
     return chunks
+
+
 def download_chunk(
     url: str,
     path: str,
@@ -58,8 +77,7 @@ def download_chunk(
     headers = {"Range": f"bytes={downloaded}-{end}"}
     for attempt in range(MAX_RETRIES):
         try:
-            with requests.get(url, headers=headers, stream=True,
-                              timeout=15) as r:
+            with requests.get(url, headers=headers, stream=True, timeout=15) as r:
                 r.raise_for_status()
                 with open(path, "r+b") as f:
                     f.seek(downloaded)
@@ -75,6 +93,8 @@ def download_chunk(
             if attempt == MAX_RETRIES - 1:
                 raise
             time.sleep(RETRY_DELAY * (attempt + 1))
+
+
 def download(url: str, output: str, workers: int = 4):
     meta_path = output + ".meta"
     size, _ = head_request(url)
@@ -95,7 +115,8 @@ def download(url: str, output: str, workers: int = 4):
                         end,
                         meta,
                         meta_lock,
-                    ))
+                    )
+                )
             for f in as_completed(futures):
                 f.result()
     except GracefulExit:
@@ -106,6 +127,8 @@ def download(url: str, output: str, workers: int = 4):
     if os.path.getsize(output) == size:
         os.remove(meta_path)
         print("Download completed successfully.")
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: python downloader.py <url> <output_file> [workers]")

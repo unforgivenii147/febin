@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 import jsbeautifier
+
+
 def beautify_file(file_path) -> None:
     with open(file_path, encoding="utf-8") as file:
         content = file.read()
@@ -14,6 +16,8 @@ def beautify_file(file_path) -> None:
         return
     with open(file_path, "w", encoding="utf-8") as file:
         file.write(beautified_content)
+
+
 def beautify_directory(directory) -> None:
     for root, _dirs, files in os.walk(directory):
         for file in files:
@@ -21,5 +25,7 @@ def beautify_directory(directory) -> None:
             if file.endswith((".js", ".css", ".html")):
                 print(f"Beautifying: {file_path}")
                 beautify_file(file_path)
+
+
 if __name__ == "__main__":
     beautify_directory(".")

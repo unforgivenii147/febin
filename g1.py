@@ -5,12 +5,15 @@ Clone a GitHub repository with options:
 Supports both HTTPS and SSH URLs.
 Warns if repo size is bigger than 10MB.
 """
+
 import os
 import subprocess
 import sys
 import regex as re
 import requests
 from tqdm import tqdm
+
+
 def get_repo_size(repo_url):
     """Get repository size in MB using GitHub API."""
     if not repo_url.startswith(("http://", "https://", "git@")):
@@ -29,6 +32,8 @@ def get_repo_size(repo_url):
     except Exception as e:
         print(f"[ERROR] Could not fetch repo size: {e}")
         return 0
+
+
 def clone_repo(repo, branch="main"):
     """Clone repository with detailed progress output."""
     print(f"[INFO] Cloning repository: {repo} (branch: {branch})")
@@ -68,6 +73,8 @@ def clone_repo(repo, branch="main"):
                 tqdm.write(f"[INFO] {line}")
     except Exception as e:
         raise Exception(f"[ERROR] Clone failed: {e}")
+
+
 def main():
     if len(sys.argv) < 2:
         print("[ERROR] Usage: script.py <repository_url>")
@@ -78,8 +85,7 @@ def main():
     print(f"[INFO] Checking repository size for: {repo}")
     size_mb = get_repo_size(repo)
     if size_mb > 10:
-        print(
-            f"[WARNING] Repository size is {size_mb:.2f} MB. Continue? (y/n)")
+        print(f"[WARNING] Repository size is {size_mb:.2f} MB. Continue? (y/n)")
         if input().lower() != "y":
             print("[INFO] Aborted by user.")
             return
@@ -108,5 +114,7 @@ def main():
                 capture_output=True,
             )
             print("[INFO] Submodules updated.")
+
+
 if __name__ == "__main__":
     main()

@@ -3,6 +3,8 @@ import os
 import site
 import tarfile
 from google.colab import files
+
+
 def get_size(path):
     total = 0
     for root, _dirs, files in os.walk(path):
@@ -11,6 +13,8 @@ def get_size(path):
             if os.path.isfile(fp):
                 total += os.path.getsize(fp)
     return total
+
+
 def compress_small_site_packages(max_size_mb=15):
     site_packages_dir = site.getsitepackages()[0]
     output_file = "site-packages-small.tar.gz"
@@ -22,9 +26,9 @@ def compress_small_site_packages(max_size_mb=15):
                 if get_size_mb <= max_size_mb:
                     print(f"Including folder {item} ({get_size_mb:.2f} MB)")
                     for (
-                            root,
-                            _dirs,
-                            files_list,
+                        root,
+                        _dirs,
+                        files_list,
                     ) in os.walk(item_path):
                         for f in files_list:
                             if not f.endswith(".pyc"):
@@ -48,4 +52,6 @@ def compress_small_site_packages(max_size_mb=15):
                     tar.add(item_path, arcname=arcname)
     print(f"Archive created: {output_file}")
     files.download(output_file)
+
+
 compress_small_site_packages(max_size_mb=15)

@@ -4,6 +4,7 @@ import sys
 import time
 from watchdog.events import LoggingEventHandler
 from watchdog.observers import Observer
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO,

@@ -5,6 +5,7 @@ import sys
 from os.path import exists
 from pathlib import Path
 from dh import move_file
+
 if __name__ == "__main__":
     dir = Path.cwd()
     if "dist-info" in str(dir):

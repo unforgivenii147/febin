@@ -7,14 +7,19 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import regex as re
 from deep_translator import GoogleTranslator
+
 PYTHON_EXT = ".py"
 BACKUP_EXT = ".bak"
 CHUNK_SIZE = 5000
 TARGET_LANG = "en"
 SRC_LANG = "auto"
 _thread_local = threading.local()
+
+
 def get_size(filepath):
     return Path(filepath).stat().st_size
+
+
 def get_translator():
     if not hasattr(_thread_local, "translator"):
         _thread_local.translator = GoogleTranslator(
@@ -22,8 +27,12 @@ def get_translator():
             target=TARGET_LANG,
         )
     return _thread_local.translator
+
+
 def is_non_english(line):
     return re.search(r"[^\x00-\x7F]", line)
+
+
 def translate_line(line):
     if is_non_english(line.strip()):
         try:
@@ -34,6 +43,8 @@ def translate_line(line):
             print(f"Translation error: {e} -- Line: {line}")
             return None
     return None
+
+
 def split_large_text_blocks(text, max_len):
     lines = text.splitlines(keepends=True)
     chunks = []
@@ -46,6 +57,8 @@ def split_large_text_blocks(text, max_len):
     if chunk:
         chunks.append(chunk)
     return chunks
+
+
 def translate_docstring(docstr):
     new_lines = []
     for line in docstr.splitlines():
@@ -54,6 +67,8 @@ def translate_docstring(docstr):
         if transl:
             new_lines.append(transl)
     return "\n".join(new_lines)
+
+
 def process_file(filepath):
     backup_path = filepath + BACKUP_EXT
     shutil.copyfile(filepath, backup_path)
@@ -75,7 +90,7 @@ def process_file(filepath):
     offset_map = {}
     for node in ast.walk(parsed):
         if isinstance(
-                node,
+            node,
             (
                 ast.FunctionDef,
                 ast.AsyncFunctionDef,
@@ -89,20 +104,18 @@ def process_file(filepath):
                 for lookback in range(3):
                     possible = doc_start - lookback
                     if possible >= 0 and (
-                            lines[possible].lstrip().startswith('"""')
-                            or lines[possible].lstrip().startswith("'''")):
+                        lines[possible].lstrip().startswith('"""') or lines[possible].lstrip().startswith("'''")
+                    ):
                         docstring_line = possible
                         break
                 else:
                     continue
                 doc_lines = []
                 line_idx = docstring_line
-                quote_type = '"""' if lines[line_idx].lstrip().startswith(
-                    '"""') else "'''"
+                quote_type = '"""' if lines[line_idx].lstrip().startswith('"""') else "'''"
                 while True:
                     doc_lines.append(lines[line_idx])
-                    if lines[line_idx].rstrip().endswith(
-                            quote_type) and line_idx != docstring_line:
+                    if lines[line_idx].rstrip().endswith(quote_type) and line_idx != docstring_line:
                         break
                     line_idx += 1
                 doc_block = "\n".join(doc_lines)
@@ -133,14 +146,17 @@ def process_file(filepath):
     with open(filepath, "w", encoding="utf-8") as f:
         f.write("\n".join(final_lines) + "\n")
     print(f"Translated: {filepath}")
+
+
 def find_py_files(root="."):
     files = []
     for dirpath, _, filenames in os.walk(root):
         for fname in filenames:
-            if fname.endswith(PYTHON_EXT) and get_size(
-                    os.path.join(dirpath, fname)) != 0:
+            if fname.endswith(PYTHON_EXT) and get_size(os.path.join(dirpath, fname)) != 0:
                 files.append(os.path.join(dirpath, fname))
     return files
+
+
 def main():
     py_files = find_py_files(".")
     if not py_files:
@@ -153,5 +169,7 @@ def main():
                 future.result()
             except Exception as e:
                 print(f"Failed processing {futures[future]}: {e}")
+
+
 if __name__ == "__main__":
     main()

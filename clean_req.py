@@ -1,7 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 import regex as re
+
 _VERSION_OP_RE = re.compile(r"\s*(?:===|==|!=|>=|<=|~=|>|<)\s*")
+
+
 def clean_requirement(line: str) -> str:
     line = line.split("#", 1)[0].strip()
     if not line:
@@ -14,6 +17,8 @@ def clean_requirement(line: str) -> str:
         return ""
     parts = _VERSION_OP_RE.split(line, maxsplit=1)
     return parts[0].strip()
+
+
 def group_key(name: str):
     first = name[0]
     if first.isupper():
@@ -22,6 +27,8 @@ def group_key(name: str):
         return (1, name)
     else:
         return (2, name)
+
+
 def main() -> None:
     if len(sys.argv) != 2:
         print(
@@ -53,5 +60,7 @@ def main() -> None:
     print("\n=== Cleaned Requirements ===")
     for item in cleaned:
         print(item)
+
+
 if __name__ == "__main__":
     main()

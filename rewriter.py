@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 from sys import argv, exit
+
+
 def main() -> bool:
     fn = Path(argv[1])
     try:
@@ -10,5 +12,7 @@ def main() -> bool:
         return True
     except:
         return False
+
+
 if __name__ == "__main__":
     exit(main())

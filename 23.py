@@ -5,7 +5,10 @@ import sys
 from multiprocessing import Lock, Pool
 from pathlib import Path
 from fastwalk import walk_files
+
 print_lock = Lock()
+
+
 def is_python_file(path: Path) -> bool:
     if path.suffix == ".py":
         return True
@@ -18,6 +21,8 @@ def is_python_file(path: Path) -> bool:
         except Exception:
             return False
     return False
+
+
 def run_command(cmd):
     try:
         result = subprocess.run(
@@ -34,6 +39,8 @@ def run_command(cmd):
         )
     except Exception as e:
         return -1, "", str(e)
+
+
 def process_file(file_path) -> None:
     print(f"[OK] {file_path.name}")
     check_cmd = [
@@ -70,6 +77,8 @@ def process_file(file_path) -> None:
         with print_lock:
             print("\n".join(output))
             sys.stdout.flush()
+
+
 def get_all_files(root_dir):
     py_files = []
     for pth in walk_files(root_dir):
@@ -77,6 +86,8 @@ def get_all_files(root_dir):
         if path.is_file() and is_python_file(path):
             py_files.append(path)
     return py_files
+
+
 def main() -> None:
     try:
         subprocess.run(
@@ -85,8 +96,8 @@ def main() -> None:
             check=True,
         )
     except (
-            FileNotFoundError,
-            subprocess.CalledProcessError,
+        FileNotFoundError,
+        subprocess.CalledProcessError,
     ):
         print("Error: 'ruff' is not installed or not in PATH.")
         print("Please run: pip install ruff")
@@ -98,8 +109,10 @@ def main() -> None:
         return
     pool = Pool(8)
     for f in files:
-        pool.apply_async(process_file, ((f), ))
+        pool.apply_async(process_file, ((f),))
     pool.close()
     pool.join()
+
+
 if __name__ == "__main__":
     main()

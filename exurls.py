@@ -5,6 +5,8 @@ import sys
 from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
+
+
 def extract_links(url: str):
     resp = requests.get(url, timeout=15)
     resp.raise_for_status()
@@ -18,6 +20,8 @@ def extract_links(url: str):
             if parsed.scheme in ("http", "https"):
                 links.add(abs_url)
     return sorted(links)
+
+
 def split_internal_external(base_url, links):
     base_domain = urlparse(base_url).netloc
     internal = []
@@ -28,14 +32,17 @@ def split_internal_external(base_url, links):
         else:
             external.append(link)
     return internal, external
+
+
 def save_links(out_dir, name, links):
     path = os.path.join(out_dir, name)
     with open(path, "w", encoding="utf-8") as f:
         for link in links:
             f.write(link + "\n")
+
+
 def main():
-    parser = argparse.ArgumentParser(
-        description="Extract and save all URLs from a webpage")
+    parser = argparse.ArgumentParser(description="Extract and save all URLs from a webpage")
     parser.add_argument("url", nargs="?", help="Target URL")
     parser.add_argument(
         "-o",
@@ -68,5 +75,7 @@ def main():
     print(f"Internal links  : {len(internal)}")
     print(f"External links  : {len(external)}")
     print(f"Saved to folder : {args.out}")
+
+
 if __name__ == "__main__":
     main()

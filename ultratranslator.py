@@ -9,12 +9,19 @@ from pathlib import Path
 import regex as re
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
+
 DIRECTORY = "."
 non_english_pattern = re.compile(r"[^\x00-\x7F]")
+
+
 def is_english(text: str) -> bool:
     return not non_english_pattern.search(text)
+
+
 def chunk_text(text: str, size: int = 800) -> list[str]:
-    return [text[i:i + size] for i in range(0, len(text), size)]
+    return [text[i : i + size] for i in range(0, len(text), size)]
+
+
 def translate_chunk(chunk: str) -> str:
     try:
         result = GoogleTranslator(source="auto", target="en").translate(chunk)
@@ -22,26 +29,34 @@ def translate_chunk(chunk: str) -> str:
     except Exception as e:
         print(f"  Translation error for chunk: {e}")
         return chunk
+
+
 def translate_text(text: str) -> str:
     chunks = chunk_text(text)
     with Pool(8) as pool:
         translated = list(pool.imap(translate_chunk, chunks))
     return "".join(translated)
+
+
 def safe_overwrite(filepath: Path, content: str) -> None:
     with tempfile.NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            delete=False,
-            dir=filepath.parent,
+        mode="w",
+        encoding="utf-8",
+        delete=False,
+        dir=filepath.parent,
     ) as tmp:
         tmp.write(content)
         tmp_path = Path(tmp.name)
     shutil.move(tmp_path, filepath)
-def extract_docstrings(tree: ast.AST, ) -> dict[int, str]:
+
+
+def extract_docstrings(
+    tree: ast.AST,
+) -> dict[int, str]:
     docstrings = {}
     for node in ast.walk(tree):
         if isinstance(
-                node,
+            node,
             (
                 ast.Module,
                 ast.FunctionDef,
@@ -53,6 +68,8 @@ def extract_docstrings(tree: ast.AST, ) -> dict[int, str]:
             if doc and not is_english(doc):
                 docstrings[id(node)] = doc
     return docstrings
+
+
 def translate_python_file(source: str, filepath: Path) -> str:
     print("  Analyzing Python structure...")
     tree = ast.parse(source)
@@ -66,13 +83,13 @@ def translate_python_file(source: str, filepath: Path) -> str:
     for i, token in enumerate(tokens):
         tok_type, tok_str, start, end, _line = token
         if start > prev_end:
-            lines_between = source.splitlines()[prev_end[0] - 1:start[0]]
+            lines_between = source.splitlines()[prev_end[0] - 1 : start[0]]
             if len(lines_between) > 1:
                 for line_content in lines_before[:-1]:
                     result.append(line_content + "\n")
-                result.append(lines_before[-1][:start[1]])
+                result.append(lines_before[-1][: start[1]])
             elif lines_between:
-                result.append(lines_between[0][prev_end[1]:start[1]])
+                result.append(lines_between[0][prev_end[1] : start[1]])
         if tok_type == tokenize.COMMENT and not is_english(tok_str):
             comment_text = tok_str[1:].strip()
             print(f"  Translating comment: {comment_text[:50]}...")
@@ -102,17 +119,15 @@ def translate_python_file(source: str, filepath: Path) -> str:
             print(f"  Processed {i + 1} tokens...")
     print(f"  Translated {translated_count} items")
     return "".join(result)
+
+
 def process_files(directory: str) -> None:
     print(f"Scanning directory: {directory}")
     paths = [Path(p) for p in walk_files(directory)]
     files = [p for p in paths if p.is_file()]
     supported_extensions = {".txt", ".md", ".srt", ".json", ".html", ".py"}
-    target_files = [
-        f for f in files if f.suffix.lower() in supported_extensions
-    ]
-    print(
-        f"Found {len(target_files)} supported files out of {len(files)} total files"
-    )
+    target_files = [f for f in files if f.suffix.lower() in supported_extensions]
+    print(f"Found {len(target_files)} supported files out of {len(files)} total files")
     print("-" * 50)
     translated_count = 0
     skipped_count = 0
@@ -132,8 +147,7 @@ def process_files(directory: str) -> None:
             continue
         print("  Translating content...")
         try:
-            translated = translate_python_file(
-                original, fp) if suffix == ".py" else translate_text(original)
+            translated = translate_python_file(original, fp) if suffix == ".py" else translate_text(original)
             if translated.strip() != original.strip():
                 safe_overwrite(fp, translated)
                 print("  ✓ Successfully translated and saved")
@@ -152,5 +166,7 @@ def process_files(directory: str) -> None:
     print(f"Skipped (already English): {skipped_count}")
     print(f"Errors: {error_count}")
     print("=" * 50)
+
+
 if __name__ == "__main__":
     process_files(DIRECTORY)

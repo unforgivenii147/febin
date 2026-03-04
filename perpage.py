@@ -4,6 +4,8 @@ from multiprocessing import Pool
 from pathlib import Path
 import pdfplumber
 from termcolor import cprint
+
+
 def process_file(fp):
     i = 1
     with pdfplumber.open(fp) as pdf:
@@ -34,6 +36,8 @@ def process_file(fp):
     del i
     del text
     del pages
+
+
 def main():
     files = []
     for file in os.listdir("."):
@@ -44,11 +48,13 @@ def main():
         return
     pool = Pool(4)
     for f in files:
-        _ = pool.apply_async(process_file, ((f), ))
+        _ = pool.apply_async(process_file, ((f),))
     pool.close()
     pool.join()
     del pool
     del files
     return
+
+
 if __name__ == "__main__":
     main()

@@ -3,10 +3,14 @@ import json
 import sys
 from pathlib import Path
 import regex as re
+
+
 def sanitize_pkg_name(name: str) -> str:
     name = name.lstrip("@")
     name = name.replace("/", "__")
     return re.sub(r"[^\w.-]", "_", name)
+
+
 def rename_package_dirs(root: Path, dry_run: bool = False) -> None:
     for pkg_json in root.rglob("package.json"):
         pkg_dir = pkg_json.parent
@@ -30,9 +34,13 @@ def rename_package_dirs(root: Path, dry_run: bool = False) -> None:
         else:
             print(f"[RENAME] {pkg_dir} -> {new_dir}")
             pkg_dir.rename(new_dir)
+
+
 def main():
     root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path.cwd()
     dry_run = "--dry-run" in sys.argv
     rename_package_dirs(root, dry_run=dry_run)
+
+
 if __name__ == "__main__":
     main()

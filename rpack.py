@@ -6,8 +6,12 @@ import sysconfig
 from pathlib import Path
 import regex as re
 from wheel.wheelfile import WheelFile
+
+
 def find_site_packages() -> Path:
     return Path(sysconfig.get_paths()["purelib"])
+
+
 def list_installed_packages(site: Path):
     pkgs = {}
     for item in site.iterdir():
@@ -19,6 +23,8 @@ def list_installed_packages(site: Path):
             pkg, version = m.group(1), m.group(2)
             pkgs[pkg.lower()] = (pkg, version)
     return pkgs
+
+
 def get_wheel_tags(dist_info: Path):
     wheel_file = dist_info / "WHEEL"
     if not wheel_file.exists():
@@ -29,6 +35,8 @@ def get_wheel_tags(dist_info: Path):
         if line.startswith("Tag:"):
             tags.append(line.split(":", 1)[1].strip())
     return tags or ["py3-none-any"]
+
+
 def copy_package_files(pkg: str, site: Path, dst: Path) -> None:
     candidates = [
         site / pkg,
@@ -43,11 +51,15 @@ def copy_package_files(pkg: str, site: Path, dst: Path) -> None:
             else:
                 shutil.copy2(c, dst / c.name)
             break
+
+
 def copy_dist_info(pkg: str, version: str, site: Path, dst: Path) -> Path:
     dist_dir = site / f"{pkg}-{version}.dist-info"
     out = dst / dist_dir.name
     shutil.copytree(dist_dir, out)
     return out
+
+
 def copy_scripts(pkg: str, dst: Path) -> None:
     scripts_dir = Path(sysconfig.get_paths()["scripts"])
     if not scripts_dir.exists():
@@ -56,6 +68,8 @@ def copy_scripts(pkg: str, dst: Path) -> None:
     for script in scripts_dir.iterdir():
         if script.is_file() and pattern.match(script.name):
             shutil.copy2(script, dst / script.name)
+
+
 def build_wheel(
     pkg: str,
     version: str,
@@ -72,6 +86,8 @@ def build_wheel(
                 arcname = full.relative_to(src_dir)
                 wf.write(str(full), str(arcname))
     return wheel_path
+
+
 def repack(
     pkg: str,
     site: Path,
@@ -99,9 +115,10 @@ def repack(
         out_whl,
     )
     print(f"Repacked: {real_pkg} → {wheel}")
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Repack installed Python packages")
+    parser = argparse.ArgumentParser(description="Repack installed Python packages")
     parser.add_argument(
         "packages",
         nargs="*",
@@ -126,5 +143,7 @@ def main() -> None:
     else:
         for pkg in args.packages:
             repack(pkg, site, out_repack, out_whl)
+
+
 if __name__ == "__main__":
     main()

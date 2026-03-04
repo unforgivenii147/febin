@@ -2,12 +2,16 @@
 import json
 import sys
 from pathlib import Path
+
+
 def load_json_object(path):
     with path.open(encoding="utf-8") as f:
         data = json.load(f)
     if not isinstance(data, dict):
         raise ValueError(f"{path} is not a JSON object")
     return data
+
+
 def merge_json_files(files):
     merged = {}
     for file in files:
@@ -20,6 +24,8 @@ def merge_json_files(files):
         except Exception as e:
             print(f"Warning: {path}: {e}")
     return merged
+
+
 def main():
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} file1.json file2.json [...]")
@@ -43,5 +49,7 @@ def main():
             sort_keys=True,
         )
     print(f"saved to {out_file}")
+
+
 if __name__ == "__main__":
     main()

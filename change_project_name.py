@@ -2,12 +2,14 @@
 import os
 import shutil
 import sys
+
+
 def replace_in_file(path: str, old: str, new: str) -> None:
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             text = f.read()
     except (UnicodeDecodeError, PermissionError):
@@ -17,6 +19,8 @@ def replace_in_file(path: str, old: str, new: str) -> None:
     new_text = text.replace(old, new)
     with open(path, "w", encoding="utf-8") as f:
         f.write(new_text)
+
+
 def rename_path(path: str, old: str, new: str) -> str:
     dirname = os.path.dirname(path)
     basename = os.path.basename(path)
@@ -32,6 +36,8 @@ def rename_path(path: str, old: str, new: str) -> str:
         return new_path
     except Exception:
         return path
+
+
 def main() -> None:
     if len(sys.argv) != 3:
         print(f"Usage: {sys.argv[0]} <text_to_change> <replacement_text>")
@@ -46,5 +52,7 @@ def main() -> None:
             rename_path(os.path.join(root, fn), old, new)
         for dn in dirs:
             rename_path(os.path.join(root, dn), old, new)
+
+
 if __name__ == "__main__":
     main()

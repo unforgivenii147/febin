@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
+
 search_string = 'b64 = """'
 current_dir = os.getcwd()
 for root, _dirs, files in os.walk(current_dir):
@@ -11,7 +12,7 @@ for root, _dirs, files in os.walk(current_dir):
                 if search_string in content:
                     print(f"Found in file: {file_path}")
         except (
-                UnicodeDecodeError,
-                PermissionError,
+            UnicodeDecodeError,
+            PermissionError,
         ):
             continue

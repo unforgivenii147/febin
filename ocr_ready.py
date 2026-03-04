@@ -3,9 +3,12 @@ from pathlib import Path
 import cv2
 import numpy as np
 import pytesseract
+
 SUPPORTED_EXT = {".jpg", ".jpeg", ".png", ".tiff", ".bmp", ".webp"}
 BASE_DIR = Path(".").resolve()
 OUTPUT_DIR = BASE_DIR / "ocr_ready"
+
+
 def deskew(image):
     coords = np.column_stack(np.where(image > 0))
     if coords.size == 0:
@@ -22,6 +25,8 @@ def deskew(image):
         flags=cv2.INTER_CUBIC,
         borderMode=cv2.BORDER_REPLICATE,
     )
+
+
 def preprocess_image(img_path):
     img = cv2.imread(str(img_path))
     if img is None:
@@ -42,10 +47,14 @@ def preprocess_image(img_path):
     kernel = np.ones((1, 1), np.uint8)
     cleaned = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
     return deskew(cleaned)
+
+
 def should_skip(path: Path):
     if OUTPUT_DIR in path.parents:
         return True
     return path.suffix.lower() not in SUPPORTED_EXT
+
+
 def process():
     OUTPUT_DIR.mkdir(exist_ok=True)
     for path in BASE_DIR.rglob("*"):
@@ -63,6 +72,8 @@ def process():
         text = pytesseract.image_to_string(processed, config="--oem 1 --psm 6")
         with open(out_txt_path, "w", encoding="utf-8") as f:
             f.write(text)
+
+
 if __name__ == "__main__":
     process()
     print("Done. Images + OCR text saved in ./ocr_ready")

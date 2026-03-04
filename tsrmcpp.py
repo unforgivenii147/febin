@@ -4,11 +4,14 @@ import tree_sitter_cpp as tscpp
 from dh import run_command
 from termcolor import cprint
 from tree_sitter import Language, Parser
+
+
 class TSCppRemover:
     def __init__(self):
         self.parser = Parser()
         self.language = Language(tscpp.language())
         self.parser.language = self.language
+
     def remove_comments(self, source: str) -> tuple[str, int]:
         source_bytes = source.encode("utf-8")
         tree = self.parser.parse(source_bytes)
@@ -24,15 +27,16 @@ class TSCppRemover:
         cleaned = new_source.decode("utf-8")
         cleaned = self._cleanup_blank_lines(cleaned)
         return cleaned, removed
+
     def _collect_comments(self, node, to_delete, source_bytes):
         if node.type == "comment":
-            text = source_bytes[node.start_byte:node.end_byte].decode(
-                "utf-8").strip()
+            text = source_bytes[node.start_byte : node.end_byte].decode("utf-8").strip()
             if text.startswith("#"):
                 return
             to_delete.append((node.start_byte, node.end_byte))
         for child in node.children:
             self._collect_comments(child, to_delete, source_bytes)
+
     @staticmethod
     def _cleanup_blank_lines(text: str) -> str:
         lines = text.splitlines()
@@ -47,9 +51,13 @@ class TSCppRemover:
                 blank_streak = 0
                 cleaned.append(line.rstrip())
         return "\n".join(cleaned) + "\n"
+
+
 def validate_with_treesitter(parser, code: str) -> bool:
     tree = parser.parse(code.encode("utf-8"))
     return not tree.root_node.has_error
+
+
 def validate_with_clang(file_path: Path) -> tuple[bool, str]:
     cmd = f"clang++ -std=c++20 -fsyntax-only {file_path!s}"
     ret, txt, err = run_command(cmd)
@@ -58,6 +66,8 @@ def validate_with_clang(file_path: Path) -> tuple[bool, str]:
     elif ret == 0:
         return True, txt
     return None
+
+
 def process_file(fp):
     file_path = Path(fp)
     init_size = file_path.stat().st_size
@@ -82,6 +92,8 @@ def process_file(fp):
         f"[OK] {file_path.name} - removed {removed} comments, reduced {reduced} bytes",
         "cyan",
     )
+
+
 if __name__ == "__main__":
     exts = {".cpp", ".cc", ".cxx", ".hpp", ".h", ".hh", ".hxx", ".c"}
     for path in Path().rglob("*"):

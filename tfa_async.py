@@ -5,19 +5,26 @@ import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from deep_translator import GoogleTranslator
+
 INPUT_FILE = "words.txt"
 OUTPUT_FILE = "dic_async.json"
 MAX_WORKERS = 20
 RETRIES = 3
 CACHE_FILE = "translation_cache.json"
+
+
 def load_cache():
     if os.path.exists(CACHE_FILE):
         with open(CACHE_FILE, encoding="utf-8") as f:
             return json.load(f)
     return {}
+
+
 def save_cache(cache):
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump(cache, f, ensure_ascii=False, indent=2)
+
+
 def translate_sync(word):
     for attempt in range(RETRIES):
         try:
@@ -26,6 +33,8 @@ def translate_sync(word):
             print(f"[WARN] Failed '{word}' (attempt {attempt + 1}): {e}")
             time.sleep(0.5)
     return None
+
+
 async def translate_async(word, executor, cache):
     if word in cache:
         print(f"[CACHE] {word} → {cache[word]}")
@@ -36,6 +45,8 @@ async def translate_async(word, executor, cache):
         cache[word] = result
         save_cache(cache)
     return result
+
+
 async def main():
     with open(INPUT_FILE, encoding="utf-8") as f:
         words = [w.strip() for w in f if w.strip()]
@@ -61,5 +72,7 @@ async def main():
             indent=2,
         )
     print(f"\n[SAVED] Translation dictionary saved to {OUTPUT_FILE}")
+
+
 if __name__ == "__main__":
     asyncio.run(main())

@@ -4,6 +4,7 @@ import multiprocessing
 import os
 import tree_sitter_python as tspython
 from tree_sitter import Language, Parser, Query, QueryCursor
+
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
 QUERY_STRING = """
@@ -15,9 +16,13 @@ QUERY_STRING = """
   . (expression_statement
     (string)) @docstring)
 """
+
+
 def should_preserve_comment(content):
     content = content.strip()
     return any(content.startswith(p) for p in ["#!", "# type:", "# fmt:"])
+
+
 def strip_file(file_path):
     cursor = QueryCursor()
     query = Query(PY_LANGUAGE, QUERY_STRING)
@@ -30,38 +35,43 @@ def strip_file(file_path):
         modifications = []
         for node, tag in captures:
             if tag == "comment":
-                comment_text = source_code[node.start_byte:node.end_byte]
+                comment_text = source_code[node.start_byte : node.end_byte]
                 if not should_preserve_comment(comment_text):
-                    modifications.append((
-                        node.start_byte,
-                        node.end_byte,
-                        "",
-                    ))
+                    modifications.append(
+                        (
+                            node.start_byte,
+                            node.end_byte,
+                            "",
+                        )
+                    )
             elif tag == "docstring":
                 parent = node.parent
                 if parent and parent.named_child_count == 1:
-                    modifications.append((
-                        node.start_byte,
-                        node.end_byte,
-                        "pass",
-                    ))
+                    modifications.append(
+                        (
+                            node.start_byte,
+                            node.end_byte,
+                            "pass",
+                        )
+                    )
                 else:
-                    modifications.append((
-                        node.start_byte,
-                        node.end_byte,
-                        "",
-                    ))
+                    modifications.append(
+                        (
+                            node.start_byte,
+                            node.end_byte,
+                            "",
+                        )
+                    )
         if not modifications:
             return
         modifications.sort(key=lambda x: x[0], reverse=True)
         working_code = source_code
         for (
-                start,
-                end,
-                replacement,
+            start,
+            end,
+            replacement,
         ) in modifications:
-            working_code = working_code[:start] + replacement + working_code[
-                end:]
+            working_code = working_code[:start] + replacement + working_code[end:]
         try:
             ast.parse(working_code)
             with open(file_path, "w", encoding="utf-8") as f:
@@ -70,16 +80,17 @@ def strip_file(file_path):
             pass
     except Exception as e:
         print(f"Error in {file_path}: {e}")
+
+
 def main():
-    files = [
-        os.path.join(r, f) for r, _, fs in os.walk(".") for f in fs
-        if f.endswith(".py")
-    ]
+    files = [os.path.join(r, f) for r, _, fs in os.walk(".") for f in fs if f.endswith(".py")]
     if not files:
         return
     print(f"Applying anchored query processing to {len(files)} files...")
     with multiprocessing.get_context("spawn").Pool() as pool:
         pool.map(strip_file, files)
     print("Done.")
+
+
 if __name__ == "__main__":
     main()

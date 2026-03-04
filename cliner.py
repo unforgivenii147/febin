@@ -3,6 +3,7 @@ import mmap
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 import regex as re
+
 LOG_EXT = ".log"
 MMAP_THRESHOLD = 5 * 1024 * 1024
 NUM_WORKERS = cpu_count()
@@ -21,17 +22,21 @@ PATTERNS = [
     r"\x0e",
 ]
 COMPILED_PATTERNS = [re.compile(pattern) for pattern in PATTERNS]
+
+
 def clean_line(line: str) -> str:
     cleaned = line
     for pattern in COMPILED_PATTERNS:
         cleaned = pattern.sub("", cleaned)
     return re.sub(r" {2,}", " ", cleaned)
+
+
 def clean_file_small(file_path: Path) -> tuple:
     try:
         with open(
-                file_path,
-                encoding="utf-8",
-                errors="ignore",
+            file_path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             lines = f.readlines()
         cleaned_lines = [clean_line(line) for line in lines]
@@ -40,6 +45,8 @@ def clean_file_small(file_path: Path) -> tuple:
         return (file_path, True, "small file")
     except Exception as e:
         return (file_path, False, str(e))
+
+
 def clean_file_large(file_path: Path) -> tuple:
     try:
         with open(file_path, "r+b") as f:
@@ -65,6 +72,8 @@ def clean_file_large(file_path: Path) -> tuple:
         )
     except Exception as e:
         return (file_path, False, str(e))
+
+
 def clean_file_worker(file_path: Path) -> tuple:
     try:
         get_size = file_path.stat().st_size
@@ -74,6 +83,8 @@ def clean_file_worker(file_path: Path) -> tuple:
             return clean_file_small(file_path)
     except Exception as e:
         return (file_path, False, str(e))
+
+
 def main():
     cwd = Path.cwd()
     log_files = list(cwd.rglob(f"*{LOG_EXT}"))
@@ -82,9 +93,7 @@ def main():
         return
     print(f"Found {len(log_files)} log file(s).")
     print(f"Using {NUM_WORKERS} worker(s).")
-    print(
-        f"Files larger than {MMAP_THRESHOLD / (1024 * 1024):.1f} MB will use mmap.\n"
-    )
+    print(f"Files larger than {MMAP_THRESHOLD / (1024 * 1024):.1f} MB will use mmap.\n")
     print("Cleaning...\n")
     with Pool(processes=NUM_WORKERS) as pool:
         results = pool.map(clean_file_worker, log_files)
@@ -97,10 +106,10 @@ def main():
         else:
             print(f"✗ Error: {file_path} - {message}")
             error_count += 1
-    print(
-        f"\nDone. Successfully processed {success_count}/{len(log_files)} file(s)."
-    )
+    print(f"\nDone. Successfully processed {success_count}/{len(log_files)} file(s).")
     if error_count > 0:
         print(f"Failed: {error_count} file(s).")
+
+
 if __name__ == "__main__":
     main()

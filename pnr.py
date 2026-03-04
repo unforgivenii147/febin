@@ -3,6 +3,8 @@ import argparse
 import os
 import sys
 from pathlib import Path
+
+
 def get_unique_name(path, base_name):
     if not os.path.exists(os.path.join(path, base_name)):
         return base_name
@@ -13,18 +15,22 @@ def get_unique_name(path, base_name):
         if not os.path.exists(os.path.join(path, new_name)):
             return new_name
         counter += 1
+
+
 def ask_user_for_rename(old_name, new_name):
     return True
     while True:
-        response = (input(
-            f"'{new_name}' already exists. Rename '{old_name}' with _number suffix? (y/n): "
-        ).lower().strip())
+        response = (
+            input(f"'{new_name}' already exists. Rename '{old_name}' with _number suffix? (y/n): ").lower().strip()
+        )
         if response in ["y", "yes"]:
             return True
         elif response in ["n", "no"]:
             return False
         else:
             print("Please enter 'y' or 'n'")
+
+
 def remove_string_from_names(
     string_to_remove,
     dry_run=False,
@@ -49,17 +55,13 @@ def remove_string_from_names(
         if string_to_remove in filename:
             new_name = filename.replace(string_to_remove, "")
             if not new_name.strip():
-                print(
-                    f"Warning: Removing '{string_to_remove}' would make filename empty for '{filename}'"
-                )
+                print(f"Warning: Removing '{string_to_remove}' would make filename empty for '{filename}'")
                 continue
             old_path = os.path.join(current_path, filename)
             new_path = os.path.join(current_path, new_name)
             if os.path.exists(new_path):
                 if dry_run:
-                    print(
-                        f"Would conflict: '{filename}' -> '{new_name}' (already exists)"
-                    )
+                    print(f"Would conflict: '{filename}' -> '{new_name}' (already exists)")
                 elif ask_user_for_rename(filename, new_name):
                     new_name = get_unique_name(
                         current_path,
@@ -83,18 +85,14 @@ def remove_string_from_names(
         if string_to_remove in dirname:
             new_name = dirname.replace(string_to_remove, "")
             if not new_name.strip():
-                print(
-                    f"Warning: Removing '{string_to_remove}' would make dirname empty for '{dirname}'"
-                )
+                print(f"Warning: Removing '{string_to_remove}' would make dirname empty for '{dirname}'")
                 dirs_to_process.append((dirname, dirname))
                 continue
             old_path = os.path.join(current_path, dirname)
             new_path = os.path.join(current_path, new_name)
             if os.path.exists(new_path):
                 if dry_run:
-                    print(
-                        f"Would conflict: '{dirname}' -> '{new_name}' (already exists)"
-                    )
+                    print(f"Would conflict: '{dirname}' -> '{new_name}' (already exists)")
                     dirs_to_process.append((dirname, dirname))
                 elif ask_user_for_rename(dirname, new_name):
                     new_name = get_unique_name(
@@ -130,6 +128,8 @@ def remove_string_from_names(
                 subdir_path,
             )
     return renamed_count
+
+
 def replace_string_in_names(
     str1,
     str2,
@@ -158,9 +158,7 @@ def replace_string_in_names(
             new_path = os.path.join(current_path, new_name)
             if os.path.exists(new_path):
                 if dry_run:
-                    print(
-                        f"Would conflict: '{filename}' -> '{new_name}' (already exists)"
-                    )
+                    print(f"Would conflict: '{filename}' -> '{new_name}' (already exists)")
                 elif ask_user_for_rename(filename, new_name):
                     new_name = get_unique_name(
                         current_path,
@@ -187,9 +185,7 @@ def replace_string_in_names(
             new_path = os.path.join(current_path, new_name)
             if os.path.exists(new_path):
                 if dry_run:
-                    print(
-                        f"Would conflict: '{dirname}' -> '{new_name}' (already exists)"
-                    )
+                    print(f"Would conflict: '{dirname}' -> '{new_name}' (already exists)")
                     dirs_to_process.append((dirname, dirname))
                 elif ask_user_for_rename(dirname, new_name):
                     new_name = get_unique_name(
@@ -226,6 +222,8 @@ def replace_string_in_names(
                 subdir_path,
             )
     return renamed_count
+
+
 def rename_by_template(
     template,
     dry_run=False,
@@ -264,9 +262,7 @@ def rename_by_template(
             new_path = os.path.join(current_path, new_name)
             if os.path.exists(new_path):
                 if dry_run:
-                    print(
-                        f"Would conflict: '{filename}' -> '{new_name}' (already exists)"
-                    )
+                    print(f"Would conflict: '{filename}' -> '{new_name}' (already exists)")
                 elif ask_user_for_rename(filename, new_name):
                     new_name = get_unique_name(
                         current_path,
@@ -288,9 +284,7 @@ def rename_by_template(
                 except OSError as e:
                     print(f"Error renaming '{filename}': {e}")
     if recursive:
-        dirs = [
-            d for d in items if os.path.isdir(os.path.join(current_path, d))
-        ]
+        dirs = [d for d in items if os.path.isdir(os.path.join(current_path, d))]
         for dirname in dirs:
             subdir_path = os.path.join(current_path, dirname)
             renamed_count += rename_by_template(
@@ -300,6 +294,8 @@ def rename_by_template(
                 subdir_path,
             )
     return renamed_count
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Rename files and directories",
@@ -384,5 +380,7 @@ Examples:
     except Exception as e:
         print(f"An error occurred: {e}")
         sys.exit(1)
+
+
 if __name__ == "__main__":
     main()

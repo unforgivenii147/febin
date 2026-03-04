@@ -8,6 +8,8 @@ import pwd
 import shutil
 import stat
 import subprocess
+
+
 def colorize(
     text: str,
     mode: int,
@@ -20,6 +22,8 @@ def colorize(
     if mode & stat.S_IXUSR:
         return f"\033[32m{text}\033[0m"
     return text
+
+
 def detect_icon(name: str, mode: int) -> str:
     if stat.S_ISDIR(mode):
         return "📁"
@@ -27,11 +31,11 @@ def detect_icon(name: str, mode: int) -> str:
         return "🔗"
     ext = name.lower().split(".")[-1]
     if ext in (
-            "png",
-            "jpg",
-            "jpeg",
-            "gif",
-            "webp",
+        "png",
+        "jpg",
+        "jpeg",
+        "gif",
+        "webp",
     ):
         return "🖼️"
     if ext in ("py", "sh"):
@@ -39,7 +43,11 @@ def detect_icon(name: str, mode: int) -> str:
     if ext in ("zip", "tar", "gz", "bz2", "xz"):
         return "📦"
     return "📄"
-def get_git_status_for_dir(path: str, ) -> dict[str, dict[str, str]]:
+
+
+def get_git_status_for_dir(
+    path: str,
+) -> dict[str, dict[str, str]]:
     try:
         p = subprocess.run(
             [
@@ -75,6 +83,8 @@ def get_git_status_for_dir(path: str, ) -> dict[str, dict[str, str]]:
             "raw": xy,
         }
     return result
+
+
 class Entry:
     def __init__(
         self,
@@ -89,10 +99,11 @@ class Entry:
         self.stat = stat_obj
         self.link_target = link_target
         self.git = git
+
+
 def mode_to_string(mode: int) -> str:
     chars = []
-    chars.append(
-        "d" if stat.S_ISDIR(mode) else "l" if stat.S_ISLNK(mode) else "-")
+    chars.append("d" if stat.S_ISDIR(mode) else "l" if stat.S_ISLNK(mode) else "-")
     perms = [
         (stat.S_IRUSR, "r"),
         (stat.S_IWUSR, "w"),
@@ -107,12 +118,16 @@ def mode_to_string(mode: int) -> str:
     for bit, ch in perms:
         chars.append(ch if (mode & bit) else "-")
     return "".join(chars)
+
+
 def human_size(n: int) -> str:
     for unit in ["B", "K", "M", "G", "T"]:
         if n < 1024:
             return f"{n}{unit}"
         n /= 1024
     return f"{n:.1f}P"
+
+
 def output_long(
     entries: list[Entry],
     icons=False,
@@ -136,9 +151,9 @@ def output_long(
         gitmark = ""
         if e.git:
             gitmark = f" {e.git['raw']}"
-        print(
-            f"{mode_s} {nlink:2} {user:8} {group:8} {size:>6} {tstr} {name}{gitmark}"
-        )
+        print(f"{mode_s} {nlink:2} {user:8} {group:8} {size:>6} {tstr} {name}{gitmark}")
+
+
 def output_columns(
     entries: list[Entry],
     icons=False,
@@ -157,15 +172,20 @@ def output_columns(
     width = max(20, width)
     cols = 2
     col_width = width // cols
+
     def real_len(s: str) -> int:
         import regex as re
+
         return len(re.sub(r"\x1b\[[0-9;]*m", "", s))
+
     def truncate(text: str, max_len: int) -> str:
         if real_len(text) <= max_len:
             return text
         import regex as re
+
         plain = re.sub(r"\x1b\[[0-9;]*m", "", text)
-        return plain[:max_len - 1] + "…"
+        return plain[: max_len - 1] + "…"
+
     rendered = []
     for e in entries:
         txt = e.name
@@ -176,9 +196,11 @@ def output_columns(
         txt = truncate(txt, col_width - 1)
         rendered.append(txt)
     for i in range(0, len(rendered), cols):
-        row = rendered[i:i + cols]
+        row = rendered[i : i + cols]
         padded = [r + " " * (col_width - real_len(r)) for r in row]
         print("".join(padded))
+
+
 def print_tree(
     base: str,
     prefix: str = "",
@@ -207,6 +229,8 @@ def print_tree(
         if stat.S_ISDIR(st.st_mode):
             new_prefix = prefix + ("    " if is_last else "│   ")
             print_tree(path, new_prefix, icons, colors)
+
+
 def list_recursive(base: str, args, depth=0) -> None:
     if depth > 0:
         print(f"\n{base}:")
@@ -238,24 +262,24 @@ def list_recursive(base: str, args, depth=0) -> None:
     for e in entries:
         if stat.S_ISDIR(e.stat.st_mode):
             list_recursive(e.path, args, depth + 1)
+
+
 def print_entries(entries: list[Entry], args) -> None:
     if args.json:
         out = []
         for e in entries:
-            out.append({
-                "name":
-                e.name,
-                "size":
-                e.stat.st_size,
-                "mode":
-                mode_to_string(e.stat.st_mode),
-                "mtime":
-                e.stat.st_mtime,
-                "git":
-                e.git,
-                "type": ("dir" if stat.S_ISDIR(e.stat.st_mode) else
-                         ("link" if stat.S_ISLNK(e.stat.st_mode) else "file")),
-            })
+            out.append(
+                {
+                    "name": e.name,
+                    "size": e.stat.st_size,
+                    "mode": mode_to_string(e.stat.st_mode),
+                    "mtime": e.stat.st_mtime,
+                    "git": e.git,
+                    "type": (
+                        "dir" if stat.S_ISDIR(e.stat.st_mode) else ("link" if stat.S_ISLNK(e.stat.st_mode) else "file")
+                    ),
+                }
+            )
         print(json.dumps(out, indent=2))
         return
     if args.long:
@@ -270,6 +294,8 @@ def print_entries(entries: list[Entry], args) -> None:
         icons=args.icons,
         colors=not args.no_color,
     )
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument(
@@ -339,13 +365,17 @@ def main() -> None:
                     link_t = os.readlink(fp)
                 except OSError:
                     link_t = None
-            entries.append(Entry(
-                fp,
-                n,
-                st,
-                link_t,
-                gitmap.get(n),
-            ))
+            entries.append(
+                Entry(
+                    fp,
+                    n,
+                    st,
+                    link_t,
+                    gitmap.get(n),
+                )
+            )
         print_entries(entries, args)
+
+
 if __name__ == "__main__":
     main()

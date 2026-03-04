@@ -5,6 +5,7 @@ If a filename is provided, process only that file.
 If no argument, recursively search current directory.
 Deletes original archives after successful extraction and reports size change.
 """
+
 import argparse
 import sys
 import tarfile
@@ -12,12 +13,18 @@ import tempfile
 import time
 from pathlib import Path
 import zstandard as zstd
+
+
 def get_dir_size(path):
     """Calculate total size of directory in bytes."""
     return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
+
+
 def get_size(path):
     """Get size of a single file."""
     return path.stat().st_size if path.exists() else 0
+
+
 def extract_zst_file(archive_path, extract_path):
     """Extract a standalone .zst file."""
     output_path = extract_path / archive_path.stem  # Remove .zst extension
@@ -26,13 +33,14 @@ def extract_zst_file(archive_path, extract_path):
         with open(output_path, "wb") as output_file:
             dctx.copy_stream(compressed_file, output_file)
     return output_path
+
+
 def extract_tar_zst(archive_path, extract_path):
     """Extract tar.zst archive using zstandard library."""
     # Decompress zst to temporary tar file
     with open(archive_path, "rb") as compressed_file:
         dctx = zstd.ZstdDecompressor()
-        with tempfile.NamedTemporaryFile(suffix=".tar",
-                                         delete=False) as temp_tar:
+        with tempfile.NamedTemporaryFile(suffix=".tar", delete=False) as temp_tar:
             dctx.copy_stream(compressed_file, temp_tar)
             temp_tar_path = temp_tar.name
     # Extract the tar file
@@ -42,10 +50,14 @@ def extract_tar_zst(archive_path, extract_path):
     finally:
         # Clean up temporary tar file
         Path(temp_tar_path).unlink()
+
+
 def extract_tar_xz(archive_path, extract_path):
     """Extract tar.xz archive."""
     with tarfile.open(archive_path, "r:xz") as tar:
         tar.extractall(path=extract_path)
+
+
 def process_archive(
     archive_path,
     dry_run=False,
@@ -70,9 +82,7 @@ def process_archive(
     is_standalone_zst = archive_name.endswith(".zst") and not is_tar_zst
     if not (is_tar_zst or is_tar_xz or is_standalone_zst):
         if not quiet:
-            print(
-                f"Skipping unsupported file: {archive_path} (not .zst, .tar.zst, or .tar.xz)"
-            )
+            print(f"Skipping unsupported file: {archive_path} (not .zst, .tar.zst, or .tar.xz)")
         return False, 0, 0
     try:
         if dry_run:
@@ -93,8 +103,7 @@ def process_archive(
             extracted_files = ["multiple files (tar contents)"]
         # Calculate size of extracted files
         extracted_size = 0
-        if extracted_files and extracted_files[
-                0] != "multiple files (tar contents)":
+        if extracted_files and extracted_files[0] != "multiple files (tar contents)":
             # For single file extraction
             for file_path in extracted_files:
                 if file_path.exists():
@@ -119,6 +128,8 @@ def process_archive(
         if not quiet:
             print(f"  ✗ Error processing {archive_path}: {e}")
         return False, 0, 0
+
+
 def find_archives(directory):
     """Find all supported archives in directory recursively."""
     directory = Path(directory).resolve()
@@ -133,6 +144,8 @@ def find_archives(directory):
     archives.extend(directory.rglob("*.tar.xz"))
     # Remove duplicates and sort
     return sorted(set(archives))
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Extract .zst, .tar.zst, and .tar.xz archives.\n"
@@ -144,8 +157,7 @@ def main():
         "target",
         nargs="?",
         default=None,
-        help=
-        "File to extract or directory to search (default: current directory)",
+        help="File to extract or directory to search (default: current directory)",
     )
     parser.add_argument(
         "--dry-run",
@@ -217,13 +229,9 @@ def main():
         if not args.quiet:
             print(f"Found {len(archives)} archives to process")
             # Show breakdown by type
-            zst_count = sum(
-                1 for a in archives
-                if a.suffix == ".zst" and not a.name.endswith(".tar.zst"))
-            tar_zst_count = sum(1 for a in archives
-                                if a.name.endswith(".tar.zst"))
-            tar_xz_count = sum(1 for a in archives
-                               if a.name.endswith(".tar.xz"))
+            zst_count = sum(1 for a in archives if a.suffix == ".zst" and not a.name.endswith(".tar.zst"))
+            tar_zst_count = sum(1 for a in archives if a.name.endswith(".tar.zst"))
+            tar_xz_count = sum(1 for a in archives if a.name.endswith(".tar.xz"))
             if zst_count:
                 print(f"  - Standalone .zst: {zst_count}")
             if tar_zst_count:
@@ -260,24 +268,19 @@ def main():
             print(f"  Processed: {processed_count} archives")
             if failed_count > 0:
                 print(f"  Failed: {failed_count} archives")
-            print(
-                f"  Initial directory size: {initial_size / (1024 * 1024):.2f} MB"
-            )
-            print(
-                f"  Final directory size:   {final_size / (1024 * 1024):.2f} MB"
-            )
+            print(f"  Initial directory size: {initial_size / (1024 * 1024):.2f} MB")
+            print(f"  Final directory size:   {final_size / (1024 * 1024):.2f} MB")
             print(f"  Size change:            {size_change_mb:+.2f} MB")
             if total_archive_size > 0:
                 compression_ratio = total_extracted_size / total_archive_size
-                print(
-                    f"  Average compression ratio: {compression_ratio:.2f}:1")
-                print(
-                    f"  Space saved by compression: {total_archive_size / (1024 * 1024):.2f} MB"
-                )
+                print(f"  Average compression ratio: {compression_ratio:.2f}:1")
+                print(f"  Space saved by compression: {total_archive_size / (1024 * 1024):.2f} MB")
         else:
             print(f"\n{'=' * 50}")
             print("DRY RUN SUMMARY:")
             print(f"  Would process: {len(archives)} archives")
         return 0
+
+
 if __name__ == "__main__":
     sys.exit(main())

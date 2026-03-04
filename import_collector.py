@@ -4,6 +4,7 @@ import importlib.metadata
 import importlib.util
 import pathlib
 import sys
+
 PACKAGE_MAPPING = {
     "cv2": "opencv-python",
     "PIL": "Pillow",
@@ -21,6 +22,8 @@ PACKAGE_MAPPING = {
     "jwt": "PyJWT",
     "OpenGL": "PyOpenGL",
 }
+
+
 def is_python_file(path: pathlib.Path) -> bool:
     if path.suffix == ".py":
         return True
@@ -32,6 +35,8 @@ def is_python_file(path: pathlib.Path) -> bool:
         except Exception:
             return False
     return False
+
+
 def get_imports_from_file(file_path):
     imports = set()
     try:
@@ -41,12 +46,13 @@ def get_imports_from_file(file_path):
             if isinstance(node, ast.Import):
                 for n in node.names:
                     imports.add(n.name.split(".")[0])
-            elif isinstance(
-                    node, ast.ImportFrom) and node.level == 0 and node.module:
+            elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
                 imports.add(node.module.split(".")[0])
     except (SyntaxError, UnicodeDecodeError):
         pass
     return imports
+
+
 def check_status(module_name):
     try:
         importlib.metadata.distribution(module_name)
@@ -54,28 +60,23 @@ def check_status(module_name):
     except importlib.metadata.PackageNotFoundError:
         spec = importlib.util.find_spec(module_name)
         return spec is not None
+
+
 def main():
     current_dir = pathlib.Path(".")
     output_file = current_dir / "importz.txt"
     pip_script = current_dir / "install_deps.sh"
     all_imports = set()
     local_names = {p.stem for p in current_dir.glob("*.py")}
-    local_names.update({
-        p.name
-        for p in current_dir.iterdir()
-        if p.is_dir() and (p / "__init__.py").exists()
-    })
+    local_names.update({p.name for p in current_dir.iterdir() if p.is_dir() and (p / "__init__.py").exists()})
     std_libs = getattr(sys, "stdlib_module_names", set())
     for path in current_dir.rglob("*"):
         if is_python_file(path) and path.name not in [
-                "importz.txt",
-                "install_deps.sh",
+            "importz.txt",
+            "install_deps.sh",
         ]:
             all_imports.update(get_imports_from_file(path))
-    third_party = [
-        imp for imp in all_imports if imp not in std_libs
-        and imp not in local_names and imp != "__future__"
-    ]
+    third_party = [imp for imp in all_imports if imp not in std_libs and imp not in local_names and imp != "__future__"]
     missing_for_pip = []
     already_installed = []
     for imp in sorted(third_party):
@@ -107,5 +108,7 @@ def main():
             print("✨ Environment is fully satisfied!")
     else:
         print("ℹ️ No 3rd-party imports found.")
+
+
 if __name__ == "__main__":
     main()

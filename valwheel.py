@@ -4,6 +4,8 @@ import shutil
 from packaging.tags import parse_tag
 from packaging.utils import canonicalize_name
 from packaging.version import Version
+
+
 def is_valid_wheel_name(filename):
     try:
         basename = filename[:-4]
@@ -20,13 +22,14 @@ def is_valid_wheel_name(filename):
         if not build_tag[0].isdigit():
             return False
         try:
-            parse_tag(py_tag + "-" + abi_platform + "-" +
-                      abi_platform.split("-")[-1])
+            parse_tag(py_tag + "-" + abi_platform + "-" + abi_platform.split("-")[-1])
         except Exception:
             return False
         return True
     except Exception:
         return False
+
+
 def main():
     invalid_dir = "invalid_wheels"
     os.makedirs(invalid_dir, exist_ok=True)
@@ -37,5 +40,7 @@ def main():
                 shutil.move(filename, os.path.join(invalid_dir, filename))
             else:
                 print(f"Valid wheel name: {filename}")
+
+
 if __name__ == "__main__":
     main()

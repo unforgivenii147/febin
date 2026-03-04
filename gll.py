@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
+
+
 def main() -> int:
     if len(sys.argv) < 3:
         print(
@@ -37,12 +39,12 @@ def main() -> int:
     outname = "all.xtx"
     try:
         with (
-                path.open(
-                    "r",
-                    encoding="utf-8",
-                    errors="replace",
-                ) as infile,
-                open(outname, "w", encoding="utf-8") as outfile,
+            path.open(
+                "r",
+                encoding="utf-8",
+                errors="replace",
+            ) as infile,
+            open(outname, "w", encoding="utf-8") as outfile,
         ):
             for lineno, line in enumerate(infile, start=1):
                 if lineno < start:
@@ -58,5 +60,7 @@ def main() -> int:
         return 1
     print(f"Saved to {outname}")
     return 0
+
+
 if __name__ == "__main__":
     raise SystemExit(main())

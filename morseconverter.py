@@ -2,6 +2,7 @@
 import argparse
 import pathlib
 import sys
+
 MORSE_CODE_DICT = {
     "A": ".-",
     "B": "-...",
@@ -42,6 +43,8 @@ MORSE_CODE_DICT = {
     " ": "/",
 }
 REVERSE_MORSE_DICT = {v: k for k, v in MORSE_CODE_DICT.items()}
+
+
 def text_to_morse(text):
     morse = []
     for char in text.upper():
@@ -50,6 +53,8 @@ def text_to_morse(text):
         else:
             morse.append(char)
     return " ".join(morse)
+
+
 def morse_to_text(morse):
     text = []
     morse_chars = morse.split(" ")
@@ -59,35 +64,36 @@ def morse_to_text(morse):
         elif code:
             text.append(code)
     return "".join(text)
+
+
 def encrypt_file(input_filename, output_filename) -> None:
     try:
-        with pathlib.Path(input_filename).open("r",
-                                               encoding="utf-8") as infile:
+        with pathlib.Path(input_filename).open("r", encoding="utf-8") as infile:
             content = infile.read()
         morse_content = text_to_morse(content)
-        with pathlib.Path(output_filename).open("w",
-                                                encoding="utf-8") as outfile:
+        with pathlib.Path(output_filename).open("w", encoding="utf-8") as outfile:
             outfile.write(morse_content)
     except FileNotFoundError:
         sys.exit(1)
     except Exception:
         sys.exit(1)
+
+
 def decrypt_file(input_filename, output_filename) -> None:
     try:
-        with pathlib.Path(input_filename).open("r",
-                                               encoding="utf-8") as infile:
+        with pathlib.Path(input_filename).open("r", encoding="utf-8") as infile:
             morse_content = infile.read()
         text_content = morse_to_text(morse_content)
-        with pathlib.Path(output_filename).open("w",
-                                                encoding="utf-8") as outfile:
+        with pathlib.Path(output_filename).open("w", encoding="utf-8") as outfile:
             outfile.write(text_content)
     except FileNotFoundError:
         sys.exit(1)
     except Exception:
         sys.exit(1)
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Morse Code Encryptor/Decryptor")
+    parser = argparse.ArgumentParser(description="Morse Code Encryptor/Decryptor")
     parser.add_argument("input_file", help="Input file name")
     parser.add_argument("output_file", help="Output file name")
     parser.add_argument(
@@ -109,5 +115,7 @@ def main() -> None:
         encrypt_file(args.input_file, args.output_file)
     elif args.decrypt:
         decrypt_file(args.input_file, args.output_file)
+
+
 if __name__ == "__main__":
     main()

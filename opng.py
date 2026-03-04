@@ -4,6 +4,8 @@ import subprocess
 from multiprocessing import Pool
 from pathlib import Path
 from fastwalk import walk_files
+
+
 def find_png_files(directory):
     png_files = []
     for pth in walk_files(directory):
@@ -11,6 +13,8 @@ def find_png_files(directory):
         if path.suffix.lower() == ".png":
             png_files.append(path)
     return png_files
+
+
 def optimize_png(file_path):
     try:
         subprocess.run(
@@ -20,6 +24,8 @@ def optimize_png(file_path):
         return True, file_path
     except subprocess.CalledProcessError as e:
         return False, file_path, str(e)
+
+
 def main():
     current_dir = os.getcwd()
     png_files = find_png_files(current_dir)
@@ -32,5 +38,7 @@ def main():
             if result:
                 print(result)
     print("\nOptimization complete.")
+
+
 if __name__ == "__main__":
     main()

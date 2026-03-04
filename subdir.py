@@ -5,6 +5,8 @@ import tarfile
 import zipfile
 from pathlib import Path
 import py7zr
+
+
 def safe_mkdir(base: Path) -> Path:
     if not base.exists():
         base.mkdir()
@@ -16,6 +18,8 @@ def safe_mkdir(base: Path) -> Path:
             candidate.mkdir()
             return candidate
         i += 1
+
+
 def unzip_file(archive: Path, target_dir: Path) -> bool:
     archive_lower = archive.name.lower()
     try:
@@ -23,13 +27,11 @@ def unzip_file(archive: Path, target_dir: Path) -> bool:
             with tarfile.open(archive, "r:gz") as tar:
                 tar.extractall(target_dir)
             return True
-        elif archive_lower.endswith(".tar.bz2") or archive_lower.endswith(
-                ".tbz2"):
+        elif archive_lower.endswith(".tar.bz2") or archive_lower.endswith(".tbz2"):
             with tarfile.open(archive, "r:bz2") as tar:
                 tar.extractall(target_dir)
             return True
-        elif archive_lower.endswith(".tar.xz") or archive_lower.endswith(
-                ".txz"):
+        elif archive_lower.endswith(".tar.xz") or archive_lower.endswith(".txz"):
             with tarfile.open(archive, "r:xz") as tar:
                 tar.extractall(target_dir)
             return True
@@ -49,14 +51,16 @@ def unzip_file(archive: Path, target_dir: Path) -> bool:
             except py7zr.exceptions.Bad7zFile:
                 return False
     except (
-            tarfile.TarError,
-            zipfile.BadZipFile,
-            py7zr.exceptions.Bad7zFile,
-            OSError,
-            EOFError,
-            FileNotFoundError,
+        tarfile.TarError,
+        zipfile.BadZipFile,
+        py7zr.exceptions.Bad7zFile,
+        OSError,
+        EOFError,
+        FileNotFoundError,
     ):
         return False
+
+
 def main() -> None:
     cwd = Path.cwd()
     for item in cwd.iterdir():
@@ -72,5 +76,7 @@ def main() -> None:
             print(f"[OK] Unzipped and removed: {item.name}")
         else:
             print(f"[SKIP] Not a zip or unzip failed: {item.name}")
+
+
 if __name__ == "__main__":
     sys.exit(main())

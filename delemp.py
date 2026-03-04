@@ -8,6 +8,8 @@ from time import perf_counter
 from dh import format_size, get_nobinary, get_size, is_binary
 from fastwalk import walk_files
 from termcolor import cprint
+
+
 def process_file(filepath):
     if filepath.is_symlink():
         return False
@@ -15,9 +17,9 @@ def process_file(filepath):
         before = get_size(filepath)
         print(f"[OK] {filepath.name}", end=" ")
         with filepath.open(
-                "r+",
-                encoding="utf-8",
-                errors="ignore",
+            "r+",
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             lines = (line for line in f if line.strip())
             content = "".join(lines)
@@ -25,12 +27,14 @@ def process_file(filepath):
             f.write(content)
             f.truncate()
         after = get_size(filepath)
-        cprint(f"{format_size(before-after)}", "cyan")
+        cprint(f"{format_size(before - after)}", "cyan")
         return before != after
     except OSError:
         return False
+
+
 def main():
-    files=[]
+    files = []
     dir = Path.cwd()
     start_size = get_size(dir)
     args = sys.argv[1:]
@@ -38,7 +42,7 @@ def main():
         files = [Path(arg) for arg in args]
     else:
         files = get_nobinary(dir)
-    if len(files)==1:
+    if len(files) == 1:
         process_file(files[0])
         return
     with Pool(8) as p:
@@ -52,5 +56,7 @@ def main():
     end_size = get_size(dir)
     print("space freed: ", end=" ")
     cprint(f"{format_size(start_size - end_size)}", "cyan")
+
+
 if __name__ == "__main__":
     sys.exit(main())

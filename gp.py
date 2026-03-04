@@ -3,6 +3,8 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+
+
 def run(cmd) -> None:
     try:
         subprocess.check_call(cmd, shell=True)
@@ -12,6 +14,8 @@ def run(cmd) -> None:
             file=sys.stderr,
         )
         sys.exit(1)
+
+
 def ensure_git_repo() -> None:
     try:
         subprocess.check_output(
@@ -25,6 +29,8 @@ def ensure_git_repo() -> None:
             file=sys.stderr,
         )
         sys.exit(1)
+
+
 def symlink_global_gitignore() -> None:
     home_gitignore = Path.home() / ".gitignore"
     local_gitignore = Path(".gitignore")
@@ -42,9 +48,13 @@ def symlink_global_gitignore() -> None:
             file=sys.stderr,
         )
         sys.exit(1)
+
+
 def get_current_branch():
     cmd = "git rev-parse --abbrev-ref HEAD"
     return subprocess.check_output(cmd, shell=True).decode().strip()
+
+
 def main() -> None:
     ensure_git_repo()
     symlink_global_gitignore()
@@ -58,5 +68,7 @@ def main() -> None:
     branch = get_current_branch()
     run(f"git push origin {branch}")
     print(f"Pushed to origin/{branch} with message: {commit_msg}")
+
+
 if __name__ == "__main__":
     main()

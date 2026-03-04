@@ -5,21 +5,28 @@ import os
 import sqlite3
 import sys
 import py7zr
+
+
 def get_current_folder_name():
     return os.path.basename(os.getcwd())
+
+
 def get_user_folder_name(default_name):
     while True:
-        user_input = input(
-            f"Enter folder name (default: {default_name}): ").strip()
+        user_input = input(f"Enter folder name (default: {default_name}): ").strip()
         if not user_input:
             return default_name
         return user_input
+
+
 def folder_exists_in_db(cursor, folder_name):
     cursor.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-        (folder_name, ),
+        (folder_name,),
     )
     return cursor.fetchone() is not None
+
+
 def create_folder_table(cursor, folder_name):
     cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS "{folder_name}" (
@@ -31,6 +38,8 @@ def create_folder_table(cursor, folder_name):
             compressed_size INTEGER DEFAULT 0
         )
     """)
+
+
 def compress_data(data_bytes):
     """Compress data using 7z and return as base64 string"""
     if not data_bytes:
@@ -48,6 +57,8 @@ def compress_data(data_bytes):
     except Exception as e:
         print(f"    Compression error: {e!s}")
         return None
+
+
 def read_file_contents(filepath):
     try:
         encodings = [
@@ -59,28 +70,25 @@ def read_file_contents(filepath):
         get_size = os.path.getsize(filepath)
         # For very large files, warn but still try to read
         if get_size > 10 * 1024 * 1024:  # 10MB
-            print(
-                f"    Warning: Large file ({get_size / 1024 / 1024:.1f}MB), may take time to compress"
-            )
+            print(f"    Warning: Large file ({get_size / 1024 / 1024:.1f}MB), may take time to compress")
         # First try to read as text
         for encoding in encodings:
             try:
                 with open(filepath, encoding=encoding) as f:
                     content = f.read()
                     return {
-                        "content":
-                        content,
-                        "is_binary":
-                        False,
-                        "original_size":
-                        len(content.encode(
-                            "utf-8",
-                            errors="replace",
-                        )),
+                        "content": content,
+                        "is_binary": False,
+                        "original_size": len(
+                            content.encode(
+                                "utf-8",
+                                errors="replace",
+                            )
+                        ),
                     }
             except (
-                    UnicodeDecodeError,
-                    UnicodeError,
+                UnicodeDecodeError,
+                UnicodeError,
             ):
                 continue
         # If text reading fails, read as binary
@@ -105,12 +113,13 @@ def read_file_contents(filepath):
             "is_binary": False,
             "original_size": len(error_msg),
         }
+
+
 def get_files_in_current_dir():
     current_dir = os.getcwd()
     files = []
     try:
-        for item in sorted(
-                os.listdir(current_dir)):  # Sort for consistent order
+        for item in sorted(os.listdir(current_dir)):  # Sort for consistent order
             item_path = os.path.join(current_dir, item)
             if os.path.isfile(item_path):
                 get_size = os.path.getsize(item_path)
@@ -122,50 +131,46 @@ def get_files_in_current_dir():
                     # Compress binary content
                     compressed = compress_data(file_data["content"])
                     if compressed:
-                        files.append({
-                            "filename":
-                            item,
-                            "contents":
-                            compressed,
-                            "compressed":
-                            1,
-                            "original_size":
-                            file_data["original_size"],
-                            "compressed_size":
-                            len(compressed),
-                        })
+                        files.append(
+                            {
+                                "filename": item,
+                                "contents": compressed,
+                                "compressed": 1,
+                                "original_size": file_data["original_size"],
+                                "compressed_size": len(compressed),
+                            }
+                        )
                         print(
                             f"    ✓ Compressed {file_data['original_size'] / 1024:.1f}KB to {len(compressed) / 1024:.1f}KB"
                         )
                     else:
                         # Fallback to storing as text representation if compression fails
-                        files.append({
-                            "filename":
-                            item,
-                            "contents":
-                            "[Binary file - compression failed]",
-                            "compressed":
-                            0,
-                            "original_size":
-                            file_data["original_size"],
-                            "compressed_size":
-                            0,
-                        })
+                        files.append(
+                            {
+                                "filename": item,
+                                "contents": "[Binary file - compression failed]",
+                                "compressed": 0,
+                                "original_size": file_data["original_size"],
+                                "compressed_size": 0,
+                            }
+                        )
                 else:
                     # Store text files uncompressed (they're already efficient)
-                    files.append({
-                        "filename": item,
-                        "contents": file_data["content"],
-                        "compressed": 0,
-                        "original_size": file_data["original_size"],
-                        "compressed_size": 0,
-                    })
-                    print(
-                        f"    ✓ Stored as text ({file_data['original_size'] / 1024:.1f}KB)"
+                    files.append(
+                        {
+                            "filename": item,
+                            "contents": file_data["content"],
+                            "compressed": 0,
+                            "original_size": file_data["original_size"],
+                            "compressed_size": 0,
+                        }
                     )
+                    print(f"    ✓ Stored as text ({file_data['original_size'] / 1024:.1f}KB)")
     except PermissionError:
         print("Warning: Permission denied accessing some files")
     return files
+
+
 def insert_files(cursor, folder_name, files):
     for file_info in files:
         cursor.execute(
@@ -181,6 +186,8 @@ def insert_files(cursor, folder_name, files):
                 file_info.get("compressed_size", 0),
             ),
         )
+
+
 def main():
     # Check if py7zr is installed
     try:
@@ -192,9 +199,7 @@ def main():
     db_path = "/sdcard/pkgs.db"
     # Check permissions
     if not os.access("/sdcard/", os.W_OK):
-        print(
-            "Error: Cannot write to /sdcard/. Make sure you have proper permissions."
-        )
+        print("Error: Cannot write to /sdcard/. Make sure you have proper permissions.")
         print("On Android, you might need to:")
         print("1. Grant storage permissions to Termux/terminal app")
         print("2. Or run the script with appropriate permissions")
@@ -224,19 +229,17 @@ def main():
         # Calculate statistics
         total_original = sum(f.get("original_size", 0) for f in files)
         total_compressed = sum(f.get("compressed_size", 0) for f in files)
-        print(
-            f"\n✅ Successfully added {len(files)} files to table '{folder_name}'"
-        )
+        print(f"\n✅ Successfully added {len(files)} files to table '{folder_name}'")
         if total_compressed > 0:
-            ratio = (1 - total_compressed /
-                     total_original) * 100 if total_original > 0 else 0
+            ratio = (1 - total_compressed / total_original) * 100 if total_original > 0 else 0
             print("📊 Storage stats:")
             print(f"   Original size: {total_original / 1024 / 1024:.2f}MB")
-            print(
-                f"   Compressed size: {total_compressed / 1024 / 1024:.2f}MB")
+            print(f"   Compressed size: {total_compressed / 1024 / 1024:.2f}MB")
             print(f"   Compression ratio: {ratio:.1f}% saved")
         else:
             print(f"   Total size: {total_original / 1024 / 1024:.2f}MB")
     conn.close()
+
+
 if __name__ == "__main__":
     main()

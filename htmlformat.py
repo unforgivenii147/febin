@@ -1,10 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 import regex as re
+
 HTML_EXTS = {".html", ".htm", ".svg", ".xml"}
 SKIP_TAGS = ("pre", "code")
 SKIP_OPEN_RE = re.compile(r"<\s*(pre|code)\b", re.IGNORECASE)
 SKIP_CLOSE_RE = re.compile(r"<\s*/\s*(pre|code)\s*>", re.IGNORECASE)
+
+
 def split_tags_preserve_indent(line: str) -> str:
     indent = re.match(r"\s*", line).group(0)
     stripped = line.strip()
@@ -26,6 +29,8 @@ def split_tags_preserve_indent(line: str) -> str:
     if buffer.strip():
         rebuilt.append(indent + buffer.strip())
     return "\n".join(rebuilt)
+
+
 def format_file(path: Path):
     content = path.read_text(encoding="utf-8", errors="ignore")
     lines = content.splitlines()
@@ -45,9 +50,13 @@ def format_file(path: Path):
         encoding="utf-8",
     )
     print(f"[+] Processed: {path}")
+
+
 def main():
     for file in Path.cwd().rglob("*"):
         if file.is_file() and file.suffix.lower() in HTML_EXTS:
             format_file(file)
+
+
 if __name__ == "__main__":
     main()

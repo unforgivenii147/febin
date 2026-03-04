@@ -2,6 +2,8 @@
 import sys
 from pathlib import Path
 from fastwalk import walk_files
+
+
 def ensure_bracket(fn):
     open_parantez_count = 0
     close_parantez_count = 0
@@ -25,21 +27,19 @@ def ensure_bracket(fn):
                 open_cbraket_count += 1
             if content[i] == "}":
                 close_cbraket_count += 1
-    print(
-        f"open_parantez_count : {open_parantez_count}\nclose_parantez_count : {close_parantez_count}"
-    )
-    print(
-        f"open_braket_count : {open_braket_count}\nclose_braket_count : {close_braket_count}"
-    )
-    print(
-        f"open_cbraket_count : {open_cbraket_count}\nclose_cbraket_count : {close_cbraket_count}"
-    )
-    if (open_parantez_count == close_parantez_count
-            and open_braket_count == close_braket_count
-            and open_cbraket_count == close_cbraket_count):
+    print(f"open_parantez_count : {open_parantez_count}\nclose_parantez_count : {close_parantez_count}")
+    print(f"open_braket_count : {open_braket_count}\nclose_braket_count : {close_braket_count}")
+    print(f"open_cbraket_count : {open_cbraket_count}\nclose_cbraket_count : {close_cbraket_count}")
+    if (
+        open_parantez_count == close_parantez_count
+        and open_braket_count == close_braket_count
+        and open_cbraket_count == close_cbraket_count
+    ):
         return True
     else:
         return False
+
+
 def main():
     if len(sys.argv > 0):
         filename = sys.argv[1]
@@ -47,5 +47,7 @@ def main():
             print("ok")
         else:
             print("error")
+
+
 if __name__ == "__main__":
     main()

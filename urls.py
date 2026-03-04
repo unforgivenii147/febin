@@ -8,13 +8,12 @@ from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse, urlunparse
 import regex as re
+
 try:
     import zstandard as zstd
 except Exception:
     zstd = None
-URL_RE = re.compile(
-    r"""(https?://[^\s<>"\']+|\bwww\.[^\s<>"\']+\b|\b[^\s<>"\']+\.(com|net|org)[^\s<>"\']*)"""
-)
+URL_RE = re.compile(r"""(https?://[^\s<>"\']+|\bwww\.[^\s<>"\']+\b|\b[^\s<>"\']+\.(com|net|org)[^\s<>"\']*)""")
 GITHUB_RE = re.compile(r"(?i)github\.com")
 MAX_WORKERS = os.cpu_count() or 4
 all_urls: set[str] = set()
@@ -29,26 +28,30 @@ git_urls_classified: dict[str, set[str]] = {
     "other": set(),
 }
 lock = threading.Lock()
+
+
 def normalize_url(url: str) -> str:
     try:
         p = urlparse(url)
         scheme = p.scheme.lower()
         netloc = p.netloc.lower()
-        if (scheme == "http"
-                and netloc.endswith(":80")) or (scheme == "https"
-                                                and netloc.endswith(":443")):
+        if (scheme == "http" and netloc.endswith(":80")) or (scheme == "https" and netloc.endswith(":443")):
             netloc = netloc.rsplit(":", 1)[0]
         path = p.path.rstrip("/") or "/"
-        return urlunparse((
-            scheme,
-            netloc,
-            path,
-            "",
-            p.query,
-            "",
-        ))
+        return urlunparse(
+            (
+                scheme,
+                netloc,
+                path,
+                "",
+                p.query,
+                "",
+            )
+        )
     except Exception:
         return url
+
+
 def classify_github_url(url: str) -> str:
     try:
         p = urlparse(url)
@@ -69,12 +72,18 @@ def classify_github_url(url: str) -> str:
         return "other"
     except Exception:
         return "other"
-def extract_urls_from_bytes(data: bytes, ) -> set[str]:
+
+
+def extract_urls_from_bytes(
+    data: bytes,
+) -> set[str]:
     try:
         text = data.decode("utf-8", errors="ignore")
         return {normalize_url(u) for u in URL_RE.findall(text)}
     except Exception:
         return set()
+
+
 def handle_file_bytes(data: bytes) -> None:
     urls = extract_urls_from_bytes(data)
     if not urls:
@@ -86,12 +95,16 @@ def handle_file_bytes(data: bytes) -> None:
                 git_urls.add(u)
                 cat = classify_github_url(u)
                 git_urls_classified[cat].add(u)
+
+
 def process_regular_file(path: str) -> None:
     try:
         with open(path, "rb") as f:
             handle_file_bytes(f.read())
     except Exception:
         pass
+
+
 def process_zip(path: str) -> None:
     try:
         with zipfile.ZipFile(path) as z:
@@ -102,6 +115,8 @@ def process_zip(path: str) -> None:
                     continue
     except Exception:
         pass
+
+
 def process_tar(path: str) -> None:
     try:
         with tarfile.open(path, "r:*") as t:
@@ -115,6 +130,8 @@ def process_tar(path: str) -> None:
                         continue
     except Exception:
         pass
+
+
 def process_tar_zst(path: str) -> None:
     if not zstd:
         return
@@ -133,6 +150,8 @@ def process_tar_zst(path: str) -> None:
                             continue
     except Exception:
         pass
+
+
 def process_path(path: str) -> None:
     p = path.lower()
     if p.endswith((".zip", ".whl")):
@@ -143,10 +162,14 @@ def process_path(path: str) -> None:
         process_tar_zst(path)
     else:
         process_regular_file(path)
+
+
 def iter_files(root: str) -> Iterable[str]:
     for base, _, files in os.walk(root):
         for f in files:
             yield os.path.join(base, f)
+
+
 def main() -> None:
     files = list(iter_files("."))
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
@@ -157,22 +180,24 @@ def main() -> None:
         for u in sorted(all_urls):
             f.write(u + "\n")
     with open(
-            "/sdcard/giturls.txt",
-            "a",
-            encoding="utf-8",
+        "/sdcard/giturls.txt",
+        "a",
+        encoding="utf-8",
     ) as f:
         for u in sorted(git_urls):
             f.write(u + "\n")
     with open(
-            "/sdcard/giturls_classified.txt",
-            "a",
-            encoding="utf-8",
+        "/sdcard/giturls_classified.txt",
+        "a",
+        encoding="utf-8",
     ) as f:
         for (
-                cat,
-                urls,
+            cat,
+            urls,
         ) in git_urls_classified.items():
             for u in sorted(urls):
                 f.write(f"{cat}\t{u}\n")
+
+
 if __name__ == "__main__":
     main()

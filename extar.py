@@ -5,6 +5,7 @@ If a filename is provided, process only that file.
 If no argument, recursively search current directory.
 Deletes original archives after successful extraction and reports size change.
 """
+
 import argparse
 import sys
 import tarfile
@@ -12,9 +13,13 @@ import tempfile
 import time
 from pathlib import Path
 import zstd
+
+
 def get_dir_size(path):
     """Calculate total size of directory in bytes."""
     return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
+
+
 def extract_zst_file(archive_path, extract_path):
     """Extract a standalone .zst file."""
     output_path = extract_path / archive_path.stem
@@ -23,12 +28,13 @@ def extract_zst_file(archive_path, extract_path):
         with open(output_path, "wb") as output_file:
             dctx.copy_stream(compressed_file, output_file)
     return output_path
+
+
 def extract_tar_zst(archive_path, extract_path):
     """Extract tar.zst archive using zstandard library."""
     with open(archive_path, "rb") as compressed_file:
         dctx = zstd.ZstdDecompressor()
-        with tempfile.NamedTemporaryFile(suffix=".tar",
-                                         delete=False) as temp_tar:
+        with tempfile.NamedTemporaryFile(suffix=".tar", delete=False) as temp_tar:
             dctx.copy_stream(compressed_file, temp_tar)
             temp_tar_path = temp_tar.name
     try:
@@ -39,10 +45,14 @@ def extract_tar_zst(archive_path, extract_path):
             )
     finally:
         Path(temp_tar_path).unlink()
+
+
 def extract_tar_xz(archive_path, extract_path):
     """Extract tar.xz archive."""
     with tarfile.open(archive_path, "r:xz") as tar:
         tar.extractall(path=extract_path, filter="data")
+
+
 def process_archive(archive_path, dry_run=False, quiet=False):
     """
     Process a single archive: extract it and delete original if successful.
@@ -77,17 +87,14 @@ def process_archive(archive_path, dry_run=False, quiet=False):
             extract_tar_xz(archive_path, extract_path)
             extracted_files = ["multiple files (tar contents)"]
         extracted_size = 0
-        if extracted_files and extracted_files[
-                0] != "multiple files (tar contents)":
+        if extracted_files and extracted_files[0] != "multiple files (tar contents)":
             for file_path in extracted_files:
                 if file_path.exists():
                     extracted_size += file_path.stat().st_size
         else:
             current_time = time.time()
             for item in extract_path.rglob("*"):
-                if item.is_file(
-                ) and item != archive_path and current_time - item.stat(
-                ).st_ctime < 60:
+                if item.is_file() and item != archive_path and current_time - item.stat().st_ctime < 60:
                     extracted_size += item.stat().st_size
         archive_path.unlink()
         if not quiet:
@@ -97,6 +104,8 @@ def process_archive(archive_path, dry_run=False, quiet=False):
         if not quiet:
             print(f"Error processing {archive_name}: {e}")
         return False, 0, 0
+
+
 def find_archives(directory):
     """Find all supported archives in directory recursively."""
     directory = Path(directory).resolve()
@@ -107,6 +116,8 @@ def find_archives(directory):
     archives.extend(directory.rglob("*.tar.zst"))
     archives.extend(directory.rglob("*.tar.xz"))
     return sorted(set(archives))
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Extract .zst, .tar.zst, and .tar.xz archives.\n"
@@ -119,8 +130,7 @@ def main():
         "target",
         nargs="?",
         default=None,
-        help=
-        "File to extract or directory to search (default: current directory)",
+        help="File to extract or directory to search (default: current directory)",
     )
     parser.add_argument(
         "--dry-run",
@@ -210,5 +220,7 @@ def main():
             print(f"\n{'=' * 50}")
             print(f"DRY RUN: Would process {len(archives)} archives")
         return 0
+
+
 if __name__ == "__main__":
     sys.exit(main())

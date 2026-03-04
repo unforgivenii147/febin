@@ -5,6 +5,7 @@ from pathlib import Path
 from dh import format_size, get_size
 from fastwalk import walk_files
 from termcolor import cprint
+
 FILE_EXTENSIONS = {
     ".c",
     ".cpp",
@@ -17,6 +18,8 @@ FILE_EXTENSIONS = {
     ".js",
     ".json",
 }
+
+
 def format_file(file_path):
     init_size = file_path.stat().st_size
     try:
@@ -40,11 +43,13 @@ def format_file(file_path):
             print(f"[OK] {file_path.name} - {format_size(abs(size_diff))}")
         return True
     except (
-            subprocess.CalledProcessError,
-            FileNotFoundError,
+        subprocess.CalledProcessError,
+        FileNotFoundError,
     ):
         print(f"[ERR] {res.stderr!s} {file_path.name}")
         return False
+
+
 def main() -> None:
     cfiles = []
     dir = str(Path().cwd().resolve())
@@ -59,11 +64,13 @@ def main() -> None:
     cprint(f"{len(cfiles)} files found...", "cyan")
     pool = Pool(6)
     for f in cfiles:
-        pool.apply_async(format_file, ((f), ))
+        pool.apply_async(format_file, ((f),))
     pool.close()
     pool.join()
     endsize = get_size(dir)
     diffsize = initsize - endsize
     print(f"dir size changed: {format_size(abs(diffsize))}")
+
+
 if __name__ == "__main__":
     main()

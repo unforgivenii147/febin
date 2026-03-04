@@ -2,9 +2,12 @@
 from pathlib import Path
 from urllib.parse import urlparse
 import regex as re
+
 INPUT_FILE = Path("urls.txt")
 OUTPUT_FILE = Path("filtered_urls.txt")
 EXT_PATTERN = re.compile(r"\.(min\.)?(js|css)$", re.IGNORECASE)
+
+
 def is_static_asset(url: str) -> bool:
     url = url.strip()
     if not url:
@@ -12,6 +15,8 @@ def is_static_asset(url: str) -> bool:
     parsed = urlparse(url)
     path = parsed.path
     return bool(EXT_PATTERN.search(path))
+
+
 def main():
     if not INPUT_FILE.exists():
         print("urls.txt not found.")
@@ -28,5 +33,7 @@ def main():
         f.write("\n".join(filtered))
     print(f"Kept {len(filtered)} URLs.")
     print(f"Saved to {OUTPUT_FILE}")
+
+
 if __name__ == "__main__":
     main()

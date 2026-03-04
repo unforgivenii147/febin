@@ -4,16 +4,21 @@ import argparse
 from multiprocessing import Pool
 from pathlib import Path
 from dh import format_size, get_size, is_image, unique_path
+
 try:
     import cv2
     import numpy as np
+
     USE_CV2 = True
 except ImportError:
     from PIL import Image
+
     USE_CV2 = False
 IGNORED_DIRS = {
     ".git",
 }
+
+
 def convert_file(file_path: str) -> bool:
     path = Path(file_path)
     if not path.is_file():
@@ -38,12 +43,9 @@ def convert_file(file_path: str) -> bool:
                     dtype=np.uint8,
                 )
                 alpha = a.astype(float) / 255.0
-                img_b = (b.astype(float) * alpha + white_bg.astype(float) *
-                         (1 - alpha)).astype(np.uint8)
-                img_g = (g.astype(float) * alpha + white_bg.astype(float) *
-                         (1 - alpha)).astype(np.uint8)
-                img_r = (r.astype(float) * alpha + white_bg.astype(float) *
-                         (1 - alpha)).astype(np.uint8)
+                img_b = (b.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
+                img_g = (g.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
+                img_r = (r.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
                 final_img = cv2.merge((img_b, img_g, img_r))
             else:
                 final_img = img
@@ -79,20 +81,20 @@ def convert_file(file_path: str) -> bool:
     except Exception as e:
         print(f"Error converting '{path.name}': {e}")
         return False
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description="jpg")
     p.add_argument("files", nargs="*")
     args = p.parse_args()
     start_size = get_size(".")
     if args.files:
-        files = [
-            Path(f) for f in args.files if Path(f).is_file() and is_image(f)
-        ]
+        files = [Path(f) for f in args.files if Path(f).is_file() and is_image(f)]
     else:
         files = [
-            f for f in Path(".").rglob("*")
-            if f.is_file() and is_image(f) and not any(part in IGNORED_DIRS
-                                                       for part in f.parts)
+            f
+            for f in Path(".").rglob("*")
+            if f.is_file() and is_image(f) and not any(part in IGNORED_DIRS for part in f.parts)
         ]
     if not files:
         print("No image files detected.")
@@ -104,5 +106,7 @@ def main() -> None:
     pool.join()
     end_size = get_size(".")
     print(f"{format_size(abs(end_size - start_size))}")
+
+
 if __name__ == "__main__":
     main()

@@ -3,8 +3,11 @@ import argparse
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 import regex as re
+
 NORMAL_IMPORT = r"^import re\b"
 REGEX_IMPORT = r"^import regex as re\b"
+
+
 def update_file(file_path, reverse=False):
     try:
         lines = file_path.read_text(encoding="utf-8").splitlines(keepends=True)
@@ -14,11 +17,13 @@ def update_file(file_path, reverse=False):
         replacement = "import re" if reverse else "import regex as re"
         for line in lines:
             if not changed and re.match(search_pat, line):
-                new_lines.append(re.sub(
-                    search_pat,
-                    replacement,
-                    line,
-                ))
+                new_lines.append(
+                    re.sub(
+                        search_pat,
+                        replacement,
+                        line,
+                    )
+                )
                 changed = True
             else:
                 new_lines.append(line)
@@ -31,9 +36,10 @@ def update_file(file_path, reverse=False):
         return None
     except Exception as e:
         return f"Error processing {file_path}: {e}"
+
+
 def main():
-    parser = argparse.ArgumentParser(
-        description="Recursively swap 'import re' with 'import regex as re'")
+    parser = argparse.ArgumentParser(description="Recursively swap 'import re' with 'import regex as re'")
     parser.add_argument(
         "-r",
         "--reverse",
@@ -49,10 +55,13 @@ def main():
                 update_file,
                 py_files,
                 [args.reverse] * len(py_files),
-            ))
+            )
+        )
     updates = [r for r in results if r]
     for msg in updates:
         print(msg)
     print(f"\nTask complete. Files modified: {len(updates)}")
+
+
 if __name__ == "__main__":
     main()

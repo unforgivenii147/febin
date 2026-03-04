@@ -5,8 +5,11 @@ import os
 from collections import defaultdict
 from datetime import datetime
 import xxhash
+
 BACKUP_FILE = ".symlink_backup.json"
 MIN_FILE_SIZE = 8
+
+
 def calculate_file_hash(filepath, chunk_size=8192):
     hasher = xxhash.xxh64()
     try:
@@ -17,6 +20,8 @@ def calculate_file_hash(filepath, chunk_size=8192):
     except OSError as e:
         print(f"[ERROR] Reading {filepath}: {e}")
         return None
+
+
 def find_duplicates(directory="."):
     print(f"[INFO] Scanning directory: {os.path.abspath(directory)}")
     size_map = defaultdict(list)
@@ -35,35 +40,30 @@ def find_duplicates(directory="."):
             try:
                 size = os.path.getsize(filepath)
                 if size < MIN_FILE_SIZE:
-                    print(
-                        f"[DEBUG] Skipping file under {MIN_FILE_SIZE} bytes: {filepath}"
-                    )
+                    print(f"[DEBUG] Skipping file under {MIN_FILE_SIZE} bytes: {filepath}")
                     skipped_count += 1
                     continue
                 size_map[size].append(filepath)
                 file_count += 1
             except OSError as e:
                 print(f"[ERROR] Accessing {filepath}: {e}")
-    print(
-        f"[INFO] Scanned {file_count + skipped_count} files ({skipped_count} skipped due to size)"
-    )
-    print(
-        f"[INFO] Found {file_count} files that qualify for duplicate analysis")
+    print(f"[INFO] Scanned {file_count + skipped_count} files ({skipped_count} skipped due to size)")
+    print(f"[INFO] Found {file_count} files that qualify for duplicate analysis")
     hash_map = defaultdict(list)
-    potential_duplicates = [
-        files for files in size_map.values() if len(files) > 1
-    ]
-    print(
-        f"[INFO] Checking {sum(len(files) for files in potential_duplicates)} potential duplicates..."
-    )
+    potential_duplicates = [files for files in size_map.values() if len(files) > 1]
+    print(f"[INFO] Checking {sum(len(files) for files in potential_duplicates)} potential duplicates...")
     for files in potential_duplicates:
         for filepath in files:
             file_hash = calculate_file_hash(filepath)
             if file_hash:
                 hash_map[file_hash].append(filepath)
     return {h: files for h, files in hash_map.items() if len(files) > 1}
+
+
 def choose_keeper(files):
     return min(files, key=lambda f: (len(f), f))
+
+
 def create_symlinks(duplicates, dry_run=False):
     backup_data = {
         "timestamp": datetime.now().isoformat(),
@@ -83,12 +83,14 @@ def create_symlinks(duplicates, dry_run=False):
             get_size = os.path.getsize(duplicate)
             print(f"  Symlinking: {duplicate} -> {keeper_abs}")
             if not dry_run:
-                backup_data["operations"].append({
-                    "symlink": duplicate_abs,
-                    "target": keeper_abs,
-                    "original_existed": True,
-                    "size": get_size,
-                })
+                backup_data["operations"].append(
+                    {
+                        "symlink": duplicate_abs,
+                        "target": keeper_abs,
+                        "original_existed": True,
+                        "size": get_size,
+                    }
+                )
                 try:
                     os.remove(duplicate)
                     os.symlink(keeper_abs, duplicate_abs)
@@ -97,9 +99,7 @@ def create_symlinks(duplicates, dry_run=False):
                 except OSError as e:
                     print(f"  [ERROR] {e}")
             else:
-                print(
-                    f"  [DRY RUN] Would replace {duplicate} with symlink to {keeper}"
-                )
+                print(f"  [DRY RUN] Would replace {duplicate} with symlink to {keeper}")
                 symlink_count += 1
                 total_saved += get_size
     if not dry_run and symlink_count > 0:
@@ -112,14 +112,15 @@ def create_symlinks(duplicates, dry_run=False):
     if dry_run:
         print("[DRY RUN] No changes were made")
     return symlink_count
+
+
 def reverse_symlinks(backup_file=BACKUP_FILE):
     if not os.path.exists(backup_file):
         print(f"[ERROR] Backup file {backup_file} not found!")
         return False
     with open(backup_file) as f:
         backup_data = json.load(f)
-    print(
-        f"[INFO] Restoring from backup created at: {backup_data['timestamp']}")
+    print(f"[INFO] Restoring from backup created at: {backup_data['timestamp']}")
     print(f"[INFO] Operations to reverse: {len(backup_data['operations'])}")
     restored_count = 0
     for op in backup_data["operations"]:
@@ -134,6 +135,7 @@ def reverse_symlinks(backup_file=BACKUP_FILE):
         try:
             os.remove(symlink_path)
             import shutil
+
             shutil.copy2(target_path, symlink_path)
             restored_count += 1
             print(f"[INFO] Restored: {symlink_path}")
@@ -144,10 +146,10 @@ def reverse_symlinks(backup_file=BACKUP_FILE):
     os.rename(backup_file, backup_renamed)
     print(f"[INFO] Backup file renamed to: {backup_renamed}")
     return True
+
+
 def main():
-    parser = argparse.ArgumentParser(
-        description=
-        "Find duplicate files and replace with symlinks (reversible)")
+    parser = argparse.ArgumentParser(description="Find duplicate files and replace with symlinks (reversible)")
     parser.add_argument(
         "directory",
         nargs="?",
@@ -178,11 +180,11 @@ def main():
             print("\n[INFO] No duplicates found!")
             return
         print(f"\n[INFO] Found {len(duplicates)} groups of duplicates")
-        print(
-            f"[INFO] Total duplicate files: {sum(len(files) - 1 for files in duplicates.values())}"
-        )
+        print(f"[INFO] Total duplicate files: {sum(len(files) - 1 for files in duplicates.values())}")
         if args.dry_run:
             print("\n[INFO] [DRY RUN MODE - No changes will be made]")
         create_symlinks(duplicates, dry_run=args.dry_run)
+
+
 if __name__ == "__main__":
     main()

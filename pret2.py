@@ -4,14 +4,17 @@ import shutil
 import subprocess
 from pathlib import Path
 from dh import unique_path
-EXTENSIONS = {
-    ".js", ".css", ".html", ".json", ".mjs", ".cjs", ".ts", ".jsx", ".tsx"
-}
+
+EXTENSIONS = {".js", ".css", ".html", ".json", ".mjs", ".cjs", ".ts", ".jsx", ".tsx"}
 EXCLUDE_PATTERNS = {".py", ".ipynb"}
+
+
 def should_format(file_path: Path) -> bool:
     if file_path.suffix not in EXTENSIONS:
         return False
     return all(not file_path.name.endswith(p) for p in EXCLUDE_PATTERNS)
+
+
 def get_files_to_format(root_dir: str = ".") -> list[Path]:
     root = Path(root_dir).resolve()
     files: list[Path] = []
@@ -23,6 +26,8 @@ def get_files_to_format(root_dir: str = ".") -> list[Path]:
         if should_format(path):
             files.append(path)
     return files
+
+
 def move_to_error_folder(file_path: Path) -> None:
     error_dir = file_path.parent / "error"
     error_dir.mkdir(exist_ok=True)
@@ -30,6 +35,8 @@ def move_to_error_folder(file_path: Path) -> None:
     dest = unique_path(dest)
     shutil.move(str(file_path), str(dest))
     print(f"  ❌ Moved to error folder: {dest}")
+
+
 def format_file(file_path: Path) -> tuple[Path, bool, str | None]:
     try:
         result = subprocess.run(
@@ -51,6 +58,8 @@ def format_file(file_path: Path) -> tuple[Path, bool, str | None]:
         )
     except Exception as e:
         return file_path, False, str(e)
+
+
 def main():
     cwd = os.getcwd()
     print(f"📁 Scanning directory: {cwd}")
@@ -77,5 +86,7 @@ def main():
     print(f"   ❌ Errors encountered: {error_count}")
     print(f"   📁 Total processed: {len(files)}")
     print("=" * 60)
+
+
 if __name__ == "__main__":
     main()

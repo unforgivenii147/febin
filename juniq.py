@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import json
 import sys
+
 if len(sys.argv) != 2:
     print("Usage: python dedup_json.py <json_file>")
     sys.exit(1)

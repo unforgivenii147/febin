@@ -6,15 +6,17 @@ python script to sort lines of a given file and write back unique lines
 - uses mmap for files larger than 10MB
 - reports number of lines removed if any
 """
+
 import os
 import sys
+
+
 def sort_uniq(filename):
     get_size = os.path.getsize(filename)
     if get_size > 10 * 1024 * 1024:
         import mmap
-        with open(filename,
-                  "r+") as f, mmap.mmap(f.fileno(), 0,
-                                        access=mmap.ACCESS_READ) as mm:
+
+        with open(filename, "r+") as f, mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
             lines = mm.read().decode("utf-8").splitlines()
     else:
         with open(filename) as f:
@@ -27,6 +29,8 @@ def sort_uniq(filename):
         for line in unique_lines:
             f.write(line + "\n")
     return lines_removed
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python sort_uniq.py <filename>")

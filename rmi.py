@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
+
 INVISIBLE_CHARS = {
     "\u200b",
     "\u200c",
@@ -13,6 +14,8 @@ INVISIBLE_CHARS = {
     "\u202d",
     "\u202e",
 }
+
+
 def clean_text(text: str) -> str:
     cleaned = ""
     for c in text:
@@ -25,11 +28,13 @@ def clean_text(text: str) -> str:
             continue
         cleaned += c
     return cleaned
+
+
 def main():
     with open(
-            sys.argv[1],
-            encoding="utf-8",
-            errors="ignore",
+        sys.argv[1],
+        encoding="utf-8",
+        errors="ignore",
     ) as f:
         text = f.read()
     cleaned = clean_text(text)
@@ -41,5 +46,7 @@ def main():
     with open(sys.argv[1], "w", encoding="utf-8") as f:
         f.write(cleaned)
     print("done")
+
+
 if __name__ == "__main__":
     main()

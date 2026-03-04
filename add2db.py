@@ -2,21 +2,28 @@
 import os
 import sqlite3
 import sys
+
+
 def get_current_folder_name():
     return os.path.basename(os.getcwd())
+
+
 def get_user_folder_name(default_name):
     while True:
-        user_input = input(
-            f"Enter folder name (default: {default_name}): ").strip()
+        user_input = input(f"Enter folder name (default: {default_name}): ").strip()
         if not user_input:
             return default_name
         return user_input
+
+
 def folder_exists_in_db(cursor, folder_name):
     cursor.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-        (folder_name, ),
+        (folder_name,),
     )
     return cursor.fetchone() is not None
+
+
 def create_folder_table(cursor, folder_name):
     cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS "{folder_name}" (
@@ -25,6 +32,8 @@ def create_folder_table(cursor, folder_name):
             file_contents TEXT
         )
     """)
+
+
 def read_file_contents(filepath):
     try:
         encodings = [
@@ -38,8 +47,8 @@ def read_file_contents(filepath):
                 with open(filepath, encoding=encoding) as f:
                     return f.read(1024 * 1024)
             except (
-                    UnicodeDecodeError,
-                    UnicodeError,
+                UnicodeDecodeError,
+                UnicodeError,
             ):
                 continue
         return "[Binary file content not stored]"
@@ -47,6 +56,8 @@ def read_file_contents(filepath):
         return "[Permission denied - cannot read file]"
     except Exception as e:
         return f"[Error reading file: {e!s}]"
+
+
 def get_files_in_current_dir():
     current_dir = os.getcwd()
     files = []
@@ -56,13 +67,17 @@ def get_files_in_current_dir():
             if os.path.isfile(item_path):
                 print(f"  Reading: {item}")
                 contents = read_file_contents(item_path)
-                files.append({
-                    "filename": item,
-                    "contents": contents,
-                })
+                files.append(
+                    {
+                        "filename": item,
+                        "contents": contents,
+                    }
+                )
     except PermissionError:
         print("Warning: Permission denied accessing some files")
     return files
+
+
 def insert_files(cursor, folder_name, files):
     for file_info in files:
         cursor.execute(
@@ -75,11 +90,11 @@ def insert_files(cursor, folder_name, files):
                 file_info["contents"],
             ),
         )
+
+
 def main():
     if not os.access("/sdcard/", os.W_OK):
-        print(
-            "Error: Cannot write to /sdcard/. Make sure you have proper permissions."
-        )
+        print("Error: Cannot write to /sdcard/. Make sure you have proper permissions.")
         print("On Android, you might need to:")
         print("1. Grant storage permissions to Termux/terminal app")
         print("2. Or run the script with appropriate permissions")
@@ -103,8 +118,8 @@ def main():
         print(f"\nFound {len(files)} files:")
         insert_files(cursor, folder_name, files)
         conn.commit()
-        print(
-            f"\n✅ Successfully added {len(files)} files to table '{folder_name}'"
-        )
+        print(f"\n✅ Successfully added {len(files)} files to table '{folder_name}'")
+
+
 if __name__ == "__main__":
     main()

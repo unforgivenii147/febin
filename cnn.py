@@ -3,6 +3,7 @@ import os
 import shutil
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
+
 FILE_EXTENSIONS = [".pyc", ".log", ".bak"]
 DIR_NAMES = [
     "__pycache__",
@@ -12,6 +13,8 @@ DIR_NAMES = [
     "build",
     "target",
 ]
+
+
 def remove_path(path) -> None:
     p = Path(path)
     try:
@@ -23,6 +26,8 @@ def remove_path(path) -> None:
             print(f"Removed directory: {os.path.relpath(p)}")
     except Exception as e:
         print(f"Failed to remove {p}: {e}")
+
+
 def scan_and_remove(base_path):
     for root, dirs, files in os.walk(base_path, topdown=True):
         for file in files:
@@ -35,6 +40,8 @@ def scan_and_remove(base_path):
                 continue
             yield os.path.join(root, d)
             dirs.remove(d)
+
+
 def main() -> None:
     base_path = Path().cwd().resolve()
     with Pool(cpu_count()) as pool:
@@ -42,5 +49,7 @@ def main() -> None:
             remove_path,
             scan_and_remove(base_path),
         )
+
+
 if __name__ == "__main__":
     main()

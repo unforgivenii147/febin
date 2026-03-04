@@ -1,6 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import subprocess
-def save_installed_packages(output_file="installed.txt", ):
+
+
+def save_installed_packages(
+    output_file="installed.txt",
+):
     """
     Save the names of installed Debian packages to a text file.
     Package names are saved without their version numbers.
@@ -22,12 +26,12 @@ def save_installed_packages(output_file="installed.txt", ):
             f.write("\n".join(installed_packages))
         print(f"Installed package names saved to '{output_file}'")
     except FileNotFoundError:
-        print(
-            "Error: dpkg-query command not found. Are you running this script on a Debian-based system?"
-        )
+        print("Error: dpkg-query command not found. Are you running this script on a Debian-based system?")
     except subprocess.CalledProcessError as e:
         print(f"Error: Failed to retrieve installed packages. {e}")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+
+
 if __name__ == "__main__":
     save_installed_packages()

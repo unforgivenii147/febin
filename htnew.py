@@ -1,5 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
+
+
 def create_html_template(filename="index.html"):
     html_template = """<!DOCTYPE html>
 <html lang="en">
@@ -20,5 +22,7 @@ def create_html_template(filename="index.html"):
         print(f"Successfully created {filename} in {os.getcwd()}")
     except Exception as e:
         print(f"Error: {e}")
+
+
 if __name__ == "__main__":
     create_html_template()

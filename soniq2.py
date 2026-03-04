@@ -4,6 +4,8 @@ import os
 import sys
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
+
+
 def sort_and_uniq(file_path):
     MB_5 = 5 * 1024 * 1024
     if not os.path.exists(file_path):
@@ -14,12 +16,12 @@ def sort_and_uniq(file_path):
         lines = []
         if get_size > MB_5:
             with (
-                    open(file_path, "r+b") as f,
-                    mmap.mmap(
-                        f.fileno(),
-                        0,
-                        access=mmap.ACCESS_READ,
-                    ) as mm,
+                open(file_path, "r+b") as f,
+                mmap.mmap(
+                    f.fileno(),
+                    0,
+                    access=mmap.ACCESS_READ,
+                ) as mm,
             ):
                 lines = mm.read().decode("utf-8").splitlines()
         else:
@@ -40,6 +42,8 @@ def sort_and_uniq(file_path):
             raise e
     except Exception as e:
         print(f"Failed to process file: {e}")
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python script.py <filename>")

@@ -2,6 +2,7 @@
 import os
 import subprocess
 import sys
+
 if len(sys.argv) != 2:
     print("Usage: python extract_subtitles.py <input_file>")
     sys.exit(1)

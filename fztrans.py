@@ -6,7 +6,10 @@ import subprocess
 import sys
 from difflib import get_close_matches
 from pathlib import Path
+
 DICT_FILE = "/sdcard/isaac/dic.json"
+
+
 def load_dictionary(path: Path):
     if not path.exists():
         print(
@@ -19,24 +22,36 @@ def load_dictionary(path: Path):
     fa_en = {str(k).strip(): str(v).strip() for k, v in data.items()}
     en_fa = {v: k for k, v in fa_en.items()}
     return fa_en, en_fa
+
+
 def setup_readline(words):
     words = sorted(words)
+
     def completer(text, state):
         matches = [w for w in words if w.startswith(text)]
         return matches[state] if state < len(matches) else None
+
     readline.set_completer(completer)
     readline.parse_and_bind("tab: complete")
     readline.set_completer_delims(" \t\n")
+
+
 def translate(word, fa_en, en_fa):
     if word in fa_en:
         return fa_en[word]
     if word in en_fa:
         return en_fa[word]
     return None
+
+
 def prefix_search(prefix, all_words):
     return sorted(w for w in all_words if w.startswith(prefix))
+
+
 def fuzzy_search(word, all_words, limit=5, cutoff=0.6):
     return get_close_matches(word, all_words, n=limit, cutoff=cutoff)
+
+
 def fzf_select(all_words):
     try:
         proc = subprocess.run(
@@ -54,6 +69,8 @@ def fzf_select(all_words):
         sys.exit(1)
     selection = proc.stdout.strip()
     return selection if selection else None
+
+
 def interactive_mode(fa_en, en_fa):
     all_words = set(fa_en) | set(en_fa)
     setup_readline(all_words)
@@ -69,9 +86,10 @@ def interactive_mode(fa_en, en_fa):
             continue
         result = translate(word, fa_en, en_fa)
         print(result if result else "Not found")
+
+
 def main():
-    parser = argparse.ArgumentParser(
-        description="Offline Persian ↔ English translator")
+    parser = argparse.ArgumentParser(description="Offline Persian ↔ English translator")
     parser.add_argument(
         "word",
         nargs="*",
@@ -127,5 +145,7 @@ def main():
         print("Not found", file=sys.stderr)
         sys.exit(1)
     interactive_mode(fa_en, en_fa)
+
+
 if __name__ == "__main__":
     main()

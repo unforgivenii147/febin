@@ -2,6 +2,8 @@
 import os
 import string
 import sys
+
+
 def main():
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} <filename>")
@@ -12,8 +14,7 @@ def main():
         sys.exit(1)
     os.makedirs("output", exist_ok=True)
     files = {
-        letter:
-        open(os.path.join("output", f"{letter}.txt"), "w", encoding="utf-8")
+        letter: open(os.path.join("output", f"{letter}.txt"), "w", encoding="utf-8")
         for letter in string.ascii_lowercase
     }
     try:
@@ -28,5 +29,7 @@ def main():
     finally:
         for f in files.values():
             f.close()
+
+
 if __name__ == "__main__":
     main()

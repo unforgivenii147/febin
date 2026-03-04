@@ -2,6 +2,8 @@
 import os
 import shutil
 from pathlib import Path
+
+
 def get_size_str(size_bytes):
     """Convert bytes to human readable format."""
     for unit in ["B", "KB", "MB", "GB"]:
@@ -9,13 +11,14 @@ def get_size_str(size_bytes):
             return f"{size_bytes:.1f}{unit}"
         size_bytes /= 1024.0
     return f"{size_bytes:.1f}TB"
+
+
 def folderize_by_extension(root_dir):
     root_path = Path(root_dir)
     extension_stats = {}
     for file_path in root_path.rglob("*"):
         if file_path.is_file():
-            ext = file_path.suffix.lower(
-            )[1:] if file_path.suffix else "no_extension"
+            ext = file_path.suffix.lower()[1:] if file_path.suffix else "no_extension"
             size = file_path.stat().st_size
             if ext not in extension_stats:
                 extension_stats[ext] = {
@@ -41,16 +44,14 @@ def folderize_by_extension(root_dir):
                 counter += 1
             shutil.move(str(file_path), str(target_path))
     for dir_path in sorted(
-            root_path.glob("**/*"),
-            key=lambda p: len(p.parts),
-            reverse=True,
+        root_path.glob("**/*"),
+        key=lambda p: len(p.parts),
+        reverse=True,
     ):
         if dir_path.is_dir() and dir_path != root_path:
             try:
                 dir_path.rmdir()
-                print(
-                    f"Removed empty directory: {dir_path.relative_to(root_path)}"
-                )
+                print(f"Removed empty directory: {dir_path.relative_to(root_path)}")
             except OSError:
                 pass
     print("\n" + "=" * 50)
@@ -64,15 +65,13 @@ def folderize_by_extension(root_dir):
         total_size += stats["total_size"]
         ext_display = ext if ext else "no_extension"
         size_str = get_size_str(stats["total_size"])
-        print(
-            f"{ext_display:<15} : {stats['count']:4} file{'s' if stats['count'] != 1 else ' '}  {size_str:>8}"
-        )
+        print(f"{ext_display:<15} : {stats['count']:4} file{'s' if stats['count'] != 1 else ' '}  {size_str:>8}")
     print("-" * 50)
-    print(
-        f"{'TOTAL':<15} : {total_files:4} files  {get_size_str(total_size):>8}"
-    )
+    print(f"{'TOTAL':<15} : {total_files:4} files  {get_size_str(total_size):>8}")
     print("=" * 50)
     return created_dirs, extension_stats
+
+
 if __name__ == "__main__":
     target_dir = os.getcwd()
     print(f"Organizing files in: {target_dir}")

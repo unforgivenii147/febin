@@ -4,6 +4,8 @@ import shutil
 from pathlib import Path
 import cv2
 import numpy as np
+
+
 def get_image_features_cv2(image_path, size=(64, 64)):
     try:
         img = cv2.imread(image_path)
@@ -27,10 +29,7 @@ def get_image_features_cv2(image_path, size=(64, 64)):
             print(f"Histogram calculation error for {image_path}: {e}")
             return None
         img_flat = img_resized.flatten()
-        features = np.concatenate(
-            [hist_h.flatten(),
-             hist_s.flatten(),
-             hist_v.flatten(), img_flat])
+        features = np.concatenate([hist_h.flatten(), hist_s.flatten(), hist_v.flatten(), img_flat])
         norm = np.linalg.norm(features)
         if norm > 0:
             features = features / norm
@@ -38,10 +37,10 @@ def get_image_features_cv2(image_path, size=(64, 64)):
     except Exception as e:
         print(f"Error processing {image_path}: {e!s}")
         return None
+
+
 def get_all_images(directory):
-    image_extensions = {
-        ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"
-    }
+    image_extensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"}
     image_files = []
     for root, _dirs, files in os.walk(directory):
         for file in files:
@@ -51,6 +50,8 @@ def get_all_images(directory):
                 if os.path.isfile(full_path) and os.access(full_path, os.R_OK):
                     image_files.append(full_path)
     return image_files
+
+
 def compute_similarity(feat1, feat2):
     if feat1 is None or feat2 is None:
         return 0.0
@@ -59,6 +60,8 @@ def compute_similarity(feat1, feat2):
     if norm1 == 0 or norm2 == 0:
         return 0.0
     return np.dot(feat1, feat2) / (norm1 * norm2)
+
+
 def simple_clustering(features, paths, n_clusters=10, threshold=0.7):
     n_samples = len(features)
     if n_samples == 0:
@@ -75,8 +78,7 @@ def simple_clustering(features, paths, n_clusters=10, threshold=0.7):
         for i in range(len(cluster_ids)):
             for j in range(i + 1, len(cluster_ids)):
                 id1, id2 = cluster_ids[i], cluster_ids[j]
-                sim = compute_similarity(cluster_centers[id1],
-                                         cluster_centers[id2])
+                sim = compute_similarity(cluster_centers[id1], cluster_centers[id2])
                 if sim > max_sim:
                     max_sim = sim
                     merge_pair = (id1, id2)
@@ -94,6 +96,8 @@ def simple_clustering(features, paths, n_clusters=10, threshold=0.7):
         for idx in indices:
             labels[idx] = cluster_id
     return labels
+
+
 def organize_photos(source_dir=".", n_clusters=10, move=False, threshold=0.7):
     print(f"Scanning directory: {source_dir}")
     image_paths = get_all_images(source_dir)
@@ -111,9 +115,7 @@ def organize_photos(source_dir=".", n_clusters=10, move=False, threshold=0.7):
         if feat is not None:
             features.append(feat)
             valid_paths.append(path)
-    print(
-        f"\nSuccessfully processed {len(features)} out of {len(image_paths)} images"
-    )
+    print(f"\nSuccessfully processed {len(features)} out of {len(image_paths)} images")
     if len(features) == 0:
         print("No valid images to process!")
         return
@@ -134,8 +136,7 @@ def organize_photos(source_dir=".", n_clusters=10, move=False, threshold=0.7):
         base_name = Path(dest_path).stem
         extension = Path(dest_path).suffix
         while os.path.exists(dest_path):
-            dest_path = os.path.join(dest_dir,
-                                     f"{base_name}_{counter}{extension}")
+            dest_path = os.path.join(dest_dir, f"{base_name}_{counter}{extension}")
             counter += 1
         try:
             if move:
@@ -146,23 +147,15 @@ def organize_photos(source_dir=".", n_clusters=10, move=False, threshold=0.7):
             print(f"Error copying {path}: {e}")
     print(f"\nDone! Photos organized in: {output_base}")
     print(f"Organized {len(valid_paths)} images into {n_clusters} groups")
+
+
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(
-        description="Organize photos by similarity")
-    parser.add_argument("-d",
-                        "--directory",
-                        default=".",
-                        help="Source directory (default: current)")
-    parser.add_argument("-k",
-                        "--clusters",
-                        type=int,
-                        default=10,
-                        help="Number of groups (default: 10)")
-    parser.add_argument("-m",
-                        "--move",
-                        action="store_true",
-                        help="Move files instead of copy")
+
+    parser = argparse.ArgumentParser(description="Organize photos by similarity")
+    parser.add_argument("-d", "--directory", default=".", help="Source directory (default: current)")
+    parser.add_argument("-k", "--clusters", type=int, default=10, help="Number of groups (default: 10)")
+    parser.add_argument("-m", "--move", action="store_true", help="Move files instead of copy")
     parser.add_argument(
         "-t",
         "--threshold",

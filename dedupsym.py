@@ -6,20 +6,27 @@ import shutil
 from collections import defaultdict
 from pathlib import Path
 import xxhash
+
 CACHE_PATH = Path.home() / ".cache" / "dups_xxhash_cache.json"
 DUPS_DIR = Path.home() / "dups"
 MANIFEST_PATH = DUPS_DIR / "manifest.json"
 READ_CHUNK = 1 << 20
+
+
 def load_json(path):
     try:
         with open(path, encoding="utf-8") as f:
             return json.load(f)
     except Exception:
         return {}
+
+
 def save_json(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
+
+
 def xxh64_of_path(p: Path):
     h = xxhash.xxh64()
     with p.open("rb") as f:
@@ -29,6 +36,8 @@ def xxh64_of_path(p: Path):
                 break
             h.update(chunk)
     return h.hexdigest()
+
+
 def build_groups(root: Path, cache: dict):
     groups = defaultdict(list)
     for dirpath, _dirnames, filenames in os.walk(root):
@@ -46,8 +55,7 @@ def build_groups(root: Path, cache: dict):
             size = st.st_size
             mtime = st.st_mtime
             cached = cache.get(key)
-            if cached and cached.get("size") == size and cached.get(
-                    "mtime") == mtime:
+            if cached and cached.get("size") == size and cached.get("mtime") == mtime:
                 h = cached["hash"]
             else:
                 try:
@@ -61,6 +69,8 @@ def build_groups(root: Path, cache: dict):
                 }
             groups[h].append(fp)
     return groups
+
+
 def dedupe(root: Path, dry_run=False, force=False):
     cache = load_json(CACHE_PATH) if CACHE_PATH.exists() else {}
     groups = build_groups(root, cache)
@@ -121,6 +131,8 @@ def dedupe(root: Path, dry_run=False, force=False):
         print(f"manifest written to {MANIFEST_PATH}")
     elif dry_run:
         print("dry-run complete; no changes written.")
+
+
 def restore(dry_run=False):
     if not MANIFEST_PATH.exists():
         print("No manifest found at ~/dups/manifest.json")
@@ -134,8 +146,7 @@ def restore(dry_run=False):
         originals = [Path(p) for p in info.get("originals", [])]
         for orig in originals:
             if orig.exists() and not orig.is_symlink():
-                print(
-                    f"skipping restore for {orig} (exists and not a symlink)")
+                print(f"skipping restore for {orig} (exists and not a symlink)")
                 continue
             if orig.is_symlink():
                 try:
@@ -172,10 +183,11 @@ def restore(dry_run=False):
             print(f"removed manifest: {MANIFEST_PATH}")
         except Exception:
             pass
+
+
 def main():
     ap = argparse.ArgumentParser(
-        description=
-        "Deduplicate files by moving one copy to ~/dups and symlinking duplicates using xxhash."
+        description="Deduplicate files by moving one copy to ~/dups and symlinking duplicates using xxhash."
     )
     ap.add_argument(
         "path",
@@ -208,5 +220,7 @@ def main():
             dry_run=args.dry_run,
             force=args.force,
         )
+
+
 if __name__ == "__main__":
     main()

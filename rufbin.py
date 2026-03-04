@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import subprocess
 from pathlib import Path
+
+
 def is_python_file(file_path):
     try:
         with Path(file_path).open("r", encoding="utf-8", errors="ignore") as f:
@@ -27,6 +29,8 @@ def is_python_file(file_path):
         return file_path.suffix.lower() == ".py"
     except:
         return False
+
+
 def format_with_ruff(file_path):
     try:
         print(f"processing {file_path.name}")
@@ -49,12 +53,11 @@ def format_with_ruff(file_path):
         )
     except Exception as e:
         return False, str(e)
+
+
 def main() -> None:
     current_dir = Path()
-    python_files = [
-        item for item in current_dir.iterdir()
-        if item.is_file() and is_python_file(item)
-    ]
+    python_files = [item for item in current_dir.iterdir() if item.is_file() and is_python_file(item)]
     if not python_files:
         return
     for _f in python_files:
@@ -72,5 +75,7 @@ def main() -> None:
     if errors:
         for _error in errors:
             pass
+
+
 if __name__ == "__main__":
     main()

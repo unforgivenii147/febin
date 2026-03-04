@@ -3,6 +3,7 @@
 Script to scan site-packages directories and update RECORD files with new hashes.
 Removes references to .pyc files and direct_url.json, and logs missing files.
 """
+
 import base64
 import hashlib
 import json
@@ -11,19 +12,20 @@ import os
 import sys
 from pathlib import Path
 from typing import List, Optional, Tuple
+
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(message)s",
-    handlers=[
-        logging.FileHandler("record_updater.log"),
-        logging.StreamHandler(sys.stdout)
-    ],
+    handlers=[logging.FileHandler("record_updater.log"), logging.StreamHandler(sys.stdout)],
 )
 logger = logging.getLogger(__name__)
+
+
 def find_site_packages() -> Optional[Path]:
     """Find the system site-packages directory."""
     import site
+
     # Get all site-packages directories
     site_packages_dirs = site.getsitepackages()
     if not site_packages_dirs:
@@ -33,6 +35,8 @@ def find_site_packages() -> Optional[Path]:
     site_packages = Path(site_packages_dirs[0])
     logger.info(f"Found site-packages directory: {site_packages}")
     return site_packages
+
+
 def calculate_file_hash(filepath: Path) -> str:
     """Calculate SHA256 hash of a file and return it in the format used in RECORD files."""
     sha256_hash = hashlib.sha256()
@@ -43,12 +47,13 @@ def calculate_file_hash(filepath: Path) -> str:
                 sha256_hash.update(chunk)
         # Get the hash and encode in base64 (without padding)
         hash_bytes = sha256_hash.digest()
-        hash_b64 = base64.urlsafe_b64encode(hash_bytes).decode("ascii").rstrip(
-            "=")
+        hash_b64 = base64.urlsafe_b64encode(hash_bytes).decode("ascii").rstrip("=")
         return f"sha256={hash_b64}"
     except Exception as e:
         logger.error(f"Error calculating hash for {filepath}: {e}")
         return ""
+
+
 def get_size(filepath: Path) -> int:
     """Get the size of a file."""
     try:
@@ -56,6 +61,8 @@ def get_size(filepath: Path) -> int:
     except Exception as e:
         logger.error(f"Error getting size for {filepath}: {e}")
         return 0
+
+
 def parse_record_line(line: str) -> Tuple[str, str, str]:
     """Parse a line from a RECORD file into path, hash, and size."""
     parts = line.strip().split(",")
@@ -65,6 +72,8 @@ def parse_record_line(line: str) -> Tuple[str, str, str]:
         return parts[0], parts[1], ""
     else:
         return parts[0], "", ""
+
+
 def should_include_file(filepath: Path, relative_path: str) -> bool:
     """Determine if a file should be included in the RECORD file."""
     # Exclude .pyc files
@@ -80,6 +89,8 @@ def should_include_file(filepath: Path, relative_path: str) -> bool:
         return False
     # Include all other files
     return True
+
+
 def update_record_file(record_path: Path, dist_info_dir: Path) -> bool:
     """Update a single RECORD file with new hashes."""
     logger.info(f"Processing {record_path}")
@@ -122,18 +133,14 @@ def update_record_file(record_path: Path, dist_info_dir: Path) -> bool:
             new_lines.append(f"{relative_path},{new_hash},{new_size}")
         else:
             # If hash calculation failed, keep the original line
-            logger.warning(
-                f"Failed to calculate hash for {relative_path}, keeping original"
-            )
+            logger.warning(f"Failed to calculate hash for {relative_path}, keeping original")
             new_lines.append(line)
     # Add the RECORD file entry (will be updated with its own hash after writing)
     record_relative = str(record_path.relative_to(dist_info_dir.parent))
     new_lines.append(f"{record_relative},,")
     # Log missing files summary
     if missing_files:
-        logger.info(
-            f"Found {len(missing_files)} missing files in {dist_info_dir.name}:"
-        )
+        logger.info(f"Found {len(missing_files)} missing files in {dist_info_dir.name}:")
         for missing in missing_files:
             logger.info(f"  - {missing}")
     # Write the updated RECORD file
@@ -147,6 +154,8 @@ def update_record_file(record_path: Path, dist_info_dir: Path) -> bool:
     except Exception as e:
         logger.error(f"Error writing {record_path}: {e}")
         return False
+
+
 def update_record_self_hash(record_path: Path, dist_info_dir: Path):
     """Update the RECORD file's own hash entry."""
     try:
@@ -169,6 +178,8 @@ def update_record_self_hash(record_path: Path, dist_info_dir: Path):
         logger.debug(f"Updated self-hash for {record_path}")
     except Exception as e:
         logger.error(f"Error updating self-hash for {record_path}: {e}")
+
+
 def scan_and_update():
     """Main function to scan site-packages and update all RECORD files."""
     site_packages = find_site_packages()
@@ -188,9 +199,9 @@ def scan_and_update():
             updated_count += 1
         else:
             failed_count += 1
-    logger.info(
-        f"Summary: {updated_count} RECORD files updated, {failed_count} failed"
-    )
+    logger.info(f"Summary: {updated_count} RECORD files updated, {failed_count} failed")
+
+
 def main():
     """Main entry point."""
     logger.info("=" * 60)
@@ -205,5 +216,7 @@ def main():
         logger.error(f"Unexpected error: {e}")
         sys.exit(1)
     logger.info("Script completed successfully")
+
+
 if __name__ == "__main__":
     main()

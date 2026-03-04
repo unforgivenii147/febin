@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
+
+
 def remove_empty_lines(filepath):
     p = Path(filepath)
     with p.open("r+", encoding="utf-8", errors="ignore") as f:
@@ -9,4 +11,6 @@ def remove_empty_lines(filepath):
         f.seek(0)
         f.write(content)
         f.truncate()
+
+
 remove_empty_lines(sys.argv[1])

@@ -4,26 +4,35 @@ import os
 import tokenize
 from multiprocessing import Pool
 import regex as re
+
 SIZE_THRESHOLD = 1 * 1024 * 1024
 OLD_PRINT_RE = re.compile(r"(?m)^[ \t]*print[ \t]+[^(\n]")
+
+
 def _open_source(filepath: str):
     size = os.path.getsize(filepath)
     f = open(filepath, "rb")
     if size > SIZE_THRESHOLD:
         return mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
     return f
+
+
 def _read_text(filepath: str) -> str | None:
     try:
         with open(
-                filepath,
-                encoding="utf-8",
-                errors="ignore",
+            filepath,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             return f.read()
     except Exception:
         return None
+
+
 def _has_rich_print_import(text: str) -> bool:
     return "from rich import print" in text
+
+
 def regex_flag(filepath: str) -> bool:
     text = _read_text(filepath)
     if not text:
@@ -31,7 +40,11 @@ def regex_flag(filepath: str) -> bool:
     if _has_rich_print_import(text):
         return False
     return bool(OLD_PRINT_RE.search(text))
-def tokenizer_confirm(filepath: str, ) -> str | None:
+
+
+def tokenizer_confirm(
+    filepath: str,
+) -> str | None:
     try:
         src = _open_source(filepath)
         tokens = list(tokenize.tokenize(src.readline))
@@ -44,15 +57,17 @@ def tokenizer_confirm(filepath: str, ) -> str | None:
                 continue
             j = i + 1
             while j < len(tokens) and tokens[j].type in {
-                    tokenize.NL,
-                    tokenize.NEWLINE,
-                    tokenize.INDENT,
-                    tokenize.DEDENT,
+                tokenize.NL,
+                tokenize.NEWLINE,
+                tokenize.INDENT,
+                tokenize.DEDENT,
             }:
                 j += 1
             if j < len(tokens) and tokens[j].string != "(":
                 return line
     return None
+
+
 def process_file(filepath):
     if not regex_flag(filepath):
         return None
@@ -62,6 +77,8 @@ def process_file(filepath):
     if confirmed:
         print(filepath)
     return confirmed
+
+
 def get_pyfiles(root: str) -> list[str]:
     out: list[str] = []
     for dirpath, _, filenames in os.walk(root):
@@ -69,11 +86,15 @@ def get_pyfiles(root: str) -> list[str]:
             if name.endswith(".py"):
                 out.append(os.path.join(dirpath, name))
     return out
+
+
 def main() -> None:
     pool = Pool(8)
     for f in get_pyfiles("."):
-        pool.apply_async(process_file, ((f), ))
+        pool.apply_async(process_file, ((f),))
     pool.close()
     pool.join()
+
+
 if __name__ == "__main__":
     main()

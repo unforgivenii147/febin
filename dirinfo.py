@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 from collections import defaultdict
 
@@ -23,11 +23,23 @@ def scan_directory(path="."):
             ext = ext.lower() if ext else "(no extension)"
             extensions.add(ext)
             size_by_ext[ext] += size
-    return total_size, file_count, folder_count, extensions, size_by_ext
+    return (
+        total_size,
+        file_count,
+        folder_count,
+        extensions,
+        size_by_ext,
+    )
 
 
 def write_summary(filename=".dirinfo"):
-    total_size, file_count, folder_count, extensions, size_by_ext = scan_directory()
+    (
+        total_size,
+        file_count,
+        folder_count,
+        extensions,
+        size_by_ext,
+    ) = scan_directory()
     with open(filename, "w") as f:
         f.write(f"total size: {total_size} bytes\n")
         f.write(f"extensions: {', '.join(sorted(extensions))}\n")

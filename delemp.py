@@ -1,47 +1,52 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
+import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
 from time import perf_counter
 
-from dh import BIN_EXT, TXT_EXT, is_binary
+from dh import format_size, get_nobinary, get_size, is_binary
 from fastwalk import walk_files
+from termcolor import cprint
 
 
 def process_file(filepath):
-    if is_binary(filepath):
+    if filepath.is_symlink():
         return False
     try:
-        before = filepath.stat().st_size
-        print(f"[OK] {filepath.name}")
-        with filepath.open("r+", encoding="utf-8", errors="ignore") as f:
+        before = get_size(filepath)
+        print(f"[OK] {filepath.name}", end=" ")
+        with filepath.open(
+                "r+",
+                encoding="utf-8",
+                errors="ignore",
+        ) as f:
             lines = (line for line in f if line.strip())
             content = "".join(lines)
             f.seek(0)
             f.write(content)
             f.truncate()
-        after = filepath.stat().st_size
+        after = get_size(filepath)
+        cprint(f"{format_size(before-after)}", "cyan")
         return before != after
     except OSError:
         return False
 
 
 def main():
-    start = perf_counter()
-    files = []
-    dir = str(Path().cwd())
-    for pth in walk_files(dir):
-        path = Path(pth)
-        if path.is_symlink() or not path.exists() or path.suffix in BIN_EXT:
-            continue
-        if path.is_file() and (path.suffix in TXT_EXT or not path.suffix):
-            files.append(path)
+    args = sys.argv[1:]
+    if args:
+        files = [Path(arg) for arg in args]
+    else:
+        dir = Path.cwd()
+        start_size = get_size(dir)
+        files = get_nobinary(dir)
     results = []
     with Pool(8) as p:
         pending = deque()
         for f in files:
-            pending.append(p.apply_async(process_file, ((f),)))
+            pending.append(p.apply_async(process_file, ((f), )))
             if len(pending) > 16:
                 results.append(pending.popleft().get())
         while pending:
@@ -50,9 +55,10 @@ def main():
     for r in results:
         if r:
             changed += 1
-    print(changed)
-    print(f"{perf_counter() - start} seconds")
+    end_size = get_size(dir)
+    print("space freed: ", end=" ")
+    cprint(f"{format_size(start_size - end_size)}", "cyan")
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
 import regex as re
@@ -75,7 +75,9 @@ def find_and_replace_in_directory(directory="."):
         if process_python_file(py_file):
             modified_count += 1
     print(f"\n{'=' * 50}")
-    print(f"Summary: Modified {modified_count} out of {len(python_files)} file(s)")
+    print(
+        f"Summary: Modified {modified_count} out of {len(python_files)} file(s)"
+    )
 
 
 if __name__ == "__main__":

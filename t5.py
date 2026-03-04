@@ -1,29 +1,31 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
+import ast
+import os
 import sys
+from multiprocessing import Pool
 from pathlib import Path
 
 import tree_sitter_python as tspython
-from tree_sitter import Language, Parser, QueryCursor
+from dh import format_size, get_size
+from tree_sitter import Language, Parser, Query, QueryCursor
+
+QUERY_STRING = """
+(comment) @comment
+(block
+  . (expression_statement
+    (string)) @docstring)
+(module
+  . (expression_statement
+    (string)) @docstring)
+"""
 
 
 class TSRemover:
+
     def __init__(self):
         self.language = Language(tspython.language())
         self.parser = Parser(self.language)
-        self.query = self.language.query("""
-            (comment) @comment
-            (module
-              (expression_statement
-                (string) @module_docstring))
-            (function_definition
-              body: (block
-                (expression_statement
-                  (string) @function_docstring)))
-            (class_definition
-              body: (block
-                (expression_statement
-                  (string) @class_docstring)))
-        """)
+        self.query = Query(self.language, QUERY_STRING)
 
     def remove_comments(self, source: str):
         source_bytes = source.encode("utf-8")
@@ -41,18 +43,17 @@ class TSRemover:
                     text = source_bytes[start:end].decode("utf-8")
                     if capture_name == "comment":
                         stripped = text.strip()
-                        if (
-                            stripped.startswith("# type:")
-                            or stripped.startswith("# type: ignore")
-                            or stripped.startswith("# noqa")
-                            or stripped.startswith("# pylint:")
-                            or stripped.startswith("# mypy:")
-                        ):
+                        if (stripped.startswith("# type:")
+                                or stripped.startswith("# TODO")
+                                or stripped.startswith("# noqa")
+                                or stripped.startswith("#!")
+                                or stripped.startswith("# fmt:")):
                             continue
                         comment_count += 1
                     else:
                         docstring_count += 1
-                    if end < len(source_bytes) and source_bytes[end : end + 1] == b"\n":
+                    if end < len(source_bytes) and source_bytes[end:end +
+                                                                1] == b"\n":
                         end += 1
                     deletions.append((start, end))
         deletions = sorted(set(deletions), reverse=True)
@@ -79,11 +80,47 @@ class TSRemover:
         return "\n".join(cleaned) + "\n"
 
 
-if __name__ == "__main__":
-    file_path = Path(sys.argv[1])
+def process_file(fp):
+    file_path = Path(fp)
     ts_rmc = TSRemover()
     code = file_path.read_text(encoding="utf-8", errors="ignore")
     ts_rmc.remove_comments(code)
     result, comments, docstrings = ts_rmc.remove_comments(code)
-    file_path.write_text(result, encoding="utf-8")
-    print(f"Removed {comments} comments and {docstrings} docstrings from {file_path}")
+    if comments == 0 and docstrings == 0:
+        print(f"[NO CHANGE] : {file_path.name}")
+        return
+    try:
+        ast.parse(result)
+        print(
+            f"{file_path.name}: comments: {comments}   docstrings: {docstrings}"
+        )
+        fp.write_text(result, encoding="utf-8")
+    except:
+        print(f"{file_path.name} : invalid code")
+
+
+def main():
+    init_size = get_size(".")
+    args = sys.argv[1:]
+    if args:
+        files = [f for f in args if Path(f).is_file()]
+    else:
+        files = [
+            os.path.join(r, f) for r, _, fs in os.walk(".") for f in fs
+            if f.endswith(".py")
+        ]
+    if not files:
+        return
+    print(f"Processing {len(files)} files using QueryCursor...")
+    pool = Pool(8)
+    for _ in pool.imap_unordered(process_file, files):
+        pass
+    pool.close()
+    pool.join()
+    diff_size = init_size - get_size(".")
+    if diff_size != 0:
+        print(format_size(diff_size))
+
+
+if __name__ == "__main__":
+    main()

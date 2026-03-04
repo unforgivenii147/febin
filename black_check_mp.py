@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import ast
 import os
 import shutil
@@ -28,7 +28,7 @@ def unique_destination(dest: Path) -> Path:
         counter += 1
 
 
-def black_check(file_path: Path) -> tuple[Path, bool]:
+def black_check(file_path: Path, ) -> tuple[Path, bool]:
     print(f"[OK] {file_path}")
     """
     result = subprocess.run(
@@ -39,7 +39,7 @@ def black_check(file_path: Path) -> tuple[Path, bool]:
     return file_path, result.returncode == 0
     """
     try:
-        ast.parse(file_pathp.read_text(encoding="utf-8"))
+        ast.parse(file_path.read_text(encoding="utf-8"))
         return file_path, True
     except:
         return file_path, False
@@ -65,9 +65,8 @@ def main():
         print("No python files found.")
         return
     print(f"Found {len(files)} python files.")
-    print(f"Using {os.cpu_count()} workers...\n")
     results = []
-    with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+    with ProcessPoolExecutor(max_workers=8) as executor:
         futures = [executor.submit(black_check, f) for f in files]
         for future in as_completed(futures):
             results.append(future.result())

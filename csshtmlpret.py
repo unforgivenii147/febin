@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import itertools
 import os
 import sys
@@ -15,7 +15,6 @@ try:
 except ImportError:
     BeautifulSoup = None
     print("BeautifulSoup4 Not Found, use: pip install BeautifulSoup4")
-__version__ = "2.5.5"
 start_time = datetime.now()
 CSS_PROPS_TEXT = """
 alignment-adjust alignment-baseline animation animation-delay
@@ -86,10 +85,24 @@ z-index
 
 
 def _compile_props(props_text: str, grouped: bool = False) -> tuple:
-    props, prefixes = [], ["-webkit-", "-khtml-", "-epub-", "-moz-", "-ms-", "-o-", ""]
+    props, prefixes = (
+        [],
+        [
+            "-webkit-",
+            "-khtml-",
+            "-epub-",
+            "-moz-",
+            "-ms-",
+            "-o-",
+            "",
+        ],
+    )
     for propline in props_text.strip().lower().splitlines():
         props += [pre + pro for pro in propline.split(" ") for pre in prefixes]
-    props = filter(lambda line: not line.startswith("#"), props)
+    props = filter(
+        lambda line: not line.startswith("#"),
+        props,
+    )
     if not grouped:
         props = list(filter(None, props))
         return props, [0] * len(props)
@@ -103,11 +116,18 @@ def _compile_props(props_text: str, grouped: bool = False) -> tuple:
     return (final_props, groups)
 
 
-def _prioritify(line_of_css: str, css_props_text_as_list: tuple) -> tuple:
-    sorted_css_properties, groups_by_alphabetic_order = css_props_text_as_list
+def _prioritify(
+    line_of_css: str,
+    css_props_text_as_list: tuple,
+) -> tuple:
+    (
+        sorted_css_properties,
+        groups_by_alphabetic_order,
+    ) = css_props_text_as_list
     priority_integer, group_integer = 9999, 0
     for css_property in sorted_css_properties:
-        if css_property.lower() == line_of_css.split(":", maxsplit=1)[0].lower().strip():
+        if css_property.lower() == line_of_css.split(
+                ":", maxsplit=1)[0].lower().strip():
             priority_integer = sorted_css_properties.index(css_property)
             group_integer = groups_by_alphabetic_order[priority_integer]
             break
@@ -117,10 +137,17 @@ def _prioritify(line_of_css: str, css_props_text_as_list: tuple) -> tuple:
 def _props_grouper(props, pgs):
     if not props:
         return props
-    props_pg = zip((_prioritify(prop, pgs) for prop in props), props, strict=False)
+    props_pg = zip(
+        (_prioritify(prop, pgs) for prop in props),
+        props,
+        strict=False,
+    )
     props_pg = sorted(props_pg, key=lambda item: item[0][1])
-    props_by_groups = (list(item[1]) for item in itertools.groupby(props_pg, key=lambda item: item[0][1]))
-    props_by_groups = (sorted(item, key=lambda item: item[0][0]) for item in props_by_groups)
+    props_by_groups = (
+        list(item[1])
+        for item in itertools.groupby(props_pg, key=lambda item: item[0][1]))
+    props_by_groups = (sorted(item, key=lambda item: item[0][0])
+                       for item in props_by_groups)
     props = []
     for group in props_by_groups:
         group = (item[1] for item in group)
@@ -130,17 +157,30 @@ def _props_grouper(props, pgs):
     return props
 
 
-def sort_properties(css_unsorted_string: str) -> str:
+def sort_properties(css_unsorted_string: str, ) -> str:
     css_pgs = _compile_props(CSS_PROPS_TEXT, grouped=bool(args.group))
-    pattern = re.compile(r"(.*?{\r?\n?)(.*?)(}.*?)|(.*)", re.DOTALL + re.MULTILINE)
+    pattern = re.compile(
+        r"(.*?{\r?\n?)(.*?)(}.*?)|(.*)",
+        re.DOTALL + re.MULTILINE,
+    )
     matched_patterns = pattern.findall(css_unsorted_string)
-    sorted_patterns, sorted_buffer = [], css_unsorted_string
-    RE_prop = re.compile(r"((?:.*?)(?:;)(?:.*?\n)|(?:.*))", re.DOTALL + re.MULTILINE)
+    sorted_patterns, sorted_buffer = (
+        [],
+        css_unsorted_string,
+    )
+    RE_prop = re.compile(
+        r"((?:.*?)(?:;)(?:.*?\n)|(?:.*))",
+        re.DOTALL + re.MULTILINE,
+    )
     if len(matched_patterns) != 0:
         for matched_groups in matched_patterns:
             sorted_patterns += matched_groups[0].splitlines(True)
-            props = (line.lstrip("\n") for line in RE_prop.findall(matched_groups[1]))
-            props = list(filter(lambda line: line.strip("\n "), props))
+            props = (line.lstrip("\n")
+                     for line in RE_prop.findall(matched_groups[1]))
+            props = list(filter(
+                lambda line: line.strip("\n "),
+                props,
+            ))
             props = _props_grouper(props, css_pgs)
             sorted_patterns += props
             sorted_patterns += matched_groups[2].splitlines(True)
@@ -155,7 +195,8 @@ def remove_empty_rules(css: str) -> str:
 
 def condense_zero_units(css: str) -> str:
     return re.sub(
-        r"([\s:])(0)(px|em|%|in|q|ch|cm|mm|pc|pt|ex|rem|s|ms|" r"deg|grad|rad|turn|vw|vh|vmin|vmax|fr)",
+        r"([\s:])(0)(px|em|%|in|q|ch|cm|mm|pc|pt|ex|rem|s|ms|"
+        r"deg|grad|rad|turn|vw|vh|vmin|vmax|fr)",
         r"\1\2",
         css,
     )
@@ -170,7 +211,7 @@ def wrap_css_lines(css: str, line_length: int = 80) -> str:
     lines, line_start = [], 0
     for i, char in enumerate(css):
         if char == "}" and (i - line_start >= line_length):
-            lines.append(css[line_start : i + 1])
+            lines.append(css[line_start:i + 1])
             line_start = i + 1
     if line_start < len(css):
         lines.append(css[line_start:])
@@ -188,7 +229,11 @@ def normalize_whitespace(css: str) -> str:
     css = css_no_trailing_whitespace
     css = re.sub(r"\n{3}", "\n\n\n", css)
     css = re.sub(r"\n{5}", "\n\n\n\n\n", css)
-    css = re.sub(r"\n{6,}", f"\n\n\n/*{'-' * 72}*/\n\n\n", css)
+    css = re.sub(
+        r"\n{6,}",
+        f"\n\n\n/*{'-' * 72}*/\n\n\n",
+        css,
+    )
     css = css.replace(" ;\n", ";\n").replace("{\n", " {\n")
     css = re.sub("\\s{2,}{\n", " {\n", css)
     return css.replace("\t", "    ").rstrip() + "\n"
@@ -228,17 +273,25 @@ def split_long_selectors(css: str) -> str:
         cond_1 = len(line) > 80 and "," in line and line.strip().endswith("{")
         cond_2 = line.startswith(("*", ".", "#"))
         if cond_1 and cond_2:
-            result += line.replace(", ", ",").replace(",", ",\n").replace("{", "{\n")
+            result += line.replace(", ",
+                                   ",").replace(",",
+                                                ",\n").replace("{", "{\n")
         else:
             result += line + "\n"
     return result
 
 
 def simple_replace(css: str) -> str:
-    return css.replace("}\n#", "}\n\n#").replace("}\n.", "}\n\n.").replace("}\n*", "}\n\n*")
+    return css.replace("}\n#",
+                       "}\n\n#").replace("}\n.",
+                                         "}\n\n.").replace("}\n*", "}\n\n*")
 
 
-def css_prettify(css: str, justify: bool = False, extraline: bool = False) -> str:
+def css_prettify(
+    css: str,
+    justify: bool = False,
+    extraline: bool = False,
+) -> str:
     css = sort_properties(css)
     css = condense_zero_units(css)
     css = wrap_css_lines(css, 80)
@@ -257,9 +310,17 @@ if BeautifulSoup:
     orig_prettify = BeautifulSoup.prettify
     regez = re.compile(r"^(\s*)", re.MULTILINE)
 
-    def prettify(self, encoding=None, formatter="minimal", indent_width=4):
+    def prettify(
+        self,
+        encoding=None,
+        formatter="minimal",
+        indent_width=4,
+    ):
         print("Monkey Patching BeautifulSoup on-the-fly to process HTML...")
-        return regez.sub(r"\1" * indent_width, orig_prettify(self, encoding, formatter))
+        return regez.sub(
+            r"\1" * indent_width,
+            orig_prettify(self, encoding, formatter),
+        )
 
     BeautifulSoup.prettify = prettify
 
@@ -268,7 +329,6 @@ if BeautifulSoup:
         if extraline:
             html = "\n\n".join(html.replace("\t", "    ").splitlines()) + "\n"
         return html
-
 else:
 
     def html_prettify(html: str, extraline: bool = False) -> str:
@@ -287,12 +347,16 @@ def walk2list(
     onerror: object = None,
     followlinks: bool = False,
 ) -> tuple:
-    oswalk = os.walk(folder, topdown=topdown, onerror=onerror, followlinks=followlinks)
+    oswalk = os.walk(
+        folder,
+        topdown=topdown,
+        onerror=onerror,
+        followlinks=followlinks,
+    )
     return [
-        os.path.abspath(os.path.join(r, f))
-        for r, d, fs in oswalk
-        for f in fs
-        if not f.startswith(() if showhidden else ".") and not f.endswith(omit) and f.endswith(target)
+        os.path.abspath(os.path.join(r, f)) for r, d, fs in oswalk for f in fs
+        if not f.startswith(() if showhidden else ".") and not f.endswith(omit)
+        and f.endswith(target)
     ]
 
 
@@ -326,7 +390,7 @@ def prefixer_extensioner(file_path: str) -> str:
     return os.path.join(dir_names, filenames + extension)
 
 
-def process_single_css_file(css_file_path: str) -> str:
+def process_single_css_file(css_file_path: str, ) -> str:
     global args
     with open(css_file_path, encoding="utf-8-sig") as css_file:
         original_css = css_file.read()
@@ -340,7 +404,7 @@ def process_single_css_file(css_file_path: str) -> str:
     return pretty_css
 
 
-def process_single_html_file(html_file_path: str) -> str:
+def process_single_html_file(html_file_path: str, ) -> str:
     with open(html_file_path, encoding="utf-8-sig") as html_file:
         pretty_html = html_prettify(html_file.read(), args.extraline)
     html_file_path = prefixer_extensioner(html_file_path)
@@ -359,22 +423,42 @@ def make_arguments_parser():
     CSS Properties are AlphaSorted,to help spot cloned ones,Selectors not.
     Watch works for whole folders, with minimum of ~60 Secs between runs.""",
     )
-    parser.add_argument("--version", action="version", version=__version__)
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=__version__,
+    )
     parser.add_argument(
         "fullpath",
         metavar="fullpath",
         type=str,
         help="Full path to local file or folder.",
     )
-    parser.add_argument("--prefix", type=str, help="Prefix string to prepend on output filenames.")
+    parser.add_argument(
+        "--prefix",
+        type=str,
+        help="Prefix string to prepend on output filenames.",
+    )
     parser.add_argument(
         "--timestamp",
         action="store_true",
         help="Add a Time Stamp on all CSS/SCSS output files.",
     )
-    parser.add_argument("--quiet", action="store_true", help="Quiet, Silent, force disable all Logging.")
-    parser.add_argument("--after", type=str, help="Command to execute after run (Experimental).")
-    parser.add_argument("--before", type=str, help="Command to execute before run (Experimental).")
+    parser.add_argument(
+        "--quiet",
+        action="store_true",
+        help="Quiet, Silent, force disable all Logging.",
+    )
+    parser.add_argument(
+        "--after",
+        type=str,
+        help="Command to execute after run (Experimental).",
+    )
+    parser.add_argument(
+        "--before",
+        type=str,
+        help="Command to execute before run (Experimental).",
+    )
     parser.add_argument(
         "--watch",
         action="store_true",
@@ -401,24 +485,28 @@ def make_arguments_parser():
 
 
 def main():
-
     make_arguments_parser()
     global log
-
     if args.before and getoutput:
         print(getoutput(str(args.before)))
-    if os.path.isfile(args.fullpath) and args.fullpath.endswith((".css", ".scss")):
+    if os.path.isfile(args.fullpath) and args.fullpath.endswith(
+        (".css", ".scss")):
         print("Target is a CSS / SCSS File.")
         list_of_files = str(args.fullpath)
         process_single_css_file(args.fullpath)
-    elif os.path.isfile(args.fullpath) and args.fullpath.endswith((".htm", ".html")):
+    elif os.path.isfile(args.fullpath) and args.fullpath.endswith(
+        (".htm", ".html")):
         print("Target is a HTML File.")
         list_of_files = str(args.fullpath)
         process_single_html_file(args.fullpath)
     elif os.path.isdir(args.fullpath):
         print("Target is a Folder with CSS / SCSS, HTML, JS.")
         print("Processing a whole Folder may take some time...")
-        list_of_files = walk2list(args.fullpath, (".css", ".scss", ".html", ".htm"), ".min.css")
+        list_of_files = walk2list(
+            args.fullpath,
+            (".css", ".scss", ".html", ".htm"),
+            ".min.css",
+        )
         pool = Pool(cpu_count())
         pool.map_async(process_multiple_files, list_of_files)
         pool.close()

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 from pathlib import Path
 
@@ -15,7 +15,10 @@ def fix_links(file_path):
         if not Path(link).exists():
             static_file = static_dir / link
             if static_file.exists():
-                content = content.replace(link, str(static_file.resolve()))
+                content = content.replace(
+                    link,
+                    str(static_file.resolve()),
+                )
     backup_path = file_path.with_suffix(".bak")
     os.replace(file_path, backup_path)
     with open(file_path, "w") as file:

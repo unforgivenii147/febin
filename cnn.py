@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import shutil
 from multiprocessing import Pool, cpu_count
@@ -44,7 +44,6 @@ def scan_and_remove(base_path):
 
 def main() -> None:
     base_path = Path().cwd().resolve()
-    #    print(f"Scanning in: {base_path}")
     with Pool(cpu_count()) as pool:
         pool.map(
             remove_path,

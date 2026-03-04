@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
 import tree_sitter_cpp as tscpp
@@ -7,6 +7,7 @@ from tree_sitter import Language, Parser
 
 
 class TSCppRemover:
+
     def __init__(self):
         self.parser = Parser()
         self.parser.language = Language(tscpp.language())

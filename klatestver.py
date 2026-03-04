@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import operator
 import os
 import pathlib
@@ -6,7 +6,6 @@ import pathlib
 import regex as re
 from packaging.version import Version
 
-# Regex to extract name and version from wheel filename
 wheel_pattern = re.compile(r"^(?P<name>.+)-(?P<version>\d+(\.\d+)+).*\.txt$")
 files = [f for f in os.listdir(".") if f.endswith(".txt")]
 packages = {}

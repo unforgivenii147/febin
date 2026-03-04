@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -13,7 +13,8 @@ def process_file(fp):
     if not fp.exists():
         return (False, fp)
     ret = subprocess.run(
-        ["prettier", "-w", str(fp).replace("/storage/emulated/0", "/sdcard")],
+        ["prettier", "-w",
+         str(fp).replace("/storage/emulated/0", "/sdcard")],
         check=True,
     )
     if ret:

@@ -1,10 +1,11 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 from pathlib import Path
 
 import regex as re
 
-TIMESTAMP_RE = re.compile(r"(\d{2}:\d{2}:\d{2},\d{3})\s-->\s(\d{2}:\d{2}:\d{2},\d{3})")
+TIMESTAMP_RE = re.compile(
+    r"(\d{2}:\d{2}:\d{2},\d{3})\s-->\s(\d{2}:\d{2}:\d{2},\d{3})")
 
 
 def to_ms(ts: str) -> int:
@@ -38,7 +39,8 @@ def process_file(path: Path, shift_ms: int):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Shift SRT subtitles inplace (batch folder supported)")
+    ap = argparse.ArgumentParser(
+        description="Shift SRT subtitles inplace (batch folder supported)")
     ap.add_argument(
         "path",
         nargs="?",

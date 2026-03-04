@@ -1,9 +1,8 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 """
 python script to read an extension name via sys.argv[1] and reports:
     - how many files with that extension are there in current dir recursively and total size of them
 """
-
 import sys
 from pathlib import Path
 

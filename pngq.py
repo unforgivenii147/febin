@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import glob
 import subprocess
 from multiprocessing import Pool
@@ -7,7 +7,8 @@ from pathlib import Path
 QUALITY_RANGE = "60-70"
 START_DIR = Path(".")
 NUM_PROCESSES = 8
-print(f"Using {NUM_PROCESSES} CPU cores for parallel processing via subprocess.")
+print(
+    f"Using {NUM_PROCESSES} CPU cores for parallel processing via subprocess.")
 
 
 def process_png(input_path):
@@ -28,7 +29,9 @@ def process_png(input_path):
             check=True,
         )
         if "skipping" in result.stdout.lower():
-            print(f"🟢 Skipped: {input_path} (No size reduction possible or quality too low)")
+            print(
+                f"🟢 Skipped: {input_path} (No size reduction possible or quality too low)"
+            )
         else:
             print(f"✅ Optimized: {input_path} (Quality: {quality_range})")
     except subprocess.CalledProcessError as e:
@@ -54,4 +57,4 @@ if __name__ == "__main__":
         print(f"Found {len(files)} PNG files to process...")
         with Pool(8) as pool:
             for f in files:
-                pool.apply_async(process_png, (f,))
+                pool.apply_async(process_png, (f, ))

@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
 import regex as re
 
 REMOTE_PREFIXES = ("http://", "https://", "//")
-# ---------- HTML Processing ----------
-IMG_TAG_RE = re.compile(r'<img\b[^>]*\bsrc\s*=\s*["\']([^"\']+)["\'][^>]*>', re.IGNORECASE)
+IMG_TAG_RE = re.compile(r'<img\b[^>]*\bsrc\s*=\s*["\']([^"\']+)["\'][^>]*>',
+                        re.IGNORECASE)
 
 
 def remove_remote_html_images(text: str) -> str:
@@ -20,11 +20,10 @@ def remove_remote_html_images(text: str) -> str:
 
 
 MD_INLINE_IMG_RE = re.compile(r"!\[.*?\]\((.*?)\)", re.IGNORECASE)
-
 MD_REF_IMG_RE = re.compile(r"!\[.*?\]\[(.*?)\]", re.IGNORECASE)
 MD_REF_DEF_RE = re.compile(r"^\s*\[(.*?)\]:\s*(\S+)", re.MULTILINE)
-
-RST_IMG_RE = re.compile(r"^\s*\.\. \|[^|]+\| image:: https?://[^\s]+.*$", re.MULTILINE)
+RST_IMG_RE = re.compile(r"^\s*\.\. \|[^|]+\| image:: https?://[^\s]+.*$",
+                        re.MULTILINE)
 
 
 def remove_remote_md_images(text: str) -> str:
@@ -67,16 +66,13 @@ def remove_remote_rst_images(text: str) -> str:
 def process_file(path: Path):
     original = path.read_text(encoding="utf-8", errors="ignore")
     modified = original
-
     if path.suffix.lower() in (".html", ".htm"):
         modified = remove_remote_html_images(original)
-    elif path.suffix.lower() in (".md",):
+    elif path.suffix.lower() in (".md", ):
         modified = remove_remote_md_images(original)
     elif path.suffix.lower() in (".rst", ".txt"):
-        # Process both RST and markdown patterns in text files
         modified = remove_remote_rst_images(original)
         modified = remove_remote_md_images(modified)
-
     if modified != original:
         path.write_text(modified, encoding="utf-8")
         print(f"Modified: {path}")

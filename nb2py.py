@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
 
@@ -16,3 +16,4 @@ with open(OUTPUT, "w", encoding="utf-8") as out:
         elif cell.cell_type == "code":
             out.write(cell.source + "\n\n")
 print(f"Exported → {OUTPUT}")
+")

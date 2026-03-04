@@ -1,24 +1,24 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
+import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-from sys import exit
 
-from dh import file_size, folder_size, format_size, run_command
+from dh import format_size, get_size, run_command
 from fastwalk import walk_files
 from termcolor import cprint
 
 
 def process_file(fp):
-    start = file_size(fp)
+    start = get_size(fp)
     if not fp.exists():
         return False
     print(f"{fp.name}", end=" ")
-    cmd = f"terser {fp}"
-    output, err, code = run_command(cmd)
+    cmd = f"terser {str(fp)}"
+    code, output, err = run_command(cmd)
     if code == 0:
         fp.write_text(output)
-        result = file_size(fp) - start
+        result = get_size(fp) - start
         if int(result) == 0:
             cprint("[OK]", "white")
         elif result < 0:
@@ -32,23 +32,35 @@ def process_file(fp):
 
 
 def main():
-    init_size = folder_size(".")
-    files = []
-    for pth in walk_files("."):
-        path = Path(pth)
-        if path.is_file() and path.suffix == ".js":
-            files.append(path)
+    args = sys.argv[1:]
+    if args:
+        filepaths = []
+        for arg in args:
+            path = Path(arg)
+            if path.is_file() and path.suffix == ".js":
+                filepaths.append(path)
+        for fp in filepaths:
+            process_file(fp)
+        return 0
+    else:
+        init_size = get_size(".")
+        files = []
+        for pth in walk_files("."):
+            path = Path(pth)
+            if path.is_file() and path.suffix == ".js":
+                files.append(path)
     with Pool(8) as p:
         pending = deque()
         for f in files:
-            pending.append(p.apply_async(process_file, ((f),)))
+            pending.append(p.apply_async(process_file, ((f), )))
             if len(pending) > 16:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    end_size = folder_size(".")
+    end_size = get_size(".")
     print(f"{format_size(init_size - end_size)}")
+    return None
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

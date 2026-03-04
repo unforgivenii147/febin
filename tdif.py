@@ -1,93 +1,73 @@
-#!/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/env python
 """
 File Diff Viewer - A Textual-based application to show differences between two files
 """
-
 import argparse
 import difflib
+import sys
 from pathlib import Path
-from typing import List, Tuple
 
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal, ScrollableContainer
-from textual.widgets import Header, Footer, Static, Label
 from textual.color import Color
-from textual import events
+from textual.containers import Horizontal, ScrollableContainer
+from textual.widgets import Footer, Header, Label, Static
 
 
 class DiffLine(Static):
     """A widget representing a single line in the diff."""
-    
-    def __init__(self, text: str, line_type: str, line_num: int = None):
+
+    def __init__(self, text: str, line_type: str, line_num: int | None = None):
         """
         Initialize a diff line.
-        
         Args:
             text: The line content
             line_type: Type of line (' ', '-', '+', or '?')
             line_num: Optional line number
         """
-        # Escape any Textual markup in the text
         self.raw_text = text
         self.line_type = line_type
         self.line_num = line_num
-        
-        # Create the display content
         display_text = self._create_display_text()
         super().__init__(display_text)
-        
-        # Apply styling based on line type
         self._apply_styling()
-    
+
     def _create_display_text(self) -> str:
         """Create the display text with proper formatting."""
-        if self.line_num is not None:
-            prefix = f"{self.line_num:4d}"
-        else:
-            prefix = "    "
-        
-        # Escape any Textual markup in the text
-        # Replace [ with [[ to escape markup
-        safe_text = self.raw_text.replace('[', '[]')
-        
-        if self.line_type == ' ':
+        prefix = f"{self.line_num:4d}" if self.line_num is not None else "    "
+        safe_text = self.raw_text.replace("[", "[]")
+        if self.line_type == " ":
             return f"{prefix}  {safe_text}"
-        elif self.line_type == '-':
+        elif self.line_type == "-":
             return f"{prefix} - {safe_text}"
-        elif self.line_type == '+':
+        elif self.line_type == "+":
             return f"{prefix} + {safe_text}"
-        elif self.line_type == '?':
+        elif self.line_type == "?":
             return f"{prefix} ? {safe_text}"
         else:
             return f"{prefix}   {safe_text}"
-    
+
     def _apply_styling(self):
         """Apply styling based on line type."""
-        if self.line_type == ' ':
-            # Context line
+        if self.line_type == " ":
             self.styles.background = Color(30, 30, 30)
             self.styles.color = Color(200, 200, 200)
-        elif self.line_type == '-':
-            # Removed line
+        elif self.line_type == "-":
             self.styles.background = Color(80, 30, 30)
             self.styles.color = Color(255, 150, 150)
-        elif self.line_type == '+':
-            # Added line
+        elif self.line_type == "+":
             self.styles.background = Color(30, 80, 30)
             self.styles.color = Color(150, 255, 150)
-        elif self.line_type == '?':
-            # Change indicator line
+        elif self.line_type == "?":
             self.styles.background = Color(60, 60, 30)
             self.styles.color = Color(255, 255, 150)
 
 
 class DiffPanel(ScrollableContainer):
     """A panel that displays one side of the diff."""
-    
-    def __init__(self, title: str, lines: List[Tuple[str, str, int]]):
+
+    def __init__(self, title: str, lines: list[tuple[str, str, int]]):
         """
         Initialize a diff panel.
-        
         Args:
             title: Panel title
             lines: List of (text, line_type, line_num) tuples
@@ -95,28 +75,25 @@ class DiffPanel(ScrollableContainer):
         super().__init__()
         self.panel_title = title
         self.lines = lines
-    
+
     def compose(self) -> ComposeResult:
         """Create child widgets."""
         yield Label(f"[bold]{self.panel_title}[/bold]", classes="panel-title")
         for text, line_type, line_num in self.lines:
             yield DiffLine(text, line_type, line_num)
-    
+
     def on_mount(self) -> None:
         """Set up the panel when mounted."""
-        # Make the panel focusable
         self.can_focus = True
         self.can_focus_children = True
 
 
 class DiffViewerApp(App):
     """A Textual app to show differences between two files."""
-    
     CSS = """
     Screen {
         background: $surface;
     }
-    
     .panel-title {
         padding: 1;
         text-align: center;
@@ -125,37 +102,30 @@ class DiffViewerApp(App):
         text-style: bold;
         width: 100%;
     }
-    
     DiffPanel {
         border: solid $primary;
         height: 100%;
         width: 50%;
         overflow-y: auto;
     }
-    
     DiffPanel:focus {
         border: double $secondary;
     }
-    
     DiffLine {
         padding: 0 1;
         width: 100%;
         height: 1;
     }
-    
     Horizontal {
         height: 1fr;
     }
-    
     Header {
         background: $primary-lighten-1;
     }
-    
     Footer {
         background: $primary-darken-1;
     }
     """
-    
     BINDINGS = [
         ("q", "quit", "Quit"),
         ("f1", "toggle_panel", "Focus Next Panel"),
@@ -163,7 +133,7 @@ class DiffViewerApp(App):
         ("/", "search", "Search"),
         ("n", "next_search", "Next Result"),
     ]
-    
+
     def __init__(self, file1: str, file2: str):
         """Initialize the app with two file paths."""
         super().__init__()
@@ -173,16 +143,15 @@ class DiffViewerApp(App):
         self.right_lines = []
         self.search_term = ""
         self.search_results = []
-    
-    def read_file(self, filepath: Path) -> List[str]:
+
+    def read_file(self, filepath: Path) -> list[str]:
         """Read a file and return its lines."""
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, encoding="utf-8") as f:
                 return f.readlines()
         except UnicodeDecodeError:
-            # Try with different encoding
             try:
-                with open(filepath, 'r', encoding='latin-1') as f:
+                with open(filepath, encoding="latin-1") as f:
                     return f.readlines()
             except Exception as e:
                 self.notify(f"Error reading {filepath}: {e}", severity="error")
@@ -190,122 +159,94 @@ class DiffViewerApp(App):
         except Exception as e:
             self.notify(f"Error reading {filepath}: {e}", severity="error")
             return []
-    
+
     def compute_diff(self) -> None:
         """Compute the diff between the two files."""
         lines1 = self.read_file(self.file1)
         lines2 = self.read_file(self.file2)
-        
-        # Remove trailing newlines
-        lines1 = [line.rstrip('\n') for line in lines1]
-        lines2 = [line.rstrip('\n') for line in lines2]
-        
-        # Compute the diff
+        lines1 = [line.rstrip("\n") for line in lines1]
+        lines2 = [line.rstrip("\n") for line in lines2]
         differ = difflib.Differ()
         diff = list(differ.compare(lines1, lines2))
-        
         left_line_num = 0
         right_line_num = 0
-        
         for line in diff:
-            line_type = line[0] if line else ' '
+            line_type = line[0] if line else " "
             content = line[2:] if len(line) > 2 else ""
-            
-            if line_type == ' ':
-                # Line present in both files
+            if line_type == " ":
                 left_line_num += 1
                 right_line_num += 1
                 self.left_lines.append((content, line_type, left_line_num))
                 self.right_lines.append((content, line_type, right_line_num))
-            
-            elif line_type == '-':
-                # Line only in first file
+            elif line_type == "-":
                 left_line_num += 1
                 self.left_lines.append((content, line_type, left_line_num))
-                self.right_lines.append(("", ' ', None))  # Placeholder for alignment
-            
-            elif line_type == '+':
-                # Line only in second file
+                self.right_lines.append(("", " ", None))
+            elif line_type == "+":
                 right_line_num += 1
-                self.left_lines.append(("", ' ', None))  # Placeholder for alignment
+                self.left_lines.append(("", " ", None))
                 self.right_lines.append((content, line_type, right_line_num))
-            
-            elif line_type == '?':
-                # Change indicator line - add to both sides for context
+            elif line_type == "?":
                 self.left_lines.append((content, line_type, None))
                 self.right_lines.append((content, line_type, None))
-    
+
     def compose(self) -> ComposeResult:
         """Create child widgets."""
         yield Header()
-        
         self.compute_diff()
-        
         with Horizontal():
             left_panel = DiffPanel(str(self.file1), self.left_lines)
             right_panel = DiffPanel(str(self.file2), self.right_lines)
             yield left_panel
             yield right_panel
-        
         yield Footer()
-    
+
     def on_mount(self) -> None:
         """Set up the app when mounted."""
-        # Focus the first panel
         panels = self.query(DiffPanel)
         if panels:
             panels.first().focus()
-    
+
     def action_toggle_panel(self) -> None:
         """Toggle focus between the two panels."""
         current = self.focused
         if current and isinstance(current, DiffPanel):
-            # Find the other panel
             panels = list(self.query(DiffPanel))
             for i, panel in enumerate(panels):
                 if panel == current:
-                    # Focus the next panel
                     next_panel = panels[(i + 1) % len(panels)]
                     next_panel.focus()
                     break
         else:
-            # Focus the first panel
             panels = self.query(DiffPanel)
             if panels:
                 panels.first().focus()
-    
+
     def action_search(self) -> None:
         """Search for text in the diff."""
+
         def on_input(submitted_text: str) -> None:
             if submitted_text:
                 self.search_term = submitted_text
                 self.highlight_search_results()
-        
-        self.push_screen(
-            "input",
-            on_input,
-            title="Search",
-            instructions="Enter text to search for:"
-        )
-    
+
+        self.push_screen("input",
+                         on_input,
+                         title="Search",
+                         instructions="Enter text to search for:")
+
     def highlight_search_results(self) -> None:
         """Highlight search results in both panels."""
         if not self.search_term:
             return
-        
-        # Clear previous highlights
         for line in self.query(DiffLine):
             line.styles.background = None
-        
-        # Find and highlight matches
         for line in self.query(DiffLine):
             if self.search_term.lower() in line.raw_text.lower():
-                # Highlight the line
                 line.styles.background = Color(70, 70, 150)
-    
+
     def action_next_search(self) -> None:
         """Go to next search result."""
-        # This would need more implementation for full functionality
         self.notify("Next search result (feature not fully implemented)")
 
 
@@ -318,31 +259,23 @@ def main():
 Examples:
   %(prog)s file1.txt file2.txt
   %(prog)s --help
-        """
+        """,
     )
     parser.add_argument("file1", help="First file to compare")
     parser.add_argument("file2", help="Second file to compare")
-    
     args = parser.parse_args()
-    
-    # Verify files exist
     file1 = Path(args.file1)
     file2 = Path(args.file2)
-    
     if not file1.exists():
         print(f"Error: File '{file1}' does not exist")
         return 1
-    
     if not file2.exists():
         print(f"Error: File '{file2}' does not exist")
         return 1
-    
-    # Run the app
     app = DiffViewerApp(str(file1), str(file2))
     app.run()
-    
     return 0
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

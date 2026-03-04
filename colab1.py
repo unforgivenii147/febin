@@ -1,5 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
-# === One-cell Colab notebook: export site-packages ===
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import shutil
 import site

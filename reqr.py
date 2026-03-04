@@ -1,5 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
-import os
+#!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
 import regex as re
@@ -7,17 +6,14 @@ from fastwalk import walk_files
 
 
 def extract_requirements(metadata_path):
-
-    with open(metadata_path, "r") as f:
+    with open(metadata_path) as f:
         lines = f.readlines()
-
     requirements = []
     for line in lines:
         if line.startswith("Requires-Dist:"):
             match = re.match(r"Requires-Dist:\s*([^\s;]+)", line)
             if match:
                 requirements.append(match.group(1))
-
     if not requirements:
         print("No dependencies found in METADATA.")
         return

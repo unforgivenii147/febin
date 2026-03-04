@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import shutil
 
@@ -8,7 +8,11 @@ NO_EXT_DIR = "_no_ext"
 
 def folderize_by_extension(base_dir: str):
     for root, dirs, files in os.walk(base_dir, topdown=True):
-        dirs[:] = [d for d in dirs if not os.path.samefile(os.path.join(root, d), base_dir) or d.startswith(".")]
+        dirs[:] = [
+            d for d in dirs
+            if not os.path.samefile(os.path.join(root, d), base_dir)
+            or d.startswith(".")
+        ]
         for filename in files:
             src_path = os.path.join(root, filename)
             if os.path.dirname(src_path) == base_dir:

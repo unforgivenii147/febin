@@ -1,5 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
-# file: ocr_grid_runner.py
+#!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
 
 import argparse
@@ -99,8 +98,8 @@ def main() -> None:
     dpi_values = [150, 300]
     report_index: list[dict] = []
     for (
-        variant_name,
-        img,
+            variant_name,
+            img,
     ) in image_variants.items():
         variant_dir = args.out / variant_name
         variant_dir.mkdir(exist_ok=True)
@@ -126,15 +125,13 @@ def main() -> None:
                         ),
                         encoding="utf-8",
                     )
-                    report_index.append(
-                        {
-                            "variant": variant_name,
-                            "psm": psm,
-                            "oem": oem,
-                            "dpi": dpi,
-                            "text_file": str(txt_path),
-                        }
-                    )
+                    report_index.append({
+                        "variant": variant_name,
+                        "psm": psm,
+                        "oem": oem,
+                        "dpi": dpi,
+                        "text_file": str(txt_path),
+                    })
     (args.out / "index.json").write_text(
         json.dumps(report_index, indent=2),
         encoding="utf-8",

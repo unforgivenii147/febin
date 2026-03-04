@@ -1,14 +1,14 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
 import tree_sitter_cpp
-from dh import folder_size, format_size
+from dh import format_size, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
 
-EXCLUDE_PREFIXES = (b"#!/",)
+EXCLUDE_PREFIXES = (b"#!/", )
 parser = Parser()
 parser.language = Language(tree_sitter_cpp.language())
 
@@ -36,10 +36,13 @@ def remove_comments_cpp(path: Path) -> None:
 
         def walk(node):
             if node.type == "comment":
-                text = source[node.start_byte : node.end_byte]
+                text = source[node.start_byte:node.end_byte]
                 if text.lstrip().startswith(EXCLUDE_PREFIXES):
                     return
-                deletions.append((node.start_byte, node.end_byte))
+                deletions.append((
+                    node.start_byte,
+                    node.end_byte,
+                ))
             for child in node.children:
                 walk(child)
 
@@ -60,7 +63,15 @@ def remove_comments_cpp(path: Path) -> None:
 
 
 def collect_cpp_files(root: Path) -> list[Path]:
-    exts = {".cpp", ".cc", ".cxx", ".hpp", ".h", ".hh", ".hxx"}
+    exts = {
+        ".cpp",
+        ".cc",
+        ".cxx",
+        ".hpp",
+        ".h",
+        ".hh",
+        ".hxx",
+    }
     if root.is_file() and root.suffix in exts:
         return [root]
     return [p for p in root.rglob("*") if p.is_file() and p.suffix in exts]
@@ -68,13 +79,13 @@ def collect_cpp_files(root: Path) -> list[Path]:
 
 def main() -> None:
     root = Path().cwd().resolve()
-    init_size = folder_size(root)
+    init_size = get_size(root)
     files = collect_cpp_files(root)
     if not files:
         sys.exit("No C++ files found")
     with Pool(cpu_count()) as pool:
         pool.map(remove_comments_cpp, files)
-    end_size = folder_size(root)
+    end_size = get_size(root)
     difsize = init_size - end_size
     cprint(f"{format_size(difsize)}", "cyan")
 

@@ -1,9 +1,8 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 """Git Repository Cleaner
 Deletes all commits except the last one and all branches except main/master.
 WARNING: This is a destructive operation! Use with caution.
 """
-
 import shutil
 import subprocess
 import sys
@@ -45,7 +44,10 @@ def get_main_branch_name():
                 return line.split(":")[1].strip()
     result = run_git_command("git branch -l")
     if result:
-        branches = [b.strip().replace("* ", "") for b in result.stdout.split("\n") if b.strip()]
+        branches = [
+            b.strip().replace("* ", "") for b in result.stdout.split("\n")
+            if b.strip()
+        ]
         for branch in branches:
             if branch in ["main", "master"]:
                 return branch

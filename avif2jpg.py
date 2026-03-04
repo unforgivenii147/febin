@@ -1,10 +1,12 @@
-#!/data/data/com.termux/files/usr/bin/env python3
-import pillow_avif  # noqa: F401
+#!/data/data/com.termux/files/usr/bin/env python
+import os
+from pathlib import Path
+
 from PIL import Image
 
 input_dir = "avif_images"
 output_dir = "jpg_images"
-pathlib.Path(output_dir).mkdir(exist_ok=True, parents=True)
+Path(output_dir).mkdir(exist_ok=True, parents=True)
 for filename in os.listdir(input_dir):
     if filename.lower().endswith((".avif", ".aviff")):
         input_path = os.path.join(input_dir, filename)

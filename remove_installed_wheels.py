@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import subprocess
 import zipfile
@@ -61,7 +61,9 @@ def main():
                 installed_version = get_installed_version(pkg_name)
                 if installed_version:
                     if installed_version == pkg_version:
-                        print(f"{pkg_name} {pkg_version} is already installed in the venv, removing {wheel_file}")
+                        print(
+                            f"{pkg_name} {pkg_version} is already installed in the venv, removing {wheel_file}"
+                        )
                         remove_wheel_file(wheel_file)
                     elif installed_version > pkg_version:
                         print(
@@ -73,7 +75,9 @@ def main():
                             f"{pkg_name} {pkg_version} is newer than the installed version {installed_version} in venv. Keeping {wheel_file}"
                         )
                 else:
-                    print(f"{pkg_name} is not installed in the venv, keeping {wheel_file}")
+                    print(
+                        f"{pkg_name} is not installed in the venv, keeping {wheel_file}"
+                    )
             else:
                 print(f"Could not extract info from {wheel_file}")
 

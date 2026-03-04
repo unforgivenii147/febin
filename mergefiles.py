@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 
 EXCLUDE_DIRS = {".git"}
@@ -7,7 +7,11 @@ OUTPUT_FILE = "merged.txt"
 
 def read_file(path):
     try:
-        with open(path, encoding="utf-8", errors="ignore") as f:
+        with open(
+                path,
+                encoding="utf-8",
+                errors="ignore",
+        ) as f:
             return f.read()
     except Exception:
         return None
@@ -18,7 +22,8 @@ def collect_files(root):
         dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
         for fname in filenames:
             full = os.path.join(dirpath, fname)
-            if os.path.abspath(full) == os.path.abspath(OUTPUT_FILE) or fname == os.path.basename(__file__):
+            if os.path.abspath(full) == os.path.abspath(
+                    OUTPUT_FILE) or fname == os.path.basename(__file__):
                 continue
             yield full
 
@@ -41,8 +46,12 @@ def merge_files(root):
 
 if __name__ == "__main__":
     import argparse
-
-    ap = argparse.ArgumentParser(description="Merge files recursively into merged.txt")
-    ap.add_argument("--path", default=".", help="Directory to scan")
+    ap = argparse.ArgumentParser(
+        description="Merge files recursively into merged.txt")
+    ap.add_argument(
+        "--path",
+        default=".",
+        help="Directory to scan",
+    )
     args = ap.parse_args()
     merge_files(args.path)

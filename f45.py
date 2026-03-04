@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import subprocess
 import sys
@@ -33,10 +33,10 @@ def fold_file_inplace(filename):
     with open(filename, encoding="utf-8") as f:
         original_content = f.read()
     with tempfile.NamedTemporaryFile(
-        mode="w+",
-        suffix=".tmp",
-        delete=False,
-        encoding="utf-8",
+            mode="w+",
+            suffix=".tmp",
+            delete=False,
+            encoding="utf-8",
     ) as temp_f:
         temp_filename = temp_f.name
         temp_f.write(original_content)

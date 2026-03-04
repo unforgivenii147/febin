@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import shutil
 import sys
 from importlib import metadata
@@ -15,9 +15,8 @@ if not DEST_DIR.exists():
     DEST_DIR.mkdir()
 if not DEST_DIR2.exists():
     DEST_DIR2.mkdir()
-
-# List of packages to exclude from deletion
 EXCLUDED_PACKAGES = {
+    "dh",
     "pip",
     "setuptools",
     "wheel",
@@ -50,7 +49,7 @@ def normalize(name: str) -> str:
 
 
 def main():
-    ensure_venv()
+    #    ensure_venv()
     if not WHL_DIR.exists():
         print(f"Directory not found: {WHL_DIR}")
         return
@@ -66,13 +65,16 @@ def main():
             if norm_name in installed_pkgs:
                 installed_version = installed_pkgs[norm_name]
                 if installed_version == Version(str(version)):
-                    cprint(f"[MATCH] {dist_name}=={version} → removing", "cyan")
+                    cprint(f"[MATCH] {dist_name}=={version} → removing",
+                           "cyan")
                     wheel.unlink()
                     moved += 1
                 else:
                     wheel.unlink()
                     moved += 1
-                    print(f"[DIFF VERSION] {dist_name} (installed {installed_version}, wheel {version}) -> removed")
+                    print(
+                        f"[DIFF VERSION] {dist_name} (installed {installed_version}, wheel {version}) -> removed"
+                    )
         except Exception as e:
             print(f"[ERROR] {wheel.name}: {e}")
             shutil.move(str(wheel), DEST_DIR2 / wheel.name)

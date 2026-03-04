@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import shutil
 import sysconfig
 from pathlib import Path
@@ -16,14 +16,12 @@ def format_size(bytes_size: int) -> str:
 def get_skip_dirs():
     skip = set()
     site_packages = Path(sysconfig.get_paths()["purelib"])
-    for d in ("regex",):
+    for d in ("regex", ):
         skip.add(str(site_packages / d))
     return skip
 
 
-def clean_pyc_and_pycache(
-    start_dir: Path = Path.cwd(),
-):
+def clean_pyc_and_pycache(start_dir: Path = Path.cwd(), ):
     total_size = 0
     dirs_removed = 0
     files_removed = 0

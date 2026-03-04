@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
 
@@ -6,9 +6,25 @@ import regex as re
 from dh import atomic_write
 
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
-FONT_EXTS = {".woff", ".woff2", ".ttf", ".otf", ".eot"}
-IMG_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
-IMPORT_RE = re.compile(r"@import\s+url\([^)]+fonts\.googleapis[^)]+\);?", re.I)
+FONT_EXTS = {
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".otf",
+    ".eot",
+}
+IMG_EXTS = {
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".svg",
+    ".webp",
+}
+IMPORT_RE = re.compile(
+    r"@import\s+url\([^)]+fonts\.googleapis[^)]+\);?",
+    re.I,
+)
 FAMILY_RULES = {
     "roboto": "roboto",
     "lato": "lato",
@@ -41,7 +57,10 @@ def find_css(paths):
                     seen.add(rp)
                     result.append(rp)
         else:
-            print(f"Skipping invalid path: {p}", file=sys.stderr)
+            print(
+                f"Skipping invalid path: {p}",
+                file=sys.stderr,
+            )
     return result
 
 

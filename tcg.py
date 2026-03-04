@@ -1,9 +1,9 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import subprocess
 import sys
 
-TERMUX_PYTHON = "#!/data/data/com.termux/files/usr/bin/env python3\n"
+TERMUX_PYTHON = "#!/data/data/com.termux/files/usr/bin/env python\n"
 TERMUX_BASH = "#!/data/data/com.termux/files/usr/bin/bash\n"
 
 
@@ -20,12 +20,12 @@ def get_clipboard():
 
 def detect_shebang(content: str) -> str | None:
     stripped = content.lstrip()
-    if stripped.startswith("#!"):
-        return None
-    if "import " in content or "def " in content or stripped.startswith("python"):
+    if stripped.startswith("#!") and "python" in stripped:
         return TERMUX_PYTHON
-    if stripped.startswith(
-        (
+    if "import " in content or "def " in content or "class " in content or stripped.startswith(
+            "!python"):
+        return TERMUX_PYTHON
+    if stripped.startswith((
             "echo ",
             "cd ",
             "export ",
@@ -33,8 +33,7 @@ def detect_shebang(content: str) -> str | None:
             "if ",
             "for ",
             "#!/bin/sh",
-        )
-    ):
+    )):
         return TERMUX_BASH
     return None
 
@@ -42,7 +41,8 @@ def detect_shebang(content: str) -> str | None:
 def create_symlink(out_file):
     base_name = os.path.basename(out_file)
     name_without_ext, ext = os.path.splitext(base_name)
-    if ext and os.path.abspath(os.getcwd()) == os.path.abspath(os.path.expanduser("~/bin")):
+    if ext and os.path.abspath(os.getcwd()) == os.path.abspath(
+            os.path.expanduser("~/bin")):
         symlink_path = os.path.join(
             os.path.dirname(out_file),
             name_without_ext,
@@ -57,7 +57,8 @@ def create_symlink(out_file):
                 f"Error creating symlink: {e}",
                 file=sys.stderr,
             )
-    if ext and os.path.abspath(os.getcwd()) == os.path.abspath(os.path.expanduser("~/bashbin")):
+    if ext and os.path.abspath(os.getcwd()) == os.path.abspath(
+            os.path.expanduser("~/bashbin")):
         symlink_path = os.path.join(
             os.path.dirname(out_file),
             name_without_ext,

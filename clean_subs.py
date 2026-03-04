@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import sys
 from pathlib import Path
@@ -44,7 +44,10 @@ def clean_name(fname: str):
 def collect_files(path: Path, recursive: bool):
     if recursive:
         return [p for p in path.rglob("*") if p.suffix.lower() in VIDEO_EXTS]
-    return [p for p in path.iterdir() if p.is_file() and p.suffix.lower() in VIDEO_EXTS]
+    return [
+        p for p in path.iterdir()
+        if p.is_file() and p.suffix.lower() in VIDEO_EXTS
+    ]
 
 
 def main():
@@ -64,14 +67,25 @@ def main():
             continue
         new_name = new_core + f.suffix
         target = f.with_name(new_name)
-        print(colored("OLD:", "red"), f.name, colored("-> NEW:", "green"), new_name)
+        print(
+            colored("OLD:", "red"),
+            f.name,
+            colored("-> NEW:", "green"),
+            new_name,
+        )
         if args.write:
             if target.exists():
-                print(colored("  EXISTS, skipped", "yellow"))
+                print(colored(
+                    "  EXISTS, skipped",
+                    "yellow",
+                ))
             else:
                 f.rename(target)
     if not args.write:
-        print(colored("\nDry-run only. Use -w to apply.", "yellow"))
+        print(colored(
+            "\nDry-run only. Use -w to apply.",
+            "yellow",
+        ))
 
 
 if __name__ == "__main__":

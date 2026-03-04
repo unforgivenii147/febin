@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import shutil
 import sys
 import tarfile
@@ -23,39 +23,29 @@ def safe_mkdir(base: Path) -> Path:
 
 def unzip_file(archive: Path, target_dir: Path) -> bool:
     archive_lower = archive.name.lower()
-
     try:
-        # Handle tar.gz files
         if archive_lower.endswith(".tar.gz") or archive_lower.endswith(".tgz"):
             with tarfile.open(archive, "r:gz") as tar:
                 tar.extractall(target_dir)
             return True
-
-        # Handle tar.bz2 files
-        elif archive_lower.endswith(".tar.bz2") or archive_lower.endswith(".tbz2"):
+        elif archive_lower.endswith(".tar.bz2") or archive_lower.endswith(
+                ".tbz2"):
             with tarfile.open(archive, "r:bz2") as tar:
                 tar.extractall(target_dir)
             return True
-
-        # Handle tar.xz files
-        elif archive_lower.endswith(".tar.xz") or archive_lower.endswith(".txz"):
+        elif archive_lower.endswith(".tar.xz") or archive_lower.endswith(
+                ".txz"):
             with tarfile.open(archive, "r:xz") as tar:
                 tar.extractall(target_dir)
             return True
-
-        # Handle plain tar files
         elif archive_lower.endswith(".tar"):
             with tarfile.open(archive, "r:") as tar:
                 tar.extractall(target_dir)
             return True
-
-        # Handle zip files (including .whl which is a zip format)
         elif archive.suffix == ".whl" or archive_lower.endswith(".zip"):
             with zipfile.ZipFile(archive, "r") as zip_ref:
                 zip_ref.extractall(target_dir)
             return True
-
-        # Handle 7z files using py7zr
         else:
             try:
                 with py7zr.SevenZipFile(archive, mode="r") as sz:
@@ -63,14 +53,13 @@ def unzip_file(archive: Path, target_dir: Path) -> bool:
                 return True
             except py7zr.exceptions.Bad7zFile:
                 return False
-
     except (
-        tarfile.TarError,
-        zipfile.BadZipFile,
-        py7zr.exceptions.Bad7zFile,
-        OSError,
-        EOFError,
-        FileNotFoundError,
+            tarfile.TarError,
+            zipfile.BadZipFile,
+            py7zr.exceptions.Bad7zFile,
+            OSError,
+            EOFError,
+            FileNotFoundError,
     ):
         return False
 

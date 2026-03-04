@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import shutil
 import sys
@@ -7,9 +7,9 @@ import sys
 def replace_in_file(path: str, old: str, new: str) -> None:
     try:
         with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
+                path,
+                encoding="utf-8",
+                errors="ignore",
         ) as f:
             text = f.read()
     except (UnicodeDecodeError, PermissionError):

@@ -1,12 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import sys
 
 import regex as re
 from fontTools.ttLib import TTFont
 from termcolor import cprint
-
-# ---------- helpers ----------
 
 
 def is_ascii_printable(s: str) -> bool:

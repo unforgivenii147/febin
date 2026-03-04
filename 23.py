@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import subprocess
 import sys
@@ -50,7 +50,7 @@ def process_file(file_path) -> None:
         "--fix",
         "--unsafe-fixes",
         "--line-length",
-        "88",
+        "120",
         "--quiet",
         str(file_path),
     ]
@@ -97,8 +97,8 @@ def main() -> None:
             check=True,
         )
     except (
-        FileNotFoundError,
-        subprocess.CalledProcessError,
+            FileNotFoundError,
+            subprocess.CalledProcessError,
     ):
         print("Error: 'ruff' is not installed or not in PATH.")
         print("Please run: pip install ruff")
@@ -110,7 +110,7 @@ def main() -> None:
         return
     pool = Pool(8)
     for f in files:
-        pool.apply_async(process_file, ((f),))
+        pool.apply_async(process_file, ((f), ))
     pool.close()
     pool.join()
 

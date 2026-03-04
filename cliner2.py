@@ -1,11 +1,9 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
 import regex as re
 
-# -------- CONFIG --------
 LOG_EXT = ".log"
-# ------------------------
 PATTERNS = [
     r"\^\[",
     r"\[[\dA-Z;]+m",
@@ -31,7 +29,11 @@ def clean_line(line: str) -> str:
 
 def clean_file(file_path: Path) -> None:
     try:
-        with open(file_path, encoding="utf-8", errors="ignore") as f:
+        with open(
+                file_path,
+                encoding="utf-8",
+                errors="ignore",
+        ) as f:
             lines = f.readlines()
         cleaned_lines = [clean_line(line) for line in lines]
         with open(file_path, "w", encoding="utf-8") as f:

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -21,7 +21,7 @@ def is_text_file(path: Path) -> bool:
 
 
 def split_into_chunks(text: str, size: int):
-    return [text[i : i + size] for i in range(0, len(text), size)]
+    return [text[i:i + size] for i in range(0, len(text), size)]
 
 
 def translate_chunk(chunk: str) -> str:

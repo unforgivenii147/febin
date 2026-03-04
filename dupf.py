@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 from collections import defaultdict
 from pathlib import Path
@@ -33,8 +33,8 @@ def find_and_delete_duplicates(path: Path):
                 print(f"Error processing file {path}: {e}")
                 continue
     for (
-        file_hash,
-        paths,
+            file_hash,
+            paths,
     ) in files_by_hash.items():
         if len(paths) > 1:
             duplicate_count += len(paths) - 1
@@ -44,10 +44,10 @@ def find_and_delete_duplicates(path: Path):
             )
             for file_to_delete in paths[1:]:
                 try:
-                    file_size = file_to_delete.stat().st_size
+                    get_size = file_to_delete.stat().st_size
                     print(os.path.relpath(file_to_delete))
                     deleted_count += 1
-                    total_deleted_size += file_size
+                    total_deleted_size += get_size
                 except Exception as e:
                     print(f"Error deleting file {file_to_delete}: {e}")
         else:

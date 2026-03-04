@@ -1,15 +1,17 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import ast
+import sys
+from multiprocessing import Pool
 from pathlib import Path
 
 import tree_sitter_python as tspython
-from dh import folder_size, format_size
-from fastwalk import walk_files
+from dh import clean_blank_lines, format_size, get_pyfiles, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
 
 
 class TSRemover:
+
     def __init__(self):
         self.parser = Parser()
         self.parser.language = Language(tspython.language())
@@ -34,22 +36,7 @@ class TSRemover:
         for start, end in sorted(to_delete, reverse=True):
             new_source = new_source[:start] + new_source[end:]
         cleaned = new_source.decode("utf-8")
-        return self._cleanup_blank_lines(cleaned)
-
-    @staticmethod
-    def _cleanup_blank_lines(text: str) -> str:
-        lines = text.splitlines()
-        cleaned = []
-        blank_streak = 0
-        for line in lines:
-            if line.strip() == "":
-                blank_streak += 1
-                if blank_streak <= 2:
-                    cleaned.append("")
-            else:
-                blank_streak = 0
-                cleaned.append(line.rstrip())
-        return "\n".join(cleaned) + "\n"
+        return clean_blank_lines(cleaned)
 
 
 def process_file(fp):
@@ -60,7 +47,7 @@ def process_file(fp):
     result = ts_rmc.remove_comments(code)
     if len(result) != len(code):
         try:
-            _ = ast.parse(result)
+            ast.parse(result)
             file_path.write_text(result, encoding="utf-8")
             end_size = file_path.stat().st_size
             sr = int(abs(init_size - end_size))
@@ -75,11 +62,20 @@ def process_file(fp):
 
 
 if __name__ == "__main__":
-    dir = Path().cwd()
-    initsize = folder_size(dir)
-    for pth in walk_files(dir):
-        path = Path(pth)
-        if path.is_file() and path.suffix == ".py":
-            process_file(path)
-    sres = int(abs(initsize - folder_size(dir)))
+    dir = Path.cwd()
+    initsize = get_size(dir)
+    args = sys.argv[1:]
+    if args:
+        files = [Path(f) for f in args]
+        if len(file) == 1:
+            process_file(files[0])
+            sys.exit(0)
+    else:
+        files = get_pyfiles(dir)
+    pool = Pool(8)
+    for _ in pool.imap_unordered(process_file, files):
+        pass
+    pool.close()
+    pool.join()
+    sres = initsize - get_size(dir)
     cprint(f"dir size reduced: {format_size(sres)}", "cyan")

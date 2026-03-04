@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import tarfile
 import zipfile
@@ -22,9 +22,9 @@ def extract_urls_from_file(filepath):
     urls = set()
     try:
         with open(
-            filepath,
-            encoding="utf-8",
-            errors="ignore",
+                filepath,
+                encoding="utf-8",
+                errors="ignore",
         ) as f:
             content = f.read()
             urls.update(extract_urls_from_text(content))
@@ -97,10 +97,10 @@ def extract_urls(filepath):
     elif path.suffix in [".zip", ".whl"]:
         return extract_urls_from_zip(filepath)
     elif path.suffix.startswith(".tar") or path.suffix in [
-        ".tar.gz",
-        ".tar.xz",
-        ".tar.zst",
-        ".tar.7z",
+            ".tar.gz",
+            ".tar.xz",
+            ".tar.zst",
+            ".tar.7z",
     ]:
         return extract_urls_from_tar(filepath)
     elif path.suffix == ".7z":

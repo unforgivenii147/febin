@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import sys
 
 from markdown2 import markdown, markdown_path
@@ -9,7 +9,13 @@ class ValidationError(Exception):
     pass
 
 
-def md2pdf(pdf_file_path, md_content=None, md_file_path=None, css_file_path=None, base_url=None):
+def md2pdf(
+    pdf_file_path,
+    md_content=None,
+    md_file_path=None,
+    css_file_path=None,
+    base_url=None,
+):
     raw_html = ""
     extras = ["cuddled-lists", "tables"]
     if md_file_path:
@@ -28,4 +34,7 @@ def md2pdf(pdf_file_path, md_content=None, md_file_path=None, css_file_path=None
 if __name__ == "__main__":
     md_file = sys.argv[1]
     pdf_file = md_file.replace(".md", ".pdf")
-    md2pdf(pdf_file_path=pdf_file, md_file_path=md_file)
+    md2pdf(
+        pdf_file_path=pdf_file,
+        md_file_path=md_file,
+    )

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import contextlib
 import io
@@ -137,7 +137,7 @@ def process_zipfile_zipped(
         if zi.is_dir():
             continue
         name = zi.filename
-        if zi.file_size > max_bytes:
+        if zi.get_size > max_bytes:
             continue
         try:
             with zipf.open(zi) as member_f:
@@ -161,8 +161,7 @@ def process_zipfile_zipped(
                     max_bytes,
                     exts,
                     name_hint=name,
-                )
-            )
+                ))
 
 
 def process_tarfile_obj(
@@ -203,8 +202,7 @@ def process_tarfile_obj(
                     max_bytes,
                     exts,
                     name_hint=name,
-                )
-            )
+                ))
 
 
 def process_bytes_as_archive(
@@ -237,21 +235,18 @@ def process_bytes_as_archive(
                         max_bytes,
                         exts,
                         name_hint=name,
-                    )
-                )
+                    ))
             return
         if any(
-            lname.endswith(suf)
-            for suf in (
-                ".tar",
-                ".tar.gz",
-                ".tgz",
-                ".tar.xz",
-                ".txz",
-                ".tar.bz2",
-                ".tbz2",
-            )
-        ):
+                lname.endswith(suf) for suf in (
+                    ".tar",
+                    ".tar.gz",
+                    ".tgz",
+                    ".tar.xz",
+                    ".txz",
+                    ".tar.bz2",
+                    ".tbz2",
+                )):
             try:
                 bio.seek(0)
                 with tarfile.open(fileobj=bio, mode="r:*") as tf:
@@ -270,8 +265,7 @@ def process_bytes_as_archive(
                         max_bytes,
                         exts,
                         name_hint=name,
-                    )
-                )
+                    ))
             return
         if lname.endswith(".tar.zst"):
             if zstd is None:
@@ -281,14 +275,13 @@ def process_bytes_as_archive(
                         max_bytes,
                         exts,
                         name_hint=name,
-                    )
-                )
+                    ))
                 return
             try:
                 dctx = zstd.ZstdDecompressor()
                 with (
-                    dctx.stream_reader(io.BytesIO(b)) as reader,
-                    tempfile.TemporaryFile() as tmpf,
+                        dctx.stream_reader(io.BytesIO(b)) as reader,
+                        tempfile.TemporaryFile() as tmpf,
                 ):
                     while True:
                         chunk = reader.read(16384)
@@ -298,8 +291,8 @@ def process_bytes_as_archive(
                     tmpf.seek(0)
                     try:
                         with tarfile.open(
-                            fileobj=tmpf,
-                            mode="r:*",
+                                fileobj=tmpf,
+                                mode="r:*",
                         ) as tf:
                             process_tarfile_obj(
                                 tf,
@@ -316,8 +309,7 @@ def process_bytes_as_archive(
                                 max_bytes,
                                 exts,
                                 name_hint=name,
-                            )
-                        )
+                            ))
                 return
             except Exception:
                 found.update(
@@ -326,8 +318,7 @@ def process_bytes_as_archive(
                         max_bytes,
                         exts,
                         name_hint=name,
-                    )
-                )
+                    ))
                 return
         found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
     except Exception:
@@ -364,17 +355,15 @@ def process_path(
             except zipfile.BadZipFile:
                 pass
         if any(
-            lname.endswith(suf)
-            for suf in (
-                ".tar",
-                ".tar.gz",
-                ".tgz",
-                ".tar.xz",
-                ".txz",
-                ".tar.bz2",
-                ".tbz2",
-            )
-        ):
+                lname.endswith(suf) for suf in (
+                    ".tar",
+                    ".tar.gz",
+                    ".tgz",
+                    ".tar.xz",
+                    ".txz",
+                    ".tar.bz2",
+                    ".tbz2",
+                )):
             try:
                 with tarfile.open(path, mode="r:*") as tf:
                     process_tarfile_obj(
@@ -399,8 +388,7 @@ def process_path(
                                 max_bytes,
                                 exts,
                                 name_hint=path,
-                            )
-                        )
+                            ))
                 except Exception:
                     pass
                 return
@@ -430,8 +418,7 @@ def process_path(
                     max_bytes,
                     exts,
                     name_hint=path,
-                )
-            )
+                ))
     except Exception:
         return
 
@@ -439,7 +426,8 @@ def process_path(
 def main():
     start = perf_counter()
     parser = argparse.ArgumentParser(
-        description="Find URLs in files and supported archives recursively and save them to a file."
+        description=
+        "Find URLs in files and supported archives recursively and save them to a file."
     )
     parser.add_argument(
         "-o",
@@ -458,7 +446,8 @@ def main():
         "-e",
         "--extensions",
         default="",
-        help="Comma-separated list of file extensions to scan (e.g. .py,.md). If empty, all files are scanned. Applies to archive members too.",
+        help=
+        "Comma-separated list of file extensions to scan (e.g. .py,.md). If empty, all files are scanned. Applies to archive members too.",
     )
     parser.add_argument(
         "--max-recursion",
@@ -468,7 +457,10 @@ def main():
     )
     args = parser.parse_args()
     max_bytes = int(args.max_mb * 1024 * 1024)
-    exts = {e.strip().lower() for e in args.extensions.split(",") if e.strip()} if args.extensions else None
+    exts = {
+        e.strip().lower()
+        for e in args.extensions.split(",") if e.strip()
+    } if args.extensions else None
     found = set()
     for root, dirs, files in os.walk(".", topdown=True, followlinks=False):
         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]

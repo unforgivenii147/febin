@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import shutil
 import subprocess
@@ -6,7 +6,9 @@ from pathlib import Path
 
 from dh import unique_path
 
-EXTENSIONS = {".js", ".css", ".html", ".json", ".mjs", ".cjs", ".ts", ".jsx", ".tsx"}
+EXTENSIONS = {
+    ".js", ".css", ".html", ".json", ".mjs", ".cjs", ".ts", ".jsx", ".tsx"
+}
 EXCLUDE_PATTERNS = {".py", ".ipynb"}
 
 

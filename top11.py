@@ -1,19 +1,19 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import sys
 from pathlib import Path
 
 
-def get_file_sizes(start_path="."):
-    file_sizes = []
+def get_sizes(start_path="."):
+    get_sizes = []
     start_path = Path(start_path).resolve()
     try:
         for file_path in start_path.rglob("*"):
             if file_path.is_file():
                 try:
-                    file_size = file_path.stat().st_size
+                    get_size = file_path.stat().st_size
                     relative_path = file_path.relative_to(start_path)
-                    file_sizes.append((relative_path, file_size))
+                    get_sizes.append((relative_path, get_size))
                 except (OSError, ValueError):
                     continue
     except PermissionError as e:
@@ -22,7 +22,7 @@ def get_file_sizes(start_path="."):
             file=sys.stderr,
         )
         return []
-    return file_sizes
+    return get_sizes
 
 
 def format_size(size_bytes) -> str:
@@ -38,12 +38,12 @@ def format_size(size_bytes) -> str:
 
 def main() -> None:
     print("Scanning files...")
-    file_sizes = get_file_sizes()
-    if not file_sizes:
+    get_sizes = get_sizes()
+    if not get_sizes:
         print("No files found or unable to access directory.")
         return
-    file_sizes.sort(key=lambda x: x[1], reverse=True)
-    top_files = file_sizes[:10]
+    get_sizes.sort(key=lambda x: x[1], reverse=True)
+    top_files = get_sizes[:10]
     print("\n" + "=" * 60)
     print(f"TOP 10 LARGEST FILES (in {os.getcwd()})")
     print("=" * 60)
@@ -57,10 +57,10 @@ def main() -> None:
     for i, (file_path, size) in enumerate(top_files, 1):
         path_str = str(file_path)
         if len(path_str) > max_path_len:
-            path_str = "..." + path_str[-(max_path_len - 3) :]
+            path_str = "..." + path_str[-(max_path_len - 3):]
         size_str = format_size(size)
         print(f"{i:<4} {path_str:<{max_path_len}} {size_str:>12}")
-    total_files = len(file_sizes)
+    total_files = len(get_sizes)
     print("-" * (max_path_len + 20))
     print(f"Total files scanned: {total_files}")
     if total_files > 10:
@@ -68,12 +68,12 @@ def main() -> None:
 
 
 def alternative_version_with_details() -> None:
-    file_sizes = get_file_sizes()
-    if not file_sizes:
+    get_sizes = get_sizes()
+    if not get_sizes:
         print("No files found.")
         return
-    file_sizes.sort(key=lambda x: x[1], reverse=True)
-    top_files = file_sizes[:10]
+    get_sizes.sort(key=lambda x: x[1], reverse=True)
+    top_files = get_sizes[:10]
     print("\nTOP 10 LARGEST FILES (Detailed View)")
     print("=" * 70)
     for i, (file_path, size) in enumerate(top_files, 1):

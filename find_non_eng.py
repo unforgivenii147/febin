@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 """
 Recursively find and report non-English files in current directory using pycld2
 """
-
 import argparse
-import mimetypes
 import os
 import sys
 from collections import Counter
@@ -56,7 +54,6 @@ BINARY_EXTENSIONS = {
     ".class",
     ".jar",
 }
-
 # Text file extensions to check (can be customized)
 TEXT_EXTENSIONS = {
     ".txt",
@@ -102,10 +99,10 @@ TEXT_EXTENSIONS = {
 
 
 class LanguageDetector:
+
     def __init__(self, min_bytes=100, max_bytes=10000):
         """
         Initialize the language detector
-
         Args:
             min_bytes: Minimum bytes to read from file (smaller files might be unreliable)
             max_bytes: Maximum bytes to read (to avoid huge files)
@@ -126,24 +123,20 @@ class LanguageDetector:
         Check if a file is likely a text file based on extension and content
         """
         ext = filepath.suffix.lower()
-
         # Check extension first
         if ext in BINARY_EXTENSIONS:
             return False
         if ext in TEXT_EXTENSIONS:
             return True
-
         # If unknown extension, try to detect by reading first few bytes
         try:
             with open(filepath, "rb") as f:
                 sample = f.read(1024)
                 if not sample:
                     return False
-
                 # Check for null bytes (typical in binary files)
                 if b"\x00" in sample:
                     return False
-
                 # Try to decode as UTF-8
                 try:
                     sample.decode("utf-8")
@@ -160,107 +153,138 @@ class LanguageDetector:
         """
         try:
             # Read file content
-            with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+            with open(
+                    filepath,
+                    encoding="utf-8",
+                    errors="ignore",
+            ) as f:
                 content = f.read(self.max_bytes)
-
             # Skip if too short
             if len(content) < self.min_bytes:
-                return False, "TOO_SHORT", None, None
-
+                return (
+                    False,
+                    "TOO_SHORT",
+                    None,
+                    None,
+                )
             # Detect language
             # CLD2 returns: (is_reliable, text_bytes, details)
             # details is a list of (language_name, language_code, percent, score)
-            is_reliable, _, details = pycld2.detect(content, returnVectors=True)
-
+            is_reliable, _, details = pycld2.detect(content,
+                                                    returnVectors=True)
             if details and len(details) > 0:
-                lang_name, lang_code, percent, _ = details[0]
-                return is_reliable, lang_name, lang_code, percent
+                (
+                    lang_name,
+                    lang_code,
+                    percent,
+                    _,
+                ) = details[0]
+                return (
+                    is_reliable,
+                    lang_name,
+                    lang_code,
+                    percent,
+                )
             else:
-                return False, "UNKNOWN", None, None
-
+                return (
+                    False,
+                    "UNKNOWN",
+                    None,
+                    None,
+                )
         except pycld2.error as e:
-            return False, f"CLD2_ERROR: {e}", None, None
+            return (
+                False,
+                f"CLD2_ERROR: {e}",
+                None,
+                None,
+            )
         except Exception as e:
-            return False, f"ERROR: {e}", None, None
+            return (
+                False,
+                f"ERROR: {e}",
+                None,
+                None,
+            )
 
-    def scan_directory(self, directory, show_progress=True, only_report_non_english=True):
+    def scan_directory(
+        self,
+        directory,
+        show_progress=True,
+        only_report_non_english=True,
+    ):
         """
         Recursively scan directory for non-English files
-
         Args:
             directory: Directory to scan
             show_progress: Show progress indicator
             only_report_non_english: Only report non-English files (skip English)
         """
         directory = Path(directory)
-
         if not directory.exists():
             print(f"Error: Directory '{directory}' does not exist")
             return
-
         print(f"🔍 Scanning directory: {directory.absolute()}")
         print("=" * 60)
-
         # Walk through directory
         for root, dirs, files in os.walk(directory):
             root_path = Path(root)
-
             # Skip hidden directories (optional)
             dirs[:] = [d for d in dirs if not d.startswith(".")]
-
             for file in files:
                 filepath = root_path / file
-
                 # Skip hidden files (optional)
                 if file.startswith("."):
                     continue
-
                 self.stats["total_files"] += 1
-
                 if show_progress:
-                    print(f"\r📊 Processing: {filepath} [Files: {self.stats['total_files']}]", end="", flush=True)
-
+                    print(
+                        f"\r📊 Processing: {filepath} [Files: {self.stats['total_files']}]",
+                        end="",
+                        flush=True,
+                    )
                 # Check if it's a text file
                 if not self.is_text_file(filepath):
                     self.stats["skipped_binary"] += 1
                     continue
-
                 # Detect language
-                is_reliable, lang_name, lang_code, percent = self.detect_language(filepath)
-
+                (
+                    is_reliable,
+                    lang_name,
+                    lang_code,
+                    percent,
+                ) = self.detect_language(filepath)
                 # Skip if detection failed
-                if lang_name in ["TOO_SHORT", "UNKNOWN", None] or lang_name.startswith(("ERROR:", "CLD2_ERROR:")):
-                    self.stats["skipped_small" if lang_name == "TOO_SHORT" else "skipped_error"] += 1
+                if lang_name in [
+                        "TOO_SHORT",
+                        "UNKNOWN",
+                        None,
+                ] or lang_name.startswith(("ERROR:", "CLD2_ERROR:")):
+                    self.stats[("skipped_small" if lang_name == "TOO_SHORT"
+                                else "skipped_error")] += 1
                     continue
-
                 # Track language statistics
                 self.stats["languages"][lang_name] += 1
-
                 # Check if it's non-English and report
                 if lang_code != "en" or not only_report_non_english:
                     # For English detection, also check reliability
                     if lang_code == "en" and not is_reliable and only_report_non_english:
                         # Unreliable English detection - might be mixed or non-English
-                        self.stats["non_english"].append(
-                            {
-                                "file": filepath,
-                                "language": lang_name,
-                                "code": lang_code,
-                                "reliable": is_reliable,
-                                "confidence": percent,
-                            }
-                        )
+                        self.stats["non_english"].append({
+                            "file": filepath,
+                            "language": lang_name,
+                            "code": lang_code,
+                            "reliable": is_reliable,
+                            "confidence": percent,
+                        })
                     elif lang_code != "en":
-                        self.stats["non_english"].append(
-                            {
-                                "file": filepath,
-                                "language": lang_name,
-                                "code": lang_code,
-                                "reliable": is_reliable,
-                                "confidence": percent,
-                            }
-                        )
-
+                        self.stats["non_english"].append({
+                            "file": filepath,
+                            "language": lang_name,
+                            "code": lang_code,
+                            "reliable": is_reliable,
+                            "confidence": percent,
+                        })
         print("\n" + "=" * 60)
         self.report_results(only_report_non_english)
 
@@ -270,29 +294,29 @@ class LanguageDetector:
         """
         print("\n📊 SCAN RESULTS")
         print("=" * 60)
-
         # File statistics
         print(f"📁 Total files processed: {self.stats['total_files']}")
         print(f"⏭️  Skipped binary files: {self.stats['skipped_binary']}")
-        print(f"📏 Skipped small files (<100 bytes): {self.stats['skipped_small']}")
+        print(
+            f"📏 Skipped small files (<100 bytes): {self.stats['skipped_small']}"
+        )
         print(f"❌ Skipped (errors): {self.stats['skipped_error']}")
-
         if only_report_non_english:
-            print(f"🌍 Non-English files found: {len(self.stats['non_english'])}")
+            print(
+                f"🌍 Non-English files found: {len(self.stats['non_english'])}")
         else:
-            print(f"🌍 Total text files analyzed: {sum(self.stats['languages'].values())}")
-
+            print(
+                f"🌍 Total text files analyzed: {sum(self.stats['languages'].values())}"
+            )
         # Language distribution
         if self.stats["languages"]:
             print("\n📈 Language Distribution:")
             for lang, count in self.stats["languages"].most_common():
                 print(f"  • {lang}: {count} files")
-
         # Non-English files details
         if self.stats["non_english"]:
             print(f"\n📝 Non-English Files ({len(self.stats['non_english'])}):")
             print("-" * 60)
-
             # Group by language for better readability
             non_english_by_lang = {}
             for item in self.stats["non_english"]:
@@ -300,7 +324,6 @@ class LanguageDetector:
                 if lang not in non_english_by_lang:
                     non_english_by_lang[lang] = []
                 non_english_by_lang[lang].append(item)
-
             for lang, files in sorted(non_english_by_lang.items()):
                 print(f"\n  [{lang}] - {len(files)} files:")
                 for item in files[:10]:  # Show first 10 per language
@@ -308,12 +331,10 @@ class LanguageDetector:
                     confidence = item["confidence"] or 0
                     rel_str = f"[{reliability} {confidence}%]" if confidence else "[?]"
                     print(f"    {rel_str} {item['file']}")
-
                 if len(files) > 10:
                     print(f"    ... and {len(files) - 10} more")
         else:
             print("\n✅ No non-English files found!")
-
         # Summary
         print("\n" + "=" * 60)
         english_files = sum(self.stats["languages"].get("ENGLISH", 0))
@@ -323,34 +344,64 @@ class LanguageDetector:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Recursively find non-English files using pycld2")
-    parser.add_argument("directory", nargs="?", default=".", help="Directory to scan (default: current directory)")
+    parser = argparse.ArgumentParser(
+        description="Recursively find non-English files using pycld2")
     parser.add_argument(
-        "--min-bytes", type=int, default=100, help="Minimum bytes to read for language detection (default: 100)"
+        "directory",
+        nargs="?",
+        default=".",
+        help="Directory to scan (default: current directory)",
     )
     parser.add_argument(
-        "--max-bytes", type=int, default=10000, help="Maximum bytes to read from each file (default: 10000)"
+        "--min-bytes",
+        type=int,
+        default=100,
+        help="Minimum bytes to read for language detection (default: 100)",
     )
-    parser.add_argument("--all", "-a", action="store_true", help="Report all files, including English ones")
-    parser.add_argument("--no-progress", "-np", action="store_true", help="Don't show progress")
-    parser.add_argument("--output", "-o", type=str, help="Output results to file")
-
+    parser.add_argument(
+        "--max-bytes",
+        type=int,
+        default=10000,
+        help="Maximum bytes to read from each file (default: 10000)",
+    )
+    parser.add_argument(
+        "--all",
+        "-a",
+        action="store_true",
+        help="Report all files, including English ones",
+    )
+    parser.add_argument(
+        "--no-progress",
+        "-np",
+        action="store_true",
+        help="Don't show progress",
+    )
+    parser.add_argument(
+        "--output",
+        "-o",
+        type=str,
+        help="Output results to file",
+    )
     args = parser.parse_args()
-
     # Create detector
-    detector = LanguageDetector(min_bytes=args.min_bytes, max_bytes=args.max_bytes)
-
+    detector = LanguageDetector(
+        min_bytes=args.min_bytes,
+        max_bytes=args.max_bytes,
+    )
     # Scan directory
-    detector.scan_directory(args.directory, show_progress=not args.no_progress, only_report_non_english=not args.all)
-
+    detector.scan_directory(
+        args.directory,
+        show_progress=not args.no_progress,
+        only_report_non_english=not args.all,
+    )
     # Save to file if requested
     if args.output:
-        import sys
         from contextlib import redirect_stdout
-
-        with open(args.output, "w", encoding="utf-8") as f:
-            with redirect_stdout(f):
-                detector.report_results(only_report_non_english=not args.all)
+        with (
+                open(args.output, "w", encoding="utf-8") as f,
+                redirect_stdout(f),
+        ):
+            detector.report_results(only_report_non_english=not args.all)
         print(f"\n✅ Results saved to: {args.output}")
 
 
@@ -365,5 +416,4 @@ if __name__ == "__main__":
         print("  pkg install clang")
         print("  pip install pycld2")
         sys.exit(1)
-
     main()

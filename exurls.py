@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import os
 import sys
@@ -43,7 +43,8 @@ def save_links(out_dir, name, links):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Extract and save all URLs from a webpage")
+    parser = argparse.ArgumentParser(
+        description="Extract and save all URLs from a webpage")
     parser.add_argument("url", nargs="?", help="Target URL")
     parser.add_argument(
         "-o",

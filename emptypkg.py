@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import pathlib
 import sysconfig
 
@@ -17,9 +17,9 @@ def is_empty_package(dist_info_path) -> bool:
                 os.path.join(
                     pathlib.Path(dist_info_path).parent,
                     rel_path,
-                )
-            ).resolve()
-            if not abs_path.startswith(pathlib.Path(dist_info_path).resolve() + os.sep):
+                )).resolve()
+            if not abs_path.startswith(
+                    pathlib.Path(dist_info_path).resolve() + os.sep):
                 return False
     return True
 

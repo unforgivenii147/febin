@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import multiprocessing as mp
 import os
 import sys
@@ -16,7 +16,7 @@ def init_worker():
 
 
 def is_preserved_comment(source_bytes: bytes, node: Node) -> bool:
-    text = source_bytes[node.start_byte : node.end_byte]
+    text = source_bytes[node.start_byte:node.end_byte]
     if node.start_byte == 0 and text.startswith(b"#!"):
         return True
     stripped = text.lstrip(b"#").strip()
@@ -42,7 +42,7 @@ def collect_nodes_to_remove(source_bytes: bytes, node: Node) -> list[Node]:
     return to_remove
 
 
-def process_file(filepath: str) -> tuple[str, bool]:
+def process_file(filepath: str, ) -> tuple[str, bool]:
     global _parser
     try:
         with open(filepath, "rb") as f:
@@ -52,22 +52,30 @@ def process_file(filepath: str) -> tuple[str, bool]:
         to_delete = collect_nodes_to_remove(source_bytes, root)
         if not to_delete:
             return filepath, True
-        to_delete.sort(key=lambda n: n.start_byte, reverse=True)
+        to_delete.sort(
+            key=lambda n: n.start_byte,
+            reverse=True,
+        )
         new_source = bytearray(source_bytes)
         for node in to_delete:
-            del new_source[node.start_byte : node.end_byte]
+            del new_source[node.start_byte:node.end_byte]
         with open(filepath, "wb") as f:
             f.write(new_source)
         return filepath, True
     except Exception as e:
-        print(f"Error processing {filepath}: {e}", file=sys.stderr)
+        print(
+            f"Error processing {filepath}: {e}",
+            file=sys.stderr,
+        )
         return filepath, False
 
 
 def main():
     py_files = []
     for root, dirs, files in os.walk("."):
-        dirs[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"]
+        dirs[:] = [
+            d for d in dirs if not d.startswith(".") and d != "__pycache__"
+        ]
         for file in files:
             if file.endswith(".py"):
                 py_files.append(os.path.join(root, file))
@@ -93,6 +101,8 @@ if __name__ == "__main__":
         import tree_sitter
         import tree_sitter_python
     except ImportError:
-        print("Error: Missing required package. Please install tree-sitter==0.25.2 and tree-sitter-python==0.25.0")
+        print(
+            "Error: Missing required package. Please install tree-sitter==0.25.2 and tree-sitter-python==0.25.0"
+        )
         sys.exit(1)
     main()

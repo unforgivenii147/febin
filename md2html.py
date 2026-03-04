@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import shutil
 import sys
@@ -19,7 +19,10 @@ def modify_classes(html_content):
         "code": "bg-gray-100 p-1 rounded-md",
         "pre": "bg-gray-900 text-white p-4 rounded-md overflow-x-auto",
     }
-    for tag, tailwind_classes in tag_class_map.items():
+    for (
+            tag,
+            tailwind_classes,
+    ) in tag_class_map.items():
         for element in soup.find_all(tag):
             existing_classes = element.get("class", [])
             new_classes = tailwind_classes.split()
@@ -29,18 +32,34 @@ def modify_classes(html_content):
 
 
 def convert_latex_format(text):
-    text = re.sub(r"\\\[(.*?)\\\]", r'<div class="latex-display">\1</div>', text, flags=re.DOTALL)
-    return re.sub(r"\\\((.*?)\\\)", r'<span class="latex-inline">\1</span>', text, flags=re.DOTALL)
+    text = re.sub(
+        r"\\\[(.*?)\\\]",
+        r'<div class="latex-display">\1</div>',
+        text,
+        flags=re.DOTALL,
+    )
+    return re.sub(
+        r"\\\((.*?)\\\)",
+        r'<span class="latex-inline">\1</span>',
+        text,
+        flags=re.DOTALL,
+    )
 
 
 def read_markdown_file(file_path):
-    with open(file_path, encoding="utf-8", errors="ignore") as f:
+    with open(
+            file_path,
+            encoding="utf-8",
+            errors="ignore",
+    ) as f:
         return f.read()
 
 
 def convert_markdown(md_path: str) -> str:
     if not md_path:
-        raise ValueError("Markdown file path cannot be empty. Please provide a valid .md file path.")
+        raise ValueError(
+            "Markdown file path cannot be empty. Please provide a valid .md file path."
+        )
     markdown_text = read_markdown_file(md_path)
     markdown_text = convert_latex_format(markdown_text)
     base_name = os.path.basename(md_path).replace(".md", "")

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
 
@@ -32,19 +32,19 @@ def clean_file(
 ) -> tuple[bool, int, str]:
     try:
         with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
+                path,
+                encoding="utf-8",
+                errors="ignore",
         ) as f:
             lines = f.readlines()
         cleaned, removed = clean_lines(lines, collapse)
         if removed == 0:
             return False, 0, ""
         with open(
-            path,
-            "w",
-            encoding="utf-8",
-            errors="ignore",
+                path,
+                "w",
+                encoding="utf-8",
+                errors="ignore",
         ) as f:
             f.writelines(cleaned)
         return True, removed, path.suffix.lower()

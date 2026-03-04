@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import glob
 import os
@@ -13,7 +13,9 @@ AES_BLOCK_SIZE = 16
 
 
 def random_key(length=32):
-    return "".join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
+    return "".join(
+        random.choice(string.ascii_letters + string.digits)
+        for _ in range(length))
 
 
 def encrypt_file(file_path, key):

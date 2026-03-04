@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import contextlib
 import multiprocessing
@@ -39,13 +39,11 @@ def get_package_metadata(pkg):
 
 
 def create_control_file(path, meta) -> None:
-    control_content = (
-        f"Package: {meta['Package']}\n"
-        f"Version: {meta['Version']}\n"
-        f"Architecture: {meta['Architecture']}\n"
-        f"Maintainer: {meta['Maintainer']}\n"
-        f"Description: {meta['Description']}\n"
-    )
+    control_content = (f"Package: {meta['Package']}\n"
+                       f"Version: {meta['Version']}\n"
+                       f"Architecture: {meta['Architecture']}\n"
+                       f"Maintainer: {meta['Maintainer']}\n"
+                       f"Description: {meta['Description']}\n")
     (path / "control").write_text(control_content)
 
 

@@ -1,10 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
 
 import pillow_heif as ph
-from dh import folder_size
+from dh import get_size
 from fastwalk import walk_files
 
 
@@ -20,17 +20,20 @@ def process_file(fp):
 
 def main():
     dir = Path().cwd()
-    start_size = folder_size(dir)
+    start_size = get_size(dir)
     files = []
     for pth in walk_files(dir):
         path = Path(pth)
-        if path.is_file() and path.suffix in {".heif", ".heic"}:
+        if path.is_file() and path.suffix in {
+                ".heif",
+                ".heic",
+        }:
             files.append(path)
     pool = Pool(8)
     pool.imap_unordered(process_file, files)
     pool.close()
     pool.join()
-    end_size = folder_size(dir)
+    end_size = get_size(dir)
     print(f"{fornat_size(abs(end_size - start_size))}")
 
 

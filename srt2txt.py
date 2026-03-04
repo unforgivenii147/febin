@@ -1,10 +1,11 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
 
 import regex as re
 
-TIMESTAMP_RE = re.compile(r"\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}")
+TIMESTAMP_RE = re.compile(
+    r"\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}")
 TAG_RE = re.compile(r"<[^>]+>|{\w+}")
 
 

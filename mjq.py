@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import contextlib
 import os
 import subprocess
@@ -65,7 +65,8 @@ def main():
     total_before = 0
     total_after = 0
     with Pool(processes=workers) as pool:
-        for filepath, changed, before, after, err in pool.imap_unordered(minify_with_jq, files):
+        for filepath, changed, before, after, err in pool.imap_unordered(
+                minify_with_jq, files):
             if err:
                 print(f"[ERROR] {filepath} -> {err}")
                 errors += 1

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import subprocess
 
@@ -53,11 +53,14 @@ def exclude_build_packages(installed_packages):
         "autoconf",
         "automake",
     }
-    return [(pkg, size) for pkg, size in installed_packages if pkg not in build_essential_packages]
+    return [(pkg, size) for pkg, size in installed_packages
+            if pkg not in build_essential_packages]
 
 
 def suggest_unused_packages(installed_packages, used_packages, top_n=200):
-    unused_packages = [pkg for pkg in installed_packages if pkg[0] not in used_packages]
+    unused_packages = [
+        pkg for pkg in installed_packages if pkg[0] not in used_packages
+    ]
     unused_packages = exclude_build_packages(unused_packages)
     unused_packages.sort(key=lambda x: x[1], reverse=True)
     return unused_packages[:top_n]
@@ -74,7 +77,8 @@ def main():
     )
     print("Top unused packages (sorted by size):")
     for pkg, size in suggestions:
-        if ("python" not in str(pkg)) and ("l8b" not in str(pkg)) and ("static" not in str(pkg)):
+        if ("python" not in str(pkg)) and ("l8b" not in str(pkg)) and (
+                "static" not in str(pkg)):
             print(f"{pkg}: {size / 1024} MB")
 
 

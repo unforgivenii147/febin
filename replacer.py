@@ -1,9 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import os
 import sys
 
 import regex as re
+from dh import is_binary
 
 
 def process_file(file_path, search_text, replace_text=None, dry_run=False):
@@ -11,23 +12,14 @@ def process_file(file_path, search_text, replace_text=None, dry_run=False):
     try:
         with open(file_path, encoding="utf-8") as f:
             content = f.read()
-
-        # If replace_text is None, remove the search text (replace with empty string)
         replacement = replace_text if replace_text is not None else ""
-
-        # For the search text, escape any regex special characters
         escaped_search = re.escape(search_text)
-
-        # Don't use word boundaries for punctuation/special characters
-        # Just create a simple pattern that matches the exact text
         pattern = re.compile(escaped_search)
-
         if pattern.search(content):
             if dry_run:
-                # Find all matches for preview
                 matches = list(pattern.finditer(content))
-                print(f"[DRY RUN] Found {len(matches)} match(es) in {file_path}")
-                # Show first few matches with context
+                print(
+                    f"[DRY RUN] Found {len(matches)} match(es) in {file_path}")
                 for i, match in enumerate(matches[:3]):
                     start = max(0, match.start() - 20)
                     end = min(len(content), match.end() + 20)
@@ -43,26 +35,23 @@ def process_file(file_path, search_text, replace_text=None, dry_run=False):
                 print(f"Updated: {file_path}")
             return True
         return False
-
-    except (UnicodeDecodeError, PermissionError, IsADirectoryError) as e:
-        # Skip binary files and directories
+    except (UnicodeDecodeError, PermissionError, IsADirectoryError):
         return False
     except Exception as e:
         print(f"Error processing {file_path}: {e}", file=sys.stderr)
         return False
 
 
-def replace_in_files(search_text, replace_text=None, target_file=None, dry_run=False):
+def replace_in_files(search_text,
+                     replace_text=None,
+                     target_file=None,
+                     dry_run=False):
     """Main function to process files"""
     exclude_dirs = {".git", "build", "dist", "__pycache__", "node_modules"}
-
-    # Track if any files were processed
     files_processed = 0
     files_changed = 0
-
-    # If a specific file is provided, process just that file
     if target_file:
-        if os.path.isfile(target_file):
+        if os.path.isfile(target_file) and not os.path.islink(target_file):
             print(f"Processing file: {target_file}")
             if process_file(target_file, search_text, replace_text, dry_run):
                 files_changed += 1
@@ -70,29 +59,28 @@ def replace_in_files(search_text, replace_text=None, target_file=None, dry_run=F
         else:
             print(f"Error: {target_file} is not a valid file", file=sys.stderr)
         return files_processed, files_changed
-
-    # Otherwise process recursively
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         for filename in files:
             file_path = os.path.join(root, filename)
+            if os.path.islink(file_path) or is_binary(file_path):
+                continue
             files_processed += 1
             if process_file(file_path, search_text, replace_text, dry_run):
                 files_changed += 1
-
-            # Simple progress indicator for large directories
             if files_processed % 100 == 0:
                 print(f"Processed {files_processed} files...", end="\r")
-
     return files_processed, files_changed
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Recursively replace or remove text in files.")
+    parser = argparse.ArgumentParser(
+        description="Recursively replace or remove text in files.")
     parser.add_argument(
         "strings",
         nargs="+",
-        help="Search text and optional replacement text. If only one string is provided, it will be removed.",
+        help=
+        "Search text and optional replacement text. If only one string is provided, it will be removed.",
     )
     parser.add_argument(
         "--dry-run",
@@ -102,36 +90,32 @@ if __name__ == "__main__":
     parser.add_argument(
         "-f",
         "--file",
-        help="Process only the specified file instead of recursive directory search",
+        help=
+        "Process only the specified file instead of recursive directory search",
     )
-
     args = parser.parse_args()
-
-    # Handle the two possible cases: replacement (2 strings) or removal (1 string)
     if len(args.strings) == 2:
         search_text, replace_text = args.strings
         action = f"REPLACING '{search_text}' WITH '{replace_text}'"
     elif len(args.strings) == 1:
         search_text = args.strings[0]
-        replace_text = None  # This triggers removal
+        replace_text = None
         action = f"REMOVING '{search_text}'"
     else:
-        parser.error("Please provide either one string (to remove) or two strings (search and replace)")
-
-    # Handle quoted strings - remove surrounding quotes if present
+        parser.error(
+            "Please provide either one string (to remove) or two strings (search and replace)"
+        )
     if search_text.startswith(("'", '"')) and search_text.endswith(("'", '"')):
         search_text = search_text[1:-1]
-
     if args.dry_run:
         print("--- RUNNING IN DRY RUN MODE (No files will be modified) ---")
-
     print(f"--- {action} ---")
-
     files_processed, files_changed = replace_in_files(
         search_text,
         replace_text,
         target_file=args.file,
         dry_run=args.dry_run,
     )
-
-    print(f"\n--- Complete: Processed {files_processed} files, modified {files_changed} files ---")
+    print(
+        f"\n--- Complete: Processed {files_processed} files, modified {files_changed} files ---"
+    )

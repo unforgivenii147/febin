@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import json
 
 import requests
@@ -28,7 +28,9 @@ def get_github_repos(username, output_file=None) -> None:
                 f.write(f"Repository: {name}\n")
                 f.write(f"Description: {description}\n")
                 f.write(f"URL: {url}\n")
-                f.write(f"Stars: {stars} | Forks: {forks} | Language: {language}\n")
+                f.write(
+                    f"Stars: {stars} | Forks: {forks} | Language: {language}\n"
+                )
                 f.write("-" * 50 + "\n")
         print(f"Successfully saved {len(repos)} repositories to {output_file}")
     except requests.exceptions.RequestException as e:

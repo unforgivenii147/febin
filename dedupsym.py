@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import json
 import os
@@ -56,7 +56,8 @@ def build_groups(root: Path, cache: dict):
             size = st.st_size
             mtime = st.st_mtime
             cached = cache.get(key)
-            if cached and cached.get("size") == size and cached.get("mtime") == mtime:
+            if cached and cached.get("size") == size and cached.get(
+                    "mtime") == mtime:
                 h = cached["hash"]
             else:
                 try:
@@ -147,7 +148,8 @@ def restore(dry_run=False):
         originals = [Path(p) for p in info.get("originals", [])]
         for orig in originals:
             if orig.exists() and not orig.is_symlink():
-                print(f"skipping restore for {orig} (exists and not a symlink)")
+                print(
+                    f"skipping restore for {orig} (exists and not a symlink)")
                 continue
             if orig.is_symlink():
                 try:
@@ -188,7 +190,8 @@ def restore(dry_run=False):
 
 def main():
     ap = argparse.ArgumentParser(
-        description="Deduplicate files by moving one copy to ~/dups and symlinking duplicates using xxhash."
+        description=
+        "Deduplicate files by moving one copy to ~/dups and symlinking duplicates using xxhash."
     )
     ap.add_argument(
         "path",

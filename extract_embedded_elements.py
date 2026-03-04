@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
 
 import base64
@@ -43,9 +43,7 @@ def content_hash(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def extract_from_html(
-    html: str,
-) -> Iterable[tuple[str, bytes]]:
+def extract_from_html(html: str, ) -> Iterable[tuple[str, bytes]]:
     for match in DATA_URL_RE.finditer(html):
         mime = match.group("mime")
         raw_data = match.group("data")

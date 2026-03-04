@@ -1,10 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
 from bs4 import BeautifulSoup
 
 
-def find_html_files(root_dir: str = ".") -> list[Path]:
+def find_html_files(root_dir: str = ".", ) -> list[Path]:
     html_files = []
     root_path = Path(root_dir).resolve()
     for file_path in root_path.rglob("*.html"):
@@ -15,7 +15,7 @@ def find_html_files(root_dir: str = ".") -> list[Path]:
     return sorted(html_files)
 
 
-def extract_common_structure(html_files: list[Path]) -> dict:
+def extract_common_structure(html_files: list[Path], ) -> dict:
     body_classes = []
     meta_tags = []
     link_tags = []
@@ -48,13 +48,14 @@ def extract_common_structure(html_files: list[Path]) -> dict:
     }
 
 
-def merge_html_content(html_files: list[Path]) -> str:
+def merge_html_content(html_files: list[Path], ) -> str:
     merged_sections = []
     for file_path in html_files:
         try:
             with open(file_path, encoding="utf-8") as f:
                 soup = BeautifulSoup(f.read(), "html.parser")
-                content = soup.body.decode_contents() if soup.body else str(soup)
+                content = soup.body.decode_contents() if soup.body else str(
+                    soup)
                 section_html = f"""
     <!-- Content from: {file_path.relative_to(Path.cwd())} -->
     <section class="merged-content" data-source="{file_path.name}">
@@ -205,7 +206,11 @@ def main():
         print(f"   - {file_path.relative_to(Path.cwd())}")
     if len(html_files) > 10:
         print(f"   ... and {len(html_files) - 10} more")
-    success = create_template_html(html_files, output_file="template.html", title="Merged HTML Template")
+    success = create_template_html(
+        html_files,
+        output_file="template.html",
+        title="Merged HTML Template",
+    )
     if success:
         print("\n" + "=" * 60)
         print("✨ Template generation complete!")
@@ -220,7 +225,12 @@ if __name__ == "__main__":
         print("📦 Installing BeautifulSoup4...")
         import subprocess
         import sys
-
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "beautifulsoup4"])
+        subprocess.check_call([
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "beautifulsoup4",
+        ])
         from bs4 import BeautifulSoup
     main()

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import subprocess
 from pathlib import Path
 
@@ -57,7 +57,10 @@ def format_with_ruff(file_path):
 
 def main() -> None:
     current_dir = Path()
-    python_files = [item for item in current_dir.iterdir() if item.is_file() and is_python_file(item)]
+    python_files = [
+        item for item in current_dir.iterdir()
+        if item.is_file() and is_python_file(item)
+    ]
     if not python_files:
         return
     for _f in python_files:

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import compileall
 import os
 from collections import deque
@@ -35,7 +35,7 @@ def main():
     with Pool(8) as p:
         pending = deque()
         for f in files:
-            pending.append(p.apply_async(process_file, ((f),)))
+            pending.append(p.apply_async(process_file, ((f), )))
             if len(pending) > 16:
                 pending.popleft().get()
         while pending:

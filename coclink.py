@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 from datetime import UTC, datetime, timedelta
 
@@ -30,15 +30,14 @@ def get_videos(youtube, channel_id):
         response = request.execute()
         for item in response.get("items", []):
             video_id = item["id"]["videoId"]
-            video_details = youtube.videos().list(part="snippet", id=video_id).execute()
+            video_details = youtube.videos().list(part="snippet",
+                                                  id=video_id).execute()
             snippet = video_details["items"][0]["snippet"]
-            videos.append(
-                {
-                    "title": snippet["title"],
-                    "description": snippet["description"],
-                    "url": f"https://www.youtube.com/watch?v={video_id}",
-                }
-            )
+            videos.append({
+                "title": snippet["title"],
+                "description": snippet["description"],
+                "url": f"https://www.youtube.com/watch?v={video_id}",
+            })
         request = youtube.search().list_next(request, response)
         if len(videos) > 100:
             break
@@ -48,7 +47,10 @@ def get_videos(youtube, channel_id):
 def extract_th18_links(description):
     pattern = r"(https?://link\.clashofclans\.com/[^\s]+)"
     links = re.findall(pattern, description)
-    return [l for l in links if "TH18" in l.upper() or "TH18" in description.upper()]
+    return [
+        l for l in links
+        if "TH18" in l.upper() or "TH18" in description.upper()
+    ]
 
 
 def create_html(channel_name, base_data):
@@ -98,13 +100,11 @@ def main():
         for v in vids:
             links = extract_th18_links(v["description"])
             if links:
-                results.append(
-                    {
-                        "title": v["title"],
-                        "video_url": v["url"],
-                        "links": list(set(links)),
-                    }
-                )
+                results.append({
+                    "title": v["title"],
+                    "video_url": v["url"],
+                    "links": list(set(links)),
+                })
         if results:
             create_html(name, results)
         else:

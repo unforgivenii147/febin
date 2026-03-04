@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import glob
 
 from PIL import Image
@@ -18,7 +18,9 @@ def reduce_image_size(image_path, scale_factor=0.75) -> None:
                 optimize=True,
                 quality=85,
             )
-            print(f"Reduced: {image_path} ({img.width}x{img.height} -> {new_width}x{new_height})")
+            print(
+                f"Reduced: {image_path} ({img.width}x{img.height} -> {new_width}x{new_height})"
+            )
     except Exception as e:
         print(f"Error processing {image_path}: {e!s}")
 

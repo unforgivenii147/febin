@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import json
 import subprocess
@@ -67,7 +67,8 @@ def extract_subtitles(video_path, output_dir):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Extract embedded subtitles from a movie file")
+    parser = argparse.ArgumentParser(
+        description="Extract embedded subtitles from a movie file")
     parser.add_argument("movie", help="Path to movie file")
     parser.add_argument(
         "-o",

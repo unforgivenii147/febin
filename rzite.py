@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
 
 import argparse
@@ -46,7 +46,8 @@ def find_distributions(site_dirs):
     dists = {}
     for sd in site_dirs:
         for p in sd.iterdir():
-            if p.is_dir() and (p.name.endswith(".dist-info") or p.name.endswith(".egg-info")):
+            if p.is_dir() and (p.name.endswith(".dist-info")
+                               or p.name.endswith(".egg-info")):
                 key = p.name.rsplit(".", 1)[0].lower()
                 dists[key] = p
     return dists
@@ -67,13 +68,10 @@ def parse_metadata_from_distinfo(distinfo_dir):
     if ep.exists():
         config = ConfigParser()
         try:
-            config.read_string(
-                "[DEFAULT]\n"
-                + ep.read_text(
-                    encoding="utf-8",
-                    errors="ignore",
-                )
-            )
+            config.read_string("[DEFAULT]\n" + ep.read_text(
+                encoding="utf-8",
+                errors="ignore",
+            ))
         except Exception:
             config.read(ep)
         lines = ep.read_text(encoding="utf-8", errors="ignore").splitlines()
@@ -95,26 +93,26 @@ def read_record_list(distinfo_dir):
     rec = distinfo_dir / "RECORD"
     if rec.exists():
         return [
-            l.strip().split(",", 1)[0]
-            for l in rec.read_text(encoding="utf-8", errors="ignore").splitlines()
-            if l.strip()
+            l.strip().split(",", 1)[0] for l in rec.read_text(
+                encoding="utf-8", errors="ignore").splitlines() if l.strip()
         ]
     for p in (
-        distinfo_dir / "installed-files.txt",
-        distinfo_dir / "installed_files.txt",
+            distinfo_dir / "installed-files.txt",
+            distinfo_dir / "installed_files.txt",
     ):
         if p.exists():
             return [
-                l.strip()
-                for l in p.read_text(
+                l.strip() for l in p.read_text(
                     encoding="utf-8",
                     errors="ignore",
-                ).splitlines()
-                if l.strip()
+                ).splitlines() if l.strip()
             ]
     tt = distinfo_dir / "top_level.txt"
     if tt.exists():
-        return [l.strip() for l in tt.read_text(encoding="utf-8", errors="ignore").splitlines() if l.strip()]
+        return [
+            l.strip() for l in tt.read_text(
+                encoding="utf-8", errors="ignore").splitlines() if l.strip()
+        ]
     return None
 
 
@@ -129,10 +127,10 @@ def find_script_paths(prefix, script_names):
             out.append(sp)
         else:
             for alt in (
-                s,
-                s + ".py",
-                s + "-script.py",
-                s + ".sh",
+                    s,
+                    s + ".py",
+                    s + "-script.py",
+                    s + ".sh",
             ):
                 ap = bin_dir / alt
                 if ap.exists():
@@ -194,21 +192,19 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
                     if c.exists():
                         if c.is_dir():
                             for (
-                                root,
-                                _,
-                                files,
+                                    root,
+                                    _,
+                                    files,
                             ) in os.walk(c):
                                 for fn in files:
                                     s = Path(root) / fn
                                     rel = s.relative_to(base)
                                     collected.append((s, rel))
                         else:
-                            collected.append(
-                                (
-                                    c,
-                                    c.relative_to(base),
-                                )
-                            )
+                            collected.append((
+                                c,
+                                c.relative_to(base),
+                            ))
         else:
             for rel in rec_list:
                 if not rel or rel.startswith(("..", "/")):
@@ -217,9 +213,9 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
                 if src.exists():
                     if src.is_dir():
                         for (
-                            root,
-                            _,
-                            files,
+                                root,
+                                _,
+                                files,
                         ) in os.walk(src):
                             for fn in files:
                                 s = Path(root) / fn
@@ -232,9 +228,9 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
                     if alt.exists():
                         if alt.is_dir():
                             for (
-                                root,
-                                _,
-                                files,
+                                    root,
+                                    _,
+                                    files,
                             ) in os.walk(alt):
                                 for fn in files:
                                     s = Path(root) / fn
@@ -329,9 +325,9 @@ def build_wheel_from_tree(
     )
     wheel_out_path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(
-        wheel_out_path,
-        "w",
-        compression=zipfile.ZIP_DEFLATED,
+            wheel_out_path,
+            "w",
+            compression=zipfile.ZIP_DEFLATED,
     ) as zf:
         for root, _, files in os.walk(workdir):
             for fn in files:
@@ -350,7 +346,9 @@ def main() -> None:
             cleaned = cleaned.strip("\n")
             if cleaned:
                 allxtx.append(cleaned)
-    parser = argparse.ArgumentParser(description="Repack installed packages into .whl files (Termux-aware).")
+    parser = argparse.ArgumentParser(
+        description="Repack installed packages into .whl files (Termux-aware)."
+    )
     parser.add_argument(
         "packages",
         nargs="*",
@@ -377,7 +375,8 @@ def main() -> None:
             key = name.lower()
             found = None
             for k, p in dists.items():
-                if k == key or k.startswith(key + "-") or k.split("-")[0] == key:
+                if k == key or k.startswith(key +
+                                            "-") or k.split("-")[0] == key:
                     found = p
                     break
             if not found:
@@ -399,7 +398,8 @@ def main() -> None:
                 base = base_name
             md = parse_metadata_from_distinfo(distinfo)
             dist_name = md.get("Name") or base.split("-", 1)[0]
-            version = md.get("Version") or (base.split("-", 1)[1] if "-" in base else "0")
+            version = md.get("Version") or (base.split("-", 1)[1]
+                                            if "-" in base else "0")
             items, md = collect_files_for_dist(distinfo, site_dirs, prefix)
             if not items:
                 continue

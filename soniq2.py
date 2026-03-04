@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import mmap
 import os
 import sys
@@ -12,16 +12,16 @@ def sort_and_uniq(file_path):
         print(f"Error: File '{file_path}' not found.")
         return
     try:
-        file_size = os.path.getsize(file_path)
+        get_size = os.path.getsize(file_path)
         lines = []
-        if file_size > MB_5:
+        if get_size > MB_5:
             with (
-                open(file_path, "r+b") as f,
-                mmap.mmap(
-                    f.fileno(),
-                    0,
-                    access=mmap.ACCESS_READ,
-                ) as mm,
+                    open(file_path, "r+b") as f,
+                    mmap.mmap(
+                        f.fileno(),
+                        0,
+                        access=mmap.ACCESS_READ,
+                    ) as mm,
             ):
                 lines = mm.read().decode("utf-8").splitlines()
         else:

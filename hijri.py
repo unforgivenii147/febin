@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import datetime
 
 from dh import georgian_to_hijri, perprint
@@ -10,4 +10,6 @@ def get_current_ymd():
 
 
 current_year, current_month, current_day = get_current_ymd()
-perprint(f"{current_year}-{current_month}-{current_day}=={georgian_to_hijri(current_year, current_month, current_day)}")
+perprint(
+    f"{current_year}-{current_month}-{current_day}=={georgian_to_hijri(current_year, current_month, current_day)}"
+)

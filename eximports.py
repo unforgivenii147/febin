@@ -1,16 +1,13 @@
-#!/usr/bin/env python
-from collections import defaultdict
+#!/data/data/com.termux/files/usr/bin/env python
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import tree_sitter_python as tsp
+from dh import STDLIB, get_installed_pkgs, get_pyfiles
 from tree_sitter import Language, Parser
 
 parser = Parser()
 parser.language = Language(tsp.language())
-
-OUT_DIR = Path("output")
-OUT_DIR.mkdir(exist_ok=True)
-
 VALID = {
     "import_statement",
     "import_from_statement",
@@ -19,53 +16,73 @@ VALID = {
 
 def extract_file(src: bytes, tree):
     root = tree.root_node
-
     chunks = []
     for node in root.children:
         if node.type in VALID:
-            chunks.append(src[node.start_byte : node.end_byte].decode())
-
+            chunks.append(src[node.start_byte:node.end_byte].decode())
     return chunks
 
 
-# Dictionary to store imports by folder path
-folder_imports = defaultdict(list)
-
-for py in Path(".").rglob("*.py"):
-    # Skip hidden directories and site-packages
-    if any(part.startswith(".") for part in py.parts) or "site-packages" in py.parts:
-        continue
-
-    # Skip files in the output directory
-    if OUT_DIR in py.parents:
-        continue
-
-    src = py.read_bytes()
+def process_file(fp):
+    src = fp.read_bytes()
     tree = parser.parse(src)
-
     imports = extract_file(src, tree)
-
-    if imports:
-        # Get the folder containing the Python file
-        folder_path = py.parent
-        relative_folder = folder_path.relative_to(".")
-
-        # Add imports with file comment
-        folder_imports[relative_folder].append(f"\n".join(imports))
-
-# Write collected imports to folder-specific files
-for folder, imports_list in folder_imports.items():
-    if not imports_list:
-        continue
-
-    # Create output file path: output/foldername/imports.py
-    out_file = OUT_DIR / folder / "imports.py"
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-
-    # Combine all imports with proper spacing
-    content = "\n\n".join(imports_list)
-
-    out_file.write_text(content)
+    return imports
 
 
-print(f"\n✨ Done! Processed {len(folder_imports)} folder(s)")
+if __name__ == "__main__":
+    outfile = Path("importz.txt")
+    all_imports = []
+    dir = Path.cwd()
+    files = get_pyfiles(dir)
+    results = []
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        futures = [ex.submit(process_file, f) for f in files]
+        for future in as_completed(futures):
+            results.append(future.result())
+    for imports in results:
+        if imports:
+            for k in imports:
+                if not k in all_imports:
+                    all_imports.append(k)
+    all_imports = sorted(set(all_imports))
+    outfile.write_text("\n".join(all_imports))
+    content = outfile.read_text(encoding="utf-8")
+    impoz = []
+    for line in content.splitlines():
+        line = line.lower()
+        if line.startswith("import "):
+            line = line.replace("import ", "")
+            if " as " in line:
+                indx = line.index(" as ")
+                line = line[:indx]
+            if "." in line:
+                indx = line.index(".")
+                line = line[:indx]
+            if not line in impoz and not line.startswith("_"):
+                impoz.append(line + "\n")
+        elif line.startswith("from "):
+            line = line.replace("from ", "")
+            if line.startswith("."):
+                continue
+            if " as " in line:
+                indx = line.index(" as ")
+                line = line[:indx]
+            if "." in line:
+                indx = line.index(".")
+                line = line[:indx]
+            if " import" in line:
+                indx = line.index(" import")
+                line = line[:indx]
+            if not line in impoz and not line.startswith("_"):
+                impoz.append(line + "\n")
+    impoz = sorted(set(impoz))
+    stdlib_plus_installed = [p for p in STDLIB]
+    inpkg = [p.replace("-", "_").lower() for p in get_installed_pkgs()]
+    stdlib_plus_installed.extend(inpkg)
+    filterd = []
+    for rq in impoz:
+        if rq.strip() not in stdlib_plus_installed:
+            print(rq.strip())
+            filterd.append(rq)
+    outfile.write_text("".join(filterd))

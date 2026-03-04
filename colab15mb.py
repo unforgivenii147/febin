@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import site
 import tarfile
@@ -6,7 +6,7 @@ import tarfile
 from google.colab import files
 
 
-def get_folder_size(path):
+def get_size(path):
     total = 0
     for root, _dirs, files in os.walk(path):
         for f in files:
@@ -23,13 +23,13 @@ def compress_small_site_packages(max_size_mb=15):
         for item in os.listdir(site_packages_dir):
             item_path = os.path.join(site_packages_dir, item)
             if os.path.isdir(item_path):
-                folder_size_mb = get_folder_size(item_path) / (1024 * 1024)
-                if folder_size_mb <= max_size_mb:
-                    print(f"Including folder {item} ({folder_size_mb:.2f} MB)")
+                get_size_mb = get_size(item_path) / (1024 * 1024)
+                if get_size_mb <= max_size_mb:
+                    print(f"Including folder {item} ({get_size_mb:.2f} MB)")
                     for (
-                        root,
-                        _dirs,
-                        files_list,
+                            root,
+                            _dirs,
+                            files_list,
                     ) in os.walk(item_path):
                         for f in files_list:
                             if not f.endswith(".pyc"):
@@ -43,9 +43,9 @@ def compress_small_site_packages(max_size_mb=15):
                                     arcname=arcname,
                                 )
             elif os.path.isfile(item_path):
-                file_size_mb = os.path.getsize(item_path) / (1024 * 1024)
-                if file_size_mb <= max_size_mb and not item.endswith(".pyc"):
-                    print(f"Including file {item} ({file_size_mb:.2f} MB)")
+                get_size_mb = os.path.getsize(item_path) / (1024 * 1024)
+                if get_size_mb <= max_size_mb and not item.endswith(".pyc"):
+                    print(f"Including file {item} ({get_size_mb:.2f} MB)")
                     arcname = os.path.relpath(
                         item_path,
                         site_packages_dir,

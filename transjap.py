@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import sys
 from pathlib import Path
@@ -34,7 +34,8 @@ def build_output_path(input_path: Path) -> Path:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Translate jap → English using deep-translator.")
+    parser = argparse.ArgumentParser(
+        description="Translate jap → English using deep-translator.")
     parser.add_argument(
         "input_path",
         type=str,

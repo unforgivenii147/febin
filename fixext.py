@@ -1,11 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 """
 File: file_type_checker.py
 Description: Recursively checks files in a directory to detect mismatched file extensions using Linux `file` command.
              Optionally auto-fixes mismatched extensions with -a / --auto-fix.
              Defaults to current directory if none is given.
 """
-
 import argparse
 import os
 import subprocess
@@ -17,14 +16,22 @@ from dh import MIME_TO_EXT
 def get_file_mime(file_path):
     try:
         result = subprocess.run(
-            ["file", "--brief", "--mime-type", file_path],
+            [
+                "file",
+                "--brief",
+                "--mime-type",
+                file_path,
+            ],
             capture_output=True,
             text=True,
             check=True,
         )
         return result.stdout.strip()
     except subprocess.CalledProcessError as e:
-        print(f"Error detecting file type for {file_path}: {e}", file=sys.stderr)
+        print(
+            f"Error detecting file type for {file_path}: {e}",
+            file=sys.stderr,
+        )
         return None
 
 
@@ -57,12 +64,18 @@ def check_files(directory, auto_fix=False):
                         new_name = os.path.splitext(name)[0] + new_ext
                         new_path = os.path.join(root, new_name)
                         new_path = safe_rename(file_path, new_path)
-                    mismatched_files.append((file_path, ext, mime, new_path))
+                    mismatched_files.append((
+                        file_path,
+                        ext,
+                        mime,
+                        new_path,
+                    ))
     return mismatched_files
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Check and optionally fix mismatched file extensions.")
+    parser = argparse.ArgumentParser(
+        description="Check and optionally fix mismatched file extensions.")
     parser.add_argument(
         "directory",
         nargs="*",
@@ -83,9 +96,16 @@ def main():
     mismatches = check_files(args.directory, auto_fix=args.auto_fix)
     if mismatches:
         print("Files with mismatched extensions:")
-        for file_path, ext, mime, new_path in mismatches:
+        for (
+                file_path,
+                ext,
+                mime,
+                new_path,
+        ) in mismatches:
             if new_path:
-                print(f"{file_path} -> extension: {ext}, detected: {mime} [Renamed to {new_path}]")
+                print(
+                    f"{file_path} -> extension: {ext}, detected: {mime} [Renamed to {new_path}]"
+                )
             else:
                 print(f"{file_path} -> extension: {ext}, detected: {mime}")
     else:

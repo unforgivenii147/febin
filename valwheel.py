@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import shutil
 
@@ -23,7 +23,8 @@ def is_valid_wheel_name(filename):
         if not build_tag[0].isdigit():
             return False
         try:
-            parse_tag(py_tag + "-" + abi_platform + "-" + abi_platform.split("-")[-1])
+            parse_tag(py_tag + "-" + abi_platform + "-" +
+                      abi_platform.split("-")[-1])
         except Exception:
             return False
         return True

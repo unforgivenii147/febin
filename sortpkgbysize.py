@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import csv
 
@@ -16,10 +16,10 @@ def sort_packages_by_size(filename: str):
         reverse=True,
     )
     with open(
-        filename,
-        "w",
-        newline="",
-        encoding="utf-8",
+            filename,
+            "w",
+            newline="",
+            encoding="utf-8",
     ) as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -28,7 +28,8 @@ def sort_packages_by_size(filename: str):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Sort Debian packages CSV by Installed-Size")
+    parser = argparse.ArgumentParser(
+        description="Sort Debian packages CSV by Installed-Size")
     parser.add_argument("fname", help="CSV file to sort")
     args = parser.parse_args()
     sort_packages_by_size(args.fname)

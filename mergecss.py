@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 """
 css_bundle.py — merge CSS, deduplicate rules, and bundle assets.
 Features
@@ -18,7 +18,6 @@ Result:
       fonts...
       images...
 """
-
 import argparse
 import shutil
 from pathlib import Path
@@ -26,11 +25,27 @@ from pathlib import Path
 import regex as re
 
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
-IMPORT_RE = re.compile(r"@import\s+url\([^)]+fonts\.googleapis[^)]+\);?", re.I)
+IMPORT_RE = re.compile(
+    r"@import\s+url\([^)]+fonts\.googleapis[^)]+\);?",
+    re.I,
+)
 URL_RE = re.compile(r'url\((["\']?)([^)]+)\1\)', re.I)
 RULE_RE = re.compile(r"([^{]+)\{([^}]*)\}", re.S)
-FONT_EXTS = {".woff", ".woff2", ".ttf", ".otf", ".eot"}
-IMG_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
+FONT_EXTS = {
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".otf",
+    ".eot",
+}
+IMG_EXTS = {
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".svg",
+    ".webp",
+}
 
 
 def detect_family(filename: str):
@@ -108,7 +123,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("files", nargs="*")
     ap.add_argument("-o", "--output", default="bundle.css")
-    ap.add_argument("--assets-dir", default="/sdcard/_static/assets")
+    ap.add_argument(
+        "--assets-dir",
+        default="/sdcard/_static/assets",
+    )
     args = ap.parse_args()
     assets_dir = Path(args.assets_dir)
     assets_dir.mkdir(parents=True, exist_ok=True)

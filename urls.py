@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
 
 import os
@@ -15,7 +15,9 @@ try:
     import zstandard as zstd
 except Exception:
     zstd = None
-URL_RE = re.compile(r"""(https?://[^\s<>"\']+|\bwww\.[^\s<>"\']+\b|\b[^\s<>"\']+\.(com|net|org)[^\s<>"\']*)""")
+URL_RE = re.compile(
+    r"""(https?://[^\s<>"\']+|\bwww\.[^\s<>"\']+\b|\b[^\s<>"\']+\.(com|net|org)[^\s<>"\']*)"""
+)
 GITHUB_RE = re.compile(r"(?i)github\.com")
 MAX_WORKERS = os.cpu_count() or 4
 all_urls: set[str] = set()
@@ -37,19 +39,19 @@ def normalize_url(url: str) -> str:
         p = urlparse(url)
         scheme = p.scheme.lower()
         netloc = p.netloc.lower()
-        if (scheme == "http" and netloc.endswith(":80")) or (scheme == "https" and netloc.endswith(":443")):
+        if (scheme == "http"
+                and netloc.endswith(":80")) or (scheme == "https"
+                                                and netloc.endswith(":443")):
             netloc = netloc.rsplit(":", 1)[0]
         path = p.path.rstrip("/") or "/"
-        return urlunparse(
-            (
-                scheme,
-                netloc,
-                path,
-                "",
-                p.query,
-                "",
-            )
-        )
+        return urlunparse((
+            scheme,
+            netloc,
+            path,
+            "",
+            p.query,
+            "",
+        ))
     except Exception:
         return url
 
@@ -76,9 +78,7 @@ def classify_github_url(url: str) -> str:
         return "other"
 
 
-def extract_urls_from_bytes(
-    data: bytes,
-) -> set[str]:
+def extract_urls_from_bytes(data: bytes, ) -> set[str]:
     try:
         text = data.decode("utf-8", errors="ignore")
         return {normalize_url(u) for u in URL_RE.findall(text)}
@@ -182,20 +182,20 @@ def main() -> None:
         for u in sorted(all_urls):
             f.write(u + "\n")
     with open(
-        "/sdcard/giturls.txt",
-        "a",
-        encoding="utf-8",
+            "/sdcard/giturls.txt",
+            "a",
+            encoding="utf-8",
     ) as f:
         for u in sorted(git_urls):
             f.write(u + "\n")
     with open(
-        "/sdcard/giturls_classified.txt",
-        "a",
-        encoding="utf-8",
+            "/sdcard/giturls_classified.txt",
+            "a",
+            encoding="utf-8",
     ) as f:
         for (
-            cat,
-            urls,
+                cat,
+                urls,
         ) in git_urls_classified.items():
             for u in sorted(urls):
                 f.write(f"{cat}\t{u}\n")

@@ -1,10 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
 
-from dh import file_size, folder_size, format_size, run_command
+from dh import format_size, get_size, run_command
 from fastwalk import walk_files
 
 MAX_IN_FLIGHT = 16
@@ -22,12 +22,12 @@ FILE_EXTENSIONS = {
 
 
 def format_file(file_path):
-    start = file_size(file_path)
+    start = get_size(file_path)
     print(f"{file_path.name}", end="  ")
     cmd = f"prettier -w {file_path!s}"
-    _out, err, code = run_command(cmd)
+    code, _out, err = run_command(cmd)
     if code == 0:
-        result = start - file_size(file_path)
+        result = start - get_size(file_path)
         if int(result) == 0:
             print("[OK] no change")
         elif result < 0:
@@ -41,12 +41,11 @@ def format_file(file_path):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Format files using Prettier.")
+    parser = argparse.ArgumentParser(
+        description="Format files using Prettier.")
     parser.add_argument("file", nargs="?", help="File to format")
     args = parser.parse_args()
-
     if args.file:
-        # Process single file
         file_path = Path(args.file)
         if not file_path.exists():
             print(f"Error: File '{args.file}' not found.")
@@ -56,8 +55,7 @@ def main() -> None:
         else:
             print(f"Error: File '{args.file}' has an unsupported extension.")
     else:
-        # Process current directory recursively
-        start = folder_size(".")
+        start = get_size(".")
         jfiles = []
         for pth in walk_files("."):
             path = Path(pth)
@@ -72,12 +70,12 @@ def main() -> None:
         with Pool(8) as p:
             pending = deque()
             for f in jfiles:
-                pending.append(p.apply_async(format_file, (f,)))
+                pending.append(p.apply_async(format_file, (f, )))
                 if len(pending) >= MAX_IN_FLIGHT:
                     pending.popleft().get()
             while pending:
                 pending.popleft().get()
-        end = folder_size(".")
+        end = get_size(".")
         print(f"{format_size(start - end)}")
 
 

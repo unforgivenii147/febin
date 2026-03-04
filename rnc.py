@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
@@ -41,8 +41,8 @@ def _collect_docstrings(node, source: bytes, deletions: list):
             if string_node and string_node.type == "string":
                 deletions.append((first.start_byte, first.end_byte))
     if node.type in (
-        "class_definition",
-        "function_definition",
+            "class_definition",
+            "function_definition",
     ):
         body = node.child_by_field_name("body")
         if body:
@@ -63,7 +63,7 @@ def remove_comments_and_docstrings(path: Path) -> None:
 
         def walk_comments(node):
             if node.type == "comment":
-                text = source[node.start_byte : node.end_byte]
+                text = source[node.start_byte:node.end_byte]
                 if not text.lstrip().startswith(EXCLUDE_PREFIXES):
                     deletions.append((node.start_byte, node.end_byte))
             for child in node.children:
@@ -84,7 +84,7 @@ def remove_comments_and_docstrings(path: Path) -> None:
         print(f"[FAIL] {path} -> {e}")
 
 
-def collect_py_files(root: Path) -> list[Path]:
+def get_pyfiles(root: Path) -> list[Path]:
     if root.is_file() and root.suffix == ".py":
         return [root]
     return [p for p in root.rglob("*.py") if p.is_file()]
@@ -92,7 +92,7 @@ def collect_py_files(root: Path) -> list[Path]:
 
 def main() -> None:
     root = Path().cwd().resolve()
-    files = collect_py_files(root)
+    files = get_pyfiles(root)
     if not files:
         sys.exit("No Python files found")
     with Pool(cpu_count()) as pool:

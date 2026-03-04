@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 from pathlib import Path
 
@@ -12,12 +12,13 @@ def is_python_file(file_path):
         try:
             with open(file_path, encoding="utf-8") as f:
                 first_line = f.readline()
-                if first_line.startswith("#!") and "python" in first_line.lower():
+                if first_line.startswith(
+                        "#!") and "python" in first_line.lower():
                     return True
         except (
-            UnicodeDecodeError,
-            PermissionError,
-            IsADirectoryError,
+                UnicodeDecodeError,
+                PermissionError,
+                IsADirectoryError,
         ):
             return False
     return False
@@ -54,7 +55,8 @@ def find_and_process_python_files(root_dir="."):
     for item in root_path.rglob("*"):
         if item.is_dir():
             continue
-        if any(part in skip_dirs or part.startswith(".") for part in item.parts):
+        if any(part in skip_dirs or part.startswith(".")
+               for part in item.parts):
             continue
         if is_python_file(item):
             total_files += 1
@@ -77,9 +79,9 @@ def find_and_process_python_files(root_dir="."):
 
 def main():
     import argparse
-
     parser = argparse.ArgumentParser(
-        description="Replace 'import re' with 'import regex as re' in Python files recursively."
+        description=
+        "Replace 'import re' with 'import regex as re' in Python files recursively."
     )
     parser.add_argument(
         "--dry-run",

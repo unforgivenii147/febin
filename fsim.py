@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import shutil
 import sys
@@ -36,7 +36,7 @@ def group_similar_files(hashes, threshold):
             continue
         group = [f1]
         visited.add(f1)
-        for f2 in files[i + 1 :]:
+        for f2 in files[i + 1:]:
             if f2 in visited:
                 continue
             score = ssdeep.compare(hashes[f1], hashes[f2])

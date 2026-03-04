@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
 
@@ -16,22 +16,18 @@ def format_size(sb: float) -> str:
 def remove_pyc_files(directory):
     path = Path(directory)
     pyc_count = 0
-    space_freed = 0  # in bytes
+    space_freed = 0
     pycache_count = 0
-
     for pyc_file in path.rglob("*.pyc"):
-        file_size = pyc_file.stat().st_size
+        get_size = pyc_file.stat().st_size
         pyc_file.unlink()
         pyc_count += 1
-        space_freed += file_size
-
+        space_freed += get_size
     for pycache_dir in path.rglob("__pycache__"):
         if not list(pycache_dir.iterdir()):
             pycache_dir.rmdir()
             pycache_count += 1
-
     freed_size_str = format_size(space_freed)
-
     print("\n--- Report ---")
     print(f".pyc removed: {pyc_count}")
     print(f"Space freed: {freed_size_str}")

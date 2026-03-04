@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import subprocess
 import sys
 from pathlib import Path
@@ -11,18 +11,19 @@ def load_installed_packages():
     if not path.exists():
         print(f"{PIP_LIST_FILE} not found")
         sys.exit(1)
-    return [line.strip() for line in path.read_text().splitlines() if line.strip()]
+    return [
+        line.strip() for line in path.read_text().splitlines() if line.strip()
+    ]
 
 
 def find_dist_info(prefix):
     import site
-
     matches = []
     for sp in site.getsitepackages():
         sp_path = Path(sp)
         for d in sp_path.glob(f"{prefix}*.dist-info"):
             matches.append(d)
-    for sp in (site.getusersitepackages(),):
+    for sp in (site.getusersitepackages(), ):
         sp_path = Path(sp)
         for d in sp_path.glob(f"{prefix}*.dist-info"):
             matches.append(d)
@@ -36,7 +37,9 @@ def uninstall_packages(packages):
     print("Uninstalling:", packages)
     for pkg in packages:
         try:
-            subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", pkg], check=True)
+            subprocess.run(
+                [sys.executable, "-m", "pip", "uninstall", "-y", pkg],
+                check=True)
             print(f"Uninstalled {pkg}")
         except subprocess.CalledProcessError:
             print(f"Skipped {pkg} (not installed or error)")

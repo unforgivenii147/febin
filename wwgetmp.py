@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import json
 import math
 import os
@@ -71,7 +71,8 @@ def download_part(
     headers = {"Range": f"bytes={downloaded}-{end}"}
     for attempt in range(MAX_RETRIES):
         try:
-            with requests.get(url, headers=headers, stream=True, timeout=15) as r:
+            with requests.get(url, headers=headers, stream=True,
+                              timeout=15) as r:
                 r.raise_for_status()
                 mode = "ab" if os.path.exists(part_path) else "wb"
                 with open(part_path, mode) as f:
@@ -126,8 +127,7 @@ def download(url: str, output: str, workers: int):
                         start,
                         end,
                         meta,
-                    )
-                )
+                    ))
             for f in as_completed(futures):
                 f.result()
     except GracefulExit:

@@ -1,13 +1,13 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
 
 import tree_sitter_rust
-from dh import folder_size, format_size
+from dh import format_size, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
 
-EXCLUDE_PREFIXES = (b"#!/",)
+EXCLUDE_PREFIXES = (b"#!/", )
 parser = Parser()
 parser.language = Language(tree_sitter_rust.language())
 
@@ -36,7 +36,7 @@ def process_file(path: Path) -> None:
 
         def walk(node):
             if node.type == "comment":
-                text = source[node.start_byte : node.end_byte]
+                text = source[node.start_byte:node.end_byte]
                 if text.lstrip().startswith(EXCLUDE_PREFIXES):
                     return
                 deletions.append((node.start_byte, node.end_byte))
@@ -70,10 +70,10 @@ def main() -> None:
     files = collect_rs_files(root)
     if not files:
         sys.exit("No Rust files found")
-    init_size = folder_size(root)
+    init_size = get_size(root)
     for f in files:
         process_file(f)
-    end_size = folder_size(root)
+    end_size = get_size(root)
     difsize = init_size - end_size
     cprint(f"{format_size(difsize)}", "cyan")
 

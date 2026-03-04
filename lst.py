@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 from datetime import datetime
 
@@ -8,7 +8,8 @@ def list_files_by_modification():
     files.sort(key=os.path.getmtime)
     for file in files:
         mod_time = os.path.getmtime(file)
-        readable_time = datetime.fromtimestamp(mod_time).strftime("%Y-%m-%d %H:%M:%S")
+        readable_time = datetime.fromtimestamp(mod_time).strftime(
+            "%Y-%m-%d %H:%M:%S")
         print(f"{readable_time} - {file}")
 
 

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
@@ -9,11 +9,9 @@ import dh
 try:
     import cv2
     import numpy as np
-
     USE_CV2 = True
 except ImportError:
     from PIL import Image
-
     USE_CV2 = False
 IGNORED_DIRS = {
     ".git",
@@ -34,7 +32,8 @@ def convert_file(file_path: str) -> bool:
         return True
     output_path = path.with_suffix(".png")
     if output_path.exists():
-        response = input(f"'{output_path.name}' exists. Overwrite? (y/n): ").strip().lower()
+        response = input(f"'{output_path.name}' exists. Overwrite? (y/n): "
+                         ).strip().lower()
         if response != "y":
             return False
     try:
@@ -51,9 +50,12 @@ def convert_file(file_path: str) -> bool:
                     dtype=np.uint8,
                 )
                 alpha = a.astype(float) / 255.0
-                img_b = (b.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
-                img_g = (g.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
-                img_r = (r.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
+                img_b = (b.astype(float) * alpha + white_bg.astype(float) *
+                         (1 - alpha)).astype(np.uint8)
+                img_g = (g.astype(float) * alpha + white_bg.astype(float) *
+                         (1 - alpha)).astype(np.uint8)
+                img_r = (r.astype(float) * alpha + white_bg.astype(float) *
+                         (1 - alpha)).astype(np.uint8)
                 final_img = cv2.merge((img_b, img_g, img_r))
             else:
                 final_img = img
@@ -92,11 +94,11 @@ def convert_file(file_path: str) -> bool:
 
 
 def main() -> None:
-    start_size = dh.folder_size(".")
+    start_size = dh.get_size(".")
     files = [
-        f
-        for f in Path(".").rglob("*")
-        if f.is_file() and not any(part in IGNORED_DIRS for part in f.parts) and dh.is_image(f)
+        f for f in Path(".").rglob("*")
+        if f.is_file() and not any(part in IGNORED_DIRS
+                                   for part in f.parts) and dh.is_image(f)
     ]
     if not files:
         print("No image files detected.")
@@ -106,7 +108,7 @@ def main() -> None:
         results = list(executor.map(convert_file, files))
     changed_count = sum(1 for r in results if r)
     print(f"Done. {changed_count} files modified.")
-    result = dh.folder_size(".") - start_size
+    result = dh.get_size(".") - start_size
     if result < 0:
         print(f"size reduced: - {dh.format_size(abs(result))} ")
     else:

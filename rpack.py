@@ -1,5 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
-# file: repack_pkg.py
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import os
 import shutil
@@ -120,7 +119,8 @@ def repack(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Repack installed Python packages")
+    parser = argparse.ArgumentParser(
+        description="Repack installed Python packages")
     parser.add_argument(
         "packages",
         nargs="*",

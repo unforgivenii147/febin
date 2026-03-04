@@ -1,11 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import mmap
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
 import regex as re
 
-# -------- CONFIG --------
 LOG_EXT = ".log"
 MMAP_THRESHOLD = 5 * 1024 * 1024
 NUM_WORKERS = cpu_count()
@@ -35,7 +34,11 @@ def clean_line(line: str) -> str:
 
 def clean_file_small(file_path: Path) -> tuple:
     try:
-        with open(file_path, encoding="utf-8", errors="ignore") as f:
+        with open(
+                file_path,
+                encoding="utf-8",
+                errors="ignore",
+        ) as f:
             lines = f.readlines()
         cleaned_lines = [clean_line(line) for line in lines]
         with open(file_path, "w", encoding="utf-8") as f:
@@ -48,10 +51,14 @@ def clean_file_small(file_path: Path) -> tuple:
 def clean_file_large(file_path: Path) -> tuple:
     try:
         with open(file_path, "r+b") as f:
-            file_size = f.seek(0, 2)
+            get_size = f.seek(0, 2)
             f.seek(0)
-            if file_size == 0:
-                return (file_path, True, "empty file")
+            if get_size == 0:
+                return (
+                    file_path,
+                    True,
+                    "empty file",
+                )
             with mmap.mmap(f.fileno(), 0) as mmapped_file:
                 content = mmapped_file.read().decode("utf-8", errors="ignore")
         lines = content.splitlines(keepends=True)
@@ -59,15 +66,19 @@ def clean_file_large(file_path: Path) -> tuple:
         cleaned_content = "".join(cleaned_lines)
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(cleaned_content)
-        return (file_path, True, "large file (mmap)")
+        return (
+            file_path,
+            True,
+            "large file (mmap)",
+        )
     except Exception as e:
         return (file_path, False, str(e))
 
 
 def clean_file_worker(file_path: Path) -> tuple:
     try:
-        file_size = file_path.stat().st_size
-        if file_size > MMAP_THRESHOLD:
+        get_size = file_path.stat().st_size
+        if get_size > MMAP_THRESHOLD:
             return clean_file_large(file_path)
         else:
             return clean_file_small(file_path)
@@ -83,7 +94,9 @@ def main():
         return
     print(f"Found {len(log_files)} log file(s).")
     print(f"Using {NUM_WORKERS} worker(s).")
-    print(f"Files larger than {MMAP_THRESHOLD / (1024 * 1024):.1f} MB will use mmap.\n")
+    print(
+        f"Files larger than {MMAP_THRESHOLD / (1024 * 1024):.1f} MB will use mmap.\n"
+    )
     print("Cleaning...\n")
     with Pool(processes=NUM_WORKERS) as pool:
         results = pool.map(clean_file_worker, log_files)
@@ -96,7 +109,9 @@ def main():
         else:
             print(f"✗ Error: {file_path} - {message}")
             error_count += 1
-    print(f"\nDone. Successfully processed {success_count}/{len(log_files)} file(s).")
+    print(
+        f"\nDone. Successfully processed {success_count}/{len(log_files)} file(s)."
+    )
     if error_count > 0:
         print(f"Failed: {error_count} file(s).")
 

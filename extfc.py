@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/env python
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -8,10 +8,8 @@ from tree_sitter import Language, Parser
 
 parser = Parser()
 parser.language = Language(tsp.language())
-
 OUT_DIR = Path("output")
 OUT_DIR.mkdir(exist_ok=True)
-
 VALID = {
     "function_definition",
     "class_definition",
@@ -20,33 +18,28 @@ VALID = {
 
 def get_node_text(src: bytes, node):
     """Extract text for a node safely."""
-    return src[node.start_byte : node.end_byte].decode()
+    return src[node.start_byte:node.end_byte].decode()
 
 
 def extract_functions_and_classes(src: bytes, tree):
     """Extract function and class definitions from a parsed tree."""
     root = tree.root_node
-
     definitions = []
 
     def traverse(node):
         if node.type in VALID:
             # Get the node's text
             node_text = get_node_text(src, node)
-
             # Add decorators if present
             decorators = []
             prev_node = node.prev_sibling
             while prev_node and prev_node.type == "decorator":
                 decorators.append(get_node_text(src, prev_node))
                 prev_node = prev_node.prev_sibling
-
             # Combine decorators with the definition
             if decorators:
                 node_text = "\n".join(reversed(decorators)) + "\n" + node_text
-
             definitions.append(node_text)
-
         # Continue traversing children
         for child in node.children:
             traverse(child)
@@ -70,11 +63,18 @@ def extract_docstring(src: bytes, node):
     return None
 
 
-def format_definition_with_metadata(def_text: str, file_name: str, line_num: int, docstring: str = None):
+def format_definition_with_metadata(
+    def_text: str,
+    file_name: str,
+    line_num: int,
+    docstring: str | None = None,
+):
     """Format a definition with metadata comments."""
     lines = [f"# From: {file_name}:{line_num}"]
     if docstring:
-        lines.append(f"# Docstring: {docstring[:50]}{'...' if len(docstring) > 50 else ''}")
+        lines.append(
+            f"# Docstring: {docstring[:50]}{'...' if len(docstring) > 50 else ''}"
+        )
     lines.append(def_text)
     return "\n".join(lines)
 
@@ -84,73 +84,64 @@ folder_definitions = defaultdict(list)
 processed_files_count = 0
 folders_found = set()
 total_definitions = 0
-
 for py in Path(".").rglob("*.py"):
     # Skip hidden directories and site-packages
-    if any(part.startswith(".") for part in py.parts) or "site-packages" in py.parts:
+    if any(part.startswith(".")
+           for part in py.parts) or "site-packages" in py.parts:
         continue
-
     # Skip files in the output directory
     if OUT_DIR in py.parents:
         continue
-
     try:
         src = py.read_bytes()
         tree = parser.parse(src)
-
         definitions = extract_functions_and_classes(src, tree)
-
         if definitions:
             # Get the folder containing the Python file
             folder_path = py.parent
             relative_folder = get_relative_path(folder_path, Path("."))
             folders_found.add(str(relative_folder))
-
             # Add definitions with file metadata
             file_header = f"\n# {'=' * 60}\n# File: {py.name}\n# {'=' * 60}\n"
             folder_definitions[relative_folder].append(file_header)
-
             for i, def_text in enumerate(definitions, 1):
                 folder_definitions[relative_folder].append(def_text)
                 if i < len(definitions):
-                    folder_definitions[relative_folder].append("\n" + "#" + "-" * 58 + "\n")
-
+                    folder_definitions[relative_folder].append("\n" + "#" +
+                                                               "-" * 58 + "\n")
             processed_files_count += 1
             total_definitions += len(definitions)
-
     except Exception as e:
         print(f"⚠️  Error processing {py}: {e}")
-
 # Write collected definitions to folder-specific files
-for folder, defs_list in folder_definitions.items():
+for (
+        folder,
+        defs_list,
+) in folder_definitions.items():
     if not defs_list:
         continue
-
     # Create output file path: output/foldername/definitions.py
     out_file = OUT_DIR / folder / "definitions.py"
     out_file.parent.mkdir(parents=True, exist_ok=True)
-
     # Combine all definitions
     content = "\n".join(defs_list)
-
     # Add a comprehensive header
     header = f"""#!/usr/bin/env python
 # Auto-generated definitions file for folder: {folder}
 # Generated from {processed_files_count} Python file(s) containing {total_definitions} definitions
 # Date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-
 # This file contains all function and class definitions extracted from Python files in this folder
 # Each definition is separated by a line of dashes for clarity
-
 """
     out_file.write_text(header + content)
-
     # Count definitions in this folder
-    folder_def_count = len([d for d in defs_list if d.strip() and not d.startswith("#") and not d.startswith("\n#")])
+    folder_def_count = len([
+        d for d in defs_list
+        if d.strip() and not d.startswith("#") and not d.startswith("\n#")
+    ])
     print(
         f"✅ saved: {out_file} ({folder_def_count} definitions from {len([f for f in defs_list if 'File:' in f])} files)"
     )
-
 print(
     f"\n✨ Done! Processed {processed_files_count} files with {total_definitions} total definitions in {len(folder_definitions)} folder(s)"
 )

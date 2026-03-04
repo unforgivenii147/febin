@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import sys
 
 import regex as re
@@ -31,7 +31,8 @@ def pygments_highlight(html: str) -> str:
     def repl(match):
         lang = match.group(1)
         code = match.group(2)
-        code = code.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
+        code = code.replace("&lt;", "<").replace("&gt;",
+                                                 ">").replace("&amp;", "&")
         try:
             lexer = get_lexer_by_name(lang)
         except Exception:
@@ -41,7 +42,12 @@ def pygments_highlight(html: str) -> str:
     return code_block_re.sub(repl, html)
 
 
-def md2pdf(pdf_file_path, md_file_path, css_file_path=None, base_url=None):
+def md2pdf(
+    pdf_file_path,
+    md_file_path,
+    css_file_path=None,
+    base_url=None,
+):
     extras = [
         "header-ids",
         "fenced-code-blocks",

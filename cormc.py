@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import glob
 import logging
 import os
@@ -9,10 +9,19 @@ try:
     from tree_sitter import Language, Parser
     from tree_sitter_languages import get_language, get_parser
 except ImportError:
-    print("Error: tree-sitter dependencies not installed.", file=sys.stderr)
-    print("Install with: pip install tree-sitter tree-sitter-languages", file=sys.stderr)
+    print(
+        "Error: tree-sitter dependencies not installed.",
+        file=sys.stderr,
+    )
+    print(
+        "Install with: pip install tree-sitter tree-sitter-languages",
+        file=sys.stderr,
+    )
     sys.exit(1)
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 
@@ -38,11 +47,16 @@ class CommentRemover:
         comment_text = comment_text.strip()
         if comment_text.startswith("#!"):
             return True
-        return any(pattern in comment_text for pattern in self.PRESERVE_PATTERNS)
+        return any(pattern in comment_text
+                   for pattern in self.PRESERVE_PATTERNS)
 
     def parse_file(self, filepath: str) -> tuple[str, list[dict]] | None:
         try:
-            with open(filepath, encoding="utf-8", errors="replace") as f:
+            with open(
+                    filepath,
+                    encoding="utf-8",
+                    errors="replace",
+            ) as f:
                 source_code = f.read()
         except Exception as e:
             logger.error(f"Failed to read {filepath}: {e}")
@@ -54,7 +68,8 @@ class CommentRemover:
             return None
         return source_code, tree
 
-    def extract_removable_ranges(self, source_code: str, tree) -> list[tuple[int, int]]:
+    def extract_removable_ranges(self, source_code: str,
+                                 tree) -> list[tuple[int, int]]:
         lines = source_code.split("\n")
         removable_ranges = []
         for line_idx, line in enumerate(lines):
@@ -68,11 +83,13 @@ class CommentRemover:
             comment_text = line[comment_start:]
             if self.should_preserve_comment(comment_text):
                 continue
-            byte_offset = sum(len(l.encode("utf-8")) + 1 for l in lines[:line_idx])
+            byte_offset = sum(
+                len(l.encode("utf-8")) + 1 for l in lines[:line_idx])
             byte_offset += len(line[:comment_start].encode("utf-8"))
             end_offset = byte_offset + len(comment_text.encode("utf-8"))
             removable_ranges.append((byte_offset, end_offset))
-        removable_ranges.extend(self._extract_docstrings(source_code.encode("utf-8"), tree))
+        removable_ranges.extend(
+            self._extract_docstrings(source_code.encode("utf-8"), tree))
         return self._merge_ranges(sorted(removable_ranges))
 
     def _is_in_string(self, line: str, pos: int) -> bool:
@@ -87,28 +104,43 @@ class CommentRemover:
             i += 1
         return in_single or in_double
 
-    def _extract_docstrings(self, source_bytes: bytes, tree) -> list[tuple[int, int]]:
+    def _extract_docstrings(self, source_bytes: bytes,
+                            tree) -> list[tuple[int, int]]:
         docstring_ranges = []
 
         def walk_tree(node, parent_type=None):
             if node.type == "string":
-                if parent_type in ("function_definition", "class_definition", "module"):
-                    docstring_ranges.append((node.start_byte, node.end_byte))
+                if parent_type in (
+                        "function_definition",
+                        "class_definition",
+                        "module",
+                ):
+                    docstring_ranges.append((
+                        node.start_byte,
+                        node.end_byte,
+                    ))
             for child in node.children:
-                child_parent = child.type if child.type in ("function_definition", "class_definition") else parent_type
+                child_parent = (child.type if child.type in (
+                    "function_definition",
+                    "class_definition",
+                ) else parent_type)
                 walk_tree(child, child_parent)
 
         walk_tree(tree.root_node)
         return docstring_ranges
 
-    def _merge_ranges(self, ranges: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    def _merge_ranges(self, ranges: list[tuple[int,
+                                               int]]) -> list[tuple[int, int]]:
         if not ranges:
             return []
         merged = [ranges[0]]
         for current_start, current_end in ranges[1:]:
             last_start, last_end = merged[-1]
             if current_start <= last_end:
-                merged[-1] = (last_start, max(last_end, current_end))
+                merged[-1] = (
+                    last_start,
+                    max(last_end, current_end),
+                )
             else:
                 merged.append((current_start, current_end))
         return merged
@@ -132,7 +164,8 @@ class CommentRemover:
             if parsed is None:
                 return False
             source_code, tree = parsed
-            cleaned_code = self.remove_comments_and_docstrings(source_code, tree)
+            cleaned_code = self.remove_comments_and_docstrings(
+                source_code, tree)
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(cleaned_code)
             logger.info(f"Processed: {filepath}")
@@ -142,16 +175,28 @@ class CommentRemover:
             return False
 
 
-def find_python_files(root_dir: str = ".") -> list[str]:
+def find_python_files(root_dir: str = ".", ) -> list[str]:
     python_files = []
-    for py_file in glob.glob(os.path.join(root_dir, "**", "*.py"), recursive=True):
-        if any(part in py_file for part in ["__pycache__", ".git", ".venv", "venv", ".tox"]):
+    for py_file in glob.glob(
+            os.path.join(root_dir, "**", "*.py"),
+            recursive=True,
+    ):
+        if any(part in py_file for part in [
+                "__pycache__",
+                ".git",
+                ".venv",
+                "venv",
+                ".tox",
+        ]):
             continue
         python_files.append(py_file)
     return python_files
 
 
-def process_files_mp(files: list[str], num_workers: int | None = None) -> tuple[int, int]:
+def process_files_mp(
+    files: list[str],
+    num_workers: int | None = None,
+) -> tuple[int, int]:
     if num_workers is None:
         num_workers = max(1, cpu_count() - 1)
     logger.info(f"Processing {len(files)} files with {num_workers} workers")
@@ -165,9 +210,9 @@ def process_files_mp(files: list[str], num_workers: int | None = None) -> tuple[
 
 def main():
     import argparse
-
     parser = argparse.ArgumentParser(
-        description="Remove comments and docstrings from Python files recursively using tree-sitter."
+        description=
+        "Remove comments and docstrings from Python files recursively using tree-sitter."
     )
     parser.add_argument(
         "directory",
@@ -182,7 +227,12 @@ def main():
         default=None,
         help=f"Number of worker processes (default: {max(1, cpu_count() - 1)})",
     )
-    parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Verbose output",
+    )
     args = parser.parse_args()
     if args.verbose:
         logger.setLevel(logging.DEBUG)

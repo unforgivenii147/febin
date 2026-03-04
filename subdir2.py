@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import shutil
 import subprocess
 import sys
@@ -29,8 +29,8 @@ def unzip_file(archive: Path, target_dir: Path) -> bool:
         )
         return result.returncode == 0
     except (
-        subprocess.CalledProcessError,
-        FileNotFoundError,
+            subprocess.CalledProcessError,
+            FileNotFoundError,
     ):
         return False
 

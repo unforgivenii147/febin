@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 from pprint import pprint
 
@@ -11,23 +11,18 @@ def find_similar_files(files, threshold=0.8, k=256):
     """Find files with similar content using MinHash"""
     similar_groups = []
     sketches = {}
-
-    # Generate sketches for each file
     for file in files:
         content = Path(file).read_bytes()
         sketches[file] = sz.minhash(content, k)
-
-    # Compare files
     for i, (file_a, sketch_a) in enumerate(sketches.items()):
         group = [file_a]
-        for file_b, sketch_b in list(sketches.items())[i + 1 :]:
+        for file_b, sketch_b in list(sketches.items())[i + 1:]:
             similarity = sz.jaccard(sketch_a, sketch_b)
             if similarity >= threshold:
                 group.append(file_b)
-                del sketches[file_b]  # Remove to avoid duplicate processing
+                del sketches[file_b]
         if len(group) > 1:
             similar_groups.append(group)
-
     return similar_groups
 
 

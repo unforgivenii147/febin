@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import ast
 import importlib.metadata
 import importlib.util
@@ -15,6 +15,7 @@ def get_py_files(start_path):
 
 
 class ImportVisitor(ast.NodeVisitor):
+
     def __init__(self):
         self.imports = set()
 
@@ -45,9 +46,10 @@ def find_imports(start_path):
         except (SyntaxError, UnicodeDecodeError):
             continue
     local_files = {p.stem for p in pathlib.Path(start_path).glob("*.py")}
-    return sorted(
-        [imp for imp in all_imports if imp not in std_libs and imp not in local_files and imp != "__future__"]
-    )
+    return sorted([
+        imp for imp in all_imports if imp not in std_libs
+        and imp not in local_files and imp != "__future__"
+    ])
 
 
 def get_version(module_name):
@@ -61,7 +63,8 @@ def get_version(module_name):
             return "Not Installed"
         mod = importlib.import_module(module_name)
         for k, v in mod.__dict__.items():
-            if ("version" in k.lower() or "ver" in k.lower()) and isinstance(v, (str, numbers.Number)):
+            if ("version" in k.lower() or "ver" in k.lower()) and isinstance(
+                    v, (str, numbers.Number)):
                 return str(v)
     except Exception:
         return "Not Installed(unknown)"
@@ -78,6 +81,8 @@ def main():
     print("-" * 40)
     for mod in modules:
         if mod not in STDLIB:
+            if mod.startswith("_"):
+                continue
             ver = get_version(mod)
             line = f"{mod:<20} | {ver:<15}"
             print(line)
@@ -89,21 +94,17 @@ def main():
     with open(output_file, encoding="utf-8") as fin:
         lines = fin.readlines()
         for line in lines:
-            cleaned.append(
-                line.rstrip()
-                .replace("Not Installed", "")
-                .replace("==(NA)", "")
-                .replace("==(unknown)", "")
-                .replace("==", "")
-            )
+            cleaned.append(line.rstrip().replace("Not Installed", "").replace(
+                "==(NA)", "").replace("==(unknown)", "").replace("==", ""))
     pkgz = get_installed_pkgs()
-    cleaned = [p for p in cleaned if p not in pkgz]
+    cleaned = [p for p in cleaned if p not in pkgz and not p.startswith("_")]
     if cleaned:
         with open(output_file, "w", encoding="utf-8") as f:
             f.write("\n".join(cleaned))
     else:
-        os.remove("importz.txt")
-    print(f"\nResults saved to {output_file}")
+        if os.path.exists(output_file):
+            os.remove(output_file)
+            print(f"empty {output_file} removed")
 
 
 if __name__ == "__main__":

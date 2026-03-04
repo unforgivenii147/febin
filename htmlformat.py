@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
 import regex as re
@@ -46,7 +46,10 @@ def format_file(path: Path):
             formatted.append(split_tags_preserve_indent(line))
         if SKIP_CLOSE_RE.search(line):
             skip_mode = False
-    path.write_text("\n".join(formatted) + "\n", encoding="utf-8")
+    path.write_text(
+        "\n".join(formatted) + "\n",
+        encoding="utf-8",
+    )
     print(f"[+] Processed: {path}")
 
 

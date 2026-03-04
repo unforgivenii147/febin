@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/env python
 import ast
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
 import tree_sitter_python as tspython
-from dh import folder_size, format_size
+from dh import format_size, get_size
 from fastwalk import walk_files
 from termcolor import cprint
 from tree_sitter import Language, Parser, Query, QueryCursor
@@ -13,6 +13,7 @@ ts_remover = None
 
 
 class TSRemover:
+
     def __init__(self):
         self.language = Language(tspython.language())
         self.parser = Parser(self.language)
@@ -45,8 +46,7 @@ class TSRemover:
                     text = source_bytes[start:end].decode("utf-8")
                     if capture_name == "comment":
                         stripped = text.strip()
-                        if stripped.startswith(
-                            (
+                        if stripped.startswith((
                                 "# type:",
                                 "# black:",
                                 "# ruff:",
@@ -54,13 +54,13 @@ class TSRemover:
                                 "# fmt:",
                                 "# pylint:",
                                 "# mypy:",
-                            )
-                        ):
+                        )):
                             continue
                         comment_count += 1
                     else:
                         docstring_count += 1
-                    if end < len(source_bytes) and source_bytes[end : end + 1] == b"\n":
+                    if end < len(source_bytes) and source_bytes[end:end +
+                                                                1] == b"\n":
                         end += 1
                     deletions.append((start, end))
         deletions = sorted(set(deletions), reverse=True)
@@ -130,18 +130,23 @@ def process_file(fp):
 
 if __name__ == "__main__":
     dir_path = Path.cwd()
-    files = [Path(p) for p in walk_files(dir_path) if Path(p).is_file() and Path(p).suffix == ".py"]
-    init_size = folder_size(dir_path)
+    files = [
+        Path(p) for p in walk_files(dir_path)
+        if Path(p).is_file() and Path(p).suffix == ".py"
+    ]
+    init_size = get_size(dir_path)
     results = []
     nproc = min(cpu_count() or 1, 8)
     with Pool(processes=nproc, initializer=ts_remover_initializer) as pool:
         results = pool.map(process_file, files)
-    end_size = folder_size(dir_path)
+    end_size = get_size(dir_path)
     size_diff = init_size - end_size
     changed = sum(1 for r in results if r and r[0] == "changed")
     errors = [r for r in results if r and r[0] == "error"]
     nochg = sum(1 for r in results if r and r[0] == "nochange")
-    print(f"\nProcessed: {len(files)} files: {changed} changed, {nochg} unchanged, {len(errors)} errors")
+    print(
+        f"\nProcessed: {len(files)} files: {changed} changed, {nochg} unchanged, {len(errors)} errors"
+    )
     if errors:
         print("Files with errors:")
         for _, fn, *_ in errors:

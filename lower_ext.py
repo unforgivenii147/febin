@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import string
 from multiprocessing import Pool
 from pathlib import Path
@@ -32,7 +32,7 @@ def main():
             files.append(path)
     pool = Pool(12)
     for f in files:
-        pool.apply_async(process_file, ((f),))
+        pool.apply_async(process_file, ((f), ))
     pool.close()
     pool.join()
     print(f"{perf_counter() - start} sec")

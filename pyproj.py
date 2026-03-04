@@ -1,9 +1,8 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 """
 Script to create a template Python project structure.
 Usage: python create_project.py <package_name>
 """
-
 import sys
 from pathlib import Path
 

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import tarfile
 import zipfile
 from pathlib import Path
@@ -13,13 +13,14 @@ def whl_to_tar_xz(whl_path: Path):
         target = unique_path(target)
     print(f"[WHL → TAR.XZ] {whl_path.name}")
     try:
-        with zipfile.ZipFile(whl_path, "r") as zf, tarfile.open(target, "w:xz") as tf:
+        with zipfile.ZipFile(whl_path,
+                             "r") as zf, tarfile.open(target, "w:xz") as tf:
             for member in zf.infolist():
                 if member.is_dir():
                     continue
                 with zf.open(member) as source:
                     tarinfo = tarfile.TarInfo(name=member.filename)
-                    tarinfo.size = member.file_size
+                    tarinfo.size = member.get_size
                     tf.addfile(tarinfo, source)
         print(f"[OK] {target.name}")
     except Exception as e:
@@ -36,8 +37,9 @@ def tar_xz_to_whl(tar_path: Path):
     print(f"[TAR.XZ → WHL] {tar_path.name}")
     try:
         with (
-            tarfile.open(tar_path, "r:xz") as tf,
-            zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as zf,
+                tarfile.open(tar_path, "r:xz") as tf,
+                zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED)
+                as zf,
         ):
             for member in tf.getmembers():
                 if member.isdir():

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import sys
 
 INVISIBLE_CHARS = {
@@ -32,9 +32,9 @@ def clean_text(text: str) -> str:
 
 def main():
     with open(
-        sys.argv[1],
-        encoding="utf-8",
-        errors="ignore",
+            sys.argv[1],
+            encoding="utf-8",
+            errors="ignore",
     ) as f:
         text = f.read()
     cleaned = clean_text(text)

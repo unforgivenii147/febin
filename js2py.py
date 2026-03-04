@@ -1,9 +1,8 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 """
 Convert JavaScript code to Python using AI-powered translation.
 Uses OpenAI API or local AST-based conversion with js2py library.
 """
-
 import argparse
 import os
 import sys
@@ -15,14 +14,18 @@ import regex as re
 def install_js2py():
     try:
         import js2py
-
         return True
     except ImportError:
         print("📦 Installing js2py library...")
         import subprocess
-
         try:
-            subprocess.check_call([sys.executable, "-m", "pip", "install", "js2py"])
+            subprocess.check_call([
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "js2py",
+            ])
             print("✅ js2py installed successfully")
             return True
         except subprocess.CalledProcessError:
@@ -33,18 +36,24 @@ def install_js2py():
 def convert_with_js2py(js_file: Path, outfile: Path) -> bool:
     try:
         import js2py
-
         js2py.translate_file(js_file, out_file)
         return True
     except Exception as e:
-        return (False, f"js2py conversion error: {e!s}")
+        return (
+            False,
+            f"js2py conversion error: {e!s}",
+        )
 
 
-def convert_with_openai(js_code: str, api_key: str | None = None) -> tuple[bool, str]:
+def convert_with_openai(js_code: str,
+                        api_key: str | None = None) -> tuple[bool, str]:
     try:
         import openai
     except ImportError:
-        return (False, "OpenAI library not installed. Install with: pip install openai")
+        return (
+            False,
+            "OpenAI library not installed. Install with: pip install openai",
+        )
     api_key = api_key or os.getenv("OPENAI_API_KEY")
     if not api_key:
         return (
@@ -64,21 +73,34 @@ python code:"""
             model="gpt-4",
             messages=[
                 {
-                    "role": "system",
-                    "content": "You are an expert programmer who converts JavaScript to Python accurately.",
+                    "role":
+                    "system",
+                    "content":
+                    "You are an expert programmer who converts JavaScript to Python accurately.",
                 },
-                {"role": "user", "content": prompt},
+                {
+                    "role": "user",
+                    "content": prompt,
+                },
             ],
             temperature=0.3,
             max_tokens=2000,
         )
         python_code = response.choices[0].message.content
         if "```python" in python_code:
-            python_code = re.search(r"```python\n(.*?)```", python_code, re.DOTALL)
+            python_code = re.search(
+                r"```python\n(.*?)```",
+                python_code,
+                re.DOTALL,
+            )
             if python_code:
                 python_code = python_code.group(1)
         elif "```" in python_code:
-            python_code = re.search(r"```\n(.*?)```", python_code, re.DOTALL)
+            python_code = re.search(
+                r"```\n(.*?)```",
+                python_code,
+                re.DOTALL,
+            )
             if python_code:
                 python_code = python_code.group(1)
         return (True, python_code.strip())
@@ -89,21 +111,63 @@ python code:"""
 def simple_js_to_python(js_code: str) -> str:
     python_code = js_code
     python_code = re.sub(r"\b(let|const|var)\s+", "", python_code)
-    python_code = re.sub(r"console\.log\s*\(", "print(", python_code)
+    python_code = re.sub(
+        r"console\.log\s*\(",
+        "print(",
+        python_code,
+    )
     python_code = re.sub(r"\btrue\b", "True", python_code)
     python_code = re.sub(r"\bfalse\b", "False", python_code)
-    python_code = re.sub(r"\b(null|undefined)\b", "None", python_code)
-    python_code = re.sub(r"\bfunction\s+(\w+)\s*\((.*?)\)\s*{", r"def \1(\2):", python_code)
-    python_code = re.sub(r"const\s+(\w+)\s*=\s*\((.*?)\)\s*=>\s*{", r"def \1(\2):", python_code)
-    python_code = re.sub(r"(\w+)\s*=\s*\((.*?)\)\s*=>\s*{", r"def \1(\2):", python_code)
+    python_code = re.sub(
+        r"\b(null|undefined)\b",
+        "None",
+        python_code,
+    )
+    python_code = re.sub(
+        r"\bfunction\s+(\w+)\s*\((.*?)\)\s*{",
+        r"def \1(\2):",
+        python_code,
+    )
+    python_code = re.sub(
+        r"const\s+(\w+)\s*=\s*\((.*?)\)\s*=>\s*{",
+        r"def \1(\2):",
+        python_code,
+    )
+    python_code = re.sub(
+        r"(\w+)\s*=\s*\((.*?)\)\s*=>\s*{",
+        r"def \1(\2):",
+        python_code,
+    )
     python_code = re.sub(r"//", "#", python_code)
     python_code = re.sub(r";$", "", python_code, flags=re.MULTILINE)
-    python_code = re.sub(r"\s*{\s*$", ":", python_code, flags=re.MULTILINE)
-    python_code = re.sub(r"^\s*}\s*$", "", python_code, flags=re.MULTILINE)
-    python_code = re.sub(r"\bif\s*\((.*?)\)\s*{", r"if \1:", python_code)
-    python_code = re.sub(r"\belse\s+if\s*\((.*?)\)\s*{", r"elif \1:", python_code)
+    python_code = re.sub(
+        r"\s*{\s*$",
+        ":",
+        python_code,
+        flags=re.MULTILINE,
+    )
+    python_code = re.sub(
+        r"^\s*}\s*$",
+        "",
+        python_code,
+        flags=re.MULTILINE,
+    )
+    python_code = re.sub(
+        r"\bif\s*\((.*?)\)\s*{",
+        r"if \1:",
+        python_code,
+    )
+    python_code = re.sub(
+        r"\belse\s+if\s*\((.*?)\)\s*{",
+        r"elif \1:",
+        python_code,
+    )
     python_code = re.sub(r"\belse\s*{", r"else:", python_code)
-    python_code = re.sub(r"\bwhile\s*\((.*?)\)\s*{", r"while \1:", python_code)
+    python_code = re.sub(
+        r"\bwhile\s*\((.*?)\)\s*{",
+        r"while \1:",
+        python_code,
+    )
     return re.sub(
         r"for\s*\(\s*let\s+(\w+)\s*=\s*(\d+)\s*;\s*\1\s*<\s*(\w+)\s*;\s*\1\+\+\s*\)\s*{",
         r"for \1 in range(\2, \3):",
@@ -169,7 +233,11 @@ def main():
                      python js_to_py.py script.js -o output.py
         """,
     )
-    parser.add_argument("input", type=Path, help="Input JavaScript file")
+    parser.add_argument(
+        "input",
+        type=Path,
+        help="Input JavaScript file",
+    )
     parser.add_argument(
         "-m",
         "--method",
@@ -179,14 +247,20 @@ def main():
     )
     parser.add_argument(
         "--api-key",
-        help="OpenAI API key (for openai method, or set OPENAI_API_KEY env var)",
+        help=
+        "OpenAI API key (for openai method, or set OPENAI_API_KEY env var)",
     )
     args = parser.parse_args()
     if not args.input.exists():
         print(f"❌ Error: File not found: {args.input}")
         sys.exit(1)
     outputfile = str(args.input).replace(".js", ".py")
-    success = convert_file(args.input, outputfile, args.method, args.api_key)
+    success = convert_file(
+        args.input,
+        outputfile,
+        args.method,
+        args.api_key,
+    )
     sys.exit(0 if success else 1)
 
 

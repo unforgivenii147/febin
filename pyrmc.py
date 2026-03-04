@@ -1,11 +1,11 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import ast
 import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
 import tree_sitter_python
-from dh import folder_size, format_size
+from dh import format_size, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
 
@@ -21,7 +21,8 @@ def process_again(pt):
         lines = text.splitlines()
         for line in lines:
             striped = line.strip()
-            if striped.startswith('"""') and striped.endswith('"""') and striped != '"""':
+            if striped.startswith('"""') and striped.endswith(
+                    '"""') and striped != '"""':
                 print(line)
                 continue
             new_lines.append(line)
@@ -63,9 +64,9 @@ def _collect_docstrings(node, source: bytes, deletions: list):
             if string_node and string_node.type == "string":
                 deletions.append((first.start_byte, first.end_byte))
     if node.type in (
-        "class_definition",
-        "function_definition",
-        "async_function_definition",
+            "class_definition",
+            "function_definition",
+            "async_function_definition",
     ):
         body = node.child_by_field_name("body")
         if body:
@@ -86,7 +87,7 @@ def remove_comments_and_docstrings(path: Path) -> None:
 
         def walk_comments(node):
             if node.type == "comment":
-                text = source[node.start_byte : node.end_byte]
+                text = source[node.start_byte:node.end_byte]
                 if not text.lstrip().startswith(EXCLUDE_PREFIXES):
                     deletions.append((node.start_byte, node.end_byte))
             for child in node.children:
@@ -108,7 +109,7 @@ def remove_comments_and_docstrings(path: Path) -> None:
         cprint(f"[FAIL] {path.name} -> {e}", "cyan")
 
 
-def collect_py_files(root: Path) -> list[Path]:
+def get_pyfiles(root: Path) -> list[Path]:
     if root.is_file() and root.suffix == ".py":
         return [root]
     return [p for p in root.rglob("*.py") if p.is_file()]
@@ -116,13 +117,13 @@ def collect_py_files(root: Path) -> list[Path]:
 
 def main() -> None:
     root = Path().cwd().resolve()
-    files = collect_py_files(root)
+    files = get_pyfiles(root)
     if not files:
         sys.exit("No Python files found")
-    init_size = folder_size(root)
+    init_size = get_size(root)
     with Pool(cpu_count()) as pool:
         pool.map(remove_comments_and_docstrings, files)
-    end_size = folder_size(root)
+    end_size = get_size(root)
     difsize = init_size - end_size
     cprint(f"{format_size(difsize)}", "cyan")
 

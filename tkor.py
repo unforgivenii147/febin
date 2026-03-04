@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import sys
 from pathlib import Path
@@ -23,7 +23,7 @@ def read_text_file(path: Path) -> str:
 
 
 def chunk_text(text: str, size: int = CHUNK_SIZE) -> list[str]:
-    return [text[i : i + size] for i in range(0, len(text), size)]
+    return [text[i:i + size] for i in range(0, len(text), size)]
 
 
 def translate_chunks(chunks: list[str]) -> str:
@@ -43,7 +43,9 @@ def build_output_path(input_path: Path) -> Path:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Translate Korean → English using chunked deep-translator.")
+    parser = argparse.ArgumentParser(
+        description="Translate Korean → English using chunked deep-translator."
+    )
     parser.add_argument(
         "input_path",
         type=str,

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 from pathlib import Path
 
@@ -33,7 +33,8 @@ def extract_package_name(line: str) -> str | None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Clean pip freeze output and keep only package names (overwrite file)."
+        description=
+        "Clean pip freeze output and keep only package names (overwrite file)."
     )
     parser.add_argument("file", help="pip freeze output file")
     args = parser.parse_args()

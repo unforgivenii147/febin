@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import ast
 from pathlib import Path
 
@@ -30,31 +30,24 @@ def is_code_line(line: str) -> bool:
     s = line.strip()
     if not s:
         return True
-    return (
-        s.startswith(
-            (
-                "def ",
-                "class ",
-                "if ",
-                "elif ",
-                "else:",
-                "for ",
-                "while ",
-                "try:",
-                "except ",
-                "finally:",
-                "with ",
-                "return",
-                "import ",
-                "from ",
-                "@",
-                "#",
-            )
-        )
-        or "=" in s
-        or "(" in s
-        or s.endswith(":")
-    )
+    return (s.startswith((
+        "def ",
+        "class ",
+        "if ",
+        "elif ",
+        "else:",
+        "for ",
+        "while ",
+        "try:",
+        "except ",
+        "finally:",
+        "with ",
+        "return",
+        "import ",
+        "from ",
+        "@",
+        "#",
+    )) or "=" in s or "(" in s or s.endswith(":"))
 
 
 def clean_text(text: str) -> str:
@@ -81,7 +74,13 @@ def clean_text(text: str) -> str:
             indent_level = 1
             out.append('if __name__ == "__main__":')
             continue
-        if stripped.startswith(("return", "pass", "break", "continue", "raise")):
+        if stripped.startswith((
+                "return",
+                "pass",
+                "break",
+                "continue",
+                "raise",
+        )):
             out.append(INDENT * indent_level + stripped)
             indent_level = max(indent_level - 1, 0)
             continue
@@ -93,17 +92,19 @@ def clean_text(text: str) -> str:
     return "\n".join(out)
 
 
-def ast_validate(code: str) -> tuple[bool, str | None]:
+def ast_validate(code: str, ) -> tuple[bool, str | None]:
     try:
         ast.parse(code)
         return True, None
     except SyntaxError as e:
-        return False, f"{e.msg} (line {e.lineno}, col {e.offset})"
+        return (
+            False,
+            f"{e.msg} (line {e.lineno}, col {e.offset})",
+        )
 
 
 def main():
     import sys
-
     src = Path(sys.argv[1])
     dst = Path(sys.argv[1])
     cleaned = clean_text(src.read_text(encoding="utf-8", errors="ignore"))

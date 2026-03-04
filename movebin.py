@@ -1,5 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
-# file: move_binary_files.py
+#!/data/data/com.termux/files/usr/bin/env python
 import shutil
 from pathlib import Path
 

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import random
 
 extensions = [
@@ -1284,7 +1284,7 @@ extensions = [
     ".sgi",
     ".sgl",
     ".sgm",
-    ".sgml",
+    ".sgml"
     ".sh",
     ".sh",
     ".sha256sum",
@@ -1792,7 +1792,7 @@ for ext in extensions:
 dc_str = ":".join(dc)
 dircolors = f'\nLS_COLORS="rs=0:di=01;38;2;20;180;189:ln=01;38;2;139;233;253:mh=00:pi=48;2;33;34;44;38;2;241;250;140:so=01;38;2;255;121;198:do=01;38;2;255;121;198:bd=48;2;33;34;44;38;2;241;250;140:cd=48;2;33;34;44;38;2;241;250;140:or=48;2;33;34;44;38;2;255;85;85:mi=00:su=38;2;248;248;242;48;2;255;85;85:sg=38;2;33;34;44;48;2;241;250;140:tw=38;2;33;34;44;48;2;80;250;123:ow=38;2;189;147;249;48;2;80;250;123:st=38;2;248;248;242;48;2;189;147;249:ex=01;38;2;80;250;123:{dc_str}"\nexport LS_COLORS\n'
 with open(
-    "/data/data/com.termux/files/home/.ls_colors",
-    "w",
+        "/data/data/com.termux/files/home/.ls_colors",
+        "w",
 ) as f:
     f.write(dircolors)

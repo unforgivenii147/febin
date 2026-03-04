@@ -1,6 +1,5 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
-
 
 TARGET_SHEBANG = "#!/data/data/com.termux/files/usr/bin/env python"
 
@@ -15,9 +14,9 @@ def is_python_file(filepath):
             first_line = f.readline().strip()
             if first_line.startswith("#!") and "python" in first_line:
                 return True
-            if first_line.startswith("#") and (
-                "python" in first_line or "encoding" in first_line or "noqa" in first_line
-            ):
+            if first_line.startswith("#") and ("python" in first_line
+                                               or "encoding" in first_line
+                                               or "noqa" in first_line):
                 return True
             f.seek(0)
             for line in f:
@@ -39,24 +38,19 @@ def process_file(filepath):
             if len(lines) > 1 and lines[1].strip() != "":
                 lines.insert(1, "\n")
         else:
-            has_python_code = any(
-                line.strip().startswith(
-                    (
-                        "import ",
-                        "from ",
-                        "def ",
-                        "class ",
-                    )
-                )
-                for line in lines
-            )
+            has_python_code = any(line.strip().startswith((
+                "import ",
+                "from ",
+                "def ",
+                "class ",
+            )) for line in lines)
             if has_python_code:
                 lines.insert(0, TARGET_SHEBANG + "\n")
                 lines.insert(1, "\n")
         f.seek(0)
         f.writelines(lines)
         f.truncate()
-        print(f"{filepath} updated.")
+        print(f"{os.path.relpath(filepath)} updated.")
     if "bin" in filepath.split(os.sep):
         os.chmod(filepath, 0o755)
 

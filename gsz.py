@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import sys
 
@@ -45,10 +45,14 @@ def get_branch_size(repo: str, branch: str) -> int:
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        size_bytes = sum(item.get("size", 0) for item in data.get("tree", []) if item["type"] == "blob")
+        size_bytes = sum(
+            item.get("size", 0) for item in data.get("tree", [])
+            if item["type"] == "blob")
         return size_bytes // 1024
     else:
-        raise RuntimeError(f"Failed to fetch branch tree: {branch}, status {response.status_code}")
+        raise RuntimeError(
+            f"Failed to fetch branch tree: {branch}, status {response.status_code}"
+        )
 
 
 def format_size(kb: int) -> str:

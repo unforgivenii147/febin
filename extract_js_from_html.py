@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import random
 import string
@@ -35,7 +35,10 @@ def process_file(fp):
     soup = BeautifulSoup(html_content, "html.parser")
     scripts = soup.find_all("script")
     if scripts:
-        cprint(f"{[fp.name]} : {len(scripts)} scripts found.", "magenta")
+        cprint(
+            f"{[fp.name]} : {len(scripts)} scripts found.",
+            "magenta",
+        )
         for script in scripts:
             save_script(script.contents)
     return True
@@ -44,7 +47,7 @@ def process_file(fp):
 def main():
     files = []
     dir = Path.cwd()
-    start = dh.folder_size(dir)
+    start = dh.get_size(dir)
     for pth in walk_files(str(dir)):
         path = Path(os.path.join(dir, pth))
         if path.is_file() and path.suffix == ".html":
@@ -53,7 +56,7 @@ def main():
     pool.imap_unordered(process_file, files)
     pool.close()
     pool.join()
-    end = dh.folder_size(dir)
+    end = dh.get_size(dir)
     print(f"{dh.format_size(end - start)}")
 
 

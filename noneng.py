@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 from pathlib import Path
 
@@ -7,7 +7,6 @@ from langdetect import DetectorFactory, detect
 from langdetect.lang_detect_exception import LangDetectException
 
 DetectorFactory.seed = 0
-
 MAX_CHARS = 5000
 
 
@@ -17,18 +16,15 @@ def is_text_file(pth):
         return True
     if path.suffix.lower() in BIN_EXT:
         return False
-    if not is_binary(path):
-        return True
-    else:
-        return False
+    return bool(not is_binary(path))
 
 
 def contains_non_english(path):
     try:
         with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
+                path,
+                encoding="utf-8",
+                errors="ignore",
         ) as f:
             text = f.read(MAX_CHARS).strip()
             if len(text) < 20:

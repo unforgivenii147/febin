@@ -1,7 +1,6 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import subprocess
-import sys
 import tempfile
 from pathlib import Path
 
@@ -12,33 +11,58 @@ def clean_single_svg(in_file, svgcleaner_path=SVGCPATH):
     """Clean a single SVG file and return size change."""
     if not os.path.exists(in_file):
         raise FileNotFoundError(f"Input file not found: {in_file}")
-
     before_size = os.path.getsize(in_file)
     tmp_out_path = None
-
     try:
-        with tempfile.NamedTemporaryFile(suffix=".svg", delete=False) as tmp_out:
+        with tempfile.NamedTemporaryFile(suffix=".svg",
+                                         delete=False) as tmp_out:
             tmp_out_path = tmp_out.name
-
         subprocess.run(
-            [svgcleaner_path, "--copy-on-error", "--remove-comments=yes", in_file, tmp_out_path],
+            [
+                svgcleaner_path,
+                "--copy-on-error",
+                "--remove-comments=yes",
+                in_file,
+                tmp_out_path,
+            ],
             check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
         )
-
         after_size = os.path.getsize(tmp_out_path)
         if after_size != 0:
             os.replace(tmp_out_path, in_file)
             size_change = before_size - after_size
-            return (True, in_file, before_size, after_size, size_change)
+            return (
+                True,
+                in_file,
+                before_size,
+                after_size,
+                size_change,
+            )
         else:
-            return (False, in_file, before_size, after_size, size_change)
-
+            return (
+                False,
+                in_file,
+                before_size,
+                after_size,
+                size_change,
+            )
     except subprocess.CalledProcessError as e:
-        return (False, in_file, 0, 0, f"Error: {e.stderr.decode('utf-8')}")
+        return (
+            False,
+            in_file,
+            0,
+            0,
+            f"Error: {e.stderr.decode('utf-8')}",
+        )
     except Exception as e:
-        return (False, in_file, 0, 0, f"Unexpected error: {e}")
+        return (
+            False,
+            in_file,
+            0,
+            0,
+            f"Unexpected error: {e}",
+        )
     finally:
         if tmp_out_path and os.path.exists(tmp_out_path):
             os.unlink(tmp_out_path)
@@ -55,22 +79,22 @@ def clean_svg_dir(root_dir, svgcleaner_path="svgcleaner"):
     if not svg_files:
         print("No SVG files found.")
         return
-
     total_before = 0
     total_after = 0
     total_saved = 0
-
     for in_file in svg_files:
-        success, f, before, after, size_change = clean_single_svg(in_file, svgcleaner_path)
+        success, f, before, after, size_change = clean_single_svg(
+            in_file, svgcleaner_path)
         if success:
             print(f"Cleaned: {f}")
-            print(f"  Before: {before} bytes, After: {after} bytes, Saved: {size_change} bytes")
+            print(
+                f"  Before: {before} bytes, After: {after} bytes, Saved: {size_change} bytes"
+            )
             total_before += before
             total_after += after
             total_saved += size_change
         else:
             print(f"Failed to clean {f}: {size_change}")
-
     print("\n--- Summary ---")
     print(f"Total files processed: {len(svg_files)}")
     print(f"Total size before: {total_before} bytes")

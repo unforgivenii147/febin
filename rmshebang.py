@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 TARGET_STR = "#!/data/data/com.termux/files/usr/bin/env python3"
 
 

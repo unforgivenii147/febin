@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from collections import Counter
 from pathlib import Path
 
@@ -13,7 +13,11 @@ def levenshtein_distance(a: str, b: str) -> int:
             insertions = previous_row[j] + 1
             deletions = current_row[j - 1] + 1
             substitutions = previous_row[j - 1] + (ca != cb)
-            current_row.append(min(insertions, deletions, substitutions))
+            current_row.append(min(
+                insertions,
+                deletions,
+                substitutions,
+            ))
         previous_row = current_row
     return previous_row[-1]
 

@@ -1,5 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
-
+#!/data/data/com.termux/files/usr/bin/env python
 import sys
 from collections import Counter
 from pathlib import Path
@@ -7,23 +6,23 @@ from pathlib import Path
 import regex as re
 from dh import unique_path
 
-USER_KEYWORDS_FILE = Path("/sdcard/keywords")
+USER_STOPWORDS_FILE = Path("/sdcard/stopwords")
 
 
-def load_user_keywords(path):
+def load_user_stopwords(path):
     if not path.is_file():
         return set()
-    keywords = set()
+    stopwords = set()
     with path.open(errors="ignore") as f:
         for line in f:
             line = line.strip().lower()
             if not line or line.startswith("#"):
                 continue
-            keywords.add(line)
-    return keywords
+            stopwords.add(line)
+    return stopwords
 
 
-EXCLUDE = load_user_keywords(USER_KEYWORDS_FILE)
+EXCLUDE = load_user_stopwords(USER_STOPWORDS_FILE)
 
 
 def extract_words(text):

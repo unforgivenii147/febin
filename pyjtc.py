@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import os
 
@@ -12,7 +12,7 @@ def remove_comments_and_strings(content, filetype, keep_strings=False):
             r"/\*.*?\*/",
             "",
             content,
-            flags=re.DOTALL,
+            flags=re.DOTALL,re.MULTILINE
         )
         if not keep_strings:
             content = re.sub(r"\"[^\"]*\"", "", content)
@@ -36,12 +36,12 @@ def process_file(filepath, inplace=False, keep_strings=False):
     _, ext = os.path.splitext(filepath)
     ext = ext[1:].lower()
     if ext not in [
-        "hpp",
-        "h",
-        "c",
-        "cpp",
-        "py",
-        "sh",
+            "hpp",
+            "h",
+            "c",
+            "cpp",
+            "py",
+            "sh",
     ]:
         print(f"Unsupported file type: {ext}")
         return
@@ -58,7 +58,8 @@ def process_file(filepath, inplace=False, keep_strings=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Remove comments and docstrings from code files, optionally keeping strings."
+        description=
+        "Remove comments and docstrings from code files, optionally keeping strings."
     )
     parser.add_argument(
         "files",

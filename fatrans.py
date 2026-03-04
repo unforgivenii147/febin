@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import json
 import readline
@@ -69,7 +69,8 @@ def interactive_mode(fa_en, en_fa):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Offline Persian ↔ English translator")
+    parser = argparse.ArgumentParser(
+        description="Offline Persian ↔ English translator")
     parser.add_argument(
         "word",
         nargs="*",

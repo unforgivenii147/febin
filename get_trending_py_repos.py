@@ -1,5 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
-# file: github_trending_python.py
+#!/data/data/com.termux/files/usr/bin/env python
 import csv
 import json
 from dataclasses import asdict, dataclass
@@ -46,8 +45,7 @@ def fetch_trending(timeframe: str) -> list[Repo]:
                 stars=stars,
                 language=language,
                 timeframe=timeframe,
-            )
-        )
+            ))
     return repos
 
 

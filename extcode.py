@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
 import tree_sitter_python as tsp
@@ -7,12 +7,9 @@ from tree_sitter import Language, Parser
 LANG = Language(tsp)
 parser = Parser()
 parser.set_language(LANG)
-
 ROOT_DIR = Path(".").resolve()
 OUTPUT_DIR = Path("output")
-
 OUTPUT_DIR.mkdir(exist_ok=True)
-
 VALID_TOP_LEVEL_NODES = {
     "function_definition",
     "class_definition",
@@ -35,27 +32,23 @@ def extract_from_file(py_file: Path):
     extracted_chunks = []
     for child in root.children:
         if child.type in VALID_TOP_LEVEL_NODES:
-            extracted_chunks.append(source[child.start_byte : child.end_byte].decode())
+            extracted_chunks.append(
+                source[child.start_byte:child.end_byte].decode())
     return "\n\n".join(extracted_chunks)
 
 
 def process_directory():
     for py_file in ROOT_DIR.rglob("*.py"):
-        # Skip virtualenvs and output directory
         if any(part.startswith(".") for part in py_file.parts):
             continue
         if OUTPUT_DIR in py_file.parents:
             continue
-
         extracted = extract_from_file(py_file)
         if not extracted.strip():
             continue
-
-        # Preserve directory structure
         relative_path = py_file.relative_to(ROOT_DIR)
         out_file = OUTPUT_DIR / relative_path
         out_file.parent.mkdir(parents=True, exist_ok=True)
-
         out_file.write_text(extracted)
         print(f"Saved: {out_file}")
 

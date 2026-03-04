@@ -2,23 +2,17 @@
 import os
 import sys
 from pathlib import Path
-
 import regex as re
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
-
 DIRECTORY = "."
 CHUNK_SIZE = 2000
 TARGET_LANGUAGE = "en"
 non_english_pattern = re.compile(r"[^\x00-\x7F]")
-
-
 def chunk_text(text, chunk_size=CHUNK_SIZE):
     words = text.split()
     for i in range(0, len(words), chunk_size):
         yield " ".join(words[i:i + chunk_size])
-
-
 def translate_text(text):
     try:
         return GoogleTranslator(source="auto",
@@ -26,8 +20,6 @@ def translate_text(text):
     except Exception as e:
         print(f"Error translating text chunk: {e}")
         return text
-
-
 def translate_file(filepath):
     with open(filepath, encoding="utf-8") as f:
         content = f.read()
@@ -46,15 +38,11 @@ def translate_file(filepath):
     with open(new_filepath, "w", encoding="utf-8") as f:
         f.write(translated_content)
     print(f"saved as {new_filepath}")
-
-
 def translate_folder(directory):
     for pth in walk_files(directory):
         path = Path(pth)
         if path.is_file():
             translate_file(path)
-
-
 if __name__ == "__main__":
     choice = input("translate a f)ile or d)ir?")
     if choice == "d":

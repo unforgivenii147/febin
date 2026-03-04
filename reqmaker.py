@@ -2,14 +2,10 @@
 import subprocess
 from collections.abc import Iterable
 from pathlib import Path
-
 import regex as re
-
 REQUIREMENTS_FILE = Path("requirements.txt")
 MISSING_PATTERN = re.compile(
     r"requires ([A-Za-z0-9_\-]+), which is not installed\.")
-
-
 def run_pip_check() -> str:
     result = subprocess.run(
         ["pip", "check"],
@@ -18,8 +14,6 @@ def run_pip_check() -> str:
         check=False,
     )
     return result.stdout.strip()
-
-
 def parse_missing_packages(pip_output: str, ) -> list[str]:
     missing: set[str] = set()
     for line in pip_output.splitlines():
@@ -27,8 +21,6 @@ def parse_missing_packages(pip_output: str, ) -> list[str]:
         if match:
             missing.add(match.group(1))
     return sorted(missing)
-
-
 def read_existing_requirements() -> set[str]:
     if not REQUIREMENTS_FILE.exists():
         return set()
@@ -37,8 +29,6 @@ def read_existing_requirements() -> set[str]:
         for line in REQUIREMENTS_FILE.read_text().splitlines()
         if line.strip() and not line.startswith("#")
     }
-
-
 def save_to_requirements(packages: Iterable[str], ) -> None:
     existing = read_existing_requirements()
     merged = sorted(existing | set(packages))
@@ -46,8 +36,6 @@ def save_to_requirements(packages: Iterable[str], ) -> None:
     print(
         f"✔️ Saved {len(packages)} new package(s). Total: {len(merged)} in requirements.txt"
     )
-
-
 def main() -> None:
     print("🔍 Running pip check...")
     output = run_pip_check()
@@ -61,7 +49,5 @@ def main() -> None:
         return
     print(f"⚠️ Missing packages detected: {missing_packages}")
     save_to_requirements(missing_packages)
-
-
 if __name__ == "__main__":
     main()

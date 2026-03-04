@@ -2,10 +2,7 @@
 """Remove author metadata header from python files (with or without extension)."""
 import os
 from pathlib import Path
-
 from fastwalk import walk_files
-
-
 def is_python_file(path: str) -> bool:
     if os.path.isdir(path):
         return False
@@ -29,8 +26,6 @@ def is_python_file(path: str) -> bool:
             ))
     except Exception:
         return False
-
-
 def remove_header(path) -> None:
     original = []
     cleaned = []
@@ -53,14 +48,10 @@ def remove_header(path) -> None:
         if ans == "y":
             with open(path, "w", encoding="utf-8") as fo:
                 fo.write("".join(cleaned))
-
-
 def main() -> None:
     for pth in walk_files("."):
         path = Path(pth)
         if is_python_file(path):
             remove_header(path)
-
-
 if __name__ == "__main__":
     main()

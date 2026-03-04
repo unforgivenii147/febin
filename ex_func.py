@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from collections import defaultdict
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from tree_sitter import Language, Parser
-
 parser = Parser()
 parser.language = Language(tsp.language())
 OUT_DIR = Path("output")
@@ -12,8 +10,6 @@ OUT_DIR.mkdir(exist_ok=True)
 VALID = {
     "function_definition",
 }
-
-
 def extract_file(src: bytes, tree):
     root = tree.root_node
     chunks = []
@@ -21,8 +17,6 @@ def extract_file(src: bytes, tree):
         if node.type in VALID:
             chunks.append(src[node.start_byte:node.end_byte].decode())
     return chunks
-
-
 folder_imports = defaultdict(list)
 for py in Path(".").rglob("*.py"):
     if any(part.startswith(".")

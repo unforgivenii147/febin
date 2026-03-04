@@ -11,15 +11,10 @@ import tarfile
 import tempfile
 import time
 from pathlib import Path
-
 import zstd
-
-
 def get_dir_size(path):
     """Calculate total size of directory in bytes."""
     return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
-
-
 def extract_zst_file(archive_path, extract_path):
     """Extract a standalone .zst file."""
     output_path = extract_path / archive_path.stem
@@ -28,8 +23,6 @@ def extract_zst_file(archive_path, extract_path):
         with open(output_path, "wb") as output_file:
             dctx.copy_stream(compressed_file, output_file)
     return output_path
-
-
 def extract_tar_zst(archive_path, extract_path):
     """Extract tar.zst archive using zstandard library."""
     with open(archive_path, "rb") as compressed_file:
@@ -46,14 +39,10 @@ def extract_tar_zst(archive_path, extract_path):
             )
     finally:
         Path(temp_tar_path).unlink()
-
-
 def extract_tar_xz(archive_path, extract_path):
     """Extract tar.xz archive."""
     with tarfile.open(archive_path, "r:xz") as tar:
         tar.extractall(path=extract_path, filter="data")
-
-
 def process_archive(archive_path, dry_run=False, quiet=False):
     """
     Process a single archive: extract it and delete original if successful.
@@ -108,8 +97,6 @@ def process_archive(archive_path, dry_run=False, quiet=False):
         if not quiet:
             print(f"Error processing {archive_name}: {e}")
         return False, 0, 0
-
-
 def find_archives(directory):
     """Find all supported archives in directory recursively."""
     directory = Path(directory).resolve()
@@ -120,8 +107,6 @@ def find_archives(directory):
     archives.extend(directory.rglob("*.tar.zst"))
     archives.extend(directory.rglob("*.tar.xz"))
     return sorted(set(archives))
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Extract .zst, .tar.zst, and .tar.xz archives.\n"
@@ -225,7 +210,5 @@ def main():
             print(f"\n{'=' * 50}")
             print(f"DRY RUN: Would process {len(archives)} archives")
         return 0
-
-
 if __name__ == "__main__":
     sys.exit(main())

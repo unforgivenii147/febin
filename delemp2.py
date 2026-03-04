@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
-
 EXCLUDED_DIRS = {".git"}
-
-
 def clean_lines(lines: list[str], collapse: bool) -> tuple[list[str], int]:
     removed = 0
     if not collapse:
@@ -24,8 +21,6 @@ def clean_lines(lines: list[str], collapse: bool) -> tuple[list[str], int]:
             else:
                 removed += 1
     return cleaned, removed
-
-
 def clean_file(
     path: Path,
     collapse: bool,
@@ -50,12 +45,8 @@ def clean_file(
         return True, removed, path.suffix.lower()
     except Exception:
         return False, 0, ""
-
-
 def main() -> None:
     fn = Path(sys.argv[1])
     clean_file(fn, collapse=False)
-
-
 if __name__ == "__main__":
     main()

@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
-
 import cv2
 import pytesseract
-
 SUPPORTED_FORMATS = {
     ".png",
     ".bmp",
@@ -13,8 +11,6 @@ SUPPORTED_FORMATS = {
     ".jpg",
     ".jpeg",
 }
-
-
 def extract_text(file_path: str) -> bool:
     path = Path(file_path)
     if not path.is_file() or path.suffix.lower() not in SUPPORTED_FORMATS:
@@ -38,8 +34,6 @@ def extract_text(file_path: str) -> bool:
     except Exception as e:
         print(f"An error occurred: {e}")
         return False
-
-
 def main():
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} <image_file>")
@@ -48,7 +42,5 @@ def main():
         sys.exit(0)
     else:
         sys.exit(1)
-
-
 if __name__ == "__main__":
     main()

@@ -4,22 +4,17 @@ import logging
 import shutil
 import sys
 from pathlib import Path
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 logger = logging.getLogger(__name__)
-
-
 class PackageRepacker:
-
     def __init__(self, output_base: str = "~/tmp/repack"):
         self.output_base = Path(output_base).expanduser()
         self.output_base.mkdir(parents=True, exist_ok=True)
         self.found_site_packages: list[Path] = []
-
     def find_site_packages_dirs(self, ) -> list[Path]:
         site_packages_dirs = []
         search_paths = [
@@ -71,7 +66,6 @@ class PackageRepacker:
         unique_dirs.sort()
         self.found_site_packages = unique_dirs
         return unique_dirs
-
     def get_package_info_from_dist_info(self, dist_info_dir: Path) -> dict:
         metadata = {
             "name": dist_info_dir.name.split("-")[0],
@@ -103,7 +97,6 @@ class PackageRepacker:
                 logger.warning(
                     f"Could not read metadata from {metadata_file}: {e}")
         return metadata
-
     def create_wheel_structure(
         self,
         package_name: str,
@@ -193,7 +186,6 @@ class PackageRepacker:
             logger.warning(
                 f"Could not find original RECORD file at {original_record}")
         return wheel_dir
-
     def copy_package_files(
         self,
         dist_info_dir: Path,
@@ -244,7 +236,6 @@ class PackageRepacker:
         except Exception as e:
             logger.error(f"Error copying files for {dist_info_dir.name}: {e}")
             return False
-
     def copy_all_packages(self):
         total_copied = 0
         for site_packages_dir in self.found_site_packages:
@@ -273,8 +264,6 @@ class PackageRepacker:
                 f"Copied {package_count} packages from {site_packages_dir}")
         logger.info(f"Total packages copied: {total_copied}")
         logger.info(f"Package files saved to: {self.output_base}")
-
-
 def main():
     parser = argparse.ArgumentParser(
         description=
@@ -327,7 +316,5 @@ def main():
         logger.error(f"Fatal error: {e}")
         return 1
     return 0
-
-
 if __name__ == "__main__":
     sys.exit(main())

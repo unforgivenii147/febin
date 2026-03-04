@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 import sys
-
-
 def samefile(path1: str, path2: str) -> bool:
     try:
         return os.path.samefile(path1, path2)

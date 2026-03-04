@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 TARGET_STR = "#!/data/data/com.termux/files/usr/bin/env python3"
-
-
 def is_text_file(filepath) -> bool | None:
     try:
         with Path(filepath).open("r", encoding="utf-8") as f:
@@ -9,8 +7,6 @@ def is_text_file(filepath) -> bool | None:
         return True
     except (UnicodeDecodeError, PermissionError):
         return False
-
-
 def process_file(filepath) -> None:
     try:
         with Path(filepath).open("r", encoding="utf-8") as f:
@@ -21,8 +17,6 @@ def process_file(filepath) -> None:
                 f.writelines(new_lines)
     except Exception:
         pass
-
-
 def main() -> None:
     for root, _dirs, files in os.walk("."):
         for file in files:
@@ -47,7 +41,5 @@ def main() -> None:
                 continue
             if is_text_file(filepath):
                 process_file(filepath)
-
-
 if __name__ == "__main__":
     main()

@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
-
 import regex as re
 from fastwalk import walk_files
-
-
 def extract_requirements(metadata_path):
     with open(metadata_path) as f:
         lines = f.readlines()
@@ -20,8 +17,6 @@ def extract_requirements(metadata_path):
     print(f"{len(requirements)} reqs found")
     with open("/sdcard/requirements.txt", "a") as f:
         f.write("\n".join(requirements))
-
-
 if __name__ == "__main__":
     dir = Path().cwd()
     for pth in walk_files(dir):

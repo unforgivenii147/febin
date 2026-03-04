@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-
 search_string = 'b64 = """'
 current_dir = os.getcwd()
 for root, _dirs, files in os.walk(current_dir):

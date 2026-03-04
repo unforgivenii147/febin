@@ -2,12 +2,10 @@
 import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-
 import tree_sitter_cpp
 import tree_sitter_python
 import tree_sitter_rust
 from tree_sitter import Language, Parser
-
 LANGUAGES = {
     ".py": tree_sitter_python.language(),
     ".rs": tree_sitter_rust.language(),
@@ -20,14 +18,10 @@ LANGUAGES = {
     ".hxx": tree_sitter_cpp.language(),
 }
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
-
-
 def get_parser(lang):
     parser = Parser()
     parser.language = Language(lang)
     return parser
-
-
 def _cleanup_blank_lines(text: str) -> str:
     lines = text.splitlines()
     cleaned = []
@@ -41,16 +35,12 @@ def _cleanup_blank_lines(text: str) -> str:
             blank_streak = 0
             cleaned.append(line.rstrip())
     return "\n".join(cleaned) + "\n"
-
-
 def _collect_python_docstrings(node, deletions):
-
     def first_named_child(block):
         for child in block.children:
             if child.is_named:
                 return child
         return None
-
     if node.type == "module":
         first = first_named_child(node)
         if first and first.type == "expression_statement":
@@ -71,8 +61,6 @@ def _collect_python_docstrings(node, deletions):
                     deletions.append((first.start_byte, first.end_byte))
     for child in node.children:
         _collect_python_docstrings(child, deletions)
-
-
 def process_file(path: Path) -> None:
     try:
         ext = path.suffix.lower()
@@ -83,7 +71,6 @@ def process_file(path: Path) -> None:
         source = path.read_bytes()
         tree = parser.parse(source)
         deletions = []
-
         def walk(node):
             if node.type == "comment":
                 text = source[node.start_byte:node.end_byte]
@@ -92,7 +79,6 @@ def process_file(path: Path) -> None:
                 deletions.append((node.start_byte, node.end_byte))
             for child in node.children:
                 walk(child)
-
         walk(tree.root_node)
         if ext == ".py":
             _collect_python_docstrings(tree.root_node, deletions)
@@ -109,8 +95,6 @@ def process_file(path: Path) -> None:
         print(f"[OK] {path}")
     except Exception as e:
         print(f"[FAIL] {path} -> {e}")
-
-
 def collect_supported_files(root: Path) -> list[Path]:
     if root.is_file():
         return [root] if root.suffix.lower() in LANGUAGES else []
@@ -118,8 +102,6 @@ def collect_supported_files(root: Path) -> list[Path]:
         p for p in root.rglob("*")
         if p.is_file() and p.suffix.lower() in LANGUAGES
     ]
-
-
 def main() -> None:
     root = Path().cwd().resolve()
     files = collect_supported_files(root)
@@ -127,7 +109,5 @@ def main() -> None:
         sys.exit("No supported files found")
     with Pool(cpu_count()) as pool:
         pool.map(process_file, files)
-
-
 if __name__ == "__main__":
     main()

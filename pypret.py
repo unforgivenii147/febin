@@ -2,10 +2,7 @@
 import json
 import os
 import pathlib
-
 import jsbeautifier
-
-
 def beautify_json_file(file_path) -> bool | None:
     try:
         with pathlib.Path(file_path).open(encoding="utf-8") as f:
@@ -17,8 +14,6 @@ def beautify_json_file(file_path) -> bool | None:
         return False
     except Exception:
         return False
-
-
 def beautify_code_file(file_path, beautify_function,
                        asset_type) -> bool | None:
     try:
@@ -32,8 +27,6 @@ def beautify_code_file(file_path, beautify_function,
         return True
     except Exception:
         return False
-
-
 def beautify_files_in_directory(root_dir=".", ) -> None:
     processed_count = 0
     errors_count = 0
@@ -70,7 +63,5 @@ def beautify_files_in_directory(root_dir=".", ) -> None:
                     else:
                         errors_count += 1
                     break
-
-
 if __name__ == "__main__":
     beautify_files_in_directory(pathlib.Path.cwd())

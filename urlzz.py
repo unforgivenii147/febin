@@ -4,20 +4,14 @@ import tarfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 import py7zr
 import regex as re
 from dh import BIN_EXT, TXT_EXT
-
 url_pattern = re.compile(r'https?://[^\s"\']+')
 EXT = BIN_EXT
 EXT.update(TXT_EXT)
-
-
 def extract_urls_from_text(content):
     return set(url_pattern.findall(content))
-
-
 def extract_urls_from_file(filepath):
     urls = set()
     try:
@@ -31,8 +25,6 @@ def extract_urls_from_file(filepath):
     except Exception as e:
         print(f"Failed to read {filepath}: {e}")
     return urls
-
-
 def extract_urls_from_tar(filepath):
     urls = set()
     try:
@@ -53,8 +45,6 @@ def extract_urls_from_tar(filepath):
     except Exception as e:
         print(f"Failed to read tar {filepath}: {e}")
     return urls
-
-
 def extract_urls_from_zip(filepath):
     urls = set()
     try:
@@ -72,8 +62,6 @@ def extract_urls_from_zip(filepath):
     except Exception as e:
         print(f"Failed to read zip {filepath}: {e}")
     return urls
-
-
 def extract_urls_from_7z(filepath):
     urls = set()
     try:
@@ -88,8 +76,6 @@ def extract_urls_from_7z(filepath):
     except Exception as e:
         print(f"Failed to read 7z {filepath}: {e}")
     return urls
-
-
 def extract_urls(filepath):
     path = Path(filepath)
     if path.suffix in EXT:
@@ -106,8 +92,6 @@ def extract_urls(filepath):
     elif path.suffix == ".7z":
         return extract_urls_from_7z(filepath)
     return set()
-
-
 if __name__ == "__main__":
     file_paths = []
     for root, dirs, files in os.walk("."):

@@ -3,20 +3,14 @@ import os
 import sys
 import time
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from tqdm import tqdm
-
 MAX_CHARS = 5000
-
-
 def get_output_filename(input_file):
     path = Path(input_file)
     stem = path.stem
     suffix = path.suffix
     return path.parent / f"{stem}_en{suffix}"
-
-
 def load_file(input_file):
     encodings = [
         "utf-8",
@@ -31,13 +25,9 @@ def load_file(input_file):
         except (OSError, UnicodeDecodeError):
             continue
     raise OSError(f"Could not read file {input_file} with any encoding")
-
-
 def save_file(output_file, content):
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(content)
-
-
 def find_chunk_boundary(text, max_chars):
     if len(text) <= max_chars:
         return len(text)
@@ -59,8 +49,6 @@ def find_chunk_boundary(text, max_chars):
     if last_space > 0:
         return last_space + 1
     return max_chars
-
-
 def chunk_text(text, max_chars):
     chunks = []
     pos = 0
@@ -73,8 +61,6 @@ def chunk_text(text, max_chars):
         chunks.append(remaining[:chunk_end])
         pos += chunk_end
     return chunks
-
-
 def translate_chunk(text, source_lang="auto"):
     for attempt in range(3):
         try:
@@ -85,8 +71,6 @@ def translate_chunk(text, source_lang="auto"):
             print(f"[WARN] Translation failed (attempt {attempt + 1}/3): {e}")
             time.sleep(1 + attempt)
     raise Exception("Failed to translate chunk after 3 attempts")
-
-
 def translate_file(input_file, source_lang="auto"):
     print(f"[INFO] Reading file: {input_file}")
     content = load_file(input_file)
@@ -131,8 +115,6 @@ def translate_file(input_file, source_lang="auto"):
     result = "".join(translated_chunks)
     print(f"\n[INFO] Detected language: {detected_lang}")
     return result
-
-
 def main():
     if len(sys.argv) < 2:
         print(
@@ -171,7 +153,5 @@ def main():
     except Exception as e:
         print(f"\n[ERROR] Translation failed: {e}")
         sys.exit(1)
-
-
 if __name__ == "__main__":
     main()

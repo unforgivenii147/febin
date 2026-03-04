@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
 from pathlib import Path
-
-
 def remove_ipynb_if_md_exists(root: Path, dry_run: bool = True):
     removed = 0
     checked = 0
@@ -24,8 +22,6 @@ def remove_ipynb_if_md_exists(root: Path, dry_run: bool = True):
     print(f"Checked: {checked}")
     print(f"Removed: {removed}"
           if not dry_run else "Dry run only. No files removed.")
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description=

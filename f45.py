@@ -3,8 +3,6 @@ import os
 import subprocess
 import sys
 import tempfile
-
-
 def fold_content_pure(fname, width=35):
     content = ""
     with open(fname, encoding="utf-8", errors="ignore") as f:
@@ -21,8 +19,6 @@ def fold_content_pure(fname, width=35):
         for line in folded_lines:
             fo.write(line + "\n")
     print(f"{fname} updated.")
-
-
 def fold_file_inplace(filename):
     if not os.path.exists(filename):
         print(
@@ -65,7 +61,5 @@ def fold_file_inplace(filename):
             original_f.write(result.stdout)
     os.unlink(temp_filename)
     print(f"Successfully folded '{filename}' in place.")
-
-
 if __name__ == "__main__":
     fold_file_inplace(sys.argv[1])

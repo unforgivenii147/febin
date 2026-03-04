@@ -6,23 +6,15 @@ import tempfile
 import tokenize
 from multiprocessing import Pool
 from pathlib import Path
-
 import regex as re
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
-
 DIRECTORY = "."
 non_english_pattern = re.compile(r"[^\x00-\x7F]")
-
-
 def is_english(text: str) -> bool:
     return not non_english_pattern.search(text)
-
-
 def chunk_text(text: str, size: int = 800) -> list[str]:
     return [text[i:i + size] for i in range(0, len(text), size)]
-
-
 def translate_chunk(chunk: str) -> str:
     try:
         result = GoogleTranslator(source="auto", target="en").translate(chunk)
@@ -30,15 +22,11 @@ def translate_chunk(chunk: str) -> str:
     except Exception as e:
         print(f"  Translation error for chunk: {e}")
         return chunk
-
-
 def translate_text(text: str) -> str:
     chunks = chunk_text(text)
     with Pool(8) as pool:
         translated = list(pool.imap(translate_chunk, chunks))
     return "".join(translated)
-
-
 def safe_overwrite(filepath: Path, content: str) -> None:
     with tempfile.NamedTemporaryFile(
             mode="w",
@@ -49,8 +37,6 @@ def safe_overwrite(filepath: Path, content: str) -> None:
         tmp.write(content)
         tmp_path = Path(tmp.name)
     shutil.move(tmp_path, filepath)
-
-
 def extract_docstrings(tree: ast.AST, ) -> dict[int, str]:
     docstrings = {}
     for node in ast.walk(tree):
@@ -67,8 +53,6 @@ def extract_docstrings(tree: ast.AST, ) -> dict[int, str]:
             if doc and not is_english(doc):
                 docstrings[id(node)] = doc
     return docstrings
-
-
 def translate_python_file(source: str, filepath: Path) -> str:
     print("  Analyzing Python structure...")
     tree = ast.parse(source)
@@ -118,8 +102,6 @@ def translate_python_file(source: str, filepath: Path) -> str:
             print(f"  Processed {i + 1} tokens...")
     print(f"  Translated {translated_count} items")
     return "".join(result)
-
-
 def process_files(directory: str) -> None:
     print(f"Scanning directory: {directory}")
     paths = [Path(p) for p in walk_files(directory)]
@@ -170,7 +152,5 @@ def process_files(directory: str) -> None:
     print(f"Skipped (already English): {skipped_count}")
     print(f"Errors: {error_count}")
     print("=" * 50)
-
-
 if __name__ == "__main__":
     process_files(DIRECTORY)

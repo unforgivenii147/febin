@@ -1,12 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import time
 from pathlib import Path
-
 from dh import SoFileStripper
-
-
 class BatchStripper:
-
     @staticmethod
     def strip_by_size_threshold(
         directory: str,
@@ -22,7 +18,6 @@ class BatchStripper:
         for so_file in large_files:
             stripper.process_file(so_file)
         return stripper.stats
-
     @staticmethod
     def strip_by_extension(
         directory: str,
@@ -41,7 +36,6 @@ class BatchStripper:
         for so_file in so_files:
             stripper.process_file(so_file)
         return stripper.stats
-
     @staticmethod
     def strip_exclude_patterns(
         directory: str,
@@ -60,7 +54,6 @@ class BatchStripper:
         for so_file in so_files:
             stripper.process_file(so_file)
         return stripper.stats
-
     @staticmethod
     def strip_with_retry(directory: str,
                          max_retries: int = 3,
@@ -79,8 +72,6 @@ class BatchStripper:
                         print(f"  Retry {attempt + 1}/{max_retries - 1}...")
                     time.sleep(1)
         return stripper.stats
-
-
 def main():
     import argparse
     parser = argparse.ArgumentParser(
@@ -139,7 +130,5 @@ def main():
     elif args.command == "retry":
         BatchStripper.strip_with_retry(args.directory, args.max_retries,
                                        args.verbose, verify)
-
-
 if __name__ == "__main__":
     main()

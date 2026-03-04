@@ -2,16 +2,12 @@
 import subprocess
 import sys
 from pathlib import Path
-
-
 def human_size(num_bytes: int) -> str:
     for unit in ("B", "KB", "MB", "GB"):
         if num_bytes < 1024:
             return f"{num_bytes:.2f} {unit}"
         num_bytes /= 1024
     return f"{num_bytes:.2f} TB"
-
-
 def run(cmd: list[str]) -> None:
     try:
         subprocess.run(cmd, check=True)
@@ -21,8 +17,6 @@ def run(cmd: list[str]) -> None:
             file=sys.stderr,
         )
         sys.exit(e.returncode)
-
-
 def main() -> None:
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} input.pdf")
@@ -61,7 +55,5 @@ def main() -> None:
     else:
         print("original file is smaller")
         temp_qpdf.unlink(missing_ok=True)
-
-
 if __name__ == "__main__":
     main()

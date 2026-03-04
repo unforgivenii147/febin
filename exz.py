@@ -8,13 +8,9 @@ import sys
 from datetime import datetime
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-
-
 def setup_logging(verbose=True):
     level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(level=level, format="%(message)s")
-
-
 def extract_with_lzma(xz_path, remove_original=True):
     try:
         xz_path = Path(xz_path)
@@ -70,8 +66,6 @@ def extract_with_lzma(xz_path, remove_original=True):
             None,
             f"Unexpected error: {e}",
         )
-
-
 def extract_with_system_xz(xz_path, remove_original=False):
     try:
         xz_path = Path(xz_path)
@@ -113,8 +107,6 @@ def extract_with_system_xz(xz_path, remove_original=False):
             None,
             f"Unexpected error: {e}",
         )
-
-
 def find_xz_files(directory):
     directory = Path(directory)
     if not directory.exists():
@@ -125,16 +117,12 @@ def find_xz_files(directory):
         if path.is_file():
             xz_files.append(path)
     return xz_files
-
-
 def process_file(args):
     file_path, use_system, remove_original = args
     if use_system:
         return extract_with_system_xz(file_path, remove_original)
     else:
         return extract_with_lzma(file_path, remove_original)
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Recursively extract all .xz files in a directory tree",
@@ -237,7 +225,5 @@ Examples:
     if error_count > 0:
         logging.warning(f"Failed to extract: {error_count} files")
     return 0 if error_count == 0 else 1
-
-
 if __name__ == "__main__":
     sys.exit(main())

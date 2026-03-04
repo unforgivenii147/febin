@@ -2,8 +2,6 @@
 import os
 import sys
 import time
-
-
 def parse_minutes() -> float:
     if len(sys.argv) == 1:
         return 60.0
@@ -12,8 +10,6 @@ def parse_minutes() -> float:
     except ValueError:
         print("Invalid argument. Usage: script.py [minutes]")
         sys.exit(1)
-
-
 def main() -> None:
     minutes = parse_minutes()
     cutoff = time.time() - (minutes * 60)
@@ -30,7 +26,5 @@ def main() -> None:
             accessed = stats.st_atime
             if created >= cutoff or modified >= cutoff or changed >= cutoff or accessed >= cutoff:
                 print(path)
-
-
 if __name__ == "__main__":
     main()

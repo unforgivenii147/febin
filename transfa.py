@@ -2,10 +2,7 @@
 import os
 import sys
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
-
-
 def translate_file(fname: str):
     linez = []
     fpath = Path(fname)
@@ -21,7 +18,5 @@ def translate_file(fname: str):
                 result = translator.translate(text)
                 f.write(f"\n{text} = {result}\n")
     return result
-
-
 if __name__ == "__main__":
     translate_file(sys.argv[1])

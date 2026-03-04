@@ -2,28 +2,19 @@
 import argparse
 from pathlib import Path
 from sys import argv, exit
-
 from dh import format_size, get_size
 from fastwalk import walk_parallel
-
-
 def empty_it(pth) -> None:
     with open(pth, "w") as f:
         f.write("")
-
-
 def remove_it(fp) -> None:
     if not fp.is_symlink():
         fp.unlink()
     else:
         pass
-
-
 def load_junk():
     with open("/sdcard/junk") as f:
         return [line.strip().lower() for line in f if line.strip()]
-
-
 def main():
     dir = Path.cwd()
     initsize = get_size(dir)
@@ -39,7 +30,5 @@ def main():
     endsize = get_size(dir)
     difsize = int(initsize - endsize)
     print(f"{format_size(difsize)}")
-
-
 if __name__ == "__main__":
     exit(main())

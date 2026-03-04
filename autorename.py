@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 from pathlib import Path
-
 files = [f.name for f in Path(".").glob("*.srt")]
 def common_prefix(strings):
     return os.path.commonprefix(strings)

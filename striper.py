@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from sys import argv
-
-
 def remove_spaces_from_file(fname) -> None:
     try:
         with open(fname) as file:
@@ -15,7 +13,5 @@ def remove_spaces_from_file(fname) -> None:
         print(f"Error: File '{fname}' not found.")
     except Exception as e:
         print(f"An error occurred: {e}")
-
-
 if __name__ == "__main__":
     remove_spaces_from_file(argv[1])

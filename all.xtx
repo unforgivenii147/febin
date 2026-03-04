@@ -1,56 +1,11 @@
-def cleanup_blank_lines(content: str) -> str:
-    content = re.sub(r"\n\n+", "\n", content)
-    return "\n".join(line.rstrip() for line in content.split("\n"))
-
-
-def process_file(file_path: Path) -> None:
-    before = get_size(file_path)
-    try:
-        original = file_path.read_text(encoding="utf-8")
-        try:
-            modified, removed = rm_ast(original)
-        except:
-            modified, removed = rm_doc(original)
-        modified = cleanup_blank_lines(modified)
-        if removed:
-            try:
-                modified = strip_code(modified)
-                ast.parse(modified)
-                file_path.write_text(modified, encoding="utf-8")
-                after = get_size(file_path)
-                print(f"{file_path.name}", end=" ")
-                cprint(f"{format_size(before - after)}", "blue")
-                return
-            except:
-                cprint(f"{file_path.name} ast parse error", "cyan")
-                return
-    except Exception as exc:
-        print(f"✗ Error processing {file_path}: {exc}")
-        return
-
-
-def main():
-    dir = Path.cwd()
-    initsize = get_size(dir)
-    args = sys.argv[1:]
-    if args:
-        files = [Path(f) for f in args]
-        if len(files) == 1:
-            process_file(files[0])
-            return
-        else:
-            for f in files:
-                process_file(f8)
-    else:
-        files = get_pyfiles(dir)
-        p = Pool(8)
-        for f in files:
-            p.apply_async(process_file, (f, ))
-        p.close()
-        p.join()
-    diff_size = initsize - get_size(dir)
-    print(f"{format_size(diff_size)}")
-
-
-if __name__ == "__main__":
-    main()
+    cleaned = []
+    for line in lines:
+        if line.startswith("#!"):
+            cleaned.append(line)
+            continue
+        if "#" in line and not line.strip().startswith("#"):
+            indx = line.index("#")
+            cleaned.append(line[:indx] + "\n")
+            continue
+        if not line.strip().startswith("#"):
+            cleaned.append(line)

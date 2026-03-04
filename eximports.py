@@ -1,19 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from dh import STDLIB, get_installed_pkgs, get_pyfiles
 from tree_sitter import Language, Parser
-
 parser = Parser()
 parser.language = Language(tsp.language())
 VALID = {
     "import_statement",
     "import_from_statement",
 }
-
-
 def extract_file(src: bytes, tree):
     root = tree.root_node
     chunks = []
@@ -21,15 +17,11 @@ def extract_file(src: bytes, tree):
         if node.type in VALID:
             chunks.append(src[node.start_byte:node.end_byte].decode())
     return chunks
-
-
 def process_file(fp):
     src = fp.read_bytes()
     tree = parser.parse(src)
     imports = extract_file(src, tree)
     return imports
-
-
 if __name__ == "__main__":
     outfile = Path("importz.txt")
     all_imports = []

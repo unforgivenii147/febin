@@ -2,8 +2,6 @@
 import ast
 import pathlib
 import sys
-
-
 def is_python_file(path: pathlib.Path) -> bool:
     if path.suffix == ".py":
         return True
@@ -15,8 +13,6 @@ def is_python_file(path: pathlib.Path) -> bool:
         except Exception:
             return False
     return False
-
-
 def get_imports_from_file(file_path):
     imports = set()
     try:
@@ -32,8 +28,6 @@ def get_imports_from_file(file_path):
     except (SyntaxError, UnicodeDecodeError):
         pass
     return imports
-
-
 def main():
     current_dir = pathlib.Path(".")
     output_file = current_dir / "importz.txt"
@@ -60,7 +54,5 @@ def main():
         print(f"✅ Saved {len(third_party)} 3rd-party imports to {output_file}")
     else:
         print("ℹ️ No 3rd-party imports found.")
-
-
 if __name__ == "__main__":
     main()

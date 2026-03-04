@@ -3,12 +3,9 @@ import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-
 from dh import format_size, get_size, run_command
 from fastwalk import walk_files
 from termcolor import cprint
-
-
 def process_file(fp):
     start = get_size(fp)
     if not fp.exists():
@@ -29,8 +26,6 @@ def process_file(fp):
     else:
         cprint(f"[ERROR] {err}", "magenta")
         return False
-
-
 def main():
     args = sys.argv[1:]
     if args:
@@ -60,7 +55,5 @@ def main():
     end_size = get_size(".")
     print(f"{format_size(init_size - end_size)}")
     return None
-
-
 if __name__ == "__main__":
     sys.exit(main())

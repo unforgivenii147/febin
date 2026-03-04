@@ -2,15 +2,10 @@
 import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-
 import tree_sitter_cpp as tscpp
 from tree_sitter import Language, Parser, Query, QueryCursor
-
 ts_remover = None
-
-
 class TSCppRemover:
-
     def __init__(self):
         self.language = Language(tscpp.language())
         self.parser = Parser(self.language)
@@ -20,7 +15,6 @@ class TSCppRemover:
             (comment) @comment
         """,
         )
-
     def remove_comments(self, source: str):
         source_bytes = source.encode("utf-8")
         tree = self.parser.parse(source_bytes)
@@ -62,7 +56,6 @@ class TSCppRemover:
         cleaned = new_source.decode("utf-8")
         cleaned = self._cleanup_blank_lines(cleaned)
         return cleaned, comment_count
-
     @staticmethod
     def _cleanup_blank_lines(text: str) -> str:
         lines = text.splitlines()
@@ -80,13 +73,9 @@ class TSCppRemover:
         if result and not result.endswith("\n"):
             result += "\n"
         return result
-
-
 def ts_remover_initializer():
     global ts_remover
     ts_remover = TSCppRemover()
-
-
 def process_file(fp):
     global ts_remover
     file_path = Path(fp)
@@ -113,24 +102,18 @@ def process_file(fp):
     else:
         print(f"[NO CHANGE] {file_path.name}")
         return ("nochange", file_path, 0)
-
-
 if __name__ == "__main__":
     try:
         from dh import format_size, get_size
         from fastwalk import walk_files
     except ImportError:
-
         def walk_files(path):
             return [str(p) for p in Path(path).rglob("*")]
-
         def get_size(path):
             return sum(f.stat().st_size for f in Path(path).rglob("*")
                        if f.is_file())
-
         def format_size(size):
             return f"{size / 1024:.2f} KB"
-
     dir_path = Path.cwd()
     files = [
         p for p in walk_files(dir_path) if Path(p).suffix in

@@ -2,10 +2,7 @@
 import os
 import shutil
 from concurrent.futures import ThreadPoolExecutor
-
 import regex as re
-
-
 def find_py_files(directory):
     py_files = []
     for root, _, files in os.walk(directory):
@@ -13,14 +10,10 @@ def find_py_files(directory):
             if file.endswith(".py"):
                 py_files.append(os.path.join(root, file))
     return py_files
-
-
 def backup_file(file_path):
     backup_path = file_path + ".bak"
     shutil.copy2(file_path, backup_path)
     return backup_path
-
-
 def replace_multiprocessing(file_path):
     try:
         with open(file_path, encoding="utf-8") as f:
@@ -68,8 +61,6 @@ def replace_multiprocessing(file_path):
             file_path,
             f"Error: {e!s}",
         )
-
-
 def main():
     current_dir = os.getcwd()
     py_files = find_py_files(current_dir)
@@ -83,7 +74,5 @@ def main():
     print(f"\nProcessing complete. Success: {success}/{len(py_files)} files.")
     for result in results:
         print(f"{'✓' if result[0] else '✗'} {result[1]}: {result[2]}")
-
-
 if __name__ == "__main__":
     main()

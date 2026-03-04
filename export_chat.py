@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import json
 from pathlib import Path
-
-
 def export_to_markdown(json_path, output_dir="exported"):
     output_dir = Path(output_dir)
     output_dir.mkdir(exist_ok=True)
@@ -18,7 +16,5 @@ def export_to_markdown(json_path, output_dir="exported"):
                 f.write(f"## {role.capitalize()}\n\n")
                 f.write(content)
                 f.write("\n\n---\n\n")
-
-
 if __name__ == "__main__":
     export_to_markdown("conversations.json")

@@ -9,10 +9,7 @@ import argparse
 import os
 import subprocess
 import sys
-
 from dh import MIME_TO_EXT
-
-
 def get_file_mime(file_path):
     try:
         result = subprocess.run(
@@ -33,8 +30,6 @@ def get_file_mime(file_path):
             file=sys.stderr,
         )
         return None
-
-
 def safe_rename(old_path, new_path):
     base, ext = os.path.splitext(new_path)
     counter = 1
@@ -43,8 +38,6 @@ def safe_rename(old_path, new_path):
         counter += 1
     os.rename(old_path, new_path)
     return new_path
-
-
 def check_files(directory, auto_fix=False):
     mismatched_files = []
     for root, _, files in os.walk(directory):
@@ -71,8 +64,6 @@ def check_files(directory, auto_fix=False):
                         new_path,
                     ))
     return mismatched_files
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Check and optionally fix mismatched file extensions.")
@@ -110,7 +101,5 @@ def main():
                 print(f"{file_path} -> extension: {ext}, detected: {mime}")
     else:
         print("All file extensions match their detected types.")
-
-
 if __name__ == "__main__":
     main()

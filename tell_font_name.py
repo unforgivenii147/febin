@@ -1,21 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 import sys
-
 import regex as re
 from fontTools.ttLib import TTFont
 from termcolor import cprint
-
-
 def is_ascii_printable(s: str) -> bool:
     return all(32 <= ord(c) <= 126 for c in s)
-
-
 def clean_filename(s: str) -> str:
     s = re.sub(r"[^\w\-\.]", "", s)
     return s.strip("_-.")
-
-
 def unique_path(path: str) -> str:
     base, ext = os.path.splitext(path)
     i = 2
@@ -24,8 +17,6 @@ def unique_path(path: str) -> str:
         new = f"{base}_{i}{ext}"
         i += 1
     return new
-
-
 def get_best_name(font, name_id):
     fallback = None
     for rec in font["name"].names:
@@ -40,8 +31,6 @@ def get_best_name(font, name_id):
         if is_ascii_printable(name):
             fallback = name
     return fallback
-
-
 def get_font_names(path):
     font = TTFont(path)
     family = get_best_name(font, 1)
@@ -53,8 +42,6 @@ def get_font_names(path):
     if subfamily.lower() == family.lower():
         subfamily = "Regular"
     return family, subfamily
-
-
 def main():
     if len(sys.argv) < 2:
         print("usage: font_rename.py <fontfile>")
@@ -77,7 +64,5 @@ def main():
     os.rename(fn, new_name)
     cprint(f"{fn} -> {new_name}", "green")
     return 0
-
-
 if __name__ == "__main__":
     main()

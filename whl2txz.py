@@ -3,11 +3,8 @@ import tarfile
 import zipfile
 from pathlib import Path
 from sys import argv
-
 from dh import unique_path
 from fastwalk import walk_files
-
-
 def whl_to_tar_xz(whl_path: Path):
     target = whl_path.with_suffix(".tar.xz")
     if target.exists():
@@ -27,8 +24,6 @@ def whl_to_tar_xz(whl_path: Path):
         whl_path.unlink()
     except Exception as e:
         print(f"[ERROR] {whl_path.name}: {e}")
-
-
 def tar_xz_to_whl(tar_path: Path):
     target = tar_path.with_suffix(".whl")
     tt = str(target).replace(".tar", "")
@@ -53,8 +48,6 @@ def tar_xz_to_whl(tar_path: Path):
         tar_path.unlink()
     except Exception as e:
         print(f"[ERROR] {tar_path.name}: {e}")
-
-
 def main():
     mode = argv[1]
     dir = Path().cwd()
@@ -64,7 +57,5 @@ def main():
             whl_to_tar_xz(path)
         elif mode == "2" and ".tar.xz" in path.name:
             tar_xz_to_whl(path)
-
-
 if __name__ == "__main__":
     main()

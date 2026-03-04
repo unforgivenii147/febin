@@ -1,16 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import pathlib
 import sys
-
 import cv2
 import pytesseract
 from PIL import Image
 from termcolor import cprint
-
 video = sys.argv[1]
 txtfile = pathlib.Path(video).with_suffix(".txt")
-
-
 def process_frame(frame_id, frame):
     frame = cv2.resize(frame,
                        None,
@@ -27,8 +23,6 @@ def process_frame(frame_id, frame):
         txtfile.open("a", encoding="utf-8").write(text + "\n")
     else:
         cprint(f"frame {frame_id} --> no text", "blue")
-
-
 def main():
     cap = cv2.VideoCapture(video)
     frame_id = 0
@@ -38,7 +32,5 @@ def main():
             break
         process_frame(frame_id, frame)
         frame_id += 1
-
-
 if __name__ == "__main__":
     main()

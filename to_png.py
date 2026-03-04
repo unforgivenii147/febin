@@ -1,11 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
-
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-
 import dh
-
 try:
     import cv2
     import numpy as np
@@ -21,8 +18,6 @@ IGNORED_DIRS = {
     ".venv",
     "node_modules",
 }
-
-
 def convert_file(file_path: str) -> bool:
     path = Path(file_path)
     if not path.is_file() or path.suffix.lower() not in dh.IMG_EXT:
@@ -91,8 +86,6 @@ def convert_file(file_path: str) -> bool:
     except Exception as e:
         print(f"Error converting '{path.name}': {e}")
         return False
-
-
 def main() -> None:
     start_size = dh.get_size(".")
     files = [
@@ -113,7 +106,5 @@ def main() -> None:
         print(f"size reduced: - {dh.format_size(abs(result))} ")
     else:
         print(f"size increased: + {dh.format_size(abs(result))} ")
-
-
 if __name__ == "__main__":
     main()

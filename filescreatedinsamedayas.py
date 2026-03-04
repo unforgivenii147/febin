@@ -5,8 +5,6 @@ Simpler version - finds files in the same directory created on the same day as i
 import os
 import sys
 from datetime import datetime
-
-
 def get_file_creation_time(filepath):
     """Get creation/modification time of a file."""
     try:
@@ -18,8 +16,6 @@ def get_file_creation_time(filepath):
     except Exception as e:
         print(f"Error: {e}")
         return None
-
-
 def main():
     if len(sys.argv) != 2:
         print("Usage: python script.py <filename>")
@@ -53,7 +49,5 @@ def main():
             f"Found {len(found_files)} other file(s) created on the same day:")
         for file_time, file in found_files:
             print(f"{file_time.strftime('%H:%M:%S')} - {file}")
-
-
 if __name__ == "__main__":
     main()

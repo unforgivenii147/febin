@@ -4,11 +4,9 @@ import os
 import sys
 from multiprocessing import Pool
 from pathlib import Path
-
 import tree_sitter_python as tspython
 from dh import format_size, get_size
 from tree_sitter import Language, Parser, Query, QueryCursor
-
 QUERY_STRING = """
 (comment) @comment
 (block
@@ -18,15 +16,11 @@ QUERY_STRING = """
   . (expression_statement
     (string)) @docstring)
 """
-
-
 class TSRemover:
-
     def __init__(self):
         self.language = Language(tspython.language())
         self.parser = Parser(self.language)
         self.query = Query(self.language, QUERY_STRING)
-
     def remove_comments(self, source: str):
         source_bytes = source.encode("utf-8")
         tree = self.parser.parse(source_bytes)
@@ -63,7 +57,6 @@ class TSRemover:
         cleaned = new_source.decode("utf-8")
         cleaned = self._cleanup_blank_lines(cleaned)
         return cleaned, comment_count, docstring_count
-
     @staticmethod
     def _cleanup_blank_lines(text: str) -> str:
         lines = text.splitlines()
@@ -78,8 +71,6 @@ class TSRemover:
                 blank_streak = 0
                 cleaned.append(line.rstrip())
         return "\n".join(cleaned) + "\n"
-
-
 def process_file(fp):
     file_path = Path(fp)
     ts_rmc = TSRemover()
@@ -97,8 +88,6 @@ def process_file(fp):
         fp.write_text(result, encoding="utf-8")
     except:
         print(f"{file_path.name} : invalid code")
-
-
 def main():
     init_size = get_size(".")
     args = sys.argv[1:]
@@ -120,7 +109,5 @@ def main():
     diff_size = init_size - get_size(".")
     if diff_size != 0:
         print(format_size(diff_size))
-
-
 if __name__ == "__main__":
     main()

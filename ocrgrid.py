@@ -1,28 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
-
 import argparse
 import json
 from pathlib import Path
-
 import cv2
 import numpy as np
 import pytesseract
 from PIL import Image
-
-
 def pil_to_cv(img: Image.Image) -> np.ndarray:
     return cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
-
-
 def cv_to_pil(img: np.ndarray) -> Image.Image:
     return Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-
-
 def to_grayscale(img: np.ndarray) -> np.ndarray:
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-
 def rescale(img: np.ndarray, scale: float = 2.0) -> np.ndarray:
     h, w = img.shape[:2]
     return cv2.resize(
@@ -30,8 +20,6 @@ def rescale(img: np.ndarray, scale: float = 2.0) -> np.ndarray:
         (int(w * scale), int(h * scale)),
         interpolation=cv2.INTER_CUBIC,
     )
-
-
 def deskew(img: np.ndarray) -> np.ndarray:
     gray = to_grayscale(img)
     coords = np.column_stack(np.where(gray > 0))
@@ -47,15 +35,11 @@ def deskew(img: np.ndarray) -> np.ndarray:
         flags=cv2.INTER_CUBIC,
         borderMode=cv2.BORDER_REPLICATE,
     )
-
-
 def rotate(img: np.ndarray, angle: int) -> np.ndarray:
     h, w = img.shape[:2]
     center = (w // 2, h // 2)
     m = cv2.getRotationMatrix2D(center, angle, 1.0)
     return cv2.warpAffine(img, m, (w, h), flags=cv2.INTER_CUBIC)
-
-
 def run_tesseract(
     img: Image.Image,
     psm: int,
@@ -71,8 +55,6 @@ def run_tesseract(
         "config": config,
         "text": text,
     }
-
-
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("fname", type=Path)
@@ -136,7 +118,5 @@ def main() -> None:
         json.dumps(report_index, indent=2),
         encoding="utf-8",
     )
-
-
 if __name__ == "__main__":
     main()

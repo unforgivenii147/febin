@@ -2,11 +2,8 @@
 import os
 from multiprocessing import Pool
 from pathlib import Path
-
 import pdfplumber
 from termcolor import cprint
-
-
 def process_file(fp):
     i = 1
     with pdfplumber.open(fp) as pdf:
@@ -37,8 +34,6 @@ def process_file(fp):
     del i
     del text
     del pages
-
-
 def main():
     files = []
     for file in os.listdir("."):
@@ -55,7 +50,5 @@ def main():
     del pool
     del files
     return
-
-
 if __name__ == "__main__":
     main()

@@ -2,9 +2,7 @@
 import argparse
 import sys
 from pathlib import Path
-
 from deep_translator import GoogleTranslator, single_detection
-
 CHUNK_SIZE = 2000
 ALLOWED_EXT = {
     ".txt",
@@ -13,12 +11,8 @@ ALLOWED_EXT = {
     ".json",
     ".py",
 }
-
-
 def translator():
     return GoogleTranslator(source="zh-CN", target="en")
-
-
 def translate_text_chunked(text: str) -> str:
     chunks = [text[i:i + CHUNK_SIZE] for i in range(0, len(text), CHUNK_SIZE)]
     out = []
@@ -26,8 +20,6 @@ def translate_text_chunked(text: str) -> str:
     for c in chunks:
         out.append(t.translate(c))
     return "".join(out)
-
-
 def translate_python_file(content: str) -> str:
     lines = content.splitlines(keepends=True)
     out = []
@@ -69,12 +61,8 @@ def translate_python_file(content: str) -> str:
         else:
             out.append(line)
     return "".join(out)
-
-
 def translate_text_file(content: str) -> str:
     return translate_text_chunked(content)
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Translate zh-CNpanese → English safely.")
@@ -99,7 +87,5 @@ def main() -> None:
     out_path = in_path.with_name(f"{in_path.stem}_eng{ext}")
     out_path.write_text(translated, encoding="utf-8")
     print(f"Translated ({src_lang} → en): {out_path}")
-
-
 if __name__ == "__main__":
     main()

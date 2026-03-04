@@ -2,12 +2,9 @@
 import os
 import shutil
 import sys
-
 import markdown
 import regex as re
 from bs4 import BeautifulSoup
-
-
 def modify_classes(html_content):
     soup = BeautifulSoup(html_content, "html.parser")
     tag_class_map = {
@@ -29,8 +26,6 @@ def modify_classes(html_content):
             combined_classes = list(set(existing_classes + new_classes))
             element["class"] = combined_classes
     return str(soup)
-
-
 def convert_latex_format(text):
     text = re.sub(
         r"\\\[(.*?)\\\]",
@@ -44,8 +39,6 @@ def convert_latex_format(text):
         text,
         flags=re.DOTALL,
     )
-
-
 def read_markdown_file(file_path):
     with open(
             file_path,
@@ -53,8 +46,6 @@ def read_markdown_file(file_path):
             errors="ignore",
     ) as f:
         return f.read()
-
-
 def convert_markdown(md_path: str) -> str:
     if not md_path:
         raise ValueError(
@@ -104,8 +95,6 @@ def convert_markdown(md_path: str) -> str:
         f.write(html_template)
     shutil.copy(temp_html_path, final_output_path)
     return final_output_path
-
-
 if __name__ == "__main__":
     md_path = sys.argv[1]
     output_path = convert_markdown(md_path)

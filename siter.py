@@ -9,16 +9,12 @@ import sys
 import tempfile
 import zipfile
 from pathlib import Path
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s: %(message)s",
 )
 log = logging.getLogger(__name__)
-
-
 class WheelBuilder:
-
     def __init__(
         self,
         site_packages: Path,
@@ -30,7 +26,6 @@ class WheelBuilder:
         self.venv_root = self._find_venv_root()
         self.bin_dir = self._find_bin_dir()
         self.share_dir = self.venv_root / "share" if self.venv_root else None
-
     def _find_venv_root(self) -> Path | None:
         current = self.site_packages
         for _ in range(5):
@@ -42,7 +37,6 @@ class WheelBuilder:
                 return current
             current = current.parent
         return None
-
     def _find_bin_dir(self) -> Path | None:
         return Path("/data/data/com.termux/files/usr/bin")
         if not self.venv_root:
@@ -52,7 +46,6 @@ class WheelBuilder:
             if d.exists():
                 return d
         return Path("/data/data/com.termux/files/usr/bin")
-
     def _compute_hash(self, path: Path) -> str:
         h = hashlib.sha256()
         with open(path, "rb") as f:
@@ -60,7 +53,6 @@ class WheelBuilder:
                 h.update(chunk)
         digest = h.digest()
         return f"sha256={base64.urlsafe_b64encode(digest).decode().rstrip('=')} "
-
     def _read_record(self, dist_info: Path) -> dict[str, dict]:
         record_file = dist_info / "RECORD"
         if not record_file.exists():
@@ -81,13 +73,11 @@ class WheelBuilder:
                     "size": (row[2] if len(row) > 2 else ""),
                 }
         return records
-
     def _read_installer(self, dist_info: Path) -> str:
         installer_file = dist_info / "INSTALLER"
         if installer_file.exists():
             return installer_file.read_text().strip()
         return "unknown"
-
     def _find_scripts_for_package(self, package_name: str,
                                   records: dict) -> list[Path]:
         if not self.bin_dir or not self.bin_dir.exists():
@@ -119,7 +109,6 @@ class WheelBuilder:
                 if exe_path.exists():
                     scripts.append(exe_path)
         return scripts
-
     def _find_data_for_package(self, package_name: str,
                                records: dict) -> list[tuple[Path, str]]:
         if not self.share_dir or not self.share_dir.exists():
@@ -136,7 +125,6 @@ class WheelBuilder:
                 except ValueError:
                     pass
         return data_files
-
     def _get_wheel_tags(self, ) -> tuple[str, str, str, bool]:
         try:
             from packaging.tags import sys_tags
@@ -161,11 +149,9 @@ class WheelBuilder:
                 platform_tag,
                 False,
             )
-
     def _detect_purity(self, records: dict) -> bool:
         return all(not path.endswith((".so", ".pyd", ".dll"))
                    for path in records)
-
     def build_wheel(self, dist_info_dir: Path) -> Path | None:
         if not dist_info_dir.is_dir():
             return None
@@ -305,7 +291,6 @@ class WheelBuilder:
                         whl.write(file, arcname)
         log.info(f"  Created: {wheel_path.name}")
         return wheel_path
-
     def build_all(self) -> int:
         dist_infos = sorted(self.site_packages.glob("*.dist-info"))
         if not dist_infos:
@@ -327,8 +312,6 @@ class WheelBuilder:
         log.info(
             f"\nBuilt {built}/{len(dist_infos)} wheels in {self.output_dir}")
         return built
-
-
 def find_site_packages() -> list[Path]:
     candidates = []
     import site
@@ -349,8 +332,6 @@ def find_site_packages() -> list[Path]:
                     if sp.is_dir() and sp not in candidates:
                         candidates.append(sp)
     return sorted(set(candidates))
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Build proper wheel files from installed packages",
@@ -450,7 +431,5 @@ Examples:
     else:
         built = builder.build_all()
         return 0 if built > 0 else 1
-
-
 if __name__ == "__main__":
     sys.exit(main())

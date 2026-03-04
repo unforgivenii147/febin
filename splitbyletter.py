@@ -2,8 +2,6 @@
 import os
 import string
 import sys
-
-
 def main():
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} <filename>")
@@ -30,7 +28,5 @@ def main():
     finally:
         for f in files.values():
             f.close()
-
-
 if __name__ == "__main__":
     main()

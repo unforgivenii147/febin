@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import subprocess
 from pathlib import Path
-
 from fastwalk import walk_files
-
-
 def validate_cpp(path: Path) -> tuple[bool, str]:
     proc = subprocess.run(
         ["clang++", "-fsyntax-only", str(path)],
@@ -14,8 +11,6 @@ def validate_cpp(path: Path) -> tuple[bool, str]:
     if proc.returncode == 0:
         return True, ""
     return False, proc.stderr
-
-
 if __name__ == "__main__":
     dir = Path().cwd()
     for pth in walk_files(dir):

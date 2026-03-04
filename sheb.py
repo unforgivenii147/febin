@@ -1,9 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-
 TARGET_SHEBANG = "#!/data/data/com.termux/files/usr/bin/env python"
-
-
 def is_python_file(filepath):
     if os.path.getsize(filepath) == 0 or filepath.endswith("__init__.py"):
         return False
@@ -26,8 +23,6 @@ def is_python_file(filepath):
             return False
     except (OSError, UnicodeDecodeError):
         return False
-
-
 def process_file(filepath):
     with open(filepath, "r+") as f:
         lines = f.readlines()
@@ -53,8 +48,6 @@ def process_file(filepath):
         print(f"{os.path.relpath(filepath)} updated.")
     if "bin" in filepath.split(os.sep):
         os.chmod(filepath, 0o755)
-
-
 def traverse_directory(directory):
     for root, _, files in os.walk(directory):
         for filename in files:
@@ -63,7 +56,5 @@ def traverse_directory(directory):
                 continue
             if is_python_file(filepath):
                 process_file(filepath)
-
-
 if __name__ == "__main__":
     traverse_directory(os.getcwd())

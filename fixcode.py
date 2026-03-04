@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
 from pathlib import Path
-
 import regex as re
-
 INDENT = " " * 4
 DEF_CLASS = re.compile(r"^\s*(def|class)\s+")
 MAIN_GUARD = re.compile(r"""^\s*if\s+__name__\s*==\s*['"]__main__['"]\s*:""")
@@ -24,8 +22,6 @@ BLOCK_START = re.compile(
     """,
     re.VERBOSE,
 )
-
-
 def is_code_line(line: str) -> bool:
     s = line.strip()
     if not s:
@@ -48,8 +44,6 @@ def is_code_line(line: str) -> bool:
         "@",
         "#",
     )) or "=" in s or "(" in s or s.endswith(":"))
-
-
 def clean_text(text: str) -> str:
     out = []
     indent_level = 0
@@ -90,8 +84,6 @@ def clean_text(text: str) -> str:
             continue
         out.append(INDENT * indent_level + stripped)
     return "\n".join(out)
-
-
 def ast_validate(code: str, ) -> tuple[bool, str | None]:
     try:
         ast.parse(code)
@@ -101,8 +93,6 @@ def ast_validate(code: str, ) -> tuple[bool, str | None]:
             False,
             f"{e.msg} (line {e.lineno}, col {e.offset})",
         )
-
-
 def main():
     import sys
     src = Path(sys.argv[1])
@@ -117,7 +107,5 @@ def main():
         print("✘ AST validation failed")
         print(err)
         print("Wrote for inspection")
-
-
 if __name__ == "__main__":
     main()

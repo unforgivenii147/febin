@@ -6,12 +6,9 @@ Shows results in real-time as each package is checked.
 import json
 import sys
 import time
-
 import requests
 from dh import get_installed_packages
 from packaging.version import InvalidVersion, Version
-
-
 def check_package_on_pypi(package_name: str,
                           current_version: str) -> str | None:
     """Check the latest version of a package on PyPI."""
@@ -35,8 +32,6 @@ def check_package_on_pypi(package_name: str,
     except (KeyError, json.JSONDecodeError) as e:
         print(f"  ⚠️  Error parsing response for {package_name}: {e}")
         return None
-
-
 def compare_versions(current: str, latest: str) -> str:
     """Compare two version strings."""
     try:
@@ -56,14 +51,10 @@ def compare_versions(current: str, latest: str) -> str:
             return "update"
         else:
             return "newer"
-
-
 def is_venv() -> bool:
     """Check if running in a virtual environment."""
     return hasattr(sys, "real_prefix") or (hasattr(sys, "base_prefix")
                                            and sys.base_prefix != sys.prefix)
-
-
 def main():
     """Main function to check packages one by one."""
     # Check if running in virtual environment
@@ -143,8 +134,6 @@ def main():
         )
         print("\n💡 To upgrade a specific package, run:")
         print("   python -m pip install --upgrade <package-name>")
-
-
 if __name__ == "__main__":
     try:
         main()

@@ -9,7 +9,6 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-
 try:
     from tree_sitter import Language, Parser
 except ImportError:
@@ -17,17 +16,13 @@ except ImportError:
         "Error: tree-sitter not installed. Install with: pip install tree-sitter"
     )
     sys.exit(1)
-
-
 class BashCommentRemover:
-
     def __init__(self):
         # Try to find or build the bash grammar
         self.parser = self._setup_parser()
         if not self.parser:
             print("Error: Failed to setup tree-sitter bash grammar")
             sys.exit(1)
-
     def _setup_parser(self) -> Parser | None:
         """Setup tree-sitter parser with bash grammar."""
         try:
@@ -81,7 +76,6 @@ class BashCommentRemover:
         except Exception as e:
             print(f"Error setting up parser: {e}")
             return None
-
     def remove_comments(self, content: str) -> tuple[str, bool]:
         """
         Remove comments from bash script content.
@@ -92,13 +86,11 @@ class BashCommentRemover:
             root_node = tree.root_node
             # Collect comment nodes to remove
             comments_to_remove = []
-
             def collect_comments(node):
                 if node.type == "comment":
                     comments_to_remove.append(node)
                 for child in node.children:
                     collect_comments(child)
-
             collect_comments(root_node)
             if not comments_to_remove:
                 return content, False
@@ -137,7 +129,6 @@ class BashCommentRemover:
         except Exception as e:
             print(f"Error processing content: {e}")
             return content, False
-
     def validate_syntax(self, content: str) -> bool:
         """Validate bash script syntax using tree-sitter or shfmt."""
         # Try using tree-sitter first
@@ -170,7 +161,6 @@ class BashCommentRemover:
                 return not tree.root_node.has_error
             except:
                 return False
-
     def process_file(self,
                      filepath: Path,
                      dry_run: bool = False) -> tuple[bool, int, int]:
@@ -216,7 +206,6 @@ class BashCommentRemover:
         except Exception as e:
             print(f"  ✗ Error processing {filepath}: {e}")
             return False, 0, 0
-
     def process_path(self,
                      path: Path,
                      recursive: bool = False,
@@ -266,8 +255,6 @@ class BashCommentRemover:
                 f"Error: {path} is a directory. Use --recursive to process directories."
             )
         return success_count, total_original, total_new
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Remove comments from bash files using tree-sitter")
@@ -332,7 +319,5 @@ def main():
         )
     else:
         print("\nNo files were processed successfully.")
-
-
 if __name__ == "__main__":
     main()

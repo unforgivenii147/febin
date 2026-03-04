@@ -21,9 +21,7 @@ Result:
 import argparse
 import shutil
 from pathlib import Path
-
 import regex as re
-
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
 IMPORT_RE = re.compile(
     r"@import\s+url\([^)]+fonts\.googleapis[^)]+\);?",
@@ -46,8 +44,6 @@ IMG_EXTS = {
     ".svg",
     ".webp",
 }
-
-
 def detect_family(filename: str):
     n = filename.lower()
     if "roboto" in n:
@@ -59,8 +55,6 @@ def detect_family(filename: str):
     if "fa" in n or "fontawesome" in n:
         return "fa"
     return None
-
-
 def copy_asset(src, assets_dir):
     src = Path(src)
     if not src.exists():
@@ -76,10 +70,7 @@ def copy_asset(src, assets_dir):
     if not dest.exists():
         shutil.copy2(src, dest)
     return dest
-
-
 def rewrite_urls(css_text, css_dir, assets_dir):
-
     def repl(match):
         url = match.group(2).strip().strip("\"'")
         if url.startswith("http"):
@@ -95,10 +86,7 @@ def rewrite_urls(css_text, css_dir, assets_dir):
             rel = copied.relative_to(assets_dir.parent)
             return f'url("{rel}")'
         return match.group(0)
-
     return URL_RE.sub(repl, css_text)
-
-
 def deduplicate_rules(css_text):
     rules = {}
     order = []
@@ -111,14 +99,10 @@ def deduplicate_rules(css_text):
     for sel in order:
         merged.append(f"{sel} {{\n{rules[sel]}\n}}")
     return "\n\n".join(merged)
-
-
 def process_css(file, assets_dir):
     text = file.read_text(errors="ignore")
     text = IMPORT_RE.sub("", text)
     return rewrite_urls(text, file.parent, assets_dir)
-
-
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("files", nargs="*")
@@ -142,7 +126,5 @@ def main():
     print("Bundle complete.")
     print("CSS:", args.output)
     print("Assets:", assets_dir)
-
-
 if __name__ == "__main__":
     main()

@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from sys import argv
-
-
 def main():
     nl = ""
     with open(argv[1]) as f:
@@ -11,7 +9,5 @@ def main():
                 nl += line.strip("\n")
     with open(argv[1], "w") as fo:
         fo.write(nl + "\n")
-
-
 if __name__ == "__main__":
     main()

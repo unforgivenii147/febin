@@ -4,11 +4,8 @@ from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
 from time import perf_counter
-
 import pdfplumber
 from fastwalk import walk_files
-
-
 def process_file(fp):
     fp = Path(fp)
     if fp.exists() and not fp.is_symlink():
@@ -27,8 +24,6 @@ def process_file(fp):
             else:
                 print(f"{np.name} exists.")
     return
-
-
 def main():
     start = perf_counter()
     files = []
@@ -39,7 +34,5 @@ def main():
     with Pool(8) as pool:
         pool.imap_unordered(process_file, files)
     print(f"{perf_counter() - start} sec")
-
-
 if __name__ == "__main__":
     exit(main())

@@ -2,16 +2,11 @@
 import shutil
 import subprocess
 from pathlib import Path
-
 ERROR_DIR = Path("error")
 OK_DIR = Path("ok")
-
-
 def ensure_dirs():
     ERROR_DIR.mkdir(exist_ok=True)
     OK_DIR.mkdir(exist_ok=True)
-
-
 def unique_destination(dest: Path) -> Path:
     if not dest.exists():
         return dest
@@ -24,16 +19,12 @@ def unique_destination(dest: Path) -> Path:
         if not new_dest.exists():
             return new_dest
         counter += 1
-
-
 def black_check(file_path: Path) -> bool:
     result = subprocess.run(
         ["black", "--check", str(file_path)],
         capture_output=True,
     )
     return result.returncode == 0
-
-
 def main():
     ensure_dirs()
     for py_file in Path(".").glob("*.py"):
@@ -47,7 +38,5 @@ def main():
             dest = unique_destination(ERROR_DIR / py_file.name)
             print(f"  ✗ ERROR → {dest}")
         shutil.move(str(py_file), str(dest))
-
-
 if __name__ == "__main__":
     main()

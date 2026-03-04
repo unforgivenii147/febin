@@ -9,19 +9,14 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-
 from dotenv import load_dotenv
-
-
 class GitHubRepoCreator:
-
     def __init__(self):
         self.current_dir = Path.cwd()
         self.repo_name = self.current_dir.name
         self.env_file = Path.home() / ".env"
         self.github_token = self._load_github_token()
         self.github_username = self._get_github_username()
-
     def _load_github_token(self) -> str:
         """Load GitHub token from ~/.env file"""
         print(f"🔑 Loading GitHub token from {self.env_file}")
@@ -40,7 +35,6 @@ class GitHubRepoCreator:
             print(f"❌ .env file not found at {self.env_file}")
             print("Please create ~/.env with: GITHUB_TOKEN=your_token_here")
             sys.exit(1)
-
     def _get_github_username(self) -> str:
         """Get GitHub username from git config or token"""
         # Try to get from git config first
@@ -77,7 +71,6 @@ class GitHubRepoCreator:
             "Please set it manually: git config --global user.name 'your_username'"
         )
         sys.exit(1)
-
     def _run_cmd(self,
                  cmd: list,
                  cwd: Path | None = None) -> tuple[bool, str, str]:
@@ -92,7 +85,6 @@ class GitHubRepoCreator:
                     result.stderr.strip())
         except Exception as e:
             return False, "", str(e)
-
     def _check_prerequisites(self):
         """Check if all required tools are available"""
         print("\n🔍 Checking prerequisites...")
@@ -113,7 +105,6 @@ class GitHubRepoCreator:
             print("Install it: pip install python-dotenv")
             sys.exit(1)
         print("✅ All prerequisites satisfied")
-
     def _initialize_git(self):
         """Initialize git repository if needed"""
         print(f"\n📁 Initializing git repository: {self.repo_name}")
@@ -139,7 +130,6 @@ class GitHubRepoCreator:
             print(f"❌ Failed to create main branch: {stderr}")
             sys.exit(1)
         print("✅ Git repository initialized")
-
     def _setup_gitignore(self):
         """Copy .gitignore from home if it exists"""
         home_gitignore = Path.home() / ".gitignore"
@@ -152,7 +142,6 @@ class GitHubRepoCreator:
                 print("✅ .gitignore copied")
             except Exception as e:
                 print(f"⚠️  Could not copy .gitignore: {e}")
-
     def _check_repo_exists(self) -> bool:
         """Check if repository already exists on GitHub"""
         cmd = [
@@ -168,7 +157,6 @@ class GitHubRepoCreator:
         ]
         success, status_code, _ = self._run_cmd(cmd)
         return bool(success and status_code == "200")
-
     def _create_github_repo(self) -> bool:
         """Create repository on GitHub using API"""
         print(
@@ -240,7 +228,6 @@ class GitHubRepoCreator:
         except Exception as e:
             print(f"❌ Error creating repository: {e}")
             sys.exit(1)
-
     def _setup_remote(self):
         """Add or update remote origin"""
         print("\n🔗 Configuring remote...")
@@ -264,7 +251,6 @@ class GitHubRepoCreator:
                 print("✅ Remote origin added")
             else:
                 print(f"⚠️  Could not add remote: {stderr}")
-
     def _commit_changes(self):
         """Commit all changes"""
         print("\n💾 Committing changes...")
@@ -287,7 +273,6 @@ class GitHubRepoCreator:
             sys.exit(1)
         print("✅ Changes committed")
         return True
-
     def _push_to_github(self):
         """Push to GitHub using token for authentication"""
         print("\n🚀 Pushing to GitHub...")
@@ -313,7 +298,6 @@ class GitHubRepoCreator:
             )
             sys.exit(1)
         print("✅ Successfully pushed to GitHub")
-
     def run(self):
         """Main execution flow"""
         # Print header
@@ -342,8 +326,6 @@ class GitHubRepoCreator:
             print("=" * 60)
         else:
             print("\n⚠️  Operation cancelled")
-
-
 def main():
     try:
         creator = GitHubRepoCreator()
@@ -356,7 +338,5 @@ def main():
         import traceback
         traceback.print_exc()
         sys.exit(1)
-
-
 if __name__ == "__main__":
     main()

@@ -7,21 +7,16 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-
 try:
     from tqdm import tqdm
 except ImportError:
     print("Error: tqdm is required. Install it with: pip install tqdm")
     sys.exit(1)
-
-
 def find_dist_info_dirs(site_packages: Path, ) -> list[Path]:
     dist_dirs = []
     dist_dirs.extend(site_packages.glob("*.dist-info"))
     dist_dirs.extend(site_packages.glob("*.egg-info"))
     return sorted(dist_dirs)
-
-
 def get_package_name_version(dist_dir: Path, ) -> tuple:
     name = dist_dir.name
     if name.endswith(".dist-info"):
@@ -32,8 +27,6 @@ def get_package_name_version(dist_dir: Path, ) -> tuple:
     if len(parts) == 2:
         return parts[0], parts[1]
     return parts[0], "0.0.0"
-
-
 def read_record_file(dist_dir: Path,
                      site_packages: Path) -> tuple[list[Path], set[Path]]:
     record_file = dist_dir / "RECORD"
@@ -60,8 +53,6 @@ def read_record_file(dist_dir: Path,
             else:
                 missing_files.add(full_path)
     return existing_files, missing_files
-
-
 def get_wheel_tag(dist_dir: Path, ) -> str | None:
     wheel_file = dist_dir / "WHEEL"
     if not wheel_file.exists():
@@ -71,8 +62,6 @@ def get_wheel_tag(dist_dir: Path, ) -> str | None:
             if line.startswith("Tag:"):
                 return line.split(":", 1)[1].strip()
     return None
-
-
 def copy_files_to_temp(
     files: list[Path],
     site_packages: Path,
@@ -93,8 +82,6 @@ def copy_files_to_temp(
                 dest_path,
                 dirs_exist_ok=True,
             )
-
-
 def create_wheel(
     pkg_name: str,
     pkg_version: str,
@@ -140,8 +127,6 @@ def create_wheel(
     except Exception as e:
         print(f"Error creating wheel: {e}")
         return False
-
-
 def repack_package(
     dist_dir: Path,
     site_packages: Path,
@@ -182,8 +167,6 @@ def repack_package(
             output_dir,
             wheel_tag,
         )
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Repack installed Python packages as wheels")
@@ -248,7 +231,5 @@ def main():
     print(f"\nWheels saved to: {output_dir}")
     if failed_count > 0:
         print(f"Failed packages copied to: {not_repacked_dir}")
-
-
 if __name__ == "__main__":
     main()

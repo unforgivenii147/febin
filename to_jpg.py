@@ -1,12 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
-
 import argparse
 from multiprocessing import Pool
 from pathlib import Path
-
 from dh import format_size, get_size, is_image, unique_path
-
 try:
     import cv2
     import numpy as np
@@ -17,8 +14,6 @@ except ImportError:
 IGNORED_DIRS = {
     ".git",
 }
-
-
 def convert_file(file_path: str) -> bool:
     path = Path(file_path)
     if not path.is_file():
@@ -84,8 +79,6 @@ def convert_file(file_path: str) -> bool:
     except Exception as e:
         print(f"Error converting '{path.name}': {e}")
         return False
-
-
 def main() -> None:
     p = argparse.ArgumentParser(description="jpg")
     p.add_argument("files", nargs="*")
@@ -111,7 +104,5 @@ def main() -> None:
     pool.join()
     end_size = get_size(".")
     print(f"{format_size(abs(end_size - start_size))}")
-
-
 if __name__ == "__main__":
     main()

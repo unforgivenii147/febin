@@ -1,24 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import colorsys
 import sys
-
 import regex as re
-
 HEX_RE = re.compile(r"^#([0-9a-fA-F]{6})$")
-
-
 def hex_to_hsv(hex_color: str):
     r = int(hex_color[1:3], 16) / 255
     g = int(hex_color[3:5], 16) / 255
     b = int(hex_color[5:7], 16) / 255
     return colorsys.rgb_to_hsv(r, g, b)
-
-
 def sort_key(color: str):
     h, s, v = hex_to_hsv(color)
     return (h, s, v)
-
-
 def main(path: str):
     with open(path, encoding="utf-8") as f:
         colors = [line.strip() for line in f if HEX_RE.match(line.strip())]
@@ -26,8 +18,6 @@ def main(path: str):
     with open(path, "w", encoding="utf-8") as f:
         for c in colors:
             f.write(c.lower() + "\n")
-
-
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: sort_colors.py colors.txt")

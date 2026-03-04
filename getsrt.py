@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 import subprocess
-
-
 def extract_subtitles(input_file, output_file=None, subtitle_index=0):
     """
     Extract subtitles from an MKV file using FFmpeg.
@@ -28,6 +26,4 @@ def extract_subtitles(input_file, output_file=None, subtitle_index=0):
         print(f"Subtitles extracted to: {output_file}")
     except subprocess.CalledProcessError as e:
         print(f"Error extracting subtitles: {e}")
-
-
 extract_subtitles("your_movie.mkv")

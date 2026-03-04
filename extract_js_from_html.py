@@ -5,13 +5,10 @@ import string
 from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
-
 import dh
 from bs4 import BeautifulSoup
 from fastwalk import walk_files
 from termcolor import cprint
-
-
 def save_script(str1):
     fn = "js/"
     if not os.path.exists("js"):
@@ -27,8 +24,6 @@ def save_script(str1):
             f.write("\n".join(list(str1)))
         cprint(f"{[fn]} created.", "cyan")
     return True
-
-
 def process_file(fp):
     with open(fp, encoding="utf-8") as file:
         html_content = file.read()
@@ -42,8 +37,6 @@ def process_file(fp):
         for script in scripts:
             save_script(script.contents)
     return True
-
-
 def main():
     files = []
     dir = Path.cwd()
@@ -58,7 +51,5 @@ def main():
     pool.join()
     end = dh.get_size(dir)
     print(f"{dh.format_size(end - start)}")
-
-
 if __name__ == "__main__":
     exit(main())

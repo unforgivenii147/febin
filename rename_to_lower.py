@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
-
-
 def to_lowercase(path):
     path = Path(path)
     for item in path.rglob("*"):
@@ -17,8 +15,6 @@ def to_lowercase(path):
                 #                new_path=unique_path(new_path)
                 #                item.rename(new_path)
                 print(f"[{item.name}] already lowercase")
-
-
 if __name__ == "__main__":
     current_dir = Path.cwd()
     print(

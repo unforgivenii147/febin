@@ -2,25 +2,17 @@
 import argparse
 import sys
 from pathlib import Path
-
 import ffmpeg
 import regex as re
-
 TIME_PATTERN = re.compile(r"^\d{2}:\d{2}:\d{2}$")
-
-
 def validate_time(value: str) -> str:
     if not TIME_PATTERN.match(value):
         raise argparse.ArgumentTypeError(
             "Time must be in HH:MM:SS format (e.g. 00:10:00)")
     return value
-
-
 def hhmmss_to_seconds(t: str) -> int:
     h, m, s = map(int, t.split(":"))
     return h * 3600 + m * 60 + s
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Trim a video using ffmpeg-python (stream copy)")
@@ -62,7 +54,5 @@ def main():
     except:
         print("FFmpeg error:")
         sys.exit(1)
-
-
 if __name__ == "__main__":
     main()

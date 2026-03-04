@@ -2,16 +2,12 @@
 import pathlib
 import sys
 from multiprocessing import Process, Queue, cpu_count
-
 import cv2
 import pytesseract
 from PIL import Image
 from termcolor import cprint
-
 video = sys.argv[1]
 txtfile = pathlib.Path(video).with_suffix(".txt")
-
-
 def ocr_worker(q_in: Queue, q_out: Queue):
     while True:
         item = q_in.get()
@@ -34,8 +30,6 @@ def ocr_worker(q_in: Queue, q_out: Queue):
         else:
             cprint(f"frame {frame_id} --> no text", "blue")
         q_out.put((frame_id, text))
-
-
 def main():
     cap = cv2.VideoCapture(video)
     q_in = Queue(maxsize=cpu_count())
@@ -65,7 +59,5 @@ def main():
     cap.release()
     for w in workers:
         w.join()
-
-
 if __name__ == "__main__":
     main()

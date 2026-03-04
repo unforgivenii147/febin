@@ -3,10 +3,8 @@ import argparse
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-
 from dh import format_size, get_size, run_command
 from fastwalk import walk_files
-
 MAX_IN_FLIGHT = 16
 FILE_EXTENSIONS = {
     ".js",
@@ -19,8 +17,6 @@ FILE_EXTENSIONS = {
     ".cjs",
     ".mjs",
 }
-
-
 def format_file(file_path):
     start = get_size(file_path)
     print(f"{file_path.name}", end="  ")
@@ -38,8 +34,6 @@ def format_file(file_path):
     else:
         print(f"[ERROR] {err}")
         return False
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Format files using Prettier.")
@@ -77,7 +71,5 @@ def main() -> None:
                 pending.popleft().get()
         end = get_size(".")
         print(f"{format_size(start - end)}")
-
-
 if __name__ == "__main__":
     main()

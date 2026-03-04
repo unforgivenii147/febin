@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
-
-
 def format_size(sb: float) -> str:
     if sb < 1024:
         return f"{sb:.2f} B"
@@ -11,8 +9,6 @@ def format_size(sb: float) -> str:
         return f"{sb / 1024**2:.2f} MB"
     else:
         return f"{sb / 1024**3:.2f} GB"
-
-
 def remove_pyc_files(directory):
     path = Path(directory)
     pyc_count = 0
@@ -32,8 +28,6 @@ def remove_pyc_files(directory):
     print(f".pyc removed: {pyc_count}")
     print(f"Space freed: {freed_size_str}")
     print(f"dir removed: {pycache_count}")
-
-
 if __name__ == "__main__":
     current_dir = Path.cwd()
     remove_pyc_files(current_dir)

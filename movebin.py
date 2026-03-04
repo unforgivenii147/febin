@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import shutil
 from pathlib import Path
-
 from dh import is_binary
-
-
 def main():
     current_dir = Path.cwd()
     binary_dir = current_dir / "binary"
@@ -22,7 +19,5 @@ def main():
         print("No binary files found to move.")
     else:
         print(f"Total binary files moved: {files_moved}")
-
-
 if __name__ == "__main__":
     main()

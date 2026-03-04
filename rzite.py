@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
-
 import argparse
 import base64
 import hashlib
@@ -13,16 +12,12 @@ import zipfile
 from configparser import ConfigParser
 from email.parser import Parser
 from pathlib import Path
-
-
 def prefix_path():
     p = os.environ.get("PREFIX")
     if p:
         return Path(p)
     Path(sysconfig.get_paths()["purelib"])
     return Path(os.environ.get("PREFIX", sys.base_prefix))
-
-
 def site_packages_paths(prefix):
     pyver = f"python{sys.version_info.major}.{sys.version_info.minor}"
     candidates = [prefix / "lib" / pyver / "site-packages"]
@@ -40,8 +35,6 @@ def site_packages_paths(prefix):
             seen.add(c)
             out.append(c)
     return out
-
-
 def find_distributions(site_dirs):
     dists = {}
     for sd in site_dirs:
@@ -51,8 +44,6 @@ def find_distributions(site_dirs):
                 key = p.name.rsplit(".", 1)[0].lower()
                 dists[key] = p
     return dists
-
-
 def parse_metadata_from_distinfo(distinfo_dir):
     md = {}
     for candidate in ("METADATA", "PKG-INFO"):
@@ -87,8 +78,6 @@ def parse_metadata_from_distinfo(distinfo_dir):
                 console.append(left)
         md["console_scripts"] = console
     return md
-
-
 def read_record_list(distinfo_dir):
     rec = distinfo_dir / "RECORD"
     if rec.exists():
@@ -114,8 +103,6 @@ def read_record_list(distinfo_dir):
                 encoding="utf-8", errors="ignore").splitlines() if l.strip()
         ]
     return None
-
-
 def find_script_paths(prefix, script_names):
     bin_dir = prefix / "bin"
     out = []
@@ -137,13 +124,9 @@ def find_script_paths(prefix, script_names):
                     out.append(ap)
                     break
     return out
-
-
 def safe_copy(src, dest) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     shutil.move(src, dest)
-
-
 def compute_hash_and_size(path):
     h = hashlib.sha256()
     with Path(path).open("rb") as f:
@@ -151,8 +134,6 @@ def compute_hash_and_size(path):
             h.update(chunk)
     digest = base64.urlsafe_b64encode(h.digest()).rstrip(b"=").decode("ascii")
     return "sha256=" + digest, str(path.stat().st_size)
-
-
 def detect_wheel_tags():
     impl = sys.implementation.name
     mj = sys.version_info.major
@@ -169,8 +150,6 @@ def detect_wheel_tags():
             abi_tag = "none"
     plat = sysconfig.get_platform().replace("-", "_").replace(".", "_")
     return py_tag, abi_tag, plat
-
-
 def collect_files_for_dist(distinfo_path, site_dirs, prefix):
     site_dirs[0] if site_dirs else Path()
     collected = []
@@ -255,8 +234,6 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
             seen.add(k)
             final.append((src, rel))
     return final, md
-
-
 def _has_native_extensions(tree_items) -> bool:
     native_exts = {
         ".so",
@@ -266,8 +243,6 @@ def _has_native_extensions(tree_items) -> bool:
         ".sl",
     }
     return any(src.suffix.lower() in native_exts for src, _ in tree_items)
-
-
 def build_wheel_from_tree(
     tree_items,
     dist_name,
@@ -335,8 +310,6 @@ def build_wheel_from_tree(
                 rel = full.relative_to(workdir).as_posix()
                 zf.write(full, arcname=rel)
     return wheel_out_path
-
-
 def main() -> None:
     with open("all.xtx") as f:
         lines = f.readlines()
@@ -423,7 +396,5 @@ def main() -> None:
             )
         except Exception:
             pass
-
-
 if __name__ == "__main__":
     main()

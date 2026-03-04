@@ -6,8 +6,6 @@ save found pkgs in requirements.txt in current dir
 """
 from pathlib import Path
 from sys import exit
-
-
 def process_file(fp):
     path = Path(fp)
     content = path.read_text(encoding="utf-8")
@@ -18,12 +16,8 @@ def process_file(fp):
             print(pkg_name)
             with open("requirements.txt", "a", encoding="utf-8") as f:
                 f.write(pkg_name + "\n")
-
-
 def main():
     filename = "uv.lock"
     process_file(filename)
-
-
 if __name__ == "__main__":
     exit(main())

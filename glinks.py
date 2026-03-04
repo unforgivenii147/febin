@@ -4,9 +4,7 @@ import subprocess
 import tarfile
 import zipfile
 from multiprocessing import Pool, cpu_count
-
 import regex as re
-
 OUTPUT_FILE = "/sdcard/gitlinks.txt"
 ARCHIVE_EXTENSIONS = (
     ".zip",
@@ -20,12 +18,8 @@ GIT_REGEX = re.compile(
     r'(?:https?://|git@|git://)[^\s\'"]+\b',
     re.IGNORECASE,
 )
-
-
 def extract_git_urls_from_text(text: str):
     return set(GIT_REGEX.findall(text))
-
-
 def use_strings(path):
     try:
         out = subprocess.check_output(
@@ -35,8 +29,6 @@ def use_strings(path):
         return out.decode("utf-8", errors="ignore")
     except Exception:
         return ""
-
-
 def process_regular_file(path):
     try:
         with open(path, "rb") as f:
@@ -48,8 +40,6 @@ def process_regular_file(path):
             return extract_git_urls_from_text(f.read())
     except Exception:
         return set()
-
-
 def process_zip(path):
     urls = set()
     try:
@@ -78,8 +68,6 @@ def process_zip(path):
     except Exception:
         pass
     return urls
-
-
 def process_tar(path, mode):
     urls = set()
     try:
@@ -113,8 +101,6 @@ def process_tar(path, mode):
     except Exception:
         pass
     return urls
-
-
 def process_archive(path):
     lower = path.lower()
     if lower.endswith((".zip", ".whl")):
@@ -124,8 +110,6 @@ def process_archive(path):
     elif lower.endswith((".tar.xz", ".txz")):
         return process_tar(path, "r:xz")
     return set()
-
-
 def worker(path):
     try:
         if path.lower().endswith(ARCHIVE_EXTENSIONS):
@@ -134,16 +118,12 @@ def worker(path):
             return process_regular_file(path)
     except Exception:
         return set()
-
-
 def collect_files():
     out = []
     for root, _dirs, files in os.walk("."):
         for f in files:
             out.append(os.path.join(root, f))
     return out
-
-
 def main() -> None:
     files = collect_files()
     print(f"Found {len(files)} files. Using {cpu_count()} CPU cores...")
@@ -157,7 +137,5 @@ def main() -> None:
         for url in sorted(found):
             fp.write(url + "\n")
     print(f"\nExtracted {len(found)} unique git URLs → {OUTPUT_FILE}")
-
-
 if __name__ == "__main__":
     main()

@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
-
 import nbformat
-
 INPUT = Path(sys.argv[1])
 OUTPUT = Path(INPUT).with_suffix(".py")
 nb = nbformat.read(INPUT, as_version=4)

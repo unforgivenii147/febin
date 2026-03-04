@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-
 import dh
-
 EXT = [
     ".py",
     ".h",
@@ -15,14 +13,10 @@ EXT = [
     ".h",
     ".hxx",
 ]
-
-
 def get_first_13(path: str) -> str:
     with open(path, encoding="utf-8", errors="ignore") as f:
         lines = f.readlines()
     return "".join(lines[:13])
-
-
 def main() -> None:
     output_path = "all.txt"
     collected = []
@@ -43,7 +37,5 @@ def main() -> None:
             out.write("\n\n\n")
     print(f"Unique snippets saved → {output_path}")
     print(f"Total unique blocks: {len(unique_collected)}")
-
-
 if __name__ == "__main__":
     main()

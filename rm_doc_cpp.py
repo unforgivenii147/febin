@@ -1,34 +1,25 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
-
 import regex as re
-
-
 class RegexCommentRemover:
-
     def __init__(self):
         self.pattern = re.compile(
             r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
             re.DOTALL | re.MULTILINE,
         )
-
     def remove_comments(self, source: str):
-
         def replacer(match):
             s = match.group(0)
             if s.startswith("/"):
                 return " " if "\n" not in s else "\n" * s.count("\n")
             else:
                 return s
-
         result = re.sub(self.pattern, replacer, source)
         comment_count = source.count("//") + source.count("/*")
         result_count = result.count("//") + result.count("/*")
         removed = comment_count - result_count
         return result, removed
-
-
 def process_file(file_path, remover):
     try:
         with open(file_path, encoding="utf-8", errors="ignore") as f:
@@ -56,8 +47,6 @@ def process_file(file_path, remover):
     else:
         print(f"[NO CHANGE] {file_path.name}")
         return ("nochange", file_path, 0)
-
-
 if __name__ == "__main__":
     dir_path = Path.cwd()
     files = [
@@ -81,14 +70,12 @@ if __name__ == "__main__":
     errors = [r for r in results if r[0] == "error"]
     nochg = sum(1 for r in results if r[0] == "nochange")
     total_comments = sum(r[2] for r in results if r[0] == "changed")
-
     def format_size(size):
         for unit in ["B", "KB", "MB", "GB"]:
             if size < 1024.0:
                 return f"{size:.2f} {unit}"
             size /= 1024.0
         return f"{size:.2f} TB"
-
     print(f"\n{'=' * 60}")
     print(
         f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}"

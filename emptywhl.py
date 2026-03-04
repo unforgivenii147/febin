@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import zipfile
-
-
 def is_empty_wheel(wheel_path) -> bool:
     with zipfile.ZipFile(wheel_path, "r") as z:
         dist_info_dirs = [
@@ -23,8 +21,6 @@ def is_empty_wheel(wheel_path) -> bool:
                 if not file_path.startswith(dist_info + "/"):
                     return False
     return True
-
-
 def main() -> None:
     wheels = [f for f in os.listdir(".") if f.endswith(".whl")]
     if not wheels:
@@ -34,7 +30,5 @@ def main() -> None:
         return
     for _w in empty:
         pass
-
-
 if __name__ == "__main__":
     main()

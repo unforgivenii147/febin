@@ -6,18 +6,13 @@ Recursively processes all files starting from current directory
 import os
 import shutil
 import time
-
 TIME_THRESHOLD = 8 * 60
-
-
 def get_file_age(filepath):
     """Get file age in seconds"""
     current_time = time.time()
     file_stat = os.stat(filepath)
     file_creation_time = file_stat.st_ctime
     return current_time - file_creation_time
-
-
 def move_recent_files(start_dir="."):
     """Move files created in last 5 minutes to '5min' subdirectory"""
     target_dir = os.path.join(start_dir, "5min")
@@ -59,8 +54,6 @@ def move_recent_files(start_dir="."):
             ) as e:
                 print(f"Error processing {filepath}: {e}")
     print(f"\nTotal files moved: {moved_count}")
-
-
 def main():
     """Main function"""
     try:
@@ -75,7 +68,5 @@ def main():
         print("\nOperation cancelled by user")
     except Exception as e:
         print(f"An error occurred: {e}")
-
-
 if __name__ == "__main__":
     main()

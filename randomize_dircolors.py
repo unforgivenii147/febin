@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import random
-
 extensions = [
     ".3dml",
     ".3ds",
@@ -1774,16 +1773,12 @@ extensions = [
     ".zsh",
     ".zst",
 ]
-
-
 def color():
     return (
         random.randint(50, 210),
         random.randint(50, 210),
         random.randint(50, 210),
     )
-
-
 dc = []
 for ext in extensions:
     r, g, b = color()

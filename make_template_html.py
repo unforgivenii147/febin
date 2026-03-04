@@ -1,9 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
-
 from bs4 import BeautifulSoup
-
-
 def find_html_files(root_dir: str = ".", ) -> list[Path]:
     html_files = []
     root_path = Path(root_dir).resolve()
@@ -13,8 +10,6 @@ def find_html_files(root_dir: str = ".", ) -> list[Path]:
     for file_path in root_path.rglob("*.htm"):
         html_files.append(file_path)
     return sorted(html_files)
-
-
 def extract_common_structure(html_files: list[Path], ) -> dict:
     body_classes = []
     meta_tags = []
@@ -46,8 +41,6 @@ def extract_common_structure(html_files: list[Path], ) -> dict:
         "script_tags": common_scripts,
         "body_class": common_body_class,
     }
-
-
 def merge_html_content(html_files: list[Path], ) -> str:
     merged_sections = []
     for file_path in html_files:
@@ -66,8 +59,6 @@ def merge_html_content(html_files: list[Path], ) -> str:
         except Exception as e:
             print(f"⚠️  Error merging {file_path}: {e}")
     return "\n".join(merged_sections)
-
-
 def create_template_html(
     html_files: list[Path],
     output_file: str = "template.html",
@@ -193,8 +184,6 @@ def create_template_html(
     except Exception as e:
         print(f"❌ Error writing template: {e}")
         return False
-
-
 def main():
     print("🔍 Searching for HTML files in current directory...")
     html_files = find_html_files()
@@ -216,8 +205,6 @@ def main():
         print("✨ Template generation complete!")
         print("📄 Output file: template.html")
         print("=" * 60)
-
-
 if __name__ == "__main__":
     try:
         from bs4 import BeautifulSoup

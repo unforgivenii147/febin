@@ -2,7 +2,6 @@
 import os
 import subprocess
 from pathlib import Path
-
 target_dir = Path(os.getcwd())
 os.chdir(target_dir.parent)
 subprocess.run(

@@ -1,12 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 from pprint import pprint
-
 import stringzilla as sz
 from dh import is_binary
 from fastwalk import walk_files
-
-
 def find_similar_files(files, threshold=0.8, k=256):
     """Find files with similar content using MinHash"""
     similar_groups = []
@@ -24,8 +21,6 @@ def find_similar_files(files, threshold=0.8, k=256):
         if len(group) > 1:
             similar_groups.append(group)
     return similar_groups
-
-
 if __name__ == "__main__":
     fz = []
     dir = Path.cwd()

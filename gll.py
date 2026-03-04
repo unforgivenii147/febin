@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
-
-
 def main() -> int:
     if len(sys.argv) < 3:
         print(
@@ -60,7 +58,5 @@ def main() -> int:
         return 1
     print(f"Saved to {outname}")
     return 0
-
-
 if __name__ == "__main__":
     raise SystemExit(main())

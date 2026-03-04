@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
-
 import os
 import tarfile
 import threading
@@ -8,9 +7,7 @@ import zipfile
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse, urlunparse
-
 import regex as re
-
 try:
     import zstandard as zstd
 except Exception:
@@ -32,8 +29,6 @@ git_urls_classified: dict[str, set[str]] = {
     "other": set(),
 }
 lock = threading.Lock()
-
-
 def normalize_url(url: str) -> str:
     try:
         p = urlparse(url)
@@ -54,8 +49,6 @@ def normalize_url(url: str) -> str:
         ))
     except Exception:
         return url
-
-
 def classify_github_url(url: str) -> str:
     try:
         p = urlparse(url)
@@ -76,16 +69,12 @@ def classify_github_url(url: str) -> str:
         return "other"
     except Exception:
         return "other"
-
-
 def extract_urls_from_bytes(data: bytes, ) -> set[str]:
     try:
         text = data.decode("utf-8", errors="ignore")
         return {normalize_url(u) for u in URL_RE.findall(text)}
     except Exception:
         return set()
-
-
 def handle_file_bytes(data: bytes) -> None:
     urls = extract_urls_from_bytes(data)
     if not urls:
@@ -97,16 +86,12 @@ def handle_file_bytes(data: bytes) -> None:
                 git_urls.add(u)
                 cat = classify_github_url(u)
                 git_urls_classified[cat].add(u)
-
-
 def process_regular_file(path: str) -> None:
     try:
         with open(path, "rb") as f:
             handle_file_bytes(f.read())
     except Exception:
         pass
-
-
 def process_zip(path: str) -> None:
     try:
         with zipfile.ZipFile(path) as z:
@@ -117,8 +102,6 @@ def process_zip(path: str) -> None:
                     continue
     except Exception:
         pass
-
-
 def process_tar(path: str) -> None:
     try:
         with tarfile.open(path, "r:*") as t:
@@ -132,8 +115,6 @@ def process_tar(path: str) -> None:
                         continue
     except Exception:
         pass
-
-
 def process_tar_zst(path: str) -> None:
     if not zstd:
         return
@@ -152,8 +133,6 @@ def process_tar_zst(path: str) -> None:
                             continue
     except Exception:
         pass
-
-
 def process_path(path: str) -> None:
     p = path.lower()
     if p.endswith((".zip", ".whl")):
@@ -164,14 +143,10 @@ def process_path(path: str) -> None:
         process_tar_zst(path)
     else:
         process_regular_file(path)
-
-
 def iter_files(root: str) -> Iterable[str]:
     for base, _, files in os.walk(root):
         for f in files:
             yield os.path.join(base, f)
-
-
 def main() -> None:
     files = list(iter_files("."))
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
@@ -199,7 +174,5 @@ def main() -> None:
         ) in git_urls_classified.items():
             for u in sorted(urls):
                 f.write(f"{cat}\t{u}\n")
-
-
 if __name__ == "__main__":
     main()

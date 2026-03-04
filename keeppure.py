@@ -7,8 +7,6 @@ import csv
 import os
 import site
 from multiprocessing import Pool, cpu_count
-
-
 def get_all_dist_info_dirs():
     """Quickly find all dist-info directories"""
     dist_info_dirs = []
@@ -21,8 +19,6 @@ def get_all_dist_info_dirs():
                 if item.endswith(".dist-info"):
                     dist_info_dirs.append(os.path.join(site_dir, item))
     return dist_info_dirs
-
-
 def check_package_binary(dist_info_path):
     """Check a single package for binary files (for multiprocessing)"""
     record_file = os.path.join(dist_info_path, "RECORD")
@@ -41,16 +37,12 @@ def check_package_binary(dist_info_path):
         except:
             pass
     return None
-
-
 def get_binary_packages_parallel():
     """Get all binary packages using multiprocessing"""
     dist_info_dirs = get_all_dist_info_dirs()
     with Pool(processes=cpu_count()) as pool:
         results = pool.map(check_package_binary, dist_info_dirs)
     return {pkg for pkg in results if pkg}
-
-
 def clean_requirements_txt(requirements_file="requirements.txt", ):
     """Fast cleanup of requirements.txt - minimal output"""
     if not os.path.exists(requirements_file):
@@ -86,8 +78,6 @@ def clean_requirements_txt(requirements_file="requirements.txt", ):
             print(f"   - {pkg}")
     else:
         print("✅ No binary packages found in requirements.txt")
-
-
 if __name__ == "__main__":
     import sys
     req_file = sys.argv[1] if len(sys.argv) > 1 else "requirements.txt"

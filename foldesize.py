@@ -2,8 +2,6 @@
 import math
 import os
 import shutil
-
-
 def get_all_files_in_root_only(root_path):
     files_info = []
     try:
@@ -22,8 +20,6 @@ def get_all_files_in_root_only(root_path):
     except Exception as e:
         print(f"Error scanning directory: {e}")
     return files_info
-
-
 def convert_size(size_bytes):
     if size_bytes == 0:
         return "0B"
@@ -32,8 +28,6 @@ def convert_size(size_bytes):
     p = math.pow(1024, i)
     s = round(size_bytes / p, 2)
     return f"{s}{units[i]}"
-
-
 def calculate_optimal_files_per_folder(total_files, target_folders=None):
     if target_folders:
         return math.ceil(total_files / target_folders)
@@ -47,8 +41,6 @@ def calculate_optimal_files_per_folder(total_files, target_folders=None):
         return 100
     else:
         return 200
-
-
 def analyze_size_distribution(files_info):
     if not files_info:
         return {}
@@ -60,8 +52,6 @@ def analyze_size_distribution(files_info):
         "total": sum(sizes),
         "count": len(sizes),
     }
-
-
 def organize_files_in_root(
     root_path=".",
     target_folders=None,
@@ -177,12 +167,8 @@ def organize_files_in_root(
     for folder in created_folders:
         print(f"  - {folder}")
     print("=" * 70)
-
-
 def main():
     ROOT_PATH = "."
     organize_files_in_root(root_path=ROOT_PATH)
-
-
 if __name__ == "__main__":
     main()

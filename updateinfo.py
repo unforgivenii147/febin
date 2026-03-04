@@ -5,15 +5,12 @@ Script to update author name, email, and GitHub URL in Python package configurat
 import re
 import sys
 from pathlib import Path
-
 # Your information
 NEW_INFO = {
     "name": "Isaac Onagh",
     "email": "mkalafsaz@gmail.com",
     "github_username": "unforgivenii147"
 }
-
-
 def update_setup_py(file_path: Path) -> bool:
     """Update setup.py file with new author info and GitHub URL."""
     try:
@@ -38,8 +35,6 @@ def update_setup_py(file_path: Path) -> bool:
     except Exception as e:
         print(f"❌ Error updating {file_path}: {e}")
         return False
-
-
 def update_pyproject_toml(file_path: Path) -> bool:
     """Update pyproject.toml file with new author info and GitHub URL."""
     try:
@@ -52,7 +47,6 @@ def update_pyproject_toml(file_path: Path) -> bool:
             author_pattern = (
                 r'(authors\s*=\s*\[\s*\{[^}]*name\s*=\s*["\'][^"\']*["\'][^}]*email\s*=\s*["\'][^"\']*["\'][^}]*\})'
             )
-
             def replace_author(match):
                 author_block = match.group(1)
                 # Replace name
@@ -62,7 +56,6 @@ def update_pyproject_toml(file_path: Path) -> bool:
                 # Replace email
                 return re.sub(r'email\s*=\s*["\'][^"\']*["\']',
                               f'email = "{NEW_INFO["email"]}"', author_block)
-
             content = re.sub(author_pattern,
                              replace_author,
                              content,
@@ -81,8 +74,6 @@ def update_pyproject_toml(file_path: Path) -> bool:
     except Exception as e:
         print(f"❌ Error updating {file_path}: {e}")
         return False
-
-
 def update_setup_cfg(file_path: Path) -> bool:
     """Update setup.cfg file with new author info and GitHub URL."""
     try:
@@ -113,8 +104,6 @@ def update_setup_cfg(file_path: Path) -> bool:
     except Exception as e:
         print(f"❌ Error updating {file_path}: {e}")
         return False
-
-
 def main():
     """Main function to update all configuration files."""
     print("🔍 Scanning for configuration files...")
@@ -142,7 +131,5 @@ def main():
     else:
         print("ℹ️  No files were updated")
     return 0
-
-
 if __name__ == "__main__":
     sys.exit(main())

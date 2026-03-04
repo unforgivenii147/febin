@@ -3,11 +3,8 @@ import argparse
 import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-
 from bs4 import BeautifulSoup
 from html_to_markdown import Options, convert
-
-
 def clean_html(html_content: str) -> str:
     soup = BeautifulSoup(html_content, "html.parser")
     for script in soup.find_all("script"):
@@ -28,8 +25,6 @@ def clean_html(html_content: str) -> str:
     for form in soup.find_all("form"):
         form.decompose()
     return str(soup)
-
-
 def convert_html_to_md(
     html_file: Path,
     options: Options | None = None,
@@ -69,8 +64,6 @@ def convert_html_to_md(
             file=sys.stderr,
         )
         return (html_file, False)
-
-
 def find_html_files(directory: Path, recursive: bool = True) -> list[Path]:
     if recursive:
         html_files = list(directory.rglob("*.html")) + list(
@@ -79,13 +72,9 @@ def find_html_files(directory: Path, recursive: bool = True) -> list[Path]:
         html_files = list(directory.glob("*.html")) + list(
             directory.glob("*.htm"))
     return sorted(html_files)
-
-
 def process_file_wrapper(args: tuple, ) -> tuple[Path, bool]:
     html_file, options = args
     return convert_html_to_md(html_file, options)
-
-
 def main():
     parser = argparse.ArgumentParser(
         description=
@@ -177,7 +166,5 @@ Examples:
         print(
             f"Conversion complete: {successful}/{len(html_files)} files converted successfully"
         )
-
-
 if __name__ == "__main__":
     main()

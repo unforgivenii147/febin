@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import subprocess
-
-
 def create_unpinned_requirements(output_file="req.txt", ):
     try:
         result = subprocess.run(
@@ -26,7 +24,5 @@ def create_unpinned_requirements(output_file="req.txt", ):
         print(f"Error running pip freeze: {e}")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-
-
 if __name__ == "__main__":
     create_unpinned_requirements()

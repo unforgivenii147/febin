@@ -6,30 +6,20 @@ import numbers
 import os
 import pathlib
 import sys
-
 from dh import STDLIB, get_installed_pkgs
-
-
 def get_py_files(start_path):
     return list(pathlib.Path(start_path).rglob("*.py*"))
-
-
 class ImportVisitor(ast.NodeVisitor):
-
     def __init__(self):
         self.imports = set()
-
     def visit_Import(self, node):
         for name in node.names:
             self.imports.add(name.name.split(".")[0])
         self.generic_visit(node)
-
     def visit_ImportFrom(self, node):
         if node.level == 0 and node.module:
             self.imports.add(node.module.split(".")[0])
         self.generic_visit(node)
-
-
 def find_imports(start_path):
     all_imports = set()
     std_libs = STDLIB
@@ -50,8 +40,6 @@ def find_imports(start_path):
         imp for imp in all_imports if imp not in std_libs
         and imp not in local_files and imp != "__future__"
     ])
-
-
 def get_version(module_name):
     try:
         return importlib.metadata.version(module_name)
@@ -69,8 +57,6 @@ def get_version(module_name):
     except Exception:
         return "Not Installed(unknown)"
     return "Not Installed(NA)"
-
-
 def main():
     search_path = sys.argv[1]
     output_file = f"{search_path}/importz.txt"
@@ -105,7 +91,5 @@ def main():
         if os.path.exists(output_file):
             os.remove(output_file)
             print(f"empty {output_file} removed")
-
-
 if __name__ == "__main__":
     main()

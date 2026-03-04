@@ -4,13 +4,10 @@ import shutil
 import tarfile
 import tempfile
 import zipfile
-
 TARGET_FILES = {"METADATA", "PKGINFO", "PKG-INFO"}
 PREFIX = "Requires-Dist:"
 LOG_FILE = "/sdcard/reqdist.txt"
 removed_lines_accumulator = []
-
-
 def clean_text(text: str, ) -> tuple[str, list[str]]:
     with open("/sdcard/meta.txt", "a") as fmeta:
         fmeta.write(text)
@@ -24,8 +21,6 @@ def clean_text(text: str, ) -> tuple[str, list[str]]:
             cleaned.append(line)
     final_text = "\n".join(cleaned) + ("\n" if text.endswith("\n") else "")
     return final_text, removed
-
-
 def clean_file(path: str) -> None:
     try:
         with open(
@@ -41,8 +36,6 @@ def clean_file(path: str) -> None:
         removed_lines_accumulator.extend(removed)
         with open(path, "w", encoding="utf-8") as f:
             f.write(cleaned)
-
-
 def process_zip(path: str) -> None:
     tmp = tempfile.mktemp(suffix=".zip")
     with (
@@ -63,8 +56,6 @@ def process_zip(path: str) -> None:
                     pass
             zout.writestr(item, data)
     shutil.move(tmp, path)
-
-
 def process_tar(path: str) -> None:
     tmp_dir = tempfile.mkdtemp()
     tmp_tar = tempfile.mktemp(suffix=".tar.gz")
@@ -78,16 +69,12 @@ def process_tar(path: str) -> None:
         tar.add(tmp_dir, arcname="")
     shutil.move(tmp_tar, path)
     shutil.rmtree(tmp_dir)
-
-
 def dispatch_archive(path: str) -> None:
     name = path.lower()
     if name.endswith(".whl"):
         process_zip(path)
     elif name.endswith((".tar.gz", ".tgz", ".tar")):
         process_tar(path)
-
-
 def main() -> None:
     for root, _, files in os.walk("."):
         for name in files:
@@ -121,7 +108,5 @@ def main() -> None:
         print("-" * 20)
     else:
         print("No matching lines were found or removed.")
-
-
 if __name__ == "__main__":
     main()

@@ -1,11 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-
 import dh
-
 EXT = [".md", ".txt", ".rst"]
-
-
 def find_license_files() -> None:
     lf = []
     allfiles = dh.get_files(".")
@@ -23,7 +19,5 @@ def find_license_files() -> None:
     for file_path in lf:
         with open(file_path, "w") as f:
             f.write("")
-
-
 if __name__ == "__main__":
     find_license_files()

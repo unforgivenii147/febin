@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import datetime
 import os
-
 directory = "."
 for entry in sorted(
         os.scandir(directory),

@@ -2,11 +2,8 @@
 import argparse
 import os
 import sys
-
 import regex as re
 from dh import is_binary
-
-
 def process_file(file_path, search_text, replace_text=None, dry_run=False):
     """Process a single file and perform replacement/removal"""
     try:
@@ -40,8 +37,6 @@ def process_file(file_path, search_text, replace_text=None, dry_run=False):
     except Exception as e:
         print(f"Error processing {file_path}: {e}", file=sys.stderr)
         return False
-
-
 def replace_in_files(search_text,
                      replace_text=None,
                      target_file=None,
@@ -71,8 +66,6 @@ def replace_in_files(search_text,
             if files_processed % 100 == 0:
                 print(f"Processed {files_processed} files...", end="\r")
     return files_processed, files_changed
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Recursively replace or remove text in files.")

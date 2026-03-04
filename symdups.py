@@ -4,13 +4,9 @@ import json
 import os
 from collections import defaultdict
 from datetime import datetime
-
 import xxhash
-
 BACKUP_FILE = ".symlink_backup.json"
 MIN_FILE_SIZE = 8
-
-
 def calculate_file_hash(filepath, chunk_size=8192):
     hasher = xxhash.xxh64()
     try:
@@ -21,8 +17,6 @@ def calculate_file_hash(filepath, chunk_size=8192):
     except OSError as e:
         print(f"[ERROR] Reading {filepath}: {e}")
         return None
-
-
 def find_duplicates(directory="."):
     print(f"[INFO] Scanning directory: {os.path.abspath(directory)}")
     size_map = defaultdict(list)
@@ -68,12 +62,8 @@ def find_duplicates(directory="."):
             if file_hash:
                 hash_map[file_hash].append(filepath)
     return {h: files for h, files in hash_map.items() if len(files) > 1}
-
-
 def choose_keeper(files):
     return min(files, key=lambda f: (len(f), f))
-
-
 def create_symlinks(duplicates, dry_run=False):
     backup_data = {
         "timestamp": datetime.now().isoformat(),
@@ -122,8 +112,6 @@ def create_symlinks(duplicates, dry_run=False):
     if dry_run:
         print("[DRY RUN] No changes were made")
     return symlink_count
-
-
 def reverse_symlinks(backup_file=BACKUP_FILE):
     if not os.path.exists(backup_file):
         print(f"[ERROR] Backup file {backup_file} not found!")
@@ -156,8 +144,6 @@ def reverse_symlinks(backup_file=BACKUP_FILE):
     os.rename(backup_file, backup_renamed)
     print(f"[INFO] Backup file renamed to: {backup_renamed}")
     return True
-
-
 def main():
     parser = argparse.ArgumentParser(
         description=
@@ -198,7 +184,5 @@ def main():
         if args.dry_run:
             print("\n[INFO] [DRY RUN MODE - No changes will be made]")
         create_symlinks(duplicates, dry_run=args.dry_run)
-
-
 if __name__ == "__main__":
     main()

@@ -2,10 +2,8 @@
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from tree_sitter import Language, Parser
-
 parser = Parser()
 parser.language = Language(tsp.language())
 OUT_DIR = Path("output")
@@ -14,18 +12,13 @@ VALID = {
     "function_definition",
     "class_definition",
 }
-
-
 def get_node_text(src: bytes, node):
     """Extract text for a node safely."""
     return src[node.start_byte:node.end_byte].decode()
-
-
 def extract_functions_and_classes(src: bytes, tree):
     """Extract function and class definitions from a parsed tree."""
     root = tree.root_node
     definitions = []
-
     def traverse(node):
         if node.type in VALID:
             # Get the node's text
@@ -43,26 +36,19 @@ def extract_functions_and_classes(src: bytes, tree):
         # Continue traversing children
         for child in node.children:
             traverse(child)
-
     traverse(root)
     return definitions
-
-
 def get_relative_path(file_path: Path, base_path: Path) -> Path:
     """Get the relative path of a file, handling cases where it might be relative to different roots."""
     try:
         return file_path.relative_to(base_path)
     except ValueError:
         return file_path
-
-
 def extract_docstring(src: bytes, node):
     """Extract docstring if present."""
     if node.children and node.children[0].type == "string":
         return get_node_text(src, node.children[0])
     return None
-
-
 def format_definition_with_metadata(
     def_text: str,
     file_name: str,
@@ -77,8 +63,6 @@ def format_definition_with_metadata(
         )
     lines.append(def_text)
     return "\n".join(lines)
-
-
 # Dictionary to store definitions by folder path
 folder_definitions = defaultdict(list)
 processed_files_count = 0

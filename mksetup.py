@@ -1,16 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
-
 import shutil
 import sys
 import tempfile
 import zipfile
 from email.parser import Parser
 from pathlib import Path
-
 EXT_SUFFIXES = (".so", ".pyd", ".dll")
-
-
 def read_entry_points(root: Path) -> dict[str, list[str]]:
     dist_info = next(root.glob("*.dist-info"), None)
     if not dist_info:
@@ -31,13 +27,9 @@ def read_entry_points(root: Path) -> dict[str, list[str]]:
         if current_section:
             sections[current_section].append(line)
     return sections
-
-
 def extract_wheel(whl: Path, dst: Path) -> None:
     with zipfile.ZipFile(whl) as zf:
         zf.extractall(dst)
-
-
 def load_root(input_path: Path) -> Path:
     if input_path.is_dir():
         return input_path.resolve()
@@ -47,8 +39,6 @@ def load_root(input_path: Path) -> Path:
         return tmp
     raise SystemExit(
         "Input must be a .whl file or an unzipped wheel directory")
-
-
 def read_metadata(root: Path) -> dict:
     dist_info = next(root.glob("*.dist-info"), None)
     if not dist_info:
@@ -61,16 +51,12 @@ def read_metadata(root: Path) -> dict:
         "summary": meta.get("Summary", ""),
         "install_requires": meta.get_all("Requires-Dist") or [],
     }
-
-
 def find_extensions(root: Path) -> list[str]:
     modules = []
     for f in root.rglob("*"):
         if f.suffix in EXT_SUFFIXES:
             modules.append(".".join(f.relative_to(root).with_suffix("").parts))
     return modules
-
-
 def generate_setup_py(meta: dict, extensions: list[str],
                       entry_points: dict[str, list[str]]) -> str:
     ext_block = (
@@ -101,16 +87,12 @@ setup(
     ext_modules=ext_modules,
 {ep_block})
 """
-
-
 def generate_pyproject_toml() -> str:
     return """\
 [build-system]
 requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 """
-
-
 def main() -> None:
     if len(sys.argv) != 2:
         raise SystemExit(
@@ -129,7 +111,5 @@ def main() -> None:
     print(f"✔ setup.py generated for {meta['name']}")
     print("✔ binary extensions detected"
           if extensions else "✔ pure Python package")
-
-
 if __name__ == "__main__":
     main()

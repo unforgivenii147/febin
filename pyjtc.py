@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import os
-
 import regex as re
-
-
 def remove_comments_and_strings(content, filetype, keep_strings=False):
     if filetype in ["c", "cpp", "h", "hpp"]:
         content = re.sub(r"//.*", "", content)
@@ -30,8 +27,6 @@ def remove_comments_and_strings(content, filetype, keep_strings=False):
             content = re.sub(r"\"[^\"]*\"", "", content)
             content = re.sub(r"'[^']*'", "", content)
     return content
-
-
 def process_file(filepath, inplace=False, keep_strings=False):
     _, ext = os.path.splitext(filepath)
     ext = ext[1:].lower()
@@ -54,8 +49,6 @@ def process_file(filepath, inplace=False, keep_strings=False):
         print(f"File {filepath} cleaned and saved in-place.")
     else:
         print(f"--- Cleaned {filepath} ---\n{cleaned}\n")
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description=

@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
+import sys
 import os
-
 import regex as re
+from dh import is_binary
 
 LANG_EXTENSIONS = {
-    "python": [".py"],
+    "python": [".py",'.pyi'],
     "javascript": [".js"],
     "java": [".java"],
     "c": [".c"],
@@ -13,6 +14,7 @@ LANG_EXTENSIONS = {
     "css": [".css"],
     "ruby": [".rb"],
     "php": [".php"],
+    'bash':['.sh','.bash']
 }
 COMMENT_PATTERNS = {
     "python": r"^\s*#",
@@ -24,10 +26,11 @@ COMMENT_PATTERNS = {
     "css": r"^\s*/\*",
     "ruby": r"^\s*#",
     "php": r"^\s*//",
+    
 }
 SHEBANG_LANGUAGES = {
     "python": [
-        "#!/usr/bin/python",
+        "#!/usr/bin/env python",
         "#!/usr/bin/python3",
         "#!/bin/python3",
     ],
@@ -37,9 +40,10 @@ SHEBANG_LANGUAGES = {
     "node": ["#!/usr/bin/node", "#!/bin/node"],
     "sh": ["#!/bin/sh"],
 }
-
-
 def get_language_from_shebang(file_path):
+    if is_binary(file_path):
+        print(f'{file_path} is binary')
+        return None
     if ".git" in str(file_path):
         return None
     try:
@@ -56,10 +60,12 @@ def get_language_from_shebang(file_path):
         print(f"Error reading file {file_path}: {e}")
     return None
 
-
 def count_lines_of_code(file_path, lang):
     if ".git" in str(file_path):
         return 0, 0, 0
+    if is_binary(file_path):
+        print(f'{file_path} is binary')
+        return 0,0,0
     with open(file_path, encoding="utf-8") as file:
         code_lines = 0
         comment_lines = 0
@@ -75,8 +81,6 @@ def count_lines_of_code(file_path, lang):
             else:
                 code_lines += 1
     return code_lines, comment_lines, blank_lines
-
-
 def scan_directory(directory="."):
     stats = {
         "total": {
@@ -124,8 +128,6 @@ def scan_directory(directory="."):
                     stats["total"]["blank"] += blanks
                     break
     return stats
-
-
 def display_stats(stats) -> None:
     print(f"Total lines of code: {stats['total']['code']}")
     print(f"Total comment lines: {stats['total']['comments']}")
@@ -137,8 +139,6 @@ def display_stats(stats) -> None:
             print(f"  Code lines: {lang_stats['code']}")
             print(f"  Comment lines: {lang_stats['comments']}")
             print(f"  Blank lines: {lang_stats['blank']}")
-
-
 if __name__ == "__main__":
     stats = scan_directory()
     display_stats(stats)

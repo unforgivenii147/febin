@@ -2,10 +2,7 @@
 import subprocess
 import sys
 from pathlib import Path
-
 PIP_LIST_FILE = "/sdcard/pip.list"
-
-
 def load_installed_packages():
     path = Path(PIP_LIST_FILE)
     if not path.exists():
@@ -14,8 +11,6 @@ def load_installed_packages():
     return [
         line.strip() for line in path.read_text().splitlines() if line.strip()
     ]
-
-
 def find_dist_info(prefix):
     import site
     matches = []
@@ -28,8 +23,6 @@ def find_dist_info(prefix):
         for d in sp_path.glob(f"{prefix}*.dist-info"):
             matches.append(d)
     return matches
-
-
 def uninstall_packages(packages):
     if not packages:
         print("No packages to uninstall")
@@ -43,8 +36,6 @@ def uninstall_packages(packages):
             print(f"Uninstalled {pkg}")
         except subprocess.CalledProcessError:
             print(f"Skipped {pkg} (not installed or error)")
-
-
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} <package_prefix>")

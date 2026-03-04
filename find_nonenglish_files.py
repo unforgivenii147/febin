@@ -3,16 +3,12 @@ import os
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
-
 import pycld2
 from dh import TXT_EXT
-
 MIN_TEXT_LENGTH = 20
 SUPPORTED_EXTENSIONS = TXT_EXT
 ENGLISH_LANGUAGES = {"en", "en_US", "en_GB"}
 MAX_FILE_SIZE = 1024 * 1024  # 1MB
-
-
 def detect_language(text: str, ) -> tuple[str | None, float]:
     """
     Detect language of text using pycld2.
@@ -33,16 +29,12 @@ def detect_language(text: str, ) -> tuple[str | None, float]:
         # pycld2 can throw errors on very short text or special characters
         pass
     return None, 0
-
-
 def is_likely_english(text: str, threshold: float = 70.0) -> bool:
     """Check if text is likely English based on confidence threshold."""
     lang, confidence = detect_language(text)
     if lang is None:
         return False
     return lang in ENGLISH_LANGUAGES and confidence >= threshold
-
-
 def read_file_safely(filepath: Path, ) -> str | None:
     """Read file content safely, handling encoding issues."""
     try:
@@ -62,8 +54,6 @@ def read_file_safely(filepath: Path, ) -> str | None:
     except Exception:
         pass
     return None
-
-
 def get_file_sample(
     text: str,
     max_lines: int = 50,
@@ -78,8 +68,6 @@ def get_file_sample(
     if len(sample) > max_chars:
         sample = sample[:max_chars]
     return sample
-
-
 def analyze_directory(directory: str = ".", show_all: bool = False) -> dict:
     """
     Analyze all files in directory recursively for language detection.
@@ -147,8 +135,6 @@ def analyze_directory(directory: str = ".", show_all: bool = False) -> dict:
                 results["non_english"][lang].append(filepath)
                 results["directory_stats"][str(rel_dir)]["non_english"] += 1
     return results
-
-
 def print_results(results: dict, show_files: bool = False):
     """Print formatted results."""
     print("\n" + "=" * 70)
@@ -245,8 +231,6 @@ def print_results(results: dict, show_files: bool = False):
                     f"       {stats['non_english']} non-English files to translate"
                 )
     print("=" * 70)
-
-
 def main():
     import argparse
     parser = argparse.ArgumentParser(
@@ -283,7 +267,5 @@ def main():
     except Exception as e:
         print(f"\n❌ Error: {e}")
         sys.exit(1)
-
-
 if __name__ == "__main__":
     main()

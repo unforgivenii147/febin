@@ -7,9 +7,7 @@ import os
 import sys
 from collections import Counter
 from pathlib import Path
-
 import pycld2
-
 # Common binary and non-text file extensions to skip
 BINARY_EXTENSIONS = {
     ".pyc",
@@ -96,10 +94,7 @@ TEXT_EXTENSIONS = {
     ".pm",
     ".t",
 }
-
-
 class LanguageDetector:
-
     def __init__(self, min_bytes=100, max_bytes=10000):
         """
         Initialize the language detector
@@ -117,7 +112,6 @@ class LanguageDetector:
             "non_english": [],
             "languages": Counter(),
         }
-
     def is_text_file(self, filepath):
         """
         Check if a file is likely a text file based on extension and content
@@ -145,7 +139,6 @@ class LanguageDetector:
                     return False
         except Exception:
             return False
-
     def detect_language(self, filepath):
         """
         Detect language of a file using pycld2
@@ -206,7 +199,6 @@ class LanguageDetector:
                 None,
                 None,
             )
-
     def scan_directory(
         self,
         directory,
@@ -287,7 +279,6 @@ class LanguageDetector:
                         })
         print("\n" + "=" * 60)
         self.report_results(only_report_non_english)
-
     def report_results(self, only_report_non_english=True):
         """
         Print scan results
@@ -341,8 +332,6 @@ class LanguageDetector:
         print(
             f"📋 Summary: {english_files} English, {len(self.stats['non_english'])} non-English, {self.stats['skipped_binary']} binary, {self.stats['skipped_small'] + self.stats['skipped_error']} unanalyzable"
         )
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Recursively find non-English files using pycld2")
@@ -403,8 +392,6 @@ def main():
         ):
             detector.report_results(only_report_non_english=not args.all)
         print(f"\n✅ Results saved to: {args.output}")
-
-
 if __name__ == "__main__":
     # Check if pycld2 is installed
     try:

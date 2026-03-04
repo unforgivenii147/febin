@@ -3,14 +3,11 @@ import glob
 import subprocess
 from multiprocessing import Pool
 from pathlib import Path
-
 QUALITY_RANGE = "60-70"
 START_DIR = Path(".")
 NUM_PROCESSES = 8
 print(
     f"Using {NUM_PROCESSES} CPU cores for parallel processing via subprocess.")
-
-
 def process_png(input_path):
     try:
         command = [
@@ -44,8 +41,6 @@ def process_png(input_path):
         )
     except Exception as e:
         print(f"❌ Error compressing {input_path}: {e}")
-
-
 if __name__ == "__main__":
     files = glob.glob(
         str(START_DIR / "**" / "*.png"),

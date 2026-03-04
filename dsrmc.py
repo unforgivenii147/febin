@@ -2,27 +2,19 @@
 import multiprocessing as mp
 import os
 import sys
-
 import tree_sitter_python
 from tree_sitter import Node, Parser
-
 _parser = None
-
-
 def init_worker():
     global _parser
     _parser = Parser()
     _parser.set_language(tree_sitter_python.language())
-
-
 def is_preserved_comment(source_bytes: bytes, node: Node) -> bool:
     text = source_bytes[node.start_byte:node.end_byte]
     if node.start_byte == 0 and text.startswith(b"#!"):
         return True
     stripped = text.lstrip(b"#").strip()
     return bool(stripped.startswith(b"type:") or stripped.startswith(b"fmt:"))
-
-
 def collect_nodes_to_remove(source_bytes: bytes, node: Node) -> list[Node]:
     to_remove = []
     if node.type == "comment" and not is_preserved_comment(source_bytes, node):
@@ -40,8 +32,6 @@ def collect_nodes_to_remove(source_bytes: bytes, node: Node) -> list[Node]:
     for child in node.children:
         to_remove.extend(collect_nodes_to_remove(source_bytes, child))
     return to_remove
-
-
 def process_file(filepath: str, ) -> tuple[str, bool]:
     global _parser
     try:
@@ -68,8 +58,6 @@ def process_file(filepath: str, ) -> tuple[str, bool]:
             file=sys.stderr,
         )
         return filepath, False
-
-
 def main():
     py_files = []
     for root, dirs, files in os.walk("."):
@@ -94,8 +82,6 @@ def main():
         print(f"Failed to process {len(failures)} files:")
         for f in failures:
             print(f"  {f}")
-
-
 if __name__ == "__main__":
     try:
         import tree_sitter

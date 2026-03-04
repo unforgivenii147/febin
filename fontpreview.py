@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 import pathlib
-
 FONT_EXTENSIONS = (
     ".ttf",
     ".otf",
@@ -12,8 +11,6 @@ FONT_EXTENSIONS = (
 )
 OUTPUT_HTML = "fonts_preview.html"
 FONT_SIZES = [22]
-
-
 def find_fonts(root_dir="."):
     fonts = []
     for dirpath, _, filenames in os.walk(root_dir):
@@ -21,8 +18,6 @@ def find_fonts(root_dir="."):
             os.path.join(dirpath, filename) for filename in filenames
             if filename.lower().endswith(FONT_EXTENSIONS))
     return fonts
-
-
 def generate_html(font_files):
     html = [
         "<!DOCTYPE html>",
@@ -48,8 +43,6 @@ def generate_html(font_files):
         html.append("</div>")
     html.append("</body></html>")
     return "\n".join(html)
-
-
 def main() -> None:
     fonts = find_fonts()
     if not fonts:
@@ -58,7 +51,5 @@ def main() -> None:
     with pathlib.Path(OUTPUT_HTML).open("w", encoding="utf-8") as f:
         f.write(html_content)
     print("font-preview.html created.")
-
-
 if __name__ == "__main__":
     main()

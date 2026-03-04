@@ -5,8 +5,6 @@ Gets filename and line numbers (x, y) from user input.
 Deletes lines from x to y (inclusive) and updates file in place.
 """
 import sys
-
-
 def delete_lines_from_file():
     filename, fromline, toline = sys.argv[1:]
     fromline = int(fromline)
@@ -34,7 +32,5 @@ def delete_lines_from_file():
     except Exception as e:
         print(f"Error writing to file: {e}")
         return
-
-
 if __name__ == "__main__":
     delete_lines_from_file()

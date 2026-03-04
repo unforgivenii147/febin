@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
-
 import trafilatura
-
-
 def convert_to_md(html_file: Path):
     try:
         html_content = html_file.read_text(encoding="utf-8")
@@ -27,8 +24,6 @@ def convert_to_md(html_file: Path):
     except Exception as e:
         print(f"✗ Error: {e}")
         return (html_file, False)
-
-
 if __name__ == "__main__":
     fn = Path(sys.argv[1])
     convert_to_md(fn)

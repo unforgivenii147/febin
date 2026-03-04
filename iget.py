@@ -2,12 +2,8 @@
 import math
 import os
 import threading
-
 import requests
-
-
 class MultiPartDownloader:
-
     def __init__(self, url, output_path, num_threads=4):
         self.url = url
         self.output_path = output_path
@@ -16,7 +12,6 @@ class MultiPartDownloader:
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.support_resume = False
         self.existing_size = 0
-
     def get_size(self):
         response = requests.head(
             self.url,
@@ -29,13 +24,11 @@ class MultiPartDownloader:
                 "Accept-Ranges"] == "bytes":
             self.support_resume = True
         return self.get_size
-
     def check_existing_file(self):
         if os.path.exists(self.output_path):
             self.existing_size = os.path.getsize(self.output_path)
             return self.existing_size
         return 0
-
     def download_range(self, start, end, part_num):
         headers = {
             "Range": f"bytes={start}-{end}",
@@ -49,7 +42,6 @@ class MultiPartDownloader:
                 if chunk:
                     f.write(chunk)
                     f.flush()
-
     def download(self):
         if not self.get_size:
             self.get_size()
@@ -85,8 +77,6 @@ class MultiPartDownloader:
         for thread in threads:
             thread.join()
         print("Download completed!")
-
-
 if __name__ == "__main__":
     url = input("Enter the file URL: ")
     output_path = input("Enter the output file path: ")

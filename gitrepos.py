@@ -1,9 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import json
-
 import requests
-
-
 def get_github_repos(username, output_file=None) -> None:
     if output_file is None:
         output_file = f"{username}.txt"
@@ -39,8 +36,6 @@ def get_github_repos(username, output_file=None) -> None:
         print(f"Error parsing JSON response: {e}")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-
-
 if __name__ == "__main__":
     username = input("Enter GitHub username: ").strip()
     get_github_repos(username)

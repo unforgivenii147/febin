@@ -1,11 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 import pathlib
-
 from rcssmin import cssmin
 from rjsmin import jsmin
-
-
 def minify_assets_in_directory(root_dir=".", ) -> None:
     minified_count = 0
     errors_count = 0
@@ -33,7 +30,5 @@ def minify_assets_in_directory(root_dir=".", ) -> None:
                 minified_count += 1
             except Exception:
                 errors_count += 1
-
-
 if __name__ == "__main__":
     minify_assets_in_directory(pathlib.Path.cwd())

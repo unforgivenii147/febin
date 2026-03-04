@@ -1,23 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
-
 import argparse
 import contextlib
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
 from time import perf_counter
-
 from dh import format_size, get_size
 from fastwalk import walk_files
-
 MAX_IN_FLIGHT = 16
 IGNORED_DIRS = {
     ".git",
     "__pycache__",
 }
-
-
 def is_python_file(path: Path) -> bool:
     if path.suffix in {".py", ".pyi"}:
         return True
@@ -27,8 +22,6 @@ def is_python_file(path: Path) -> bool:
             return line.startswith(b"#!") and b"python" in line.lower()
     except Exception:
         return False
-
-
 def format_single_file(file_path: Path, args) -> bool:
     start_size = get_size(file_path)
     end_size = get_size(file_path)
@@ -67,8 +60,6 @@ def format_single_file(file_path: Path, args) -> bool:
     except Exception as e:
         print(f"[ERROR]  {file_path.name}: {e}")
         return False
-
-
 def main() -> None:
     p = argparse.ArgumentParser(
         description="Fast Python API-based formatter (Lazy Loading)")
@@ -124,7 +115,5 @@ def main() -> None:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-
-
 if __name__ == "__main__":
     main()

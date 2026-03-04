@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import subprocess
 import sys
-
-
 def get_installed_packages():
     try:
         result = subprocess.run(
@@ -19,8 +17,6 @@ def get_installed_packages():
     except subprocess.CalledProcessError as e:
         print(f"Error listing installed packages: {e.stderr}")
         sys.exit(1)
-
-
 def check_package_health(package_name):
     try:
         result = subprocess.run(
@@ -45,8 +41,6 @@ def check_package_health(package_name):
             False,
             f"Error checking package: {e.stderr}",
         )
-
-
 def check_for_updates():
     try:
         result = subprocess.run(
@@ -58,8 +52,6 @@ def check_for_updates():
         return result.stdout
     except subprocess.CalledProcessError as e:
         return f"Error checking for updates: {e.stderr}"
-
-
 def main():
     print("=== Installed Packages Sanity Check ===")
     installed_pkgs = get_installed_packages()
@@ -86,7 +78,5 @@ def main():
         print("All packages are properly installed.")
     else:
         print("Some packages may need attention.")
-
-
 if __name__ == "__main__":
     main()

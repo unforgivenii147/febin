@@ -2,20 +2,15 @@
 import os
 from collections import defaultdict
 from pathlib import Path
-
 import click
 from fastwalk import walk_files
 from xxhash import xxh64
-
-
 def get_file_hash(path):
     h = xxh64()
     with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             h.update(chunk)
     return h.hexdigest()
-
-
 def find_and_delete_duplicates(path: Path):
     files_by_hash = defaultdict(list)
     duplicate_count = 0
@@ -57,8 +52,6 @@ def find_and_delete_duplicates(path: Path):
         deleted_count,
         total_deleted_size,
     )
-
-
 @click.command()
 @click.argument(
     "path",
@@ -79,7 +72,5 @@ def remove_duplicates(path) -> None:
     print("\nSummary:")
     print(f"dup found: {deleted_count}")
     print(f"del  size: {total_deleted_size} bytes")
-
-
 if __name__ == "__main__":
     remove_duplicates()

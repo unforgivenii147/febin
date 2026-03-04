@@ -1,11 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 from pathlib import Path
-
 from ascii_magic import AsciiArt
 from dh import IMG_EXT
-
-
 def getimg(dir="."):
     img_files = []
     for pth in walk_filrs(dir):
@@ -13,8 +10,6 @@ def getimg(dir="."):
         if path.suffix in IMG_EXT:
             img_files.append(path)
     return img_files
-
-
 def render_ascii(image_path):
     art = AsciiArt.from_image(image_path)
     art.to_terminal(
@@ -22,8 +17,6 @@ def render_ascii(image_path):
         width_ratio=2,
         monochrome=False,
     )
-
-
 def main():
     imfiles = getimg(".")
     if len(imfiles) == 0:
@@ -32,7 +25,5 @@ def main():
     for file in imfiles:
         render_ascii(file)
     print("done")
-
-
 if __name__ == "__main__":
     main()

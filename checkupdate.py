@@ -1,22 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/env python
-
 import os
 import sys
 import time
 from datetime import datetime
-
 import regex as re
 import requests
 from dh import get_installed_packages
 from packaging.version import InvalidVersion, Version
-
 try:
     from colorama import Fore, Style, init
     init()
     HAS_COLORS = True
 except ImportError:
     HAS_COLORS = False
-
     class Fore:
         GREEN = ""
         YELLOW = ""
@@ -24,12 +20,9 @@ except ImportError:
         CYAN = ""
         MAGENTA = ""
         RESET = ""
-
     class Style:
         BRIGHT = ""
         RESET_ALL = ""
-
-
 """
 def extract_pkgver(text,pkgname,pkgver):
     lines=response.splitlines()
@@ -59,8 +52,6 @@ def extract_pkgver(text,pkgname,pkgver):
     if ver and ver > pkgver:
         return 0,ver
 """
-
-
 def check_package_on_pypi(package_name: str,
                           current_version: str) -> str | None:
     try:
@@ -82,8 +73,6 @@ def check_package_on_pypi(package_name: str,
             return None
     except requests.exceptions.RequestException:
         return None
-
-
 def save_requirements(
     updates: list[tuple[str, str, str]],
     filename: str = "requirements.txt",
@@ -105,8 +94,6 @@ def save_requirements(
         print(
             f"{Fore.RED}Error saving requirements file: {e}{Style.RESET_ALL}")
         return False
-
-
 def load_existing_requirements(
     filename: str = "requirements.txt", ) -> dict[str, str]:
     requirements = {}
@@ -133,8 +120,6 @@ def load_existing_requirements(
                 f"{Fore.YELLOW}Warning: Could not read existing {filename}: {e}{Style.RESET_ALL}"
             )
     return requirements
-
-
 def interactive_save_menu(updates: list[tuple[str, str, str]], ):
     if not updates:
         return
@@ -254,8 +239,6 @@ def interactive_save_menu(updates: list[tuple[str, str, str]], ):
         interactive_save_menu(updates)
     else:
         print(f"{Fore.YELLOW}Invalid choice. Skipping save.{Style.RESET_ALL}")
-
-
 def main():
     print(
         f"{Fore.CYAN}📦 Checking for package updates on PyPI...{Style.RESET_ALL}"
@@ -334,8 +317,6 @@ def main():
             f"\n{Fore.YELLOW}⚠️  Packages not found on PyPI:{Style.RESET_ALL}")
         for package in sorted(not_found):
             print(f"  {package}")
-
-
 if __name__ == "__main__":
     try:
         main()

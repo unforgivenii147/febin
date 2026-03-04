@@ -4,7 +4,6 @@ import importlib.metadata
 import importlib.util
 import pathlib
 import sys
-
 PACKAGE_MAPPING = {
     "cv2": "opencv-python",
     "PIL": "Pillow",
@@ -22,8 +21,6 @@ PACKAGE_MAPPING = {
     "jwt": "PyJWT",
     "OpenGL": "PyOpenGL",
 }
-
-
 def is_python_file(path: pathlib.Path) -> bool:
     if path.suffix == ".py":
         return True
@@ -35,8 +32,6 @@ def is_python_file(path: pathlib.Path) -> bool:
         except Exception:
             return False
     return False
-
-
 def get_imports_from_file(file_path):
     imports = set()
     try:
@@ -52,8 +47,6 @@ def get_imports_from_file(file_path):
     except (SyntaxError, UnicodeDecodeError):
         pass
     return imports
-
-
 def check_status(module_name):
     try:
         importlib.metadata.distribution(module_name)
@@ -61,8 +54,6 @@ def check_status(module_name):
     except importlib.metadata.PackageNotFoundError:
         spec = importlib.util.find_spec(module_name)
         return spec is not None
-
-
 def main():
     current_dir = pathlib.Path(".")
     output_file = current_dir / "importz.txt"
@@ -116,7 +107,5 @@ def main():
             print("✨ Environment is fully satisfied!")
     else:
         print("ℹ️ No 3rd-party imports found.")
-
-
 if __name__ == "__main__":
     main()

@@ -3,8 +3,6 @@ import io
 import tarfile
 import zipfile
 from pathlib import Path
-
-
 def whl_to_tarxz(source_dir: str):
     source_path = Path(source_dir)
     if not source_path.exists():
@@ -29,7 +27,5 @@ def whl_to_tarxz(source_dir: str):
                 tar_info.size = len(file_data)
                 tf.addfile(tar_info, fileobj=io.BytesIO(file_data))
         print(f"Created {tar_xz_file}")
-
-
 if __name__ == "__main__":
     whl_to_tarxz(".")

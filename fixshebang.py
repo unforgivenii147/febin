@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
-
 OLD = {
     "#!/data/data/com.termux/files/usr/bin/env python",
     "#!/data/data/com.termux/files/usr/bin/python",
@@ -10,8 +9,6 @@ OLD = {
     "#!/usr/bin/env python3",
 }
 NEW = "#!/data/data/com.termux/files/usr/bin/env python3"
-
-
 def fix_file(path: Path) -> bool:
     text = path.read_text(encoding="utf-8", errors="ignore")
     lines = text.splitlines()
@@ -25,8 +22,6 @@ def fix_file(path: Path) -> bool:
         )
         return True
     return False
-
-
 def main() -> None:
     fixed = 0
     for file in Path(".").rglob("*.py"):
@@ -34,7 +29,5 @@ def main() -> None:
             fixed += 1
             print(f"Updated: {file}")
     print(f"\nDone. Updated {fixed} files.")
-
-
 if __name__ == "__main__":
     main()

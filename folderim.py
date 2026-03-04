@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import shutil
 from pathlib import Path
-
 import dh
 from PIL import Image
-
 IMAGE_EXTS = {
     ".jpg",
     ".jpeg",
@@ -15,12 +13,8 @@ IMAGE_EXTS = {
 HASH_FUNC = dh.phash
 MAX_DISTANCE = 10
 OUT_PREFIX = "group_"
-
-
 def is_image(path: Path) -> bool:
     return path.suffix.lower() in IMAGE_EXTS and path.is_file()
-
-
 def compute_hash(path: Path):
     try:
         with Image.open(path) as img:
@@ -28,8 +22,6 @@ def compute_hash(path: Path):
     except Exception as e:
         print(f"[SKIP] {path.name}: {e}")
         return None
-
-
 def main():
     cwd = Path.cwd()
     images = [p for p in cwd.iterdir() if is_image(p)]
@@ -61,7 +53,5 @@ def main():
     print(
         f"Done. Created {len([g for g in groups if len(g) > 1])} groups with multiple images."
     )
-
-
 if __name__ == "__main__":
     main()

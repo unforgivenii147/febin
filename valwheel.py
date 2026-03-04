@@ -1,12 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 import shutil
-
 from packaging.tags import parse_tag
 from packaging.utils import canonicalize_name
 from packaging.version import Version
-
-
 def is_valid_wheel_name(filename):
     try:
         basename = filename[:-4]
@@ -30,8 +27,6 @@ def is_valid_wheel_name(filename):
         return True
     except Exception:
         return False
-
-
 def main():
     invalid_dir = "invalid_wheels"
     os.makedirs(invalid_dir, exist_ok=True)
@@ -42,7 +37,5 @@ def main():
                 shutil.move(filename, os.path.join(invalid_dir, filename))
             else:
                 print(f"Valid wheel name: {filename}")
-
-
 if __name__ == "__main__":
     main()

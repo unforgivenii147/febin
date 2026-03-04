@@ -2,8 +2,6 @@
 import os
 import sys
 from pathlib import Path
-
-
 def get_sizes(start_path="."):
     get_sizes = []
     start_path = Path(start_path).resolve()
@@ -23,8 +21,6 @@ def get_sizes(start_path="."):
         )
         return []
     return get_sizes
-
-
 def format_size(size_bytes) -> str:
     if size_bytes == 0:
         return "0 B"
@@ -34,8 +30,6 @@ def format_size(size_bytes) -> str:
         size_bytes /= 1024.0
         i += 1
     return f"{size_bytes:.2f} {size_names[i]}"
-
-
 def main() -> None:
     print("Scanning files...")
     get_sizes = get_sizes()
@@ -65,8 +59,6 @@ def main() -> None:
     print(f"Total files scanned: {total_files}")
     if total_files > 10:
         print(f"Showing top 10 out of {total_files} files")
-
-
 def alternative_version_with_details() -> None:
     get_sizes = get_sizes()
     if not get_sizes:
@@ -79,8 +71,6 @@ def alternative_version_with_details() -> None:
     for i, (file_path, size) in enumerate(top_files, 1):
         size_str = format_size(size)
         print(f"{i:2d}. {size_str:>10} - {file_path}")
-
-
 if __name__ == "__main__":
     try:
         alternative_version_with_details()

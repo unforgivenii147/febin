@@ -1,11 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
-
-
 def is_text_file(file_path, text_extensions):
     return file_path.suffix.lower() in text_extensions
-
-
 def collect_top_lines(directory, text_extensions, top_n=500) -> None:
     for ext in text_extensions:
         lines_counter = Counter()
@@ -27,12 +23,8 @@ def collect_top_lines(directory, text_extensions, top_n=500) -> None:
             f.write(f"Top {top_n} most frequent lines for {ext} files:\n\n")
             f.writelines(f"{count}: {line} \n"
                          for line, count in lines_counter.most_common(top_n))
-
-
 def main() -> None:
     text_extensions = {".h", ".hpp"}
     collect_top_lines(".", text_extensions, top_n=500)
-
-
 if __name__ == "__main__":
     main()

@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
-
 import argparse
 import fnmatch
 import os
@@ -8,13 +7,10 @@ import stat
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TYPE_CHECKING
-
 import regex as re
 from dh import is_binary
-
 if TYPE_CHECKING:
     from collections.abc import Iterable
-
 IGNORED_DIRS = {
     ".git",
     ".hg",
@@ -27,8 +23,6 @@ DEFAULT_THREADS = max(4, (os.cpu_count() or 4))
 ANSI_BOLD = "\033[1m"
 ANSI_RESET = "\033[0m"
 ANSI_HIGHLIGHT = "\033[31m"
-
-
 def colorize(
     text: str,
     start: int,
@@ -39,15 +33,11 @@ def colorize(
         return text
     return text[:start] + ANSI_HIGHLIGHT + ANSI_BOLD + text[
         start:end] + ANSI_RESET + text[end:]
-
-
 def matches_any_glob(path: str, patterns: Iterable[str]) -> bool:
     basename = os.path.basename(path)
     return any(
         fnmatch.fnmatch(path, p) or fnmatch.fnmatch(basename, p)
         for p in patterns)
-
-
 def collect_files(
     roots: Iterable[str],
     include_hidden: bool = False,
@@ -92,8 +82,6 @@ def collect_files(
                 except Exception:
                     continue
                 yield full
-
-
 def search_file_text_mode(
     path: str,
     regex: re.Pattern | None,
@@ -139,8 +127,6 @@ def search_file_text_mode(
     except Exception:
         return path, []
     return path, matches
-
-
 def build_argparser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description="ripgrep-like recursive search in Python")
@@ -230,8 +216,6 @@ def build_argparser() -> argparse.ArgumentParser:
         help="Files or directories to search (default: .)",
     )
     return p
-
-
 def main(argv: list[str] | None = None) -> int:
     args = build_argparser().parse_args(argv)
     pattern = args.pattern_e or args.pattern
@@ -272,7 +256,6 @@ def main(argv: list[str] | None = None) -> int:
     color = not args.no_color and sys.stdout.isatty()
     any_match = False
     results_per_file = {}
-
     def worker(path: str):
         if is_binary(path):
             return path, []
@@ -284,7 +267,6 @@ def main(argv: list[str] | None = None) -> int:
             show_line_numbers=args.line_number,
             color=color,
         )
-
     with ThreadPoolExecutor(max_workers=args.threads) as ex:
         futures = {ex.submit(worker, p): p for p in candidates}
         try:
@@ -328,7 +310,5 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 130
     return 0 if any_match else 1
-
-
 if __name__ == "__main__":
     sys.exit(main())

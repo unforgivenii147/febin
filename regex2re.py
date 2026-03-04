@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 from pathlib import Path
-
 import regex as re
-
-
 def is_python_file(file_path):
     if file_path.suffix == ".py":
         return True
@@ -22,8 +19,6 @@ def is_python_file(file_path):
         ):
             return False
     return False
-
-
 def process_file(file_path):
     try:
         with open(file_path, encoding="utf-8") as f:
@@ -45,8 +40,6 @@ def process_file(file_path):
     except Exception as e:
         print(f"Error processing {file_path}: {e}")
         return False
-
-
 def find_and_process_python_files(root_dir="."):
     root_path = Path(root_dir)
     modified_files = []
@@ -75,8 +68,6 @@ def find_and_process_python_files(root_dir="."):
         print("\nModified files:")
         for file in modified_files:
             print(f"  - {file}")
-
-
 def main():
     import argparse
     parser = argparse.ArgumentParser(
@@ -101,7 +92,5 @@ def main():
         print("\n*** DRY RUN MODE - No files will be modified ***\n")
     find_and_process_python_files(args.directory)
     print("\nDone!")
-
-
 if __name__ == "__main__":
     main()

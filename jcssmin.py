@@ -3,11 +3,8 @@ import os
 from multiprocessing import Pool
 from pathlib import Path
 from time import perf_counter
-
 from fastwalk import walk_files
 from rcssmin import cssmin
-
-
 def process_file(path) -> str:
     try:
         with open(path, encoding="utf-8") as f:
@@ -24,8 +21,6 @@ def process_file(path) -> str:
             return f"[OK] {path.name}"
     except Exception as e:
         return f"[ERROR] ({path}): {e}"
-
-
 def collect_files() -> list:
     targets = []
     root = os.getcwd()
@@ -35,8 +30,6 @@ def collect_files() -> list:
         if path.is_file() and path.suffix in EXT:
             targets.append(path)
     return targets
-
-
 def main() -> None:
     s = perf_counter()
     files = collect_files()
@@ -52,7 +45,5 @@ def main() -> None:
         print(f"{round(took * 1000, 2)} ms")
     else:
         print(f"{round(took, 2)} s")
-
-
 if __name__ == "__main__":
     main()

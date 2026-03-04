@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import subprocess
-
-
 def save_installed_packages(output_file="installed.txt", ):
     """
     Save the names of installed Debian packages to a text file.
@@ -31,7 +29,5 @@ def save_installed_packages(output_file="installed.txt", ):
         print(f"Error: Failed to retrieve installed packages. {e}")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-
-
 if __name__ == "__main__":
     save_installed_packages()

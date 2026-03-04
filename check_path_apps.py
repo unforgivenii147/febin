@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import os
 from collections import defaultdict
-
-
 def find_path_duplicates():
     # Get the PATH environment variable
     path_env = os.environ.get("PATH", "")
@@ -38,7 +36,5 @@ def find_path_duplicates():
             print("-" * 30)
     if not duplicates_found:
         print("Clean as a whistle! No duplicate executables found.")
-
-
 if __name__ == "__main__":
     find_path_duplicates()

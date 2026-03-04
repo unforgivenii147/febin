@@ -7,9 +7,7 @@ import zipfile
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from typing import Any
-
 import regex as re
-
 OUTPUT_DIR = Path("output")
 ARCHIVE_EXTENSIONS = (
     ".whl",
@@ -25,10 +23,7 @@ ALLOWED_PYTHON_EXTENSIONS = (
     ".py",
     "",
 )
-
-
 class EntityExtractor(ast.NodeVisitor):
-
     def __init__(
         self,
         source_content: str,
@@ -38,7 +33,6 @@ class EntityExtractor(ast.NodeVisitor):
         self.source_lines = source_content.splitlines(keepends=True)
         self.original_path = original_path
         self.scope_stack = []
-
     def _get_source_slice(self, node: ast.AST) -> str:
         start_line = node.lineno - 1
         end_line = node.end_lineno or node.lineno
@@ -49,7 +43,6 @@ class EntityExtractor(ast.NodeVisitor):
             last_line = code_slice[-1]
             code_slice[-1] = last_line[:node.end_col_offset]
         return "".join(code_slice)
-
     def _extract_and_save(
         self,
         node: ast.AST,
@@ -77,7 +70,6 @@ class EntityExtractor(ast.NodeVisitor):
             "is_function":
             entity_type in ("function", "method"),
         })
-
     def visit_FunctionDef(self, node: ast.FunctionDef):
         entity_type = "method" if self.scope_stack and self.scope_stack[
             -1].startswith("class_") else "function"
@@ -85,7 +77,6 @@ class EntityExtractor(ast.NodeVisitor):
         self.scope_stack.append(f"func_{node.name}")
         self.generic_visit(node)
         self.scope_stack.pop()
-
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
         entity_type = "method" if self.scope_stack and self.scope_stack[
             -1].startswith("class_") else "function"
@@ -93,13 +84,11 @@ class EntityExtractor(ast.NodeVisitor):
         self.scope_stack.append(f"async_func_{node.name}")
         self.generic_visit(node)
         self.scope_stack.pop()
-
     def visit_ClassDef(self, node: ast.ClassDef):
         self._extract_and_save(node, "class", node.name)
         self.scope_stack.append(f"class_{node.name}")
         self.generic_visit(node)
         self.scope_stack.pop()
-
     def visit_Assign(self, node: ast.Assign):
         if not self.scope_stack and len(node.targets) == 1 and isinstance(
                 node.targets[0], ast.Name):
@@ -113,11 +102,8 @@ class EntityExtractor(ast.NodeVisitor):
                     "constant",
                     target_name,
                 )
-
     def generic_visit(self, node: ast.AST):
         super().generic_visit(node)
-
-
 def get_unique_filepath(base_path: Path) -> Path:
     if not base_path.exists():
         return base_path
@@ -129,8 +115,6 @@ def get_unique_filepath(base_path: Path) -> Path:
         if not new_path.exists():
             return new_path
         i += 1
-
-
 def save_entity(entity: dict[str, Any]):
     filename_base = f"{entity['full_name']}.py"
     output_path_base = OUTPUT_DIR / entity["type"] / filename_base
@@ -143,8 +127,6 @@ def save_entity(entity: dict[str, Any]):
     except Exception as e:
         print(f"Error saving {final_py_path}: {e}")
         return
-
-
 def extract_entities_from_content(content: str,
                                   path: Path) -> list[dict[str, Any]]:
     try:
@@ -157,8 +139,6 @@ def extract_entities_from_content(content: str,
     except Exception as e:
         print(f"Error parsing AST for {path}: {e}")
         return []
-
-
 def is_python_file_no_extension(path: Path, ) -> bool:
     if path.suffix:
         return False
@@ -176,8 +156,6 @@ def is_python_file_no_extension(path: Path, ) -> bool:
     except:
         pass
     return False
-
-
 def process_single_file(path: Path, ) -> list[dict[str, Any]]:
     try:
         if path.suffix == ".py" or is_python_file_no_extension(path):
@@ -187,8 +165,6 @@ def process_single_file(path: Path, ) -> list[dict[str, Any]]:
     except Exception as e:
         print(f"Error reading file {path}: {e}")
         return []
-
-
 def process_archive(path: Path, ) -> list[dict[str, Any]]:
     entities = []
     if path.suffix == ".zst":
@@ -260,15 +236,11 @@ def process_archive(path: Path, ) -> list[dict[str, Any]]:
         except Exception as e:
             print(f"Error processing TAR archive {path}: {e}")
     return entities
-
-
 def worker_process(path_str: str, ) -> list[dict[str, Any]]:
     path = Path(path_str)
     if path.name.endswith(ARCHIVE_EXTENSIONS):
         return process_archive(path)
     return process_single_file(path)
-
-
 def main():
     print(f"Starting analysis in {Path.cwd()}...")
     if OUTPUT_DIR.exists():
@@ -308,7 +280,5 @@ def main():
     print(
         f"Results are saved in the '{OUTPUT_DIR}' folder, organized by entity type (class, function, constant)."
     )
-
-
 if __name__ == "__main__":
     main()

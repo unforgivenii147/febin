@@ -1,14 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
-
 from multiprocessing import Pool
 from pathlib import Path
 from time import perf_counter
-
 import htmlmin
 from fastwalk import walk_files
-
-
 # fmt: off
 def process_file(file: Path) -> bool:
     try:
@@ -26,8 +22,6 @@ def process_file(file: Path) -> bool:
     except Exception:
         print(f"[ERR] {file.name}")
         return False
-
-
 def main() -> None:
     start_time = perf_counter()
     files = []
@@ -46,7 +40,5 @@ def main() -> None:
     pool.join()
     duration = perf_counter() - start_time
     print(f"Total Runtime: {duration:.4f} seconds")
-
-
 if __name__ == "__main__":
     main()

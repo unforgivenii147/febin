@@ -2,10 +2,7 @@
 import os
 import subprocess
 import zipfile
-
 VENV_PATH = os.path.expanduser("~/venv")
-
-
 def get_installed_version(pkg_name):
     try:
         result = subprocess.run(
@@ -20,8 +17,6 @@ def get_installed_version(pkg_name):
     except Exception as e:
         print(f"Error checking installed version for {pkg_name}: {e}")
     return None
-
-
 def get_wheel_package_info(wheel_file):
     try:
         with zipfile.ZipFile(wheel_file, "r") as zip_ref:
@@ -38,16 +33,12 @@ def get_wheel_package_info(wheel_file):
     except Exception as e:
         print(f"Error reading {wheel_file}: {e}")
     return None, None
-
-
 def remove_wheel_file(wheel_file):
     try:
         os.remove(wheel_file)
         print(f"Removed: {wheel_file}")
     except Exception as e:
         print(f"Error removing {wheel_file}: {e}")
-
-
 def main():
     whl_dir = "/sdcard/whl"
     if not os.path.exists(whl_dir):
@@ -80,7 +71,5 @@ def main():
                     )
             else:
                 print(f"Could not extract info from {wheel_file}")
-
-
 if __name__ == "__main__":
     main()

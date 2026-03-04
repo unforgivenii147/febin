@@ -1,19 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 from pathlib import Path
-
 import regex as re
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
-
 DIRECTORY = "."
 non_english_pattern = re.compile(r"[^\x00-\x7F]")
-
-
 def is_english(text):
     return not non_english_pattern.search(text)
-
-
 def translate_filename(filename):
     name, ext = os.path.splitext(filename)
     try:
@@ -23,8 +17,6 @@ def translate_filename(filename):
     except Exception as e:
         print(f"Translation error for {filename}: {e}")
         return filename
-
-
 def rename_files(directory):
     for pth in walk_files(directory):
         path = Path(pth)
@@ -52,7 +44,5 @@ def rename_files(directory):
             os.rename(original_path, new_path)
             print(
                 f"Renamed directory: {original_path.name} -> {new_path.name}")
-
-
 if __name__ == "__main__":
     rename_files(DIRECTORY)

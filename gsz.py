@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import sys
-
 import requests
-
-
 def normalize_repo_address(repo_arg: str) -> str:
     if repo_arg.startswith("http://") or repo_arg.startswith("https://"):
         parts = repo_arg.rstrip("/").split("/")
@@ -16,8 +13,6 @@ def normalize_repo_address(repo_arg: str) -> str:
         return repo_arg
     else:
         raise ValueError("Repo address must be URL or user/repo format.")
-
-
 def get_repo_size(repo: str) -> int:
     url = f"https://api.github.com/repos/{repo}"
     response = requests.get(url)
@@ -28,8 +23,6 @@ def get_repo_size(repo: str) -> int:
         raise ValueError("Repository not found.")
     else:
         raise RuntimeError(f"GitHub API error: {response.status_code}")
-
-
 def get_branches(repo: str) -> list:
     url = f"https://api.github.com/repos/{repo}/branches"
     response = requests.get(url)
@@ -38,8 +31,6 @@ def get_branches(repo: str) -> list:
         return [branch["name"] for branch in data]
     else:
         raise RuntimeError(f"Failed to fetch branches: {response.status_code}")
-
-
 def get_branch_size(repo: str, branch: str) -> int:
     url = f"https://api.github.com/repos/{repo}/git/trees/{branch}?recursive=1"
     response = requests.get(url)
@@ -53,13 +44,9 @@ def get_branch_size(repo: str, branch: str) -> int:
         raise RuntimeError(
             f"Failed to fetch branch tree: {branch}, status {response.status_code}"
         )
-
-
 def format_size(kb: int) -> str:
     mb = kb / 1024
     return f"{kb} KB ({mb:.2f} MB)"
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="Check GitHub repo size")
     parser.add_argument("repo", help="Repo URL or user/repo")
@@ -82,7 +69,5 @@ def main() -> None:
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
-
-
 if __name__ == "__main__":
     main()

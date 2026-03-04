@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-
 EXCLUDE_DIRS = {".git"}
 OUTPUT_FILE = "merged.txt"
-
-
 def read_file(path):
     try:
         with open(
@@ -15,8 +12,6 @@ def read_file(path):
             return f.read()
     except Exception:
         return None
-
-
 def collect_files(root):
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
@@ -26,8 +21,6 @@ def collect_files(root):
                     OUTPUT_FILE) or fname == os.path.basename(__file__):
                 continue
             yield full
-
-
 def merge_files(root):
     files = list(collect_files(root))
     print(f"Found {len(files)} files")
@@ -42,8 +35,6 @@ def merge_files(root):
                 fo.write("\n\n\n")
             print(f"Added: {path}")
     print(f"\nsaved as: {OUTPUT_FILE}")
-
-
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser(

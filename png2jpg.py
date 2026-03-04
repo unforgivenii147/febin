@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 import sys
-
 from PIL import Image
-
 if len(sys.argv) != 2:
     print("Usage: python convert_png_to_jpg.py <filename.png>")
     sys.exit(1)

@@ -2,25 +2,18 @@
 import shutil
 import sysconfig
 from pathlib import Path
-
 from fastwalk import walk
-
-
 def format_size(bytes_size: int) -> str:
     if bytes_size < 1024 * 1024:
         return f"{bytes_size / 1024:.2f} KB"
     else:
         return f"{bytes_size / (1024 * 1024):.2f} MB"
-
-
 def get_skip_dirs():
     skip = set()
     site_packages = Path(sysconfig.get_paths()["purelib"])
     for d in ("regex", ):
         skip.add(str(site_packages / d))
     return skip
-
-
 def clean_pyc_and_pycache(start_dir: Path = Path.cwd(), ):
     total_size = 0
     dirs_removed = 0
@@ -53,7 +46,5 @@ def clean_pyc_and_pycache(start_dir: Path = Path.cwd(), ):
     print(f"   • .pyc files removed: {files_removed}")
     print(f"   • Total size freed: {format_size(total_size)}")
     print(f"   • __pycache__ directories removed: {dirs_removed}")
-
-
 if __name__ == "__main__":
     clean_pyc_and_pycache()

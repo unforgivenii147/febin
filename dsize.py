@@ -3,8 +3,6 @@ import argparse
 import urllib.error
 import urllib.request
 from pathlib import Path
-
-
 def fetch_content_length(url: str) -> int | None:
     request = urllib.request.Request(url, method="HEAD")
     try:
@@ -20,8 +18,6 @@ def fetch_content_length(url: str) -> int | None:
     with urllib.request.urlopen(request, timeout=10) as response:
         length = response.headers.get("Content-Length")
         return int(length) if length else None
-
-
 def format_size(size_bytes: int) -> str:
     units = ["B", "KB", "MB", "GB", "TB"]
     size = float(size_bytes)
@@ -30,8 +26,6 @@ def format_size(size_bytes: int) -> str:
             return f"{size:.2f} {unit}"
         size /= 1024
     return f"{size:.2f} PB"
-
-
 def process_url(url: str) -> str:
     try:
         size = fetch_content_length(url)
@@ -41,8 +35,6 @@ def process_url(url: str) -> str:
         return f"{url}\t{format_size(size)}"
     except Exception as exc:
         return f"{url}\tError: {exc}"
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Show download size of a URL or URLs from a file")
@@ -66,7 +58,5 @@ def main() -> None:
         )
     else:
         print(process_url(args.input))
-
-
 if __name__ == "__main__":
     main()

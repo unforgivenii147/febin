@@ -4,17 +4,13 @@ import os
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
-
 from deep_translator import GoogleTranslator
 from tqdm import tqdm
-
 INPUT_FILE = "words.txt"
 OUTPUT_FILE = "dic.json"
 MAX_WORKERS = 12
 SAVE_EVERY = 1000
 lock = Lock()
-
-
 def translate_word(word):
     for attempt in range(3):
         try:
@@ -23,13 +19,9 @@ def translate_word(word):
             print(f"[WARN] Failed '{word}' (attempt {attempt + 1}): {e}")
             time.sleep(0.5)
     return None
-
-
 def load_words(input_file):
     with open(input_file, encoding="utf-8") as f:
         return [w.strip() for w in f if w.strip()]
-
-
 def load_existing_results(output_file):
     if os.path.exists(output_file):
         try:
@@ -40,8 +32,6 @@ def load_existing_results(output_file):
         except Exception as e:
             print(f"[WARN] Could not load existing {output_file}: {e}")
     return {}
-
-
 def save_results_atomic(results, output_file):
     tmp = output_file + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
@@ -52,8 +42,6 @@ def save_results_atomic(results, output_file):
             indent=2,
         )
     os.replace(tmp, output_file)
-
-
 def main():
     words = load_words(INPUT_FILE)
     print(f"[INFO] Loaded {len(words)} Persian words")
@@ -112,7 +100,5 @@ def main():
             save_results_atomic(results, OUTPUT_FILE)
         pbar.close()
         print(f"\n[SAVED] Translation dictionary saved to {OUTPUT_FILE}")
-
-
 if __name__ == "__main__":
     main()

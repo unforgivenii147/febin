@@ -3,10 +3,7 @@ import tarfile
 import zipfile
 from pathlib import Path
 from sys import argv
-
 from dh import unique_path
-
-
 def whl_to_tar_xz(whl_path: Path):
     target = whl_path.with_suffix(".tar.xz")
     if target.exists():
@@ -25,8 +22,6 @@ def whl_to_tar_xz(whl_path: Path):
         print(f"[OK] {target.name}")
     except Exception as e:
         print(f"[ERROR] {whl_path.name}: {e}")
-
-
 def tar_xz_to_whl(tar_path: Path):
     target = tar_path.with_suffix(".whl")
     tt = str(target).replace(".tar", "")
@@ -51,8 +46,6 @@ def tar_xz_to_whl(tar_path: Path):
         print(f"[OK] {target.name}")
     except Exception as e:
         print(f"[ERROR] {tar_path.name}: {e}")
-
-
 if __name__ == "__main__":
     fn = Path(argv[1])
     if fn.suffix == ".whl":

@@ -4,17 +4,13 @@ Advanced Pip Package Uninstaller - Using pip's internal API with version compati
 """
 import sys
 import warnings
-
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-
 def get_pip_api():
     """Try to import pip's API with fallbacks for different versions"""
     try:
         from pip._internal.cli.main import main as pip_main
         from pip._internal.metadata import get_default_environment
         from pip._internal.operations.freeze import freeze
-
         def get_packages():
             """Get packages using modern pip API"""
             try:
@@ -30,35 +26,28 @@ def get_pip_api():
                         name, version = line.split("==", 1)
                         packages[name] = version
                 return packages
-
         def uninstall(packages: list[str]):
             """Uninstall using modern pip API"""
             args = ["uninstall", "-y", *packages]
             return pip_main(args)
-
         return get_packages, uninstall
     except ImportError:
         try:
             import pip
-
             def get_packages():
                 """Get packages using older pip API"""
                 packages = {}
                 for dist in pip.get_installed_distributions():
                     packages[dist.project_name] = dist.version
                 return packages
-
             def uninstall(packages: list[str]):
                 """Uninstall using older pip API"""
                 for pkg in packages:
                     pip.uninstall(pkg)
                 return 0
-
             return get_packages, uninstall
         except ImportError:
             return None, None
-
-
 def display_packages(packages: dict[str, str], title: str = "Packages"):
     """Display packages in a formatted way"""
     if not packages:
@@ -67,8 +56,6 @@ def display_packages(packages: dict[str, str], title: str = "Packages"):
     for pkg, version in sorted(packages.items()):
         print(f"  - {pkg} (version: {version})")
     print(f"\nTotal: {len(packages)} package(s)")
-
-
 def find_matching_packages(pattern: str,
                            packages: dict[str, str]) -> dict[str, str]:
     """Find packages that contain the pattern in their name"""
@@ -78,8 +65,6 @@ def find_matching_packages(pattern: str,
         if pattern_lower in package_name.lower():
             matches[package_name] = version
     return matches
-
-
 def main():
     if len(sys.argv) != 2:
         print("Usage: python uninstaller_pip.py <pattern>")
@@ -130,7 +115,5 @@ def main():
     except Exception as e:
         print(f"\n✗ Error during uninstallation: {e}")
         sys.exit(1)
-
-
 if __name__ == "__main__":
     main()

@@ -2,8 +2,6 @@
 import os
 import sys
 from pathlib import Path
-
-
 def split_file_by_delimiter(fname, delim) -> None:
     with open(fname) as f:
         content = f.read()
@@ -22,14 +20,10 @@ def split_file_by_delimiter(fname, delim) -> None:
             fo.write(endl)
             i += 1
         print(f"{outfile} created")
-
-
 def main() -> None:
     fn = sys.argv[1]
     delim = sys.argv[2]
     split_file_by_delimiter(fn, delim)
     print("metadata updated.")
-
-
 if __name__ == "__main__":
     main()

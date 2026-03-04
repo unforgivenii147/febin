@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 import argparse
 import os
 import shutil
@@ -8,33 +8,21 @@ import tempfile
 import zipfile
 from pathlib import Path
 from sysconfig import get_path
-
-# Colors
 CYAN = "\033[0;96m"
 GREEN = "\033[0;92m"
 YELLOW = "\033[1;93m"
 RED = "\033[0;91m"
 NC = "\033[0m"
-
-
 def print_info(msg):
     print(f"{CYAN}{msg}{NC}")
-
-
 def print_success(msg):
     print(f"{GREEN}✓ {msg}{NC}")
-
-
 def print_warning(msg):
     print(f"{YELLOW}{msg}{NC}")
-
-
 def print_error(msg):
     print(f"{RED}✗ {msg}{NC}")
-
-
 def get_package_path(pkg_name):
-    """Locate the package path."""
+
     try:
         result = subprocess.run(
             [
@@ -55,15 +43,11 @@ def get_package_path(pkg_name):
     except Exception as e:
         print_error(f"Error importing {pkg_name}: {e}")
     return None
-
-
 def is_single_file_module(pkg_path):
-    """Check if package is a single .py file."""
+
     return pkg_path.endswith(".py")
-
-
 def is_package_directory(pkg_path):
-    """Check if path is a package directory with multiple files."""
+
     if not os.path.isdir(pkg_path):
         return False
     py_files = []
@@ -71,16 +55,7 @@ def is_package_directory(pkg_path):
         dirs[:] = [d for d in dirs if d != "__pycache__"]
         py_files.extend([f for f in files if f.endswith(".py")])
     return len(py_files) > 1
-
-
 def compile_to_bytecode(directory, opt_level=2):
-    """
-    Compile all Python files to bytecode and remove .py files.
-    opt_level:
-    - 0: No optimization (keeps __doc__, __assert__)
-    - 1: Basic optimization (-O flag, removes assert statements)
-    - 2: Advanced optimization (-OO flag, removes docstrings + asserts)
-    """
     try:
         opt_flag = []
         if opt_level == 1:
@@ -102,20 +77,16 @@ def compile_to_bytecode(directory, opt_level=2):
     except Exception as e:
         print_error(f"Compilation failed: {e}")
         return False
-
-
 def find_so_files(directory):
-    """Find all C extension (.so) files."""
+
     so_files = []
     for root, dirs, files in os.walk(directory):
         for file in files:
             if file.endswith(".so"):
                 so_files.append(os.path.join(root, file))
     return so_files
-
-
 def create_zip(src_path, zip_path, pkg_name):
-    """Create a zip file from source path."""
+
     try:
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
             if os.path.isfile(src_path):
@@ -132,10 +103,8 @@ def create_zip(src_path, zip_path, pkg_name):
     except Exception as e:
         print_error(f"Failed to create zip: {e}")
         return False
-
-
 def get_site_packages():
-    """Get the site-packages directory."""
+
     site_packages = get_path("purelib")
     if not site_packages:
         site_packages = os.path.join(
@@ -143,13 +112,7 @@ def get_site_packages():
             f"lib/python{sys.version_info.major}.{sys.version_info.minor}/site-packages",
         )
     return site_packages
-
-
 def check_import(pkg_name, backup_path=None):
-    """
-    Test if package can be imported successfully.
-    If import fails and backup exists, restore it.
-    """
     print_info("Checking import...")
     try:
         result = subprocess.run(
@@ -163,7 +126,7 @@ def check_import(pkg_name, backup_path=None):
         else:
             print_error(f"Import check failed for {pkg_name}")
             print_error(f"Error: {result.stderr}")
-            # Rollback if backup exists
+
             if backup_path and os.path.exists(backup_path):
                 print_warning("Rolling back to original package...")
                 site_packages = get_site_packages()
@@ -182,10 +145,8 @@ def check_import(pkg_name, backup_path=None):
     except Exception as e:
         print_error(f"Import check error: {e}")
         return False
-
-
 def zip_package(pkg_name, use_pyc=False, opt_level=2, verbose=False):
-    """Main function to zip a package."""
+
     print_info(f"Processing package: {pkg_name}...")
     pkg_path = get_package_path(pkg_name)
     if not pkg_path:
@@ -206,7 +167,7 @@ def zip_package(pkg_name, use_pyc=False, opt_level=2, verbose=False):
     zip_path = os.path.join(zip_dir, f"{pkg_name}.zip")
     if os.path.exists(zip_path):
         print_warning(f"{pkg_name}.zip already exists. Overwriting...")
-    # Create backup before modification
+
     backup_path = None
     with tempfile.TemporaryDirectory() as backup_tmp:
         try:
@@ -256,13 +217,13 @@ sys.modules[r'{pkg_name}'] = module
                 except Exception as e:
                     print_error(f"Failed to create loader stub: {e}")
                     return False
-                # Remove original package
+
                 try:
                     shutil.rmtree(pkg_path)
                 except Exception as e:
                     print_error(f"Failed to remove original package: {e}")
                     return False
-                # Check import
+
                 print_warning("Step 4: Verifying import...")
                 if not check_import(pkg_name, backup_path):
                     print_error("Import verification failed! Rolling back...")
@@ -274,7 +235,7 @@ sys.modules[r'{pkg_name}'] = module
                     except Exception as e:
                         print_error(f"Rollback failed: {e}")
                     return False
-                # Print summary
+
                 mode = ".pyc" if use_pyc else ".py"
                 size_mb = compressed_size / (1024 * 1024)
                 original_mb = original_size / (1024 * 1024)
@@ -288,10 +249,8 @@ sys.modules[r'{pkg_name}'] = module
         except Exception as e:
             print_error(f"Error: {e}")
             return False
-
-
 def unzip_package(pkg_name, verbose=False):
-    """Unzip a compressed package back to original state."""
+
     print_info(f"Unzipping package: {pkg_name}...")
     site_packages = get_site_packages()
     zip_path = os.path.join(site_packages, f"{pkg_name}.zip")
@@ -323,14 +282,12 @@ def unzip_package(pkg_name, verbose=False):
     except Exception as e:
         print_error(f"Unzip failed: {e}")
         return False
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Zip/Unzip Python packages for efficient storage")
     subparsers = parser.add_subparsers(dest="command", help="Commands")
-    # Zip command
-    zip_parser = subparsers.add_parser("zip", help="Zip a package")
+
+    zip_parser = subparsers.add_parser("zip", default=True, help="Zip a package")
     zip_parser.add_argument("package", help="Package name to zip")
     zip_parser.add_argument(
         "-p",
@@ -352,7 +309,7 @@ def main():
                             "--verbose",
                             action="store_true",
                             help="Enable verbose output")
-    # Unzip command
+
     unzip_parser = subparsers.add_parser("unzip", help="Unzip a package")
     unzip_parser.add_argument("package", help="Package name to unzip")
     unzip_parser.add_argument("-v",
@@ -371,7 +328,5 @@ def main():
         sys.exit(0 if success else 1)
     else:
         parser.print_help()
-
-
 if __name__ == "__main__":
     main()

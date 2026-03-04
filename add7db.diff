@@ -1,5 +1,4 @@
 [DRY RUN] Would modify: add7db.py
-
 --- add7db.py
 +++ add7db.py (processed)
 -    """Compress data using 7z and return as base64 string"""
@@ -418,5 +417,4 @@
 -    conn.close()
 -if __name__ == "__main__":
 -    main()
-
 [DRY RUN] Summary: 1 files processed, 1 would be modified

@@ -3,8 +3,6 @@ import os
 import shutil
 import string
 import sys
-
-
 def find_unprintable_positions(text):
     allowed = set(string.printable) | {
         "\n",
@@ -23,8 +21,6 @@ def find_unprintable_positions(text):
         else:
             col_num += 1
     return positions
-
-
 def clean_text(text):
     allowed = set(string.printable) | {
         "\n",
@@ -32,8 +28,6 @@ def clean_text(text):
         "\t",
     }
     return "".join(ch for ch in text if ch in allowed)
-
-
 def clean_file(path: str) -> None:
     backup_path = path + ".bak"
     shutil.copy2(path, backup_path)
@@ -58,8 +52,6 @@ def clean_file(path: str) -> None:
             errors="ignore",
     ) as f:
         f.write(cleaned)
-
-
 def main():
     if len(sys.argv) != 2:
         print(f"Usage: {os.path.basename(sys.argv[0])} <filename>")
@@ -69,7 +61,5 @@ def main():
         print(f"Error: '{fname}' is not a file")
         sys.exit(1)
     clean_file(fname)
-
-
 if __name__ == "__main__":
     main()

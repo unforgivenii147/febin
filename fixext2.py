@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-
 import magic
-
 MIME_TO_EXT = {
     "text/html": "html",
     "application/json": "json",
@@ -15,8 +13,6 @@ MIME_TO_EXT = {
     "application/x-tar": "tar",
     "text/xml": "xml",
 }
-
-
 def detect_text_based_extension(text):
     text = text.strip()
     if text.startswith("#!") and "python" in text:
@@ -54,8 +50,6 @@ def detect_text_based_extension(text):
     if text.startswith("<?xml"):
         return "xml"
     return None
-
-
 def detect_extension(path, mime_type):
     if mime_type in MIME_TO_EXT:
         return MIME_TO_EXT[mime_type]
@@ -69,8 +63,6 @@ def detect_extension(path, mime_type):
         except:
             pass
     return None
-
-
 def safe_rename(src, dst):
     if not os.path.exists(dst):
         os.rename(src, dst)
@@ -83,8 +75,6 @@ def safe_rename(src, dst):
         new_path = f"{base} ({counter}){ext}"
     os.rename(src, new_path)
     return new_path
-
-
 def correct_file_extension(root="."):
     mime = magic.Magic(mime=True)
     for dirpath, _, filenames in os.walk(root):
@@ -113,7 +103,5 @@ def correct_file_extension(root="."):
                 print(
                     f" ⚠  Collision detected. Saved as: {os.path.basename(final_path)}"
                 )
-
-
 if __name__ == "__main__":
     correct_file_extension()

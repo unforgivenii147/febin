@@ -8,10 +8,8 @@ import tarfile
 import tempfile
 import zipfile
 from time import perf_counter
-
 import regex as re
 from dh import is_valid_url
-
 try:
     import zstandard as zstd
 except Exception:
@@ -59,12 +57,8 @@ TEXT_MIME_LIKE = {
     ".h",
     ".hpp",
 }
-
-
 def should_skip_dir(dirname):
     return any(part in EXCLUDE_DIRS for part in dirname.split(os.sep))
-
-
 def find_urls_in_text(text):
     found = set()
     for m in URL_RE.findall(text):
@@ -72,8 +66,6 @@ def find_urls_in_text(text):
         if url:
             found.add(url)
     return found
-
-
 def decode_bytes_to_text(b):
     for enc in ("utf-8", "latin-1", "utf-16"):
         try:
@@ -81,8 +73,6 @@ def decode_bytes_to_text(b):
         except Exception:
             continue
     return b.decode("utf-8", errors="ignore")
-
-
 def scan_bytes_for_urls(b, max_bytes, exts, name_hint=None):
     if exts is not None and name_hint:
         _, ext = os.path.splitext(name_hint)
@@ -92,13 +82,9 @@ def scan_bytes_for_urls(b, max_bytes, exts, name_hint=None):
         return set()
     text = decode_bytes_to_text(b)
     return find_urls_in_text(text)
-
-
 def is_archive_name(name):
     nl = name.lower()
     return any(nl.endswith(suf) for suf in ARCHIVE_SUFFIXES)
-
-
 def open_tar_from_zst_path(path):
     if zstd is None:
         return None, None
@@ -123,8 +109,6 @@ def open_tar_from_zst_path(path):
         with contextlib.suppress(Exception):
             temp.close()
         return None, None
-
-
 def process_zipfile_zipped(
     zipf,
     max_bytes,
@@ -162,8 +146,6 @@ def process_zipfile_zipped(
                     exts,
                     name_hint=name,
                 ))
-
-
 def process_tarfile_obj(
     tarf,
     max_bytes,
@@ -203,8 +185,6 @@ def process_tarfile_obj(
                     exts,
                     name_hint=name,
                 ))
-
-
 def process_bytes_as_archive(
     b,
     name,
@@ -323,8 +303,6 @@ def process_bytes_as_archive(
         found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
     except Exception:
         found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
-
-
 def process_path(
     path,
     max_bytes,
@@ -421,8 +399,6 @@ def process_path(
                 ))
     except Exception:
         return
-
-
 def main():
     start = perf_counter()
     parser = argparse.ArgumentParser(
@@ -502,7 +478,5 @@ def main():
             file=sys.stderr,
         )
     print(f"time:{perf_counter() - start}")
-
-
 if __name__ == "__main__":
     main()

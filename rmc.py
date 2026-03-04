@@ -1,5 +1,6 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/env python
 import ast
+import re
 import sys
 from multiprocessing import Pool
 from pathlib import Path
@@ -14,10 +15,35 @@ PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
 
 
+
+def preprocess(orig):
+#    content = re.sub(r"#.*", "", content)
+
+    cleaned = []
+    lines=orig.splitlines()
+    for line in lines:
+        if line.startswith("#!"):
+            cleaned.append(line)
+            continue
+        if "#" in line and not line.strip().startswith("#"):
+            indx = line.index("#")
+            cleaned.append(line[:indx] + "\n")
+            continue
+        if not line.strip().startswith("#"):
+            cleaned.append(line)
+
+    code='\n'.join(cleaned)
+    code = re.sub(r'""".*?"""', "", code)
+    code = re.sub(r"'''.*?'''", "", code)
+    try:
+        tree=ast.parse(code)
+        return code
+    except:
+        return orig
+
 def should_preserve_comment(content):
     content = content.strip()
     return content.startswith("#!") or content.startswith("# fmt:")
-
 
 def strip_code(source_code):
     try:
@@ -25,7 +51,6 @@ def strip_code(source_code):
         root_node = tree.root_node
         to_delete = []
         to_replace_with_pass = []
-
         def traverse(node):
             if node.type == "comment":
                 comment_text = source_code[node.start_byte:node.end_byte]
@@ -51,7 +76,6 @@ def strip_code(source_code):
                             ))
             for child in node.children:
                 traverse(child)
-
         traverse(root_node)
         modifications = [(s, e, "") for s, e in to_delete]
         modifications += [(s, e, "pass") for s, e in to_replace_with_pass]
@@ -106,11 +130,14 @@ def process_file(file_path: Path) -> None:
     before = get_size(file_path)
     try:
         original = file_path.read_text(encoding="utf-8")
+        code = preprocess(original)
         try:
-            modified, removed = rm_ast(original)
+            modified, removed = rm_ast(code)
         except:
-            modified, removed = rm_doc(original)
+            modified, removed = rm_doc(code)
+
         modified = cleanup_blank_lines(modified)
+
         if removed:
             try:
                 modified = strip_code(modified)
@@ -128,18 +155,17 @@ def process_file(file_path: Path) -> None:
         return
 
 
+
+
+
 def main():
     dir = Path.cwd()
     initsize = get_size(dir)
     args = sys.argv[1:]
     if args:
         files = [Path(f) for f in args]
-        if len(files) == 1:
-            process_file(files[0])
-            return
-        else:
-            for f in files:
-                process_file(f8)
+        for f in files:
+            process_file(f)
     else:
         files = get_pyfiles(dir)
         p = Pool(8)
@@ -148,8 +174,16 @@ def main():
         p.close()
         p.join()
     diff_size = initsize - get_size(dir)
-    print(f"{format_size(diff_size)}")
+    print(f"space saved : {format_size(diff_size)}")
 
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+

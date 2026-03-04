@@ -13,7 +13,6 @@ import sys
 import tempfile
 import time
 from pathlib import Path
-
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -24,8 +23,6 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger(__name__)
-
-
 def atomic_write(data, final_path):
     """
     Write data atomically using a temporary file.
@@ -53,8 +50,6 @@ def atomic_write(data, final_path):
             with contextlib.suppress(BaseException):
                 os.remove(temp_path)
         return False
-
-
 def safe_delete(file_path, max_retries=3, delay=0.5):
     """
     Safely delete a file with retries.
@@ -77,8 +72,6 @@ def safe_delete(file_path, max_retries=3, delay=0.5):
             logger.error(f"Error deleting {file_path}: {e}")
             return False
     return False
-
-
 def should_compress(file_path):
     """
     Determine if a file should be compressed.
@@ -99,8 +92,6 @@ def should_compress(file_path):
         return os.path.getsize(file_path) != 0
     except (OSError, PermissionError):
         return False
-
-
 def compress_file(file_path, delete_delay=0.5):
     """
     Compress a single file using lzma compression.
@@ -166,8 +157,6 @@ def compress_file(file_path, delete_delay=0.5):
         if os.path.exists(compressed_path):
             os.remove(compressed_path)
         return False
-
-
 def calculate_directory_size(path="."):
     """Calculate total size of all files in directory recursively."""
     total_size = 0
@@ -185,8 +174,6 @@ def calculate_directory_size(path="."):
             except (OSError, PermissionError):
                 continue
     return total_size, file_count
-
-
 def format_size(size_bytes):
     """Format bytes to human readable format."""
     if size_bytes == 0:
@@ -196,8 +183,6 @@ def format_size(size_bytes):
             return f"{size_bytes:.2f} {unit}"
         size_bytes /= 1024.0
     return f"{size_bytes:.2f} TB"
-
-
 def scan_files(directory):
     """Scan directory for files to compress."""
     files_to_compress = []
@@ -210,8 +195,6 @@ def scan_files(directory):
             if should_compress(file_path):
                 files_to_compress.append(file_path)
     return files_to_compress
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Compress files using xz compression")
@@ -317,8 +300,6 @@ def main():
     )
     logger.info("=" * 60)
     logger.info("Check compression_errors.log for any errors")
-
-
 if __name__ == "__main__":
     try:
         main()

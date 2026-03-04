@@ -2,19 +2,14 @@
 import argparse
 import os
 from pathlib import Path
-
 from PIL import Image, ImageFilter, ImageOps
 from pytesseract import image_to_string
-
-
 def preprocess_image(img):
     img = img.convert("L")
     img = ImageOps.autocontrast(img)
     img = img.filter(ImageFilter.MedianFilter(size=3))
     threshold = 150
     return img.point(lambda x: 255 if x > threshold else 0)
-
-
 def extract_text(image_path):
     img = Image.open(image_path)
     processed_img = preprocess_image(img)
@@ -23,8 +18,6 @@ def extract_text(image_path):
         lang="eng",
         config="--oem 1 --psm 6",
     )
-
-
 def process_file(file_path):
     print(f"Processing {file_path.name}")
     text = extract_text(file_path)
@@ -35,8 +28,6 @@ def process_file(file_path):
         print(f"{txtfile} created.")
     else:
         print("No text found.")
-
-
 def main():
     parser = argparse.ArgumentParser(description="Extract text from images.")
     parser.add_argument(
@@ -63,7 +54,5 @@ def main():
                         ".png",
                 }:
                     process_file(file_path)
-
-
 if __name__ == "__main__":
     main()

@@ -2,11 +2,8 @@
 import os
 import shutil
 from pathlib import Path
-
 from dh import unique_path
 from fastwalk import walk_files
-
-
 def get_all_files(root_dir):
     files = []
     for pth in walk_files(root_dir):
@@ -15,8 +12,6 @@ def get_all_files(root_dir):
             size = path.stat().st_size
             files.append((path, size))
     return sorted(files, key=lambda x: x[1])
-
-
 def calculate_optimal_folders(files):
     if len(files) < 2:
         return 1
@@ -29,8 +24,6 @@ def calculate_optimal_folders(files):
         int(range_size / target_range_per_folder),
     )
     return min(num_folders, len(files))
-
-
 def create_range_folders(base_dir, files, num_folders):
     sizes = sorted([size for _, size in files])
     folder_ranges = []
@@ -42,7 +35,6 @@ def create_range_folders(base_dir, files, num_folders):
         folder_files = sizes[start_idx:end_idx]
         if folder_files:
             min_size, max_size = min(folder_files), max(folder_files)
-
             def format_size(size):
                 if size < 1000:
                     return f"{size}B"
@@ -52,15 +44,12 @@ def create_range_folders(base_dir, files, num_folders):
                     return f"{size // 1_000_000}M"
                 else:
                     return f"{size // 1_000_000_000}G"
-
             folder_name = f"{format_size(min_size)}-{format_size(max_size)}"
             folder_ranges.append((min_size, max_size, folder_name))
             folder_path = os.path.join(base_dir, folder_name)
             os.makedirs(folder_path, exist_ok=True)
         start_idx = end_idx
     return folder_ranges
-
-
 def distribute_files(files, folders, base_dir):
     size_to_folder = {}
     for (
@@ -97,8 +86,6 @@ def distribute_files(files, folders, base_dir):
                 f"No folder match for {os.path.basename(filepath)} ({size:,} bytes)"
             )
     print(f"\nMoved {moved_count}/{len(files)} files successfully.")
-
-
 def main():
     base_dir = Path(".").resolve()
     print(f"Processing files in: {base_dir}")
@@ -119,7 +106,5 @@ def main():
     )
     distribute_files(files, folders, base_dir)
     print("Folderization complete!")
-
-
 if __name__ == "__main__":
     main()

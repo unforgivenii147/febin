@@ -4,7 +4,6 @@ import logging
 import os
 import sys
 from multiprocessing import Pool, cpu_count
-
 try:
     from tree_sitter import Language, Parser
     from tree_sitter_languages import get_language, get_parser
@@ -20,11 +19,8 @@ except ImportError:
     sys.exit(1)
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
+    format="%(message)s",)
 logger = logging.getLogger(__name__)
-
-
 class CommentRemover:
     PRESERVE_PATTERNS = [
         "type:",
@@ -34,7 +30,6 @@ class CommentRemover:
         "flake8:",
         "mypy:",
     ]
-
     def __init__(self):
         try:
             self.language = get_language("python")
@@ -42,14 +37,12 @@ class CommentRemover:
         except Exception as e:
             logger.error(f"Failed to initialize tree-sitter: {e}")
             raise
-
     def should_preserve_comment(self, comment_text: str) -> bool:
         comment_text = comment_text.strip()
         if comment_text.startswith("#!"):
             return True
         return any(pattern in comment_text
                    for pattern in self.PRESERVE_PATTERNS)
-
     def parse_file(self, filepath: str) -> tuple[str, list[dict]] | None:
         try:
             with open(
@@ -67,7 +60,6 @@ class CommentRemover:
             logger.error(f"Failed to parse {filepath}: {e}")
             return None
         return source_code, tree
-
     def extract_removable_ranges(self, source_code: str,
                                  tree) -> list[tuple[int, int]]:
         lines = source_code.split("\n")
@@ -91,7 +83,6 @@ class CommentRemover:
         removable_ranges.extend(
             self._extract_docstrings(source_code.encode("utf-8"), tree))
         return self._merge_ranges(sorted(removable_ranges))
-
     def _is_in_string(self, line: str, pos: int) -> bool:
         in_single = False
         in_double = False
@@ -103,11 +94,9 @@ class CommentRemover:
                 in_double = not in_double
             i += 1
         return in_single or in_double
-
     def _extract_docstrings(self, source_bytes: bytes,
                             tree) -> list[tuple[int, int]]:
         docstring_ranges = []
-
         def walk_tree(node, parent_type=None):
             if node.type == "string":
                 if parent_type in (
@@ -125,10 +114,8 @@ class CommentRemover:
                     "class_definition",
                 ) else parent_type)
                 walk_tree(child, child_parent)
-
         walk_tree(tree.root_node)
         return docstring_ranges
-
     def _merge_ranges(self, ranges: list[tuple[int,
                                                int]]) -> list[tuple[int, int]]:
         if not ranges:
@@ -144,7 +131,6 @@ class CommentRemover:
             else:
                 merged.append((current_start, current_end))
         return merged
-
     def remove_comments_and_docstrings(self, source_code: str, tree) -> str:
         removable_ranges = self.extract_removable_ranges(source_code, tree)
         if not removable_ranges:
@@ -157,7 +143,6 @@ class CommentRemover:
             last_end = end
         result_bytes.extend(source_bytes[last_end:])
         return result_bytes.decode("utf-8", errors="replace")
-
     def process_file(self, filepath: str) -> bool:
         try:
             parsed = self.parse_file(filepath)
@@ -173,8 +158,6 @@ class CommentRemover:
         except Exception as e:
             logger.error(f"Error processing {filepath}: {e}")
             return False
-
-
 def find_python_files(root_dir: str = ".", ) -> list[str]:
     python_files = []
     for py_file in glob.glob(
@@ -191,8 +174,6 @@ def find_python_files(root_dir: str = ".", ) -> list[str]:
             continue
         python_files.append(py_file)
     return python_files
-
-
 def process_files_mp(
     files: list[str],
     num_workers: int | None = None,
@@ -206,8 +187,6 @@ def process_files_mp(
     successful = sum(1 for r in results if r)
     failed = len(results) - successful
     return successful, failed
-
-
 def main():
     import argparse
     parser = argparse.ArgumentParser(
@@ -248,7 +227,5 @@ def main():
     logger.info(f"Completed: {successful} successful, {failed} failed")
     if failed > 0:
         sys.exit(1)
-
-
 if __name__ == "__main__":
     main()

@@ -2,14 +2,9 @@
 import os
 import stat
 from pathlib import Path
-
 import fastwalk
-
-
 def get_mode(path: Path) -> int:
     return stat.S_IMODE(path.stat().st_mode)
-
-
 def normalize_permissions(homedir: str) -> None:
     DIR_PERM = 0o775
     FILE_PERM = 0o664
@@ -49,7 +44,5 @@ def normalize_permissions(homedir: str) -> None:
             continue
         except OSError as e:
             print(f"OS error on {path}: {e}")
-
-
 if __name__ == "__main__":
     normalize_permissions(".")

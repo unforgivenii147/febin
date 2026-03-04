@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from collections import Counter
 from pathlib import Path
-
-
 def levenshtein_distance(a: str, b: str) -> int:
     if len(a) < len(b):
         a, b = b, a
@@ -20,14 +18,10 @@ def levenshtein_distance(a: str, b: str) -> int:
             ))
         previous_row = current_row
     return previous_row[-1]
-
-
 def similarity(a: str, b: str) -> float:
     dist = levenshtein_distance(a, b)
     max_len = max(len(a), len(b))
     return 1 - dist / max_len if max_len else 1.0
-
-
 def group_similar(names: list[str], threshold: float = 0.8):
     groups = []
     used = set()
@@ -45,8 +39,6 @@ def group_similar(names: list[str], threshold: float = 0.8):
         if len(group) > 1:
             groups.append(group)
     return groups
-
-
 def main():
     root = Path(".")
     counter = Counter(p.name for p in root.rglob("*") if p.is_file())
@@ -61,7 +53,5 @@ def main():
     else:
         for i, group in enumerate(groups, 1):
             print(f"Group {i}: {', '.join(group)}")
-
-
 if __name__ == "__main__":
     main()

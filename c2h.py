@@ -9,7 +9,5 @@ def main():
     with open("/sdcard/colors.html", "w") as html_file:
         html_file.write(html_content)
     print("/sdcard/colors.html created")
-
-
 if __name__ == "__main__":
     main()

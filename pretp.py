@@ -2,10 +2,7 @@
 import concurrent.futures
 import os
 import subprocess
-
 from tqdm import tqdm
-
-
 def format_file(file_path):
     try:
         subprocess.run(
@@ -25,8 +22,6 @@ def format_file(file_path):
             FileNotFoundError,
     ) as e:
         return f"{file_path}: {e.stderr if hasattr(e, 'stderr') else e!s}"
-
-
 def main():
     target_extensions = (
         ".js",
@@ -78,7 +73,5 @@ def main():
             print(f"  - {error}")
     else:
         print("All files formatted successfully!")
-
-
 if __name__ == "__main__":
     main()

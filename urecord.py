@@ -8,8 +8,6 @@ import csv
 import os
 import sys
 from pathlib import Path
-
-
 def find_site_packages():
     import site
     site_packages = site.getsitepackages()
@@ -19,8 +17,6 @@ def find_site_packages():
         if user_site and os.path.exists(user_site):
             valid_paths = [user_site]
     return valid_paths
-
-
 def update_record_file(record_path):
     try:
         with open(record_path, "r", encoding="utf-8") as f:
@@ -48,8 +44,6 @@ def update_record_file(record_path):
     except Exception as e:
         print(f"  Error processing {record_path}: {e}", file=sys.stderr)
         return False
-
-
 def scan_and_update(site_packages_dirs, dry_run=False):
     total_updated = 0
     total_files = 0
@@ -82,8 +76,6 @@ def scan_and_update(site_packages_dirs, dry_run=False):
                     if update_record_file(record_path):
                         total_updated += 1
     return total_files, total_updated
-
-
 def main():
     parser = argparse.ArgumentParser(
         description=
@@ -124,7 +116,5 @@ def main():
     print(f"  Files that would be/are updated: {total_updated}")
     if args.dry_run and total_updated > 0:
         print(f"\nRun without --dry-run to apply these changes")
-
-
 if __name__ == "__main__":
     main()

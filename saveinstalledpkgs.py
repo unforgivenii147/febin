@@ -2,10 +2,7 @@
 import subprocess
 import sys
 from pathlib import Path
-
 OUTPUT_FILE = Path("/sdcard/installed_packages.txt")
-
-
 def get_installed_debian_packages() -> list[str]:
     try:
         result = subprocess.run(
@@ -23,20 +20,14 @@ def get_installed_debian_packages() -> list[str]:
     except subprocess.CalledProcessError as exc:
         sys.exit(exc.stderr.strip())
     return sorted(pkg for pkg in result.stdout.splitlines() if pkg)
-
-
 def save_packages(packages: list[str], path: Path) -> None:
     path.write_text(
         "\n".join(packages) + "\n",
         encoding="utf-8",
     )
-
-
 def main() -> None:
     packages = get_installed_debian_packages()
     save_packages(packages, OUTPUT_FILE)
     print(f"Saved {len(packages)} packages to {OUTPUT_FILE.resolve()}")
-
-
 if __name__ == "__main__":
     main()

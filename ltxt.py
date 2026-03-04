@@ -2,13 +2,9 @@
 import os
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
 from dh import BIN_EXT
 from tqdm import tqdm
-
 EXCLUDED_EXTENSIONS = BIN_EXT
-
-
 def process_file(filepath):
     counter = Counter()
     try:
@@ -24,8 +20,6 @@ def process_file(filepath):
     except Exception as e:
         print(f"Error reading {filepath}: {e}")
     return counter
-
-
 def collect_files_by_extension():
     ext_map = {}
     for root, _, filenames in os.walk(os.getcwd()):
@@ -40,8 +34,6 @@ def collect_files_by_extension():
                 ext = "no_ext"
             ext_map.setdefault(ext, []).append(full_path)
     return ext_map
-
-
 def collect_lines_for_extension(ext, files):
     if not files:
         return
@@ -67,8 +59,6 @@ def collect_lines_for_extension(ext, files):
             if count >= 2:
                 fo.write(line + "\n")
     print(f"Saved results to {output_file}")
-
-
 def main():
     ext_map = collect_files_by_extension()
     if not ext_map:
@@ -76,7 +66,5 @@ def main():
         return
     for ext, files in ext_map.items():
         collect_lines_for_extension(ext, files)
-
-
 if __name__ == "__main__":
     main()

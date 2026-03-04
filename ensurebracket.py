@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 import sys
 from pathlib import Path
-
 from fastwalk import walk_files
-
-
 def ensure_bracket(fn):
     open_parantez_count = 0
     close_parantez_count = 0
@@ -43,8 +40,6 @@ def ensure_bracket(fn):
         return True
     else:
         return False
-
-
 def main():
     if len(sys.argv > 0):
         filename = sys.argv[1]
@@ -52,7 +47,5 @@ def main():
             print("ok")
         else:
             print("error")
-
-
 if __name__ == "__main__":
     main()

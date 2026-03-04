@@ -4,7 +4,6 @@ import shutil
 from pathlib import Path
 from sys import exit
 from time import perf_counter
-
 ALLOWED = ["METADATA", "RECORD", "WHEEL", "entry_points.txt", "top_level.txt"]
 NOT_ALLOWED = [
     "AUTHORS",
@@ -44,8 +43,6 @@ NOT_ALLOWED = [
     "toplevel.txt",
     "zip-safe",
 ]
-
-
 def process_lic(fp):
     lic_dir = Path(f"{fp}/licenses")
     if lic_dir.exists():
@@ -62,8 +59,6 @@ def process_lic(fp):
         if not nf.exists() and not f == "entry_points.txt":
             rett.append(nf)
     return rett
-
-
 def main():
     missings = []
     dir = "/data/data/com.termux/files/usr/lib/python3.12/site-packages"
@@ -73,7 +68,5 @@ def main():
             missings.extend(process_lic(path))
     for k in missings:
         print(f"{k.parent.name}  ==> {k.name} missing")
-
-
 if __name__ == "__main__":
     exit(main())

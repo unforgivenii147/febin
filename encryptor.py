@@ -3,19 +3,14 @@ import os
 import random
 import string
 from pathlib import Path
-
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from fastwalk import walk_files
-
-
 def random_key(length=32):
     return "".join(
         random.choice(string.ascii_letters + string.digits)
         for _ in range(length))
-
-
 def encrypt_file(file_path, key):
     backend = default_backend()
     iv = os.urandom(16)
@@ -32,8 +27,6 @@ def encrypt_file(file_path, key):
     encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
     with open(file_path, "wb") as f:
         f.write(iv + encrypted_data)
-
-
 def decrypt_file(file_path, key):
     backend = default_backend()
     with open(file_path, "rb") as f:
@@ -51,8 +44,6 @@ def decrypt_file(file_path, key):
     data = unpadder.update(padded_data) + unpadder.finalize()
     with open(file_path, "wb") as f:
         f.write(data)
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--encrypt", action="store_true")
@@ -78,7 +69,5 @@ def main():
         path = Path(file_path)
         if path.exists():
             action(file_path, key)
-
-
 if __name__ == "__main__":
     main()

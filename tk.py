@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-
-
 def scan_directory(directory="."):
     stats = {
         "total": {
@@ -53,14 +51,10 @@ def scan_directory(directory="."):
                     stats["total"]["blank"] += blanks
                     break
     return stats
-
-
 def display_stats(stats) -> None:
     for lang_stats in stats["languages"].values():
         if lang_stats["code"] > 0:
             pass
-
-
 if __name__ == "__main__":
     stats = scan_directory()
     display_stats(stats)

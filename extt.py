@@ -2,10 +2,8 @@
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from tree_sitter import Language, Parser
-
 parser = Parser()
 parser.language = Language(tsp.language())
 OUT_DIR = Path("output")
@@ -14,26 +12,19 @@ VALID = {
     "function_definition",
     "class_definition",
 }
-
-
 def get_node_text(src: bytes, node):
     """Extract text for a node safely."""
     return src[node.start_byte:node.end_byte].decode()
-
-
 def get_node_name(node):
     """Extract the name of a function or class definition."""
     for child in node.children:
         if child.type == "identifier":
             return child.text.decode() if hasattr(child, "text") else None
     return None
-
-
 def extract_functions_and_classes(src: bytes, tree):
     """Extract function and class definitions from a parsed tree with their names."""
     root = tree.root_node
     definitions = []
-
     def traverse(node):
         if node.type in VALID:
             name = get_node_name(node)
@@ -54,19 +45,14 @@ def extract_functions_and_classes(src: bytes, tree):
             })
         for child in node.children:
             traverse(child)
-
     traverse(root)
     return definitions
-
-
 def get_relative_path(file_path: Path, base_path: Path) -> Path:
     """Get the relative path of a file."""
     try:
         return file_path.relative_to(base_path)
     except ValueError:
         return file_path
-
-
 # Dictionary to store definitions by folder path
 folder_definitions = defaultdict(lambda: defaultdict(list))
 processed_files_count = 0

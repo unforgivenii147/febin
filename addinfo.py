@@ -3,15 +3,10 @@
 import datetime
 import json
 import os
-
 INFO_PATH = os.path.expanduser("~/isaac/.info.json")
-
-
 def load_user_info() -> dict:
     with open(INFO_PATH, encoding="utf-8") as f:
         return json.load(f)
-
-
 def is_python_file(path: str) -> bool:
     if os.path.isdir(path):
         return False
@@ -35,18 +30,12 @@ def is_python_file(path: str) -> bool:
             ))
     except Exception:
         return False
-
-
 def build_header(info: dict) -> str:
     now = datetime.datetime.now()
     timestamp = now.strftime("%a %d %b %Y | %H:%M:%S")
     return f"# Author : {info.get('name', '')}\n# Email  : {info.get('email', '')}\n# Time   : {timestamp}\n\n\n"
-
-
 def file_already_has_header(contents: str, ) -> bool:
     return "# Author :" in contents.split("\n")[:5]
-
-
 def process_file(path: str, header: str) -> None:
     with open(path, encoding="utf-8", errors="ignore") as f:
         lines = f.readlines()
@@ -58,8 +47,6 @@ def process_file(path: str, header: str) -> None:
         new_contents = header + "".join(lines)
     with open(path, "w", encoding="utf-8") as f:
         f.write(new_contents)
-
-
 def main() -> None:
     info = load_user_info()
     header = build_header(info)
@@ -68,7 +55,5 @@ def main() -> None:
             path = os.path.join(root, fn)
             if is_python_file(path):
                 process_file(path, header)
-
-
 if __name__ == "__main__":
     main()

@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import csv
-
-
 def sort_packages_by_size(filename: str):
     with open(filename, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -25,8 +23,6 @@ def sort_packages_by_size(filename: str):
         writer.writeheader()
         writer.writerows(rows)
     print(f"File '{filename}' sorted by Installed-Size and overwritten.")
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Sort Debian packages CSV by Installed-Size")

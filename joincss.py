@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
-
 import regex as re
 from dh import atomic_write
-
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
 FONT_EXTS = {
     ".woff",
@@ -37,8 +35,6 @@ URL_RE = re.compile(
     r'url\((["\']?)(https?://[^)]+?\.(?:woff2?|ttf|otf|eot))\1\)',
     re.I,
 )
-
-
 def find_css(paths):
     seen = set()
     result = []
@@ -62,17 +58,13 @@ def find_css(paths):
                 file=sys.stderr,
             )
     return result
-
-
 def read_css(files):
     charset_line = None
     chunks = []
-
     def localize_font_url(match):
         url = match.group(2)
         filename = url.split("/")[-1]
         return f'url("{LOCAL_FONT_BASE}/{filename}")'
-
     for file in files:
         text = file.read_text(errors="ignore")
         text = IMPORT_RE.sub("", text)
@@ -88,8 +80,6 @@ def read_css(files):
             cleaned.append(line)
         chunks.append((file, "\n".join(cleaned).strip()))
     return charset_line, chunks
-
-
 def join_css(files, output):
     charset, chunks = read_css(files)
     parts = []
@@ -99,8 +89,6 @@ def join_css(files, output):
         parts.append(f"\n/* ===== {file.name} ===== */\n{content}\n")
     final_css = "\n".join(parts).strip() + "\n"
     atomic_write(output, final_css)
-
-
 def main():
     files = find_css(".")
     if not files:
@@ -108,7 +96,5 @@ def main():
         sys.exit(1)
     join_css(files, "merged.css")
     print(f"Joined {len(files)} files -> merged.css")
-
-
 if __name__ == "__main__":
     main()

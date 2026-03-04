@@ -1,11 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
-
-
 def alias_name(line: str) -> str:
     return line.split("=", 1)[0].replace("alias ", "").strip()
-
-
 def main():
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} <file>")
@@ -18,7 +14,5 @@ def main():
     alias_lines.sort(key=alias_name)
     with open(fname, "w") as f:
         f.writelines(alias_lines + other_lines)
-
-
 if __name__ == "__main__":
     main()

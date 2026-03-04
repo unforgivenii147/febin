@@ -2,8 +2,6 @@
 import base64
 import sys
 from pathlib import Path
-
-
 def decode_base64_lines(input_txt_path, output_folder="decoded_files"):
     output_dir = Path(output_folder)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -36,8 +34,6 @@ def decode_base64_lines(input_txt_path, output_folder="decoded_files"):
         print(f"Error: Input file not found: {input_txt_path}")
     except Exception as e:
         print(f"Unexpected error: {e}")
-
-
 if __name__ == "__main__":
     INPUT_FILE = sys.argv[1]
     OUTPUT_FOLDER = "decoded_output"

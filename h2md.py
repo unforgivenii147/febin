@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 from pathlib import Path
-
 from markdownify import markdownify
-
-
 def convert_html_to_markdown(root_dir):
     for root, _, files in os.walk(root_dir):
         for file in files:
@@ -27,8 +24,6 @@ def convert_html_to_markdown(root_dir):
                 ) as md_file:
                     md_file.write(md_content)
                 print(f"[\u2714] {Path(md_file_path).name}")
-
-
 if __name__ == "__main__":
     current_dir = os.getcwd()
     convert_html_to_markdown(current_dir)

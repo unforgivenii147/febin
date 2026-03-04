@@ -1,17 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-
 import regex as re
 from dh import BIN_EXT, TXT_EXT, format_size, get_size, is_binary
 from termcolor import cprint
-
 LIC_FILE = Path("/sdcard/lic")
 MIN_BLANK_LINES = 3
 NUM_WORKERS = max(cpu_count(), 8)
 EXCLUDE_EXTS = BIN_EXT
-
-
 def load_patterns(lic_path: Path) -> list[str]:
     try:
         with open(lic_path, encoding="utf-8", errors="ignore") as f:
@@ -29,13 +25,9 @@ def load_patterns(lic_path: Path) -> list[str]:
     except Exception as e:
         print(f"Error loading patterns from {lic_path}: {e}")
         return []
-
-
 def escape_for_regex(text: str) -> str:
     escaped = re.escape(text)
     return escaped.replace(r"\n", r"\s*\n\s*")
-
-
 def remove_patterns_from_content(content: str, patterns: list[str]) -> str:
     cleaned = content
     for pattern in patterns:
@@ -45,8 +37,6 @@ def remove_patterns_from_content(content: str, patterns: list[str]) -> str:
                          cleaned,
                          flags=re.IGNORECASE | re.MULTILINE)
     return cleaned
-
-
 def should_process_file(file_path: Path) -> bool:
     if file_path.suffix.lower() in EXCLUDE_EXTS:
         return False
@@ -55,8 +45,6 @@ def should_process_file(file_path: Path) -> bool:
     if file_path.name.startswith("."):
         return False
     return not is_binary(file_path)
-
-
 def clean_file_worker(args: tuple) -> tuple:
     file_path, patterns = args
     try:
@@ -73,8 +61,6 @@ def clean_file_worker(args: tuple) -> tuple:
             return (file_path, True, "no changes")
     except Exception as e:
         return (file_path, False, str(e))
-
-
 def main():
     if not LIC_FILE.exists():
         print(f"Error: License file not found: {LIC_FILE}")
@@ -121,7 +107,5 @@ def main():
     cprint(f"\t\t  {format_size(isz - esz)}\n\n", "cyan")
     if error_count > 0:
         print(f"  Failed: {error_count} file(s)")
-
-
 if __name__ == "__main__":
     main()

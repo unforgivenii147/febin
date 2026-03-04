@@ -2,8 +2,6 @@
 import os
 import shutil
 from pathlib import Path
-
-
 def get_size_str(size_bytes):
     """Convert bytes to human readable format."""
     for unit in ["B", "KB", "MB", "GB"]:
@@ -11,8 +9,6 @@ def get_size_str(size_bytes):
             return f"{size_bytes:.1f}{unit}"
         size_bytes /= 1024.0
     return f"{size_bytes:.1f}TB"
-
-
 def folderize_by_extension(root_dir):
     root_path = Path(root_dir)
     extension_stats = {}
@@ -77,8 +73,6 @@ def folderize_by_extension(root_dir):
     )
     print("=" * 50)
     return created_dirs, extension_stats
-
-
 if __name__ == "__main__":
     target_dir = os.getcwd()
     print(f"Organizing files in: {target_dir}")

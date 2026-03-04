@@ -2,11 +2,8 @@
 import os
 import subprocess
 import sys
-
 TERMUX_PYTHON = "#!/data/data/com.termux/files/usr/bin/env python\n"
 TERMUX_BASH = "#!/data/data/com.termux/files/usr/bin/bash\n"
-
-
 def get_clipboard():
     try:
         return subprocess.check_output(["termux-clipboard-get"], text=True)
@@ -16,8 +13,6 @@ def get_clipboard():
             file=sys.stderr,
         )
         sys.exit(1)
-
-
 def detect_shebang(content: str) -> str | None:
     stripped = content.lstrip()
     if stripped.startswith("#!") and "python" in stripped:
@@ -36,8 +31,6 @@ def detect_shebang(content: str) -> str | None:
     )):
         return TERMUX_BASH
     return None
-
-
 def create_symlink(out_file):
     base_name = os.path.basename(out_file)
     name_without_ext, ext = os.path.splitext(base_name)
@@ -73,8 +66,6 @@ def create_symlink(out_file):
                 f"Error creating symlink: {e}",
                 file=sys.stderr,
             )
-
-
 def main():
     if len(sys.argv) != 2:
         print(
@@ -99,7 +90,5 @@ def main():
     if cwd == bin_dir2:
         os.chmod(out_file, 0o755)
     create_symlink(out_file)
-
-
 if __name__ == "__main__":
     main()

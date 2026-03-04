@@ -2,11 +2,8 @@
 import os
 import sys
 from pathlib import Path
-
 import regex as re
 from fastwalk import walk_files
-
-
 def clean_log(path):
     print(f"[] {path}")
     ansi_tmux_re = re.compile(rb"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])|"
@@ -38,14 +35,10 @@ def clean_log(path):
     except Exception as e:
         print(f"✗ Error: {e}", file=sys.stderr)
         sys.exit(1)
-
-
 def main() -> None:
     for pth in walk_files("."):
         path = Path(pth)
         if path.is_file() and path.suffix == ".log":
             clean_log(path)
-
-
 if __name__ == "__main__":
     main()

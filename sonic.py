@@ -10,33 +10,23 @@ from collections import Counter
 from collections.abc import Generator
 from datetime import datetime
 from pathlib import Path
-
-
 class LineProcessor:
-
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
-
     def log(self, message: str):
         if self.verbose:
             print(f"[INFO] {message}")
-
     def get_file_size(self, file_path: Path) -> int:
         return file_path.stat().st_size
-
     def format_size(self, size_bytes: int) -> str:
         for unit in ["B", "KB", "MB", "GB", "TB"]:
             if size_bytes < 1024.0:
                 return f"{size_bytes:.2f} {unit}"
             size_bytes /= 1024.0
         return f"{size_bytes:.2f} PB"
-
-
 class MmapReader(LineProcessor):
-
     def __init__(self, verbose: bool = False):
         super().__init__(verbose=verbose)
-
     def read_lines_mmap(
             self,
             file_path: Path,
@@ -76,7 +66,6 @@ class MmapReader(LineProcessor):
                             yield decoded_line
         except Exception as e:
             raise OSError(f"Error reading file: {e!s}")
-
     def read_lines_regular(
             self,
             file_path: Path,
@@ -91,7 +80,6 @@ class MmapReader(LineProcessor):
                         yield decoded_line
         except Exception as e:
             raise OSError(f"Error reading file: {e!s}")
-
     def read_lines(
         self,
         file_path: Path,
@@ -103,13 +91,9 @@ class MmapReader(LineProcessor):
             yield from self.read_lines_mmap(file_path, encoding, skip_empty)
         else:
             yield from self.read_lines_regular(file_path, encoding, skip_empty)
-
-
 class LineSorter(LineProcessor):
-
     def __init__(self, verbose: bool = False):
         super().__init__(verbose=verbose)
-
     def sort_in_memory(self,
                        lines: list[str],
                        reverse: bool = False,
@@ -119,7 +103,6 @@ class LineSorter(LineProcessor):
             return sorted(lines, key=str.lower, reverse=reverse)
         else:
             return sorted(lines, reverse=reverse)
-
     def sort_with_temp_files(
         self,
         file_path: Path,
@@ -162,13 +145,9 @@ class LineSorter(LineProcessor):
                 if temp_file.exists():
                     temp_file.unlink()
             raise
-
-
 class LineDeduplicator(LineProcessor):
-
     def __init__(self, verbose: bool = False):
         super().__init__(verbose=verbose)
-
     def deduplicate_list(self,
                          lines: list[str],
                          preserve_order: bool = False) -> list[str]:
@@ -184,7 +163,6 @@ class LineDeduplicator(LineProcessor):
         else:
             self.log(f"Deduplicating {len(lines)} lines")
             return list(dict.fromkeys(lines))
-
     def deduplicate_generator(
             self, lines: Generator[str, None,
                                    None]) -> Generator[str, None, None]:
@@ -196,17 +174,13 @@ class LineDeduplicator(LineProcessor):
                 yield line
                 count += 1
         self.log(f"Found {count} unique lines")
-
-
 class FileSorter(LineProcessor):
-
     def __init__(self, verbose: bool = False, dry_run: bool = False):
         super().__init__(verbose=verbose)
         self.dry_run = dry_run
         self.reader = MmapReader(verbose=verbose)
         self.sorter = LineSorter(verbose=verbose)
         self.deduplicator = LineDeduplicator(verbose=verbose)
-
     def process_file(
         self,
         file_path: str,
@@ -304,7 +278,6 @@ class FileSorter(LineProcessor):
             }
         except Exception as e:
             raise RuntimeError(f"Error processing file: {e!s}")
-
     def print_stats(self, stats: dict):
         print("\n" + "=" * 60)
         print("STATISTICS")
@@ -328,7 +301,6 @@ class FileSorter(LineProcessor):
         print(f"Processing time: {stats['processing_time']:.2f} seconds")
         print(f"Speed: {stats['lines_per_second']:,.0f} lines/second")
         print("=" * 60)
-
     def save_report(self, stats: dict, report_file: str | None = None):
         if report_file is None:
             report_file = "sort_unique_report.json"
@@ -343,14 +315,10 @@ class FileSorter(LineProcessor):
             print(f"\n✓ Report saved: {report_file}")
         except Exception as e:
             print(f"\n✗ Error saving report: {e!s}")
-
-
 class FileAnalyzer(LineProcessor):
-
     def __init__(self, verbose: bool = False):
         super().__init__(verbose=verbose)
         self.reader = MmapReader(verbose=verbose)
-
     def analyze_file(self, file_path: Path, encoding: str = "utf-8") -> dict:
         get_size = self.get_file_size(file_path)
         lines = list(self.reader.read_lines(file_path, encoding))
@@ -382,7 +350,6 @@ class FileAnalyzer(LineProcessor):
             "most_common_lines":
             most_common,
         }
-
     def print_analysis(self, file_path: Path, encoding: str = "utf-8"):
         analysis = self.analyze_file(file_path, encoding)
         print(f"\n{'=' * 60}")
@@ -404,8 +371,6 @@ class FileAnalyzer(LineProcessor):
                 display_line = line[:47] + "..." if len(line) > 50 else line
                 print(f"  ({count}x) {display_line}")
         print(f"{'=' * 60}\n")
-
-
 def main():
     parser = argparse.ArgumentParser(
         description=
@@ -520,7 +485,5 @@ Examples:
     except Exception as e:
         print(f"Error: {e!s}", file=sys.stderr)
         sys.exit(1)
-
-
 if __name__ == "__main__":
     main()

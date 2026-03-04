@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-
-
 def find_md_files(directory="."):
     md_files = []
     for root, _, files in os.walk(directory):
@@ -11,8 +9,6 @@ def find_md_files(directory="."):
                                            start=directory)
                 md_files.append(rel_path)
     return md_files
-
-
 def update_summary():
     md_files = find_md_files()
     md_files.sort()
@@ -36,7 +32,5 @@ def update_summary():
         f.write("\n")
         f.writelines(new_entries)
     print(f"Updated SUMMARY.md with {len(new_entries)} chapters.")
-
-
 if __name__ == "__main__":
     update_summary()

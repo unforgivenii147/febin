@@ -3,21 +3,15 @@ import enum
 import itertools
 from collections.abc import Callable
 from dataclasses import dataclass
-
-
 @dataclass
 class CommentMatch:
     from_pos: int
     to_pos: int
-
-
 class CommentStyle(enum.Enum):
     C = enum.auto()
     XML = enum.auto()
     SHELL = enum.auto()
     ATOM = enum.auto()
-
-
 def find_comments_impl(
     input_str: str,
     state_transition: Callable,
@@ -46,8 +40,6 @@ def find_comments_impl(
         matches,
     )
     return matches
-
-
 def find_comments(input_str: str, style: CommentStyle) -> list[CommentMatch]:
     if style == CommentStyle.C:
         from . import c
@@ -63,8 +55,6 @@ def find_comments(input_str: str, style: CommentStyle) -> list[CommentMatch]:
         return xml.find_comments(input_str)
     else:
         raise ValueError(f"Unknown comment style: {style}")
-
-
 def check_sorted_matches(input_str: str, matches: list[CommentMatch]) -> None:
     length = len(input_str)
     for m in matches:
@@ -73,8 +63,6 @@ def check_sorted_matches(input_str: str, matches: list[CommentMatch]) -> None:
     for m, n in itertools.pairwise(matches):
         if m.to_pos > n.from_pos:
             raise ValueError("matches overlapping")
-
-
 def remove_matches(input_str: str, matches: list[CommentMatch]) -> str:
     chars = list(input_str)
     matches_sorted = sorted(
@@ -85,8 +73,6 @@ def remove_matches(input_str: str, matches: list[CommentMatch]) -> str:
     for m in matches_sorted:
         del chars[m.from_pos:m.to_pos]
     return "".join(chars)
-
-
 def strip_comments(
     data: str,
     style: CommentStyle,
@@ -99,8 +85,6 @@ def strip_comments(
         blank_matches = blanklines.find_blanklines(stripped)
         stripped = remove_matches(stripped, blank_matches)
     return stripped
-
-
 class _CParseState(enum.Enum):
     START = 0
     NORMAL = 1
@@ -114,8 +98,6 @@ class _CParseState(enum.Enum):
     STRING_SINGLE_QUOTES = 9
     STRING_SINGLE_QUOTES_ESCAPED = 10
     END = 11
-
-
 class _CAction(enum.Enum):
     NOTHING = 0
     COMMENT_MIGHT_START = 1
@@ -123,8 +105,6 @@ class _CAction(enum.Enum):
     COMMENT_DISMISSED = 3
     COMMENT_ENDS = 4
     COMMENT_ENDS_AND_COMMENT_MIGHT_START = 5
-
-
 def _c_state_transition(state: _CParseState,
                         ch: str | None) -> tuple[_CParseState, _CAction]:
     if ch is None:
@@ -293,8 +273,6 @@ def _c_state_transition(state: _CParseState,
         )
     else:
         return _CParseState.END, _CAction.NOTHING
-
-
 def _c_do_action(
     action: _CAction,
     comment_state: tuple[str, int | None],
@@ -323,8 +301,6 @@ def _c_do_action(
         matches.append(CommentMatch(start, pos))
         kind, start = "maybe", pos
     return (kind, start), matches
-
-
 def find_c_comments(input_str: str, ) -> list[CommentMatch]:
     return find_comments_impl(
         input_str,
@@ -334,12 +310,8 @@ def find_c_comments(input_str: str, ) -> list[CommentMatch]:
         _CParseState.END,
         ("not", None),
     )
-
-
 def strip_c_comments(code: str) -> str:
     return strip_comments(code, CommentStyle.C, False)
-
-
 class _ShellParseState(enum.Enum):
     START = 0
     NORMAL = 1
@@ -351,16 +323,12 @@ class _ShellParseState(enum.Enum):
     STRING_SINGLE_QUOTES = 7
     STRING_SINGLE_QUOTES_ESCAPED = 8
     END = 9
-
-
 class _ShellAction(enum.Enum):
     NOTHING = 0
     COMMENT_STARTS = 1
     COMMENT_ENDS = 2
     SHEBANG_OR_COMMENT_START = 3
     SHEBANG_FOUND = 4
-
-
 def _shell_state_transition(
         state: _ShellParseState,
         ch: str | None) -> tuple[_ShellParseState, _ShellAction]:
@@ -517,8 +485,6 @@ def _shell_state_transition(
             _ShellParseState.END,
             _ShellAction.NOTHING,
         )
-
-
 def _shell_do_action(
     action: _ShellAction,
     comment_state: tuple[str, int | None],
@@ -541,8 +507,6 @@ def _shell_do_action(
             matches.append(CommentMatch(start, pos))
         kind, start = "not", None
     return (kind, start), matches
-
-
 def find_shell_comments(input_str: str, ) -> list[CommentMatch]:
     return find_comments_impl(
         input_str,
@@ -552,16 +516,10 @@ def find_shell_comments(input_str: str, ) -> list[CommentMatch]:
         _ShellParseState.END,
         ("not", None),
     )
-
-
 def strip_shell_comments(code: str) -> str:
     return strip_comments(code, CommentStyle.SHELL, False)
-
-
 find_atom_comments = find_shell_comments
 strip_atom_comments = strip_shell_comments
-
-
 class _XMLParseState(enum.Enum):
     START = 0
     NORMAL = 1
@@ -576,8 +534,6 @@ class _XMLParseState(enum.Enum):
     STRING_SINGLE_QUOTES = 12
     STRING_SINGLE_QUOTES_ESCAPED = 13
     END = 14
-
-
 class _XMLAction(enum.Enum):
     NOTHING = 0
     COMMENT_OR_TAG_STARTS = 1
@@ -585,8 +541,6 @@ class _XMLAction(enum.Enum):
     COMMENT_DISMISSED = 3
     COMMENT_ENDS = 4
     COMMENT_ENDS_AND_COMMENT_OR_TAG_STARTS = 5
-
-
 def _xml_state_transition(state: _XMLParseState,
                           ch: str | None) -> tuple[_XMLParseState, _XMLAction]:
     if ch is None:
@@ -779,8 +733,6 @@ def _xml_state_transition(state: _XMLParseState,
             _XMLParseState.END,
             _XMLAction.NOTHING,
         )
-
-
 def _xml_do_action(
     action: _XMLAction,
     comment_state: tuple[str, int | None],
@@ -809,8 +761,6 @@ def _xml_do_action(
         matches.append(CommentMatch(start, pos))
         kind, start = "or_tag", pos
     return (kind, start), matches
-
-
 def find_xml_comments(input_str: str, ) -> list[CommentMatch]:
     return find_comments_impl(
         input_str,
@@ -820,12 +770,8 @@ def find_xml_comments(input_str: str, ) -> list[CommentMatch]:
         _XMLParseState.END,
         ("not", None),
     )
-
-
 def strip_xml_comments(code: str) -> str:
     return strip_comments(code, CommentStyle.XML, False)
-
-
 class _BlankParseState(enum.Enum):
     START = 0
     NORMAL = 1
@@ -836,14 +782,10 @@ class _BlankParseState(enum.Enum):
     STRING_SINGLE_QUOTES = 6
     STRING_SINGLE_QUOTES_ESCAPED = 7
     END = 8
-
-
 class _BlankAction(enum.Enum):
     NOTHING = 0
     MULTI_BLANKLINE_START = 1
     MULTI_BLANKLINE_END = 2
-
-
 def _blank_state_transition(
         state: _BlankParseState,
         ch: str | None) -> tuple[_BlankParseState, _BlankAction]:
@@ -989,8 +931,6 @@ def _blank_state_transition(
             _BlankParseState.END,
             _BlankAction.NOTHING,
         )
-
-
 def _blank_do_action(
     action: _BlankAction,
     blank_state: tuple[str, int | None],
@@ -1008,8 +948,6 @@ def _blank_do_action(
         matches.append(CommentMatch(start, pos))
         kind, start = "not", None
     return (kind, start), matches
-
-
 def find_blanklines(input_str: str, ) -> list[CommentMatch]:
     return find_comments_impl(
         input_str,
@@ -1019,36 +957,22 @@ def find_blanklines(input_str: str, ) -> list[CommentMatch]:
         _BlankParseState.END,
         ("not", None),
     )
-
-
 class cpp:
-
     @staticmethod
     def strip(code: str) -> str:
         return strip_c_comments(code)
-
-
 class rust:
-
     @staticmethod
     def strip(code: str) -> str:
         return strip_c_comments(code)
-
-
 class python:
-
     @staticmethod
     def strip(code: str) -> str:
         return strip_shell_comments(code)
-
-
 class html:
-
     @staticmethod
     def strip(code: str) -> str:
         return strip_xml_comments(code)
-
-
 if __name__ == "__main__":
     test_cases = [
         (
@@ -1118,4 +1042,3 @@ if __name__ == "__main__":
             out = func(inp)
             assert out == expected, f"{name}: {out} != {expected}"
     print("All tests passed.")
-

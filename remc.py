@@ -2,11 +2,8 @@
 import ast
 import sys
 from pathlib import Path
-
 import regex as re
 from dh import cprint, format_size, get_pyfiles, get_size, rm_doc
-
-
 def rm_ast(content: str) -> tuple[str, int]:
     try:
         tree = ast.parse(content)
@@ -17,8 +14,6 @@ def rm_ast(content: str) -> tuple[str, int]:
     for start, end in sorted(ranges, reverse=True):
         del lines[start - 1:end]
     return "\n".join(lines), len(ranges)
-
-
 def find_docstring_ranges(node) -> list[tuple[int, int]]:
     ranges: list[tuple[int, int]] = []
     for child in ast.walk(node):
@@ -33,13 +28,9 @@ def find_docstring_ranges(node) -> list[tuple[int, int]]:
                         ranges.append(
                             (child.body[0].lineno, child.body[0].end_lineno))
     return ranges
-
-
 def cleanup_blank_lines(content: str) -> str:
     content = re.sub(r"\n\n+", "\n", content)
     return "\n".join(line.rstrip() for line in content.split("\n"))
-
-
 def process_file(file_path: Path) -> None:
     try:
         original = file_path.read_text(encoding="utf-8")
@@ -61,8 +52,6 @@ def process_file(file_path: Path) -> None:
     except Exception as exc:
         print(f"✗ Error processing {file_path}: {exc}")
         return
-
-
 def process_directory(directory: str) -> dict:
     files = get_pyfiles(directory)
     if not files:
@@ -70,8 +59,6 @@ def process_directory(directory: str) -> dict:
         return
     for file_path in files:
         process_file(file_path)
-
-
 def main():
     dir = Path.cwd()
     initsize = get_size(dir)
@@ -85,7 +72,5 @@ def main():
         process_directory(dir)
     diff_size = initsize - get_size(dir)
     print(f"{format_size(diff_size)}")
-
-
 if __name__ == "__main__":
     main()

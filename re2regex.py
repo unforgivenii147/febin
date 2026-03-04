@@ -2,13 +2,9 @@
 import argparse
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
-
 import regex as re
-
 NORMAL_IMPORT = r"^import re\b"
 REGEX_IMPORT = r"^import regex as re\b"
-
-
 def update_file(file_path, reverse=False):
     try:
         lines = file_path.read_text(encoding="utf-8").splitlines(keepends=True)
@@ -35,8 +31,6 @@ def update_file(file_path, reverse=False):
         return None
     except Exception as e:
         return f"Error processing {file_path}: {e}"
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Recursively swap 'import re' with 'import regex as re'")
@@ -60,7 +54,5 @@ def main():
     for msg in updates:
         print(msg)
     print(f"\nTask complete. Files modified: {len(updates)}")
-
-
 if __name__ == "__main__":
     main()

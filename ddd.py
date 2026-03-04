@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
-
-
 def get_dir_size(path="."):
     total = 0
     try:
@@ -14,8 +12,6 @@ def get_dir_size(path="."):
     except Exception:
         return 0
     return total
-
-
 def human_readable_size(size_bytes):
     if size_bytes == 0:
         return "0B"
@@ -35,8 +31,6 @@ def human_readable_size(size_bytes):
         size_bytes /= 1024.0
         i += 1
     return f"{size_bytes:.1f}{units[i]}"
-
-
 def du_sort_python(target_dir="."):
     current_path = Path(target_dir)
     results = []
@@ -58,7 +52,5 @@ def du_sort_python(target_dir="."):
     for size_bytes, path in sorted_results:
         size_hr = human_readable_size(size_bytes)
         print(f"{size_hr}\t{path}")
-
-
 if __name__ == "__main__":
     du_sort_python(".")

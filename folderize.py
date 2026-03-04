@@ -2,8 +2,6 @@
 import os
 import shutil
 from pathlib import Path
-
-
 def falpha(root_dir="."):
     root_path = Path(root_dir).resolve()
     all_files = [f for f in root_path.rglob("*") if f.is_file()]
@@ -26,8 +24,6 @@ def falpha(root_dir="."):
             print(f"Moved: {file_path.name} -> {final_dest}")
         except Exception as e:
             print(f"Error moving {file_path.name}: {e}")
-
-
 def is_in_alphabetical_folder(file_path, root_path):
     relative_path = file_path.relative_to(root_path)
     if len(relative_path.parts) > 1:
@@ -39,8 +35,6 @@ def is_in_alphabetical_folder(file_path, root_path):
                 ]:
             return True
     return False
-
-
 def get_unique_filename(dest_path):
     if not dest_path.exists():
         return dest_path
@@ -54,8 +48,6 @@ def get_unique_filename(dest_path):
         if not new_path.exists():
             return new_path
         index += 1
-
-
 if __name__ == "__main__":
     falpha(".")
     for k in os.listdir("."):

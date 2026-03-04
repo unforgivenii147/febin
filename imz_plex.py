@@ -4,10 +4,8 @@ import tarfile
 import zipfile
 from collections import defaultdict
 from pathlib import Path
-
 import regex as re
 from dh import STDLIB
-
 SHEBANG_PATTERNS = [
     r"#!/data/data/com.termux/files/usr/bin/python",
     r"#!/usr/bin/env python",
@@ -26,8 +24,6 @@ COMPRESSED_EXTS = {
 PIP_LIST_PATH = Path("/sdcard/pip.txt")
 KNOWN_PACKAGES = set()
 STDLIB_MODULES = STDLIB
-
-
 def load_known_packages():
     global KNOWN_PACKAGES
     if PIP_LIST_PATH.exists():
@@ -40,8 +36,6 @@ def load_known_packages():
                 }
         except Exception:
             pass
-
-
 def is_python_file(path):
     path = Path(path)
     if not path.suffix or path.suffix == ".py":
@@ -66,8 +60,6 @@ def is_python_file(path):
             pass
         return False
     return path.suffix == ".py"
-
-
 def extract_imports_from_ast(code):
     imports = set()
     try:
@@ -81,8 +73,6 @@ def extract_imports_from_ast(code):
     except:
         pass
     return imports
-
-
 def extract_imports_regex(content):
     imports = set()
     patterns = [
@@ -97,8 +87,6 @@ def extract_imports_regex(content):
                 pkg = match.group(1).split(".")[0].lower()
                 imports.add(pkg)
     return imports
-
-
 def get_imports_from_file(file_path):
     try:
         with open(
@@ -113,8 +101,6 @@ def get_imports_from_file(file_path):
         return {imp for imp in imports if imp and imp != "from"}
     except:
         return set()
-
-
 def handle_compressed_file(archive_path):
     all_imports = defaultdict(int)
     path = Path(archive_path)
@@ -217,8 +203,6 @@ def handle_compressed_file(archive_path):
     except Exception:
         pass
     return dict(all_imports)
-
-
 def walk_directory(root_path):
     all_imports = defaultdict(int)
     root = Path(root_path)
@@ -238,8 +222,6 @@ def walk_directory(root_path):
         except Exception:
             continue
     return dict(all_imports)
-
-
 def generate_requirements(imports_count):
     filtered = {
         pkg: count
@@ -268,8 +250,6 @@ def generate_requirements(imports_count):
     print("Top 10 most used packages:")
     for pkg, count in sorted_imports[:10]:
         print(f"  {pkg}: {count} files")
-
-
 def main():
     load_known_packages()
     print(f"Loaded {len(KNOWN_PACKAGES)} packages from pip.txt")
@@ -279,7 +259,5 @@ def main():
         f"Found {sum(imports_count.values())} total imports across {len(imports_count)} packages"
     )
     generate_requirements(imports_count)
-
-
 if __name__ == "__main__":
     main()

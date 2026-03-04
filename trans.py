@@ -2,9 +2,7 @@
 import argparse
 import sys
 from pathlib import Path
-
 from deep_translator import GoogleTranslator, single_detection
-
 CHUNK_SIZE = 2000
 ALLOWED_EXT = {
     ".txt",
@@ -13,40 +11,26 @@ ALLOWED_EXT = {
     ".json",
     ".py",
 }
-
-
 def read_text_file(path: Path) -> str:
     ext = path.suffix.lower()
     if ext not in ALLOWED_EXT:
         raise ValueError(f"Unsupported file type: {ext}")
     return path.read_text(encoding="utf-8")
-
-
 def chunk_text(text: str, size: int = CHUNK_SIZE) -> list[str]:
     return [text[i:i + size] for i in range(0, len(text), size)]
-
-
 def detect_lang(text: str) -> str:
     sample = text[:500]
     return single_detection(sample)
-
-
 def translate_chunks(chunks: list[str], src_lang: str) -> str:
     translator = GoogleTranslator(source=src_lang, target="en")
     output = []
     for chunk in chunks:
         output.append(translator.translate(chunk))
     return "".join(output)
-
-
 def write_text_file(path: Path, data: str) -> None:
     path.write_text(data, encoding="utf-8")
-
-
 def build_output_path(input_path: Path) -> Path:
     return input_path.with_name(f"{input_path.stem}_eng{input_path.suffix}")
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="Translate text to English.")
     parser.add_argument("input_path")
@@ -95,7 +79,5 @@ def main() -> None:
         print(f"Write error: {exc}", file=sys.stderr)
         sys.exit(1)
     print(f"Translated ({src_lang} → en) → {out_path}")
-
-
 if __name__ == "__main__":
     main()

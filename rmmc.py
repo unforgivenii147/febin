@@ -1,13 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import ast
 import sys
-
 from multiprocessing import Pool
 from pathlib import Path
-
 import regex as re
 from dh import format_size, get_nobinary, get_size
-
 def process_file(file_path: Path) -> None:
     if is_binary(file_path):
         return
@@ -29,8 +26,6 @@ def process_file(file_path: Path) -> None:
         after=get_size(file_path)
         print(f'{file_path.name} ',end=' ')
         print(format_size(before-after))
-
-
 def main():
     dir = Path.cwd()
     initsize = get_size(dir)
@@ -48,7 +43,5 @@ def main():
         p.join()
     diff_size = initsize - get_size(dir)
     print(f"{format_size(diff_size)}")
-
-
 if __name__ == "__main__":
     main()

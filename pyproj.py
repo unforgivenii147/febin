@@ -5,8 +5,6 @@ Usage: python create_project.py <package_name>
 """
 import sys
 from pathlib import Path
-
-
 def create_python_project(pkg_name):
     """
     Create a template Python project structure in the current directory.
@@ -83,8 +81,6 @@ where = ["src"]
     print(f"  1. cd {current_dir}")
     print("  2. Update pyproject.toml with your information")
     print(f"  3. Start coding in src/{pkg_name}/")
-
-
 def main():
     # Check if package name is provided via command line
     if len(sys.argv) != 2:
@@ -93,7 +89,5 @@ def main():
         sys.exit * (1)
     pkg = sys.argv[1]
     create_python_project(pkg)
-
-
 if __name__ == "__main__":
     main()

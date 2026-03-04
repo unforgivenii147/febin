@@ -1,9 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-
 import regex as re
-
-
 def resolve_imports(content, current_dir):
     folder_name = os.path.basename(current_dir)
     content = re.sub(
@@ -21,8 +18,6 @@ def resolve_imports(content, current_dir):
         f"import {folder_name}",
         content,
     )
-
-
 def merge_python_files():
     current_dir = os.getcwd()
     folder_name = os.path.basename(current_dir)
@@ -40,7 +35,5 @@ def merge_python_files():
                 outfile.write(f"\n\n# --- {py_file} ---\n\n")
                 outfile.write(content)
     print(f"Merged {len(py_files)} files into {output_filename}")
-
-
 if __name__ == "__main__":
     merge_python_files()

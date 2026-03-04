@@ -1,17 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import curses
 from pathlib import Path
-
 LINES_PER_FILE = 20
-
-
 def list_files():
     return sorted(
         [p for p in Path(".").iterdir() if p.is_file()],
         key=lambda p: p.name.lower(),
     )
-
-
 def head_lines(path, n):
     lines = []
     try:
@@ -24,8 +19,6 @@ def head_lines(path, n):
     except Exception as e:
         lines = [f"[Error reading file: {e}]"]
     return lines
-
-
 def init_colors():
     curses.start_color()
     curses.use_default_colors()
@@ -33,8 +26,6 @@ def init_colors():
     curses.init_pair(2, curses.COLOR_GREEN, -1)
     curses.init_pair(3, curses.COLOR_YELLOW, -1)
     curses.init_pair(4, curses.COLOR_RED, -1)
-
-
 def draw(stdscr, files, idx):
     stdscr.clear()
     h, w = stdscr.getmaxyx()
@@ -59,8 +50,6 @@ def draw(stdscr, files, idx):
     stdscr.addnstr(h - 1, 0, footer, w - 1)
     stdscr.attroff(curses.color_pair(3))
     stdscr.refresh()
-
-
 def main(stdscr):
     curses.curs_set(0)
     stdscr.keypad(True)
@@ -83,7 +72,5 @@ def main(stdscr):
         elif key == curses.KEY_PPAGE and idx > 0:
             idx -= 1
             draw(stdscr, files, idx)
-
-
 if __name__ == "__main__":
     curses.wrapper(main)

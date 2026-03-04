@@ -2,12 +2,9 @@
 from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
-
 import pillow_heif as ph
 from dh import get_size
 from fastwalk import walk_files
-
-
 def process_file(fp):
     if not fp.exists():
         return False
@@ -16,8 +13,6 @@ def process_file(fp):
     outfile = fp.with_suffix(".jpg")
     img.save(outfile)
     return True
-
-
 def main():
     dir = Path().cwd()
     start_size = get_size(dir)
@@ -35,7 +30,5 @@ def main():
     pool.join()
     end_size = get_size(dir)
     print(f"{fornat_size(abs(end_size - start_size))}")
-
-
 if __name__ == "__main__":
     exit(main())

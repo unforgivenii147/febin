@@ -7,10 +7,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-
 import nbformat as nbf
-
-
 def py_to_ipynb(input_file, output_file=None):
     """
     Convert a Python file to a Jupyter notebook.
@@ -69,8 +66,6 @@ def py_to_ipynb(input_file, output_file=None):
     print(f"Successfully converted '{input_file}' to '{output_file}'")
     print(f"Created {len(cells)} cell(s)")
     return True
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Convert a Python script to a Jupyter notebook")
@@ -99,7 +94,5 @@ def main():
     else:
         # Use the smart splitting conversion
         py_to_ipynb(args.input, args.output)
-
-
 if __name__ == "__main__":
     main()

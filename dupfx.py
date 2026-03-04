@@ -3,13 +3,9 @@ import concurrent.futures as cf
 import os
 from collections import defaultdict
 from pathlib import Path
-
 import xxhash
-
 SKIPPED_PATHS = []
 EXCLUDED_DIRS = {".git", ".venv", "venv"}
-
-
 def hash_file(path: str, chunk_size: int = 8192):
     """Worker function for concurrent futures.
     Computes xxhash64 hash of a file. Returns (path, hash).
@@ -23,8 +19,6 @@ def hash_file(path: str, chunk_size: int = 8192):
     except (PermissionError, OSError):
         return path, None
     return path, hasher.hexdigest()
-
-
 def collect_all_files(directory: Path):
     """Collect files recursively, skipping excluded dirs."""
     files = []
@@ -33,8 +27,6 @@ def collect_all_files(directory: Path):
         for f in fs:
             files.append(Path(root) / f)
     return files
-
-
 def group_by_size(files):
     groups = defaultdict(list)
     for f in files:
@@ -44,8 +36,6 @@ def group_by_size(files):
         except (PermissionError, OSError):
             SKIPPED_PATHS.append(str(f))
     return groups
-
-
 def hash_groups_in_parallel(groups):
     candidates = []
     for _size, paths in groups.items():
@@ -63,8 +53,6 @@ def hash_groups_in_parallel(groups):
                 continue
             hash_groups[h].append(str(path))
     return {h: ps for h, ps in hash_groups.items() if len(ps) > 1}
-
-
 def auto_delete_duplicates(dups) -> None:
     print("\n🔥 AUTO-DELETE MODE: Removing duplicates...\n")
     deleted_count = 0
@@ -77,8 +65,6 @@ def auto_delete_duplicates(dups) -> None:
             except Exception as e:
                 print(f"⚠️ Could not delete {f}: {e}")
     print(f"\n✅ Deleted {deleted_count} duplicate files.")
-
-
 def report_duplicates(dups):
     dup_count = sum(len(files) - 1 for files in dups.values())
     dup_size = sum(
@@ -87,8 +73,6 @@ def report_duplicates(dups):
     print(f"   • Duplicate groups: {len(dups)}")
     print(f"   • Total duplicate files: {dup_count}")
     print(f"   • Total duplicate size: {dup_size / 1024 / 1024:.2f} MB")
-
-
 def main() -> None:
     target = Path.cwd()
     all_files = collect_all_files(target)
@@ -99,7 +83,5 @@ def main() -> None:
         auto_delete_duplicates(duplicates)
     else:
         print("\n✅ No duplicates found.")
-
-
 if __name__ == "__main__":
     main()

@@ -8,8 +8,6 @@ python script to sort lines of a given file and write back unique lines
 """
 import os
 import sys
-
-
 def sort_uniq(filename):
     get_size = os.path.getsize(filename)
     if get_size > 10 * 1024 * 1024:
@@ -29,8 +27,6 @@ def sort_uniq(filename):
         for line in unique_lines:
             f.write(line + "\n")
     return lines_removed
-
-
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python sort_uniq.py <filename>")

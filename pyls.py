@@ -7,23 +7,18 @@ import pwd
 import stat
 import sys
 from pathlib import Path
-
 COLORS = {
     "dir": "\033[34m",
     "link": "\033[36m",
     "exec": "\033[32m",
     "reset": "\033[0m",
 }
-
-
 def use_color(mode: str) -> bool:
     if mode == "always":
         return True
     if mode == "never":
         return False
     return sys.stdout.isatty()
-
-
 def colorize(name, st, enabled):
     if not enabled:
         return name
@@ -34,16 +29,12 @@ def colorize(name, st, enabled):
     if st.st_mode & stat.S_IXUSR:
         return f"{COLORS['exec']}{name}{COLORS['reset']}"
     return name
-
-
 def human_size(size):
     for unit in ("B", "K", "M", "G", "T"):
         if size < 1024:
             return f"{size}{unit}"
         size //= 1024
     return f"{size}P"
-
-
 def indicator(path, st):
     if stat.S_ISDIR(st.st_mode):
         return "/"
@@ -52,13 +43,9 @@ def indicator(path, st):
     if st.st_mode & stat.S_IXUSR:
         return "*"
     return ""
-
-
 def format_time(ts, full):
     dt = datetime.datetime.fromtimestamp(ts)
     return dt.strftime("%Y-%m-%d %H:%M:%S" if full else "%b %d %H:%M")
-
-
 def format_entry(entry, args, color_enabled):
     try:
         st = entry.stat(follow_symlinks=args.L)
@@ -82,8 +69,6 @@ def format_entry(entry, args, color_enabled):
     ts = st.st_ctime if args.lc else (st.st_atime if args.lu else st.st_mtime)
     time_str = format_time(ts, args.full_time)
     return f"{inode} {blocks} {perms}  {nlink}  {uid}  {gid}  {size: >6}  {time_str}  {name} "
-
-
 def scan_dir(path, args):
     try:
         with os.scandir(path) as it:
@@ -102,7 +87,6 @@ def scan_dir(path, args):
             ]
         else:
             entries = [e for e in entries if not e.name.startswith(".")]
-
     def key(p):
         try:
             st = p.stat(follow_symlinks=args.L)
@@ -119,13 +103,10 @@ def scan_dir(path, args):
         if args.X:
             return p.suffix
         return p.name
-
     entries.sort(key=key, reverse=args.r)
     if args.group_directories_first:
         entries.sort(key=lambda e: not e.is_dir())
     return entries
-
-
 def print_columns(items, width, by_row):
     if not items:
         return
@@ -141,8 +122,6 @@ def print_columns(items, width, by_row):
                     end="",
                 )
         print()
-
-
 def main():
     p = argparse.ArgumentParser(add_help=False)
     p.add_argument("-1", dest="one", action="store_true")
@@ -203,7 +182,5 @@ def main():
                 if e.is_dir() and not e.is_symlink():
                     print(f"\n{e}:")
                     main()
-
-
 if __name__ == "__main__":
     main()

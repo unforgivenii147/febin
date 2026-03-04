@@ -2,18 +2,13 @@
 import ast
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-
 import tree_sitter_python as tspython
 from dh import format_size, get_size
 from fastwalk import walk_files
 from termcolor import cprint
 from tree_sitter import Language, Parser, Query, QueryCursor
-
 ts_remover = None
-
-
 class TSRemover:
-
     def __init__(self):
         self.language = Language(tspython.language())
         self.parser = Parser(self.language)
@@ -29,7 +24,6 @@ class TSRemover:
     (string)) @docstring)
 """,
         )
-
     def remove_comments(self, source: str):
         source_bytes = source.encode("utf-8")
         tree = self.parser.parse(source_bytes)
@@ -74,7 +68,6 @@ class TSRemover:
         cleaned = new_source.decode("utf-8")
         cleaned = self._cleanup_blank_lines(cleaned)
         return cleaned, comment_count, docstring_count
-
     @staticmethod
     def _cleanup_blank_lines(text: str) -> str:
         lines = text.splitlines()
@@ -89,13 +82,9 @@ class TSRemover:
                 blank_streak = 0
                 cleaned.append(line.rstrip())
         return "\n".join(cleaned) + "\n"
-
-
 def ts_remover_initializer():
     global ts_remover
     ts_remover = TSRemover()
-
-
 def process_file(fp):
     global ts_remover
     file_path = Path(fp)
@@ -126,8 +115,6 @@ def process_file(fp):
     else:
         cprint(f"[NO CHANGE] {file_path.name}", "blue")
         return ("nochange", file_path, 0, 0)
-
-
 if __name__ == "__main__":
     dir_path = Path.cwd()
     files = [

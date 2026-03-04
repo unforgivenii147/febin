@@ -2,7 +2,6 @@
 import os
 import stat
 import sys
-
 CYAN = "\033[36m"
 BLUE = "\033[34m"
 GREEN = "\033[32m"
@@ -17,8 +16,6 @@ COMPRESSED_EXTS = {
     ".rar",
     ".7z",
 }
-
-
 def human_readable_size(size_bytes):
     if size_bytes < 1024:
         return f"{size_bytes} B"
@@ -28,8 +25,6 @@ def human_readable_size(size_bytes):
         return f"{size_bytes / 1024**2:.1f} MB"
     else:
         return f"{size_bytes / 1024**3:.1f} GB"
-
-
 def get_dir_size(path):
     total = 0
     for root, _dirs, files in os.walk(path, onerror=lambda e: None):
@@ -41,8 +36,6 @@ def get_dir_size(path):
             except Exception:
                 pass
     return total
-
-
 def list_dir(path="."):
     try:
         entries = os.listdir(path)
@@ -83,8 +76,6 @@ def list_dir(path="."):
     for size, name, color in sorted(items, key=lambda x: x[0]):
         size_str = human_readable_size(size).ljust(size_col_width)
         print(f"{size_str}  {color}{name}{RESET}")
-
-
 if __name__ == "__main__":
     target = sys.argv[1] if len(sys.argv) > 1 else "."
     list_dir(target)

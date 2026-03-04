@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-
 source_dir = os.path.expanduser("~/bin")
 for filename in os.listdir(source_dir):
     if filename.endswith(".py"):

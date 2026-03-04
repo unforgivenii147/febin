@@ -2,9 +2,7 @@
 import sys
 import tokenize
 from io import StringIO
-
 import regex as re
-
 python_keywords = {
     "def",
     "class",
@@ -15,8 +13,6 @@ python_keywords = {
     "async",
     "await",
 }
-
-
 def is_probably_python(lines):
     score = 0
     for line in lines:
@@ -27,16 +23,12 @@ def is_probably_python(lines):
         if re.match(r"\s{4}", line):
             score += 1
     return score >= 2
-
-
 def looks_like_python(code_block) -> bool | None:
     try:
         tokenize.generate_tokens(StringIO(code_block).readline)
         return True
     except tokenize.TokenError:
         return False
-
-
 def is_python_like(line) -> bool:
     if re.match(
             r"\s*(def|class|if|elif|else|for|while|try|except|with)\b.*:",
@@ -46,8 +38,6 @@ def is_python_like(line) -> bool:
     if re.match(r"\s*@[A-Za-z_]\w*", line):
         return True
     return bool(re.match(r"\s*import\b|\s*from\b", line))
-
-
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python fpy.py <filename>")

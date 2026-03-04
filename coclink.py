@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 from datetime import UTC, datetime, timedelta
-
 import regex as re
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
-
 load_dotenv()
 API_KEY = os.getenv("YOUTUBE_API_KEY")
 CHANNELS = {
@@ -13,8 +11,6 @@ CHANNELS = {
     "iTzu": "UCLKKvlo0yK8OgWvjCiZQ3sA",
     "Clash_Champs": "UC_mD8S6pWpSstY3mXJ9nEqw",
 }
-
-
 def get_videos(youtube, channel_id):
     past_date = (datetime.now(UTC) - timedelta(days=30)).isoformat()
     videos = []
@@ -42,8 +38,6 @@ def get_videos(youtube, channel_id):
         if len(videos) > 100:
             break
     return videos
-
-
 def extract_th18_links(description):
     pattern = r"(https?://link\.clashofclans\.com/[^\s]+)"
     links = re.findall(pattern, description)
@@ -51,8 +45,6 @@ def extract_th18_links(description):
         l for l in links
         if "TH18" in l.upper() or "TH18" in description.upper()
     ]
-
-
 def create_html(channel_name, base_data):
     date_str = datetime.now().strftime("%d-%m-%Y")
     dir_name = f"output/{date_str}_{channel_name}"
@@ -86,8 +78,6 @@ def create_html(channel_name, base_data):
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(html_content)
     print(f"Generated: {file_path}")
-
-
 def main():
     if not API_KEY:
         print("Error: API_KEY not found in .env file.")
@@ -109,7 +99,5 @@ def main():
             create_html(name, results)
         else:
             print(f"No TH18 links found for {name}.")
-
-
 if __name__ == "__main__":
     main()

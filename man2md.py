@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 import sys
-
 import regex as re
-
-
 def read_man_file(filename):
     try:
         with open(
@@ -15,8 +12,6 @@ def read_man_file(filename):
             return f.read()
     except FileNotFoundError:
         sys.exit(f"Error: file {filename} not found")
-
-
 def man_to_markdown(content):
     lines = content.splitlines()
     md_lines = []
@@ -121,8 +116,6 @@ def man_to_markdown(content):
     if in_code_block:
         md_lines.append("```")
     return "\n".join(md_lines)
-
-
 def main():
     if len(sys.argv) != 2:
         print("Usage: python man2md.py <manfile>")
@@ -135,7 +128,5 @@ def main():
     with open(outname, "w", encoding="utf-8") as f:
         f.write(markdown)
     print(f"Converted {filename} → {outname}")
-
-
 if __name__ == "__main__":
     main()

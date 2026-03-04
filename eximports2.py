@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from collections import defaultdict
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from tree_sitter import Language, Parser
-
 parser = Parser()
 parser.language = Language(tsp.language())
 OUT_DIR = Path("output")
@@ -13,8 +11,6 @@ VALID = {
     "import_statement",
     "import_from_statement",
 }
-
-
 def extract_file(src: bytes, tree):
     """Extract import statements from a parsed tree."""
     root = tree.root_node
@@ -23,8 +19,6 @@ def extract_file(src: bytes, tree):
         if node.type in VALID:
             chunks.append(src[node.start_byte:node.end_byte].decode())
     return chunks
-
-
 def get_relative_path(file_path: Path, base_path: Path) -> Path:
     """Get the relative path of a file, handling cases where it might be relative to different roots."""
     try:
@@ -32,8 +26,6 @@ def get_relative_path(file_path: Path, base_path: Path) -> Path:
     except ValueError:
         # If file is not under base_path, return the full path
         return file_path
-
-
 # Dictionary to store imports by folder path
 folder_imports = defaultdict(list)
 processed_files_count = 0

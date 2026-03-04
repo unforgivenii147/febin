@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
-
-
 def clean_requirements(fname):
     with open(fname) as f:
         lines = f.readlines()
@@ -17,8 +15,6 @@ def clean_requirements(fname):
     with open(fname, "w") as f:
         f.write("\n".join(sorted(packages)))
     print(f"Updated  {fname} with {len(packages)} unique packages.")
-
-
 if __name__ == "__main__":
     fn = sys.argv[1]
     clean_requirements(fn)

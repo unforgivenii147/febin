@@ -2,11 +2,8 @@
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 import regex as re
 from tqdm import tqdm
-
-
 def extract_regex_patterns(file_path):
     patterns = []
     regex_pattern = re.compile(
@@ -19,8 +16,6 @@ def extract_regex_patterns(file_path):
     except (OSError, UnicodeDecodeError):
         pass
     return [match[2] for match in patterns]
-
-
 def process_file(file_path, output_dir):
     patterns = extract_regex_patterns(file_path)
     if patterns:
@@ -30,8 +25,6 @@ def process_file(file_path, output_dir):
         with open(output_file, "w", encoding="utf-8") as f:
             f.write("\n".join(patterns))
     return file_path, len(patterns)
-
-
 def find_regex_in_dir(start_dir, output_dir, max_workers=4):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -65,8 +58,6 @@ def find_regex_in_dir(start_dir, output_dir, max_workers=4):
             progress_bar.update(1)
     progress_bar.close()
     print(f"Scanning complete. Processed {total_files} files.")
-
-
 if __name__ == "__main__":
     output_directory = "output"
     find_regex_in_dir(

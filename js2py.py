@@ -7,10 +7,7 @@ import argparse
 import os
 import sys
 from pathlib import Path
-
 import regex as re
-
-
 def install_js2py():
     try:
         import js2py
@@ -31,8 +28,6 @@ def install_js2py():
         except subprocess.CalledProcessError:
             print("❌ Failed to install js2py")
             return False
-
-
 def convert_with_js2py(js_file: Path, outfile: Path) -> bool:
     try:
         import js2py
@@ -43,8 +38,6 @@ def convert_with_js2py(js_file: Path, outfile: Path) -> bool:
             False,
             f"js2py conversion error: {e!s}",
         )
-
-
 def convert_with_openai(js_code: str,
                         api_key: str | None = None) -> tuple[bool, str]:
     try:
@@ -106,8 +99,6 @@ python code:"""
         return (True, python_code.strip())
     except Exception as e:
         return (False, f"OpenAI API error: {e!s}")
-
-
 def simple_js_to_python(js_code: str) -> str:
     python_code = js_code
     python_code = re.sub(r"\b(let|const|var)\s+", "", python_code)
@@ -173,8 +164,6 @@ def simple_js_to_python(js_code: str) -> str:
         r"for \1 in range(\2, \3):",
         python_code,
     )
-
-
 def convert_file(
     input_file: Path,
     output_file: Path | None = None,
@@ -215,8 +204,6 @@ def convert_file(
     except Exception as e:
         print(f"❌ Error writing file: {e}")
         return False
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Convert JavaScript code to Python",
@@ -262,8 +249,6 @@ def main():
         args.api_key,
     )
     sys.exit(0 if success else 1)
-
-
 if __name__ == "__main__":
     main()
 """

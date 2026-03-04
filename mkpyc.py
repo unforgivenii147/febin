@@ -6,19 +6,13 @@ from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
 from time import perf_counter
-
-
 def process_file(fp):
     if not fp.exists():
         return False
     compileall.compile_file(fp, legacy=True, optimize=2)
     return True
-
-
 def process_dir(dr):
     compileall.compile_dir(dr, legacy=True, optimize=2)
-
-
 def main():
     start = perf_counter()
     files = []
@@ -43,7 +37,5 @@ def main():
     for dir in dirs:
         process_dir(dir)
     print(f"{perf_counter() - start} seconds")
-
-
 if __name__ == "__main__":
     exit(main())

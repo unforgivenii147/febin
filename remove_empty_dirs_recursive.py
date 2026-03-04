@@ -4,8 +4,6 @@ find and remove empty dirs in current directory
 """
 import os
 from pathlib import Path
-
-
 def main():
     count = 0
     for dirpath, dirnames, filenames in os.walk(Path.cwd(), topdown=False):
@@ -14,7 +12,5 @@ def main():
             os.rmdir(dirpath)
             count += 1
     print(f"total {count} empty dirs removed")
-
-
 if __name__ == "__main__":
     main()

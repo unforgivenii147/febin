@@ -83,7 +83,7 @@ def distribute_files(files, folders, base_dir):
                 try:
                     dest_path = unique_path(dest_path)
                     shutil.move(filepath, dest_path)
-                    print(f"Moved {os.path.basename(filepath)} ({size:,} bytes) → {folder_name}")
+                    #                    print(f"Moved {os.path.basename(filepath)} ({size:,} bytes) → {folder_name}")
                     moved_count += 1
                     break
                 except Exception as e:
@@ -91,25 +91,27 @@ def distribute_files(files, folders, base_dir):
                 break
         else:
             print(f"No folder match for {os.path.basename(filepath)} ({size:,} bytes)")
-    print(f"\nMoved {moved_count}/{len(files)} files successfully.")
+
+
+#    print(f"\nMoved {moved_count}/{len(files)} files successfully.")
 
 
 def main():
     base_dir = Path(".").resolve()
-    print(f"Processing files in: {base_dir}")
+    #    print(f"Processing files in: {base_dir}")
     files = get_all_files(base_dir)
     if not files:
         print("No files found.")
         return
-    print(f"Found {len(files)} files.")
+    # 7    print(f"Found {len(files)} files.")
     num_folders = calculate_optimal_folders(files)
-    print(f"Size range: {min(s[1] for s in files):,} - {max(s[1] for s in files):,} bytes")
-    print(f"Creating {num_folders} folders (range-based)")
+    #    print(f"Size range: {min(s[1] for s in files):,} - {max(s[1] for s in files):,} bytes")
+    #    print(f"Creating {num_folders} folders (range-based)")
     folders = create_range_folders(base_dir, files, num_folders)
-    print(
-        "Created folders:",
-        [name for _, _, name in folders],
-    )
+    #    print(
+    #        "Created folders:",
+    #        [name for _, _, name in folders],
+    #    )
     distribute_files(files, folders, base_dir)
     print("Folderization complete!")
 

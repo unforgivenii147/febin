@@ -1,19 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
-import shutil
-import tarfile
-import tempfile
-import zipfile
-import dh
+import sys
+from pathlib import Path
 
-EXT = {".txt"}
-STRTOFIND = [
-    "import ",
-    "__version__",
-    "from ",
-    "#!/",
-    "#  encodig",
-]
+from dh import format_size, get_nobinary, get_size
+
+STRTOFIND = ["dist-info", ".so", ".py", ".pth", "__", ".zip"]
 
 
 def clean_text(text: str) -> str:
@@ -36,66 +27,29 @@ def clean_file(path: str) -> None:
             f.write(cleaned)
 
 
-def process_zip(path: str) -> None:
-    tmp = tempfile.mktemp(suffix=".zip")
-    with (
-        zipfile.ZipFile(path, "r") as zin,
-        zipfile.ZipFile(tmp, "w") as zout,
-    ):
-        for item in zin.infolist():
-            data = zin.read(item.filename)
-            base = os.path.basename(item.filename)
-            if base in TARGET_FILES:
-                try:
-                    text = data.decode("utf-8", errors="ignore")
-                    cleaned = clean_text(text)
-                    data = cleaned.encode("utf-8")
-                except Exception:
-                    pass
-            zout.writestr(item, data)
-    shutil.move(tmp, path)
-
-
-def process_tar(path: str) -> None:
-    tmp_dir = tempfile.mkdtemp()
-    tmp_tar = tempfile.mktemp(suffix=".tar.gz")
-    with tarfile.open(path, "r:*") as tar:
-        tar.extractall(tmp_dir)
-    for root, _, files in os.walk(tmp_dir):
-        for name in files:
-            if name in TARGET_FILES:
-                clean_file(os.path.join(root, name))
-    with tarfile.open(tmp_tar, "w:gz") as tar:
-        tar.add(tmp_dir, arcname="")
-    shutil.move(tmp_tar, path)
-    shutil.rmtree(tmp_dir)
-
-
-def dispatch_archive(path: str) -> None:
-    name = path.lower()
-    if name.endswith(".zip") or name.endswith(".whl"):
-        process_zip(path)
-    elif name.endswith(".tar.gz") or name.endswith(".tgz") or name.endswith(".tar"):
-        process_tar(path)
-
-
 def main() -> None:
-    for root, _, files in os.walk("."):
-        for name in files:
-            full_path = os.path.join(root, name)
-            if dh.get_ext(full_path) in EXT:
-                clean_file(full_path)
-                continue
-            if name.lower().endswith(
-                (
-                    ".zip",
-                    ".whl",
-                    ".tar.gz",
-                    ".tgz",
-                    ".tar",
-                )
-            ):
-                dispatch_archive(full_path)
+    root = Path.cwd()
+    isz = get_size(root)
+    args = sys.argv[1:]
+    if args:
+        files = [Path(arg) for arg in args]
+    else:
+        files = get_nobinary(root)
+    if len(files) == 1:
+        clean_file(files[0])
+        sys.exit(0)
+    pool = Pool(8)
+    for f in files:
+        p.apply_async(clean_file, (f,))
+    pool.close()
+    pool.join()
+
+    esz = get_size(root)
+    diffsize = isz - esz
+    print(f"space freed : {format_size(diffsize)}")
+
+
+# (".zip",".whl",".tar.gz",".tgz",".tar",)
 
 
 if __name__ == "__main__":

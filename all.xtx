@@ -1,11 +1,9 @@
-    cleaned = []
-    for line in lines:
-        if line.startswith("#!"):
-            cleaned.append(line)
-            continue
-        if "#" in line and not line.strip().startswith("#"):
-            indx = line.index("#")
-            cleaned.append(line[:indx] + "\n")
-            continue
-        if not line.strip().startswith("#"):
-            cleaned.append(line)
+def convert_size(size_bytes):
+    if size_bytes == 0:
+        return "0B"
+    units = ["B", "KB", "MB", "GB", "TB"]
+    i = math.floor(math.log(size_bytes, 1024))
+    p = math.pow(1024, i)
+    s = round(size_bytes / p, 2)
+    return f"{s}{units[i]}"
+

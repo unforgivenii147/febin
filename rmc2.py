@@ -5,24 +5,13 @@ from pathlib import Path
 import tree_sitter_python
 from tree_sitter import Language, Parser
 
+from dh import get_size, cleanup_blank_lines, get_pyfiles, format_size
+
+
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
+
 parser = Parser()
 parser.language = Language(tree_sitter_python.language())
-
-
-def _cleanup_blank_lines(text: str) -> str:
-    lines = text.splitlines()
-    cleaned = []
-    blank_streak = 0
-    for line in lines:
-        if line.strip() == "":
-            blank_streak += 1
-            if blank_streak <= 2:
-                cleaned.append("")
-        else:
-            blank_streak = 0
-            cleaned.append(line.rstrip())
-    return "\n".join(cleaned) + "\n"
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
@@ -53,7 +42,7 @@ def _collect_docstrings(node, source: bytes, deletions: list):
         _collect_docstrings(child, source, deletions)
 
 
-def remove_comments_and_docstrings(path: Path) -> None:
+def process_file(path: Path) -> None:
     try:
         source = path.read_bytes()
         tree = parser.parse(source)
@@ -73,7 +62,7 @@ def remove_comments_and_docstrings(path: Path) -> None:
         for start, end in sorted(deletions, reverse=True):
             del cleaned[start:end]
         cleaned_text = cleaned.decode("utf-8")
-        cleaned_text = _cleanup_blank_lines(cleaned_text)
+        cleaned_text = cleanup_blank_lines(cleaned_text)
         cleaned = cleaned_text.encode("utf-8")
         parser.parse(cleaned)
         path.write_bytes(cleaned)
@@ -82,19 +71,24 @@ def remove_comments_and_docstrings(path: Path) -> None:
         print(f"[FAIL] {path} -> {e}")
 
 
-def get_pyfiles(root: Path) -> list[Path]:
-    if root.is_file() and root.suffix == ".py":
-        return [root]
-    return [p for p in root.rglob("*.py") if p.is_file()]
-
-
 def main() -> None:
-    root = Path().cwd().resolve()
-    files = get_pyfiles(root)
-    if not files:
-        sys.exit("No Python files found")
-    with Pool(cpu_count()) as pool:
-        pool.map(remove_comments_and_docstrings, files)
+
+    root = Path.cwd()
+    isz = get_size(root)
+    args = sys.argv[1:]
+    if args:
+        files = [Path(arg) for arg in args]
+    else:
+        files = get_pyfiles(root)
+
+    if len(files) == 1:
+        process_file(files[0])
+        sys.exit(0)
+
+    with Pool(8) as pool:
+        pool.map(process_file, files)
+    esz = get_size(root)
+    print(f"space freed: {format_size(isz - esz)}")
 
 
 if __name__ == "__main__":

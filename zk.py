@@ -1,7 +1,4 @@
-"""
-Convert Python packages to zipped format for efficient storage.
-Supports both source (.py) and compiled bytecode (.pyc) modes.
-"""
+#!/data/data/com.termux/files/usr/bin/env python
 
 import argparse
 import os

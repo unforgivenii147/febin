@@ -2,6 +2,7 @@
 import math
 import os
 import shutil
+from pathlib import Path
 
 
 def get_all_files_in_root_only(root_path):
@@ -133,8 +134,10 @@ def organize_files_in_root(
         min_size = folder_files[0]["size"]
         max_size = folder_files[-1]["size"]
         total_size = sum(f["size"] for f in folder_files)
-        folder_name = f"size_{convert_size(min_size)}_to_{convert_size(max_size)}_({len(folder_files)}_files)"
+
+        folder_name = f"{convert_size(min_size)}-{convert_size(max_size)}"
         folder_name = "".join(c for c in folder_name if c not in r'<>:"/\|?*')
+
         folder_path = os.path.join(root_path, folder_name)
         try:
             os.makedirs(folder_path, exist_ok=True)

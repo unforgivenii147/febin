@@ -7,7 +7,6 @@ from tree_sitter import Language, Parser
 
 from dh import get_size, cleanup_blank_lines, get_pyfiles, format_size
 
-
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 
 parser = Parser()

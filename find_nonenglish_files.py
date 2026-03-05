@@ -188,7 +188,9 @@ def print_results(results: dict, show_files: bool = False):
         for (
             dir_path,
             stats,
-        ) in dirs_with_non_english[:10]:  # Show top 10
+        ) in dirs_with_non_english[
+            :10
+        ]:  # Show top 10
             percentage = stats["non_english"] / stats["total"] * 100
             print(f"   ├─ {dir_path if dir_path != '.' else '(root)'}:")
             print(f"   │   {stats['non_english']}/{stats['total']} files ({percentage:.1f}% non-English)")

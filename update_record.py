@@ -6,12 +6,9 @@ Removes references to .pyc files and direct_url.json, and logs missing files.
 
 import base64
 import hashlib
-import json
 import logging
-import os
-import sys
 from pathlib import Path
-from typing import List, Optional, Tuple
+import sys
 
 # Set up logging
 logging.basicConfig(
@@ -22,7 +19,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def find_site_packages() -> Optional[Path]:
+def find_site_packages() -> Path | None:
     """Find the system site-packages directory."""
     import site
 
@@ -63,7 +60,7 @@ def get_size(filepath: Path) -> int:
         return 0
 
 
-def parse_record_line(line: str) -> Tuple[str, str, str]:
+def parse_record_line(line: str) -> tuple[str, str, str]:
     """Parse a line from a RECORD file into path, hash, and size."""
     parts = line.strip().split(",")
     if len(parts) == 3:
@@ -99,7 +96,7 @@ def update_record_file(record_path: Path, dist_info_dir: Path) -> bool:
         return False
     # Read the current RECORD file
     try:
-        with open(record_path, "r", encoding="utf-8") as f:
+        with open(record_path, encoding="utf-8") as f:
             lines = f.readlines()
     except Exception as e:
         logger.error(f"Error reading {record_path}: {e}")
@@ -111,7 +108,7 @@ def update_record_file(record_path: Path, dist_info_dir: Path) -> bool:
         line = line.strip()
         if not line:
             continue
-        relative_path, old_hash, old_size = parse_record_line(line)
+        relative_path, _old_hash, _old_size = parse_record_line(line)
         # Skip the RECORD file itself
         if relative_path == "RECORD":
             continue
@@ -160,7 +157,7 @@ def update_record_self_hash(record_path: Path, dist_info_dir: Path):
     """Update the RECORD file's own hash entry."""
     try:
         # Read the current RECORD file
-        with open(record_path, "r", encoding="utf-8") as f:
+        with open(record_path, encoding="utf-8") as f:
             lines = f.readlines()
         # Calculate the new hash for the RECORD file itself
         record_hash = calculate_file_hash(record_path)

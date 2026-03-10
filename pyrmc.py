@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-import tree_sitter_python
+import sys
+
 from dh import format_size, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_python
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 parser = Parser()
@@ -48,6 +49,7 @@ def _cleanup_blank_lines(text: str) -> str:
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:
@@ -117,11 +119,11 @@ def main() -> None:
     files = get_pyfiles(root)
     if not files:
         sys.exit("No Python files found")
-    init_size = get_size(root)
+    before = get_size(root)
     with Pool(cpu_count()) as pool:
         pool.map(remove_comments_and_docstrings, files)
-    end_size = get_size(root)
-    difsize = init_size - end_size
+    after = get_size(root)
+    difsize = before - after
     cprint(f"{format_size(difsize)}", "cyan")
 
 

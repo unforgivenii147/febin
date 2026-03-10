@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import math
 import os
 import signal
 import sys
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
+
 import requests
 
 PART_SIZE = 10 * 1024 * 1024

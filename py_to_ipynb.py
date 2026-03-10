@@ -6,8 +6,8 @@ Usage: python py2ipynb.py input.py [output.ipynb]
 
 import argparse
 import json
-import sys
 from pathlib import Path
+
 import nbformat as nbf
 
 
@@ -23,7 +23,7 @@ def py_to_ipynb(input_file, output_file=None):
         print(f"Error: File '{input_file}' not found.")
         return False
     # Read the Python file
-    with open(input_file, "r", encoding="utf-8") as f:
+    with open(input_file, encoding="utf-8") as f:
         code = f.read()
     # Create a new notebook
     nb = nbf.v4.new_notebook()
@@ -41,8 +41,10 @@ def py_to_ipynb(input_file, output_file=None):
             or line.startswith("class ")
             or
             # Import statements (group them)
-            (line.startswith("import ") or line.startswith("from "))
-            and not current_cell[-1].startswith(("import ", "from "))
+            (
+                (line.startswith("import ") or line.startswith("from "))
+                and not current_cell[-1].startswith(("import ", "from "))
+            )
             or
             # Empty line after some code
             (
@@ -88,7 +90,7 @@ def main():
     # Override splitting behavior if requested
     if args.no_split:
         # Simple conversion - everything in one cell
-        with open(args.input, "r", encoding="utf-8") as f:
+        with open(args.input, encoding="utf-8") as f:
             code = f.read()
         nb = nbf.v4.new_notebook()
         nb["cells"] = [nbf.v4.new_code_cell(code)]

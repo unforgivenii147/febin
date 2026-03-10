@@ -1,8 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
+
 import argparse
 from multiprocessing import Pool
 from pathlib import Path
+
 from dh import format_size, get_size, is_image, unique_path
 
 try:
@@ -104,8 +106,8 @@ def main() -> None:
     pool.imap_unordered(convert_file, files)
     pool.close()
     pool.join()
-    end_size = get_size(".")
-    print(f"{format_size(abs(end_size - start_size))}")
+    after = get_size(".")
+    print(f"{format_size(abs(after - start_size))}")
 
 
 if __name__ == "__main__":

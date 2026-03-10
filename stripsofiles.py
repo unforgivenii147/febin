@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import time
 from pathlib import Path
+import time
+
 from dh import SoFileStripper
 
 

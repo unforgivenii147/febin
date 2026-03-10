@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import glob
 import logging
+from multiprocessing import Pool, cpu_count
 import os
 import sys
-from multiprocessing import Pool, cpu_count
 
 try:
     from tree_sitter import Language, Parser
@@ -104,18 +104,17 @@ class CommentRemover:
         docstring_ranges = []
 
         def walk_tree(node, parent_type=None):
-            if node.type == "string":
-                if parent_type in (
-                    "function_definition",
-                    "class_definition",
-                    "module",
-                ):
-                    docstring_ranges.append(
-                        (
-                            node.start_byte,
-                            node.end_byte,
-                        )
+            if node.type == "string" and parent_type in (
+                "function_definition",
+                "class_definition",
+                "module",
+            ):
+                docstring_ranges.append(
+                    (
+                        node.start_byte,
+                        node.end_byte,
                     )
+                )
             for child in node.children:
                 child_parent = (
                     child.type

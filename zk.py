@@ -2,13 +2,29 @@
 
 import argparse
 import os
+from pathlib import Path
 import shutil
 import subprocess
 import sys
+from sysconfig import get_path
 import tempfile
 import zipfile
-from pathlib import Path
-from sysconfig import get_path
+from importlib.metadata import distributions
+from importlib_metadata import _top_level_declared
+
+def get_pkgs():
+    pkgs=[]
+    for pkg in distributions():
+        pkgname=pkg.metadata['name'].lower().replace('-','_')
+        pkgs.appens(pkgname)
+    return pkgs
+
+get_top_level(pkg):
+    found=[]
+    for k in _top_level_infered(pkg):
+        found.append(k)
+    return found
+
 
 CYAN = "\033[0;96m"
 GREEN = "\033[0;92m"
@@ -67,7 +83,7 @@ def is_package_directory(pkg_path):
         return False
 
     py_files = []
-    for root, dirs, files in os.walk(pkg_path):
+    for _root, dirs, files in os.walk(pkg_path):
         dirs[:] = [d for d in dirs if d != "__pycache__"]
         py_files.extend([f for f in files if f.endswith(".py")])
     return len(py_files) > 1
@@ -95,11 +111,19 @@ def compile_to_bytecode(directory):
 def find_so_files(directory):
 
     so_files = []
-    for root, dirs, files in os.walk(directory):
+    for root, _dirs, files in os.walk(directory):
         for file in files:
             if file.endswith(".so"):
                 so_files.append(os.path.join(root, file))
     return so_files
+
+
+def have_so_files(directory) -> bool:
+    for root, _dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith(".so"):
+                return True
+    return False
 
 
 def create_zip(src_path, zip_path, pkg_name):
@@ -110,7 +134,7 @@ def create_zip(src_path, zip_path, pkg_name):
                 arcname = os.path.basename(src_path)
                 zf.write(src_path, arcname)
             else:
-                for root, dirs, files in os.walk(src_path):
+                for root, _dirs, files in os.walk(src_path):
                     for file in files:
                         file_path = os.path.join(root, file)
                         arcname = os.path.relpath(file_path, os.path.dirname(src_path))
@@ -119,19 +143,34 @@ def create_zip(src_path, zip_path, pkg_name):
     except Exception as e:
         print_error(f"Failed to create zip: {e}")
         return False
+sitedur='/'
+def process_pkg(pkgname):
+    pkg_path=get_toplevel(pkgname)
+
+def main(args):
+    if args:
+        pkgs=[p for p in args]
+        installed=get_pkgs()
+        for pkg in pkgs:
+            if pkg in installed:
+                process_pkg(pkg)
+    else:
+        sys.exit(0)
+
+if __name__==''__main__:
+   sys.exit(main(args=sys.argv[1:]))
 
 
-def get_site_packages():
-
-    site_packages = get_path("purelib")
-    if not site_packages:
-        site_packages = os.path.join(
-            os.path.dirname(sys.executable),
-            f"lib/python{sys.version_info.major}.{sys.version_info.minor}/site-packages",
-        )
-    return site_packages
 
 
+
+
+
+
+
+
+
+"""
 def main():
     parser = argparse.ArgumentParser(description="Convert Python packages to zipped format for efficient storage")
     parser.add_argument("package", help="Package name to zip")
@@ -155,6 +194,9 @@ def main():
         print_warning(f"Skipping '{pkg_name}' - single file modules are not supported")
         sys.exit(0)
 
+    if have_so_file(pkg_path):
+        print("have .so file")
+        sys.exit(0)
     if not is_package_directory(pkg_path):
         print_warning(f"Skipping '{pkg_name}' - not a multi-file package")
         sys.exit(0)
@@ -234,3 +276,25 @@ sys.modules[r'{pkg_name}'] = module
 
 if __name__ == "__main__":
     main()
+
+
+
+def get_site_packages():
+
+    site_packages = get_path("purelib")
+    if not site_packages:
+        site_packages = os.path.join(
+            os.path.dirname(sys.executable),
+            f"lib/python{sys.version_info.major}.{sys.version_info.minor}/site-packages",
+        )
+    return site_packages
+
+
+
+
+
+
+
+
+
+"""

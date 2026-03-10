@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
-import tree_sitter_cpp as tscpp
+
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_cpp as tscpp
 
 
 class TSCppRemover:
@@ -46,14 +47,14 @@ class TSCppRemover:
 
 def process_file(fp):
     file_path = Path(fp)
-    init_size = file_path.stat().st_size
+    before = file_path.stat().st_size
     remover = TSCppRemover()
     code = file_path.read_text(encoding="utf-8", errors="ignore")
     result = remover.remove_comments(code)
     if len(result) != len(code):
         file_path.write_text(result, encoding="utf-8")
-        end_size = file_path.stat().st_size
-        reduced = abs(init_size - end_size)
+        after = file_path.stat().st_size
+        reduced = abs(before - after)
         cprint(f"[OK] {file_path.name} - reduced {reduced} bytes", "cyan")
     else:
         cprint(f"[NO CHANGE] {file_path.name}", "blue")

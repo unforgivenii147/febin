@@ -1,15 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-import sys
 from pathlib import Path
-import regex as re
+import sys
+
 from fastwalk import walk_files
+import regex as re
 
 
 def clean_log(path):
     print(f"[] {path}")
     ansi_tmux_re = re.compile(
-        rb"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])|" rb"\x08|\x0C|\x0F|\x18|\x1C|" rb"\(\d+[a-z]\(B|\(0[Bqtxl]\(B"
+        rb"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])|"
+        rb"\x08|\x0C|\x0F|\x18|\x1C|"
+        rb"\(\d+[a-z]\(B|\(0[Bqtxl]\(B"
     )
     status_re = re.compile(
         rb"\b\d{4}[MGB]\b|"

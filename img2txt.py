@@ -1,7 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import argparse
-import os
+from multiprocessing import Pool
 from pathlib import Path
+import sys
+
+from dh import format_size, get_nobinary, get_size
+from termcolor import cprint
+from pathlib import Path
+
 from PIL import Image, ImageFilter, ImageOps
 from pytesseract import image_to_string
 
@@ -36,30 +41,29 @@ def process_file(file_path):
         print("No text found.")
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Extract text from images.")
-    parser.add_argument(
-        "file",
-        nargs="?",
-        help="Image file to process",
-    )
-    args = parser.parse_args()
-    if args.file:
-        file_path = Path(args.file)
-        if file_path.exists() and file_path.suffix in {".jpg", ".png"}:
-            process_file(file_path)
-        else:
-            print("Error: File does not exist or is not a supported image format.")
+def main() -> None:
+    dir = Path.cwd()
+    before = get_size(dir)
+    args = sys.argv[1:]
+    if args:
+        files = [Path(arg) for arg in args]
     else:
-        dir = Path().cwd()
-        for root, _, files in os.walk(dir):
-            for file in files:
-                file_path = Path(root) / file
-                if file_path.suffix in {
-                    ".jpg",
-                    ".png",
-                }:
-                    process_file(file_path)
+        files = [Path(f) for f in dir.rglob("*") if f.suffix in {".jpg", ".png"}]
+
+    if len(files) == 1:
+        process_file(files[0])
+        sys.exit(0)
+    else:
+        p = Pool(8)
+        for _ in p.imap_unordered(process_file, files):
+            pass
+        p.close()
+        p.join()
+        after = get_size(dir)
+        cprint(
+            f"{format_size(before - after)}",
+            "cyan",
+        )
 
 
 if __name__ == "__main__":

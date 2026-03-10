@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-import sys
 from pathlib import Path
-import regex as re
+import sys
+
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
+import regex as re
 
 DIRECTORY = "."
 CHUNK_SIZE = 2000

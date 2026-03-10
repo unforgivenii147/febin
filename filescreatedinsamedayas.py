@@ -3,9 +3,9 @@
 Simpler version - finds files in the same directory created on the same day as input file.
 """
 
+from datetime import datetime
 import os
 import sys
-from datetime import datetime
 
 
 def get_file_creation_time(filepath):

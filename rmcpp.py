@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-import tree_sitter_cpp as tscpp
+import sys
+
 from tree_sitter import Language, Parser, Query, QueryCursor
+import tree_sitter_cpp as tscpp
 
 ts_remover = None
 
@@ -129,15 +130,17 @@ if __name__ == "__main__":
             return f"{size / 1024:.2f} KB"
 
     dir_path = Path.cwd()
-    files = [p for p in walk_files(dir_path) if Path(p).suffix in [".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx"]]
+    files = [
+        p for p in walk_files(dir_path) if Path(p).suffix in [".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".hh"]
+    ]
     if not files:
         print("No C/C++ files found")
         sys.exit(0)
-    init_size = get_size(dir_path)
+    before = get_size(dir_path)
     nproc = min(cpu_count() or 1, 8)
     with Pool(processes=nproc, initializer=ts_remover_initializer) as pool:
         results = pool.map(process_file, files)
-    end_size = get_size(dir_path)
+    after = get_size(dir_path)
     changed = sum(1 for r in results if r[0] == "changed")
     errors = [r for r in results if r[0] == "error"]
     nochg = sum(1 for r in results if r[0] == "nochange")
@@ -147,5 +150,5 @@ if __name__ == "__main__":
         print("\nErrors in:")
         for _, fn, *_ in errors:
             print(f"  - {fn}")
-    print(f"Size reduced: {format_size(init_size - end_size)}")
+    print(f"Size reduced: {format_size(before - after)}")
     print(f"{'=' * 60}")

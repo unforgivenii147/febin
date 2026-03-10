@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-import sys
 from multiprocessing import Pool
 from pathlib import Path
-import tree_sitter_python as tspython
+import sys
+
 from dh import clean_blank_lines, format_size, get_pyfiles, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_python as tspython
 
 
 class TSRemover:
@@ -39,7 +40,7 @@ class TSRemover:
 
 def process_file(fp):
     file_path = Path(fp)
-    init_size = file_path.stat().st_size
+    before = file_path.stat().st_size
     ts_rmc = TSRemover()
     code = file_path.read_text(encoding="utf-8", errors="ignore")
     result = ts_rmc.remove_comments(code)
@@ -47,8 +48,8 @@ def process_file(fp):
         try:
             ast.parse(result)
             file_path.write_text(result, encoding="utf-8")
-            end_size = file_path.stat().st_size
-            sr = int(abs(init_size - end_size))
+            after = file_path.stat().st_size
+            sr = int(abs(before - after))
             cprint(f"[OK] {file_path.name} {format_size(sr)}", "cyan")
             return
         except:
@@ -61,7 +62,7 @@ def process_file(fp):
 
 if __name__ == "__main__":
     dir = Path.cwd()
-    initsize = get_size(dir)
+    before = get_size(dir)
     args = sys.argv[1:]
     if args:
         files = [Path(f) for f in args]
@@ -75,5 +76,5 @@ if __name__ == "__main__":
         pass
     pool.close()
     pool.join()
-    sres = initsize - get_size(dir)
+    sres = before - get_size(dir)
     cprint(f"dir size reduced: {format_size(sres)}", "cyan")

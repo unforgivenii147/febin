@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
-import sys
 from collections import Counter, defaultdict
+import os
 from pathlib import Path
-import pycld2
+import sys
+
 from dh import TXT_EXT
+import pycld2
 
 MIN_TEXT_LENGTH = 20
 SUPPORTED_EXTENSIONS = TXT_EXT
@@ -188,9 +189,7 @@ def print_results(results: dict, show_files: bool = False):
         for (
             dir_path,
             stats,
-        ) in dirs_with_non_english[
-            :10
-        ]:  # Show top 10
+        ) in dirs_with_non_english[:10]:  # Show top 10
             percentage = stats["non_english"] / stats["total"] * 100
             print(f"   ├─ {dir_path if dir_path != '.' else '(root)'}:")
             print(f"   │   {stats['non_english']}/{stats['total']} files ({percentage:.1f}% non-English)")

@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from multiprocessing import Pool, cpu_count
 import os
 import subprocess
-from multiprocessing import Pool, cpu_count
+
 from rich.progress import Progress
 
 

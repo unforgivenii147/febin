@@ -8,7 +8,6 @@ import argparse
 import csv
 import os
 import sys
-from pathlib import Path
 
 
 def find_site_packages():
@@ -25,7 +24,7 @@ def find_site_packages():
 
 def update_record_file(record_path):
     try:
-        with open(record_path, "r", encoding="utf-8") as f:
+        with open(record_path, encoding="utf-8") as f:
             lines = list(csv.reader(f))
         original_count = len(lines)
         filtered_lines = []
@@ -35,8 +34,7 @@ def update_record_file(record_path):
             file_path = row[0] if row else ""
             if (
                 file_path.endswith(".pyc")
-                or file_path == "direct_url.json"
-                or file_path == "INSTALLER"
+                or file_path in {"direct_url.json", "INSTALLER"}
                 or file_path.startswith("LICENSE")
             ):
                 continue
@@ -61,7 +59,7 @@ def scan_and_update(site_packages_dirs, dry_run=False):
             print(f"Directory does not exist: {site_dir}")
             continue
         print(f"\nScanning: {site_dir}")
-        for root, dirs, files in os.walk(site_dir):
+        for root, _dirs, files in os.walk(site_dir):
             if not root.endswith(".dist-info"):
                 continue
             if "RECORD" in files:
@@ -69,7 +67,7 @@ def scan_and_update(site_packages_dirs, dry_run=False):
                 total_files += 1
                 if dry_run:
                     try:
-                        with open(record_path, "r", encoding="utf-8") as f:
+                        with open(record_path, encoding="utf-8") as f:
                             lines = list(csv.reader(f))
                         pyc_count = sum(1 for row in lines if row and row[0].endswith(".pyc"))
                         direct_url_count = sum(1 for row in lines if row and row[0] == "direct_url.json")
@@ -77,9 +75,8 @@ def scan_and_update(site_packages_dirs, dry_run=False):
                             total_updated += 1
                     except Exception as e:
                         print(f"  Error reading {record_path}: {e}", file=sys.stderr)
-                else:
-                    if update_record_file(record_path):
-                        total_updated += 1
+                elif update_record_file(record_path):
+                    total_updated += 1
     return total_files, total_updated
 
 
@@ -98,10 +95,7 @@ def main():
     )
     parser.add_argument("--verbose", "-v", action="store_true", help="Print more detailed information")
     args = parser.parse_args()
-    if args.site_dir:
-        site_dirs = args.site_dir
-    else:
-        site_dirs = find_site_packages()
+    site_dirs = args.site_dir or find_site_packages()
     if not site_dirs:
         print("Error: Could not find site-packages directory", file=sys.stderr)
         sys.exit(1)
@@ -110,11 +104,11 @@ def main():
     print(f"Mode: {'DRY RUN (no changes)' if args.dry_run else 'ACTUAL UPDATE'}")
     total_files, total_updated = scan_and_update(site_dirs, args.dry_run)
     print(f"\n{'=' * 50}")
-    print(f"Summary:")
+    print("Summary:")
     print(f"  Total RECORD files found: {total_files}")
     print(f"  Files that would be/are updated: {total_updated}")
     if args.dry_run and total_updated > 0:
-        print(f"\nRun without --dry-run to apply these changes")
+        print("\nRun without --dry-run to apply these changes")
 
 
 if __name__ == "__main__":

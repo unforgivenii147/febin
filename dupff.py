@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
 from collections import defaultdict
+import os
 from pathlib import Path
+
 import click
 from stringzilla import File, Sha256
 

@@ -6,10 +6,11 @@ import os
 import sys
 import tarfile
 import tempfile
-import zipfile
 from time import perf_counter
-import regex as re
+import zipfile
+
 from dh import is_valid_url
+import regex as re
 
 try:
     import zstandard as zstd

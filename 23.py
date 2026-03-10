@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from multiprocessing import Lock, Pool
 import os
+from pathlib import Path
 import subprocess
 import sys
-from multiprocessing import Lock, Pool
-from pathlib import Path
+
 from fastwalk import walk_files
 
 print_lock = Lock()

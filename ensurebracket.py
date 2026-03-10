@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 import sys
-from pathlib import Path
-from fastwalk import walk_files
 
 
 def ensure_bracket(fn):
@@ -11,7 +9,7 @@ def ensure_bracket(fn):
     close_braket_count = 0
     open_cbraket_count = 0
     close_cbraket_count = 0
-    with open(fn, "r", encoding="utf-8") as f:
+    with open(fn, encoding="utf-8") as f:
         content = f.read()
         lc = len(content)
         for i in range(0, lc):
@@ -30,14 +28,11 @@ def ensure_bracket(fn):
     print(f"open_parantez_count : {open_parantez_count}\nclose_parantez_count : {close_parantez_count}")
     print(f"open_braket_count : {open_braket_count}\nclose_braket_count : {close_braket_count}")
     print(f"open_cbraket_count : {open_cbraket_count}\nclose_cbraket_count : {close_cbraket_count}")
-    if (
+    return bool(
         open_parantez_count == close_parantez_count
         and open_braket_count == close_braket_count
         and open_cbraket_count == close_cbraket_count
-    ):
-        return True
-    else:
-        return False
+    )
 
 
 def main():

@@ -7,11 +7,12 @@ Deletes original archives after successful extraction and reports size change.
 """
 
 import argparse
+from pathlib import Path
 import sys
 import tarfile
 import tempfile
 import time
-from pathlib import Path
+
 import zstandard as zstd
 
 
@@ -195,7 +196,7 @@ def main():
             print(f"Processing single file: {target_path}")
         # Calculate initial directory size (for the parent directory)
         parent_dir = target_path.parent
-        initial_size = get_dir_size(parent_dir)
+        before = get_dir_size(parent_dir)
         # Process the file
         success, arch_size, ext_size = process_archive(
             target_path,
@@ -204,8 +205,8 @@ def main():
             args.quiet,
         )
         if not args.dry_run and success:
-            final_size = get_dir_size(parent_dir)
-            size_change = final_size - initial_size
+            after = get_dir_size(parent_dir)
+            size_change = after - before
             size_change_mb = size_change / (1024 * 1024)
             print(f"\n{'=' * 50}")
             print(f"Summary for {target_path.name}:")
@@ -239,7 +240,7 @@ def main():
             if tar_xz_count:
                 print(f"  - .tar.xz: {tar_xz_count}")
         # Calculate initial size
-        initial_size = get_dir_size(target_path)
+        before = get_dir_size(target_path)
         processed_count = 0
         failed_count = 0
         total_archive_size = 0
@@ -260,16 +261,16 @@ def main():
                 failed_count += 1
         # Calculate final size and show summary
         if not args.dry_run:
-            final_size = get_dir_size(target_path)
-            size_change = final_size - initial_size
+            after = get_dir_size(target_path)
+            size_change = after - before
             size_change_mb = size_change / (1024 * 1024)
             print(f"\n{'=' * 50}")
             print("Summary:")
             print(f"  Processed: {processed_count} archives")
             if failed_count > 0:
                 print(f"  Failed: {failed_count} archives")
-            print(f"  Initial directory size: {initial_size / (1024 * 1024):.2f} MB")
-            print(f"  Final directory size:   {final_size / (1024 * 1024):.2f} MB")
+            print(f"  Initial directory size: {before / (1024 * 1024):.2f} MB")
+            print(f"  Final directory size:   {after / (1024 * 1024):.2f} MB")
             print(f"  Size change:            {size_change_mb:+.2f} MB")
             if total_archive_size > 0:
                 compression_ratio = total_extracted_size / total_archive_size

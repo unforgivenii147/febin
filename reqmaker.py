@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import subprocess
 from collections.abc import Iterable
 from pathlib import Path
+import subprocess
+
 import regex as re
 
 REQUIREMENTS_FILE = Path("requirements.txt")

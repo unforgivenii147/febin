@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from io import StringIO
 import sys
 import tokenize
-from io import StringIO
+
 import regex as re
 
 python_keywords = {

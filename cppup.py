@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import subprocess
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
+import subprocess
 from time import perf_counter
+
 import fastwalk
 
 FILE_EXTENSIONS = {

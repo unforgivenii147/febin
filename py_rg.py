@@ -1,17 +1,20 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
+
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import fnmatch
 import os
 import stat
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TYPE_CHECKING
-import regex as re
+
 from dh import is_binary
+import regex as re
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
 IGNORED_DIRS = {
     ".git",
     ".hg",

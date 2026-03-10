@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from datetime import datetime
 import os
 import sys
 import time
-from datetime import datetime
-import regex as re
-import requests
+
 from dh import get_installed_packages
 from packaging.version import InvalidVersion, Version
+import requests
 
 try:
     from colorama import Fore, Style, init
@@ -29,7 +29,7 @@ except ImportError:
         RESET_ALL = ""
 
 
-"""
+r"""
 def extract_pkgver(text,pkgname,pkgver):
     lines=response.splitlines()
     lines=lines.reverse()

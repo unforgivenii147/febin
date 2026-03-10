@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import os
 import signal
 import sys
 import threading
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
+
 import requests
 
 CHUNK_SIZE = 5 * 1024 * 1024

@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-import sys
 from pathlib import Path
-import regex as re
+import sys
+
 from dh import cprint, format_size, get_pyfiles, get_size, rm_doc
+import regex as re
 
 
 def rm_ast(content: str) -> tuple[str, int]:
@@ -69,7 +70,7 @@ def process_directory(directory: str) -> dict:
 
 def main():
     dir = Path.cwd()
-    initsize = get_size(dir)
+    before = get_size(dir)
     args = sys.argv[1:]
     if args:
         files = [Path(f) for f in args]
@@ -78,7 +79,7 @@ def main():
             return
     else:
         process_directory(dir)
-    diff_size = initsize - get_size(dir)
+    diff_size = before - get_size(dir)
     print(f"{format_size(diff_size)}")
 
 

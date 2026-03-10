@@ -1,11 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/env python
-"""
-python script to sort lines of a given file and write back unique lines
-- reads filename via sys.argv[1]
-- updates the file in-place
-- uses mmap for files larger than 10MB
-- reports number of lines removed if any
-"""
 
 import os
 import sys

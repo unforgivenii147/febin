@@ -2,11 +2,12 @@
 import ast
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-import tree_sitter_python as tspython
+
 from dh import format_size, get_size
 from fastwalk import walk_files
 from termcolor import cprint
 from tree_sitter import Language, Parser, Query, QueryCursor
+import tree_sitter_python as tspython
 
 ts_remover = None
 
@@ -130,13 +131,13 @@ def process_file(fp):
 if __name__ == "__main__":
     dir_path = Path.cwd()
     files = [Path(p) for p in walk_files(dir_path) if Path(p).is_file() and Path(p).suffix == ".py"]
-    init_size = get_size(dir_path)
+    before = get_size(dir_path)
     results = []
     nproc = min(cpu_count() or 1, 8)
     with Pool(processes=nproc, initializer=ts_remover_initializer) as pool:
         results = pool.map(process_file, files)
-    end_size = get_size(dir_path)
-    size_diff = init_size - end_size
+    after = get_size(dir_path)
+    size_diff = before - after
     changed = sum(1 for r in results if r and r[0] == "changed")
     errors = [r for r in results if r and r[0] == "error"]
     nochg = sum(1 for r in results if r and r[0] == "nochange")

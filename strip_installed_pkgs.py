@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import importlib.metadata
-import sys
+from importlib.metadata import distributions
 from pathlib import Path
+import sys
 
 
 def get_installed_packages():
-    return {dist.metadata["Name"].lower() for dist in importlib.metadata.distributions()}
+    return {dist.metadata["Name"] for dist in distributions()}
 
 
 def read_requirements(filename):
@@ -23,6 +23,7 @@ def write_requirements(lines, filename):
 
 def strip_installed_from_requirements(fname):
     installed = get_installed_packages()
+    installed = [p.lower().replace("-", "_") for p in installed if p]
     lines = read_requirements(fname)
     new_lines = [line for line in lines if line not in installed]
     write_requirements(new_lines, fname)

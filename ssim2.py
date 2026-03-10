@@ -5,6 +5,7 @@ import os
 import pathlib
 import shutil
 import sys
+
 import ssdeep
 
 try:

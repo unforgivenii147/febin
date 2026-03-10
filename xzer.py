@@ -9,11 +9,11 @@ import contextlib
 import logging
 import lzma
 import os
+from pathlib import Path
 import shutil
 import sys
 import tempfile
 import time
-from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -226,8 +226,8 @@ def main():
     logger.infgger.info(f"Compression preset: {args.preset}")
     logger.info(f"Delete delay: {args.delay} seconds")
     # Calculate initial directory size
-    initial_size, initial_files = calculate_directory_size(start_dir)
-    logger.info(f"Initial directory: {format_size(initial_size)} across {initial_files} files")
+    before, initial_files = calculate_directory_size(start_dir)
+    logger.info(f"Initial directory: {format_size(before)} across {initial_files} files")
     # Find files to compress
     files_to_compress = scan_files(start_dir)
     if not files_to_compress:
@@ -265,7 +265,7 @@ def main():
             failed += 1
     elapsed_time = time.time() - start_time
     # Calculate final directory size
-    final_size, final_files = calculate_directory_size(start_dir)
+    after, final_files = calculate_directory_size(start_dir)
     # Report results
     logger.info("\n" + "=" * 60)
     logger.info("COMPRESSION COMPLETE")
@@ -282,11 +282,9 @@ def main():
             savings_percent = (savings / total_original) * 100
             logger.info(f"Space saved: {format_size(savings)} ({savings_percent:.1f}%)")
     logger.info("-" * 40)
-    logger.info(f"Initial: {format_size(initial_size)} across {initial_files} files")
-    logger.info(f"Final:   {format_size(final_size)} across {final_files} files")
-    logger.info(
-        f"Overall reduction: {format_size(initial_size - final_size)} ({(1 - final_size / initial_size) * 100:.1f}%)"
-    )
+    logger.info(f"Initial: {format_size(before)} across {initial_files} files")
+    logger.info(f"Final:   {format_size(after)} across {final_files} files")
+    logger.info(f"Overall reduction: {format_size(before - after)} ({(1 - after / before) * 100:.1f}%)")
     logger.info("=" * 60)
     logger.info("Check compression_errors.log for any errors")
 

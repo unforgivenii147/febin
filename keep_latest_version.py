@@ -2,18 +2,19 @@
 import operator
 import os
 import pathlib
-import regex as re
+
 from packaging.version import Version
+import regex as re
 
 wheel_pattern = re.compile(r"^(?P<name>.+)-(?P<version>\d+(\.\d+)+).*\.txt$")
 files = [f for f in os.listdir(".") if f.endswith(".txt")]
 packages = {}
 for f in files:
-    match = wheel_pattern.match(f)
+    matchz = wheel_pattern.match(f)
     if not match:
         continue
-    name = match.group("name")
-    version = Version(match.group("version"))
+    name = matchz.group("name")
+    version = Version(matchz.group("version"))
     if name not in packages:
         packages[name] = []
     packages[name].append((version, f))

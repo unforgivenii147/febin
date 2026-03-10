@@ -7,6 +7,7 @@ Usage: python py2ipynb.py input.py [output.ipynb]
 import argparse
 import json
 from pathlib import Path
+
 import nbformat as nbf
 
 

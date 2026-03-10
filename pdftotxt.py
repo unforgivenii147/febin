@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-import sys
 from pathlib import Path
+import sys
+
 import pdfplumber
 
 

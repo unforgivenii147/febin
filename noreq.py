@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
+from pathlib import Path
 import shutil
 import tarfile
 import tempfile
@@ -14,8 +15,6 @@ removed_lines_accumulator = []
 def clean_text(
     text: str,
 ) -> tuple[str, list[str]]:
-    with open("/sdcard/meta.txt", "a") as fmeta:
-        fmeta.write(text)
     lines = text.splitlines()
     cleaned = []
     removed = []
@@ -82,9 +81,10 @@ def process_tar(path: str) -> None:
     shutil.rmtree(tmp_dir)
 
 
-def dispatch_archive(path: str) -> None:
+def dispatch_archive(path: str | Path) -> None:
     name = path.lower()
     if name.endswith(".whl"):
+        print(f"processing ... {path}")
         process_zip(path)
     elif name.endswith((".tar.gz", ".tgz", ".tar")):
         process_tar(path)
@@ -92,11 +92,11 @@ def dispatch_archive(path: str) -> None:
 
 def main() -> None:
     for root, _, files in os.walk("."):
-        for name in files:
-            full_path = os.path.join(root, name)
-            if name in TARGET_FILES:
+        for filename in files:
+            full_path = os.path.join(root, filename)
+            if filename in TARGET_FILES:
                 clean_file(full_path)
-            elif name.lower().endswith(
+            elif filename.lower().endswith(
                 (
                     ".zip",
                     ".whl",

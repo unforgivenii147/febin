@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 from pathlib import Path
+
 from ascii_magic import AsciiArt
 from dh import IMG_EXT
 

@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import json
+
 from deep_translator import GoogleTranslator
 
 INPUT_FILE = "words.txt"

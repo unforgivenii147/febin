@@ -6,6 +6,7 @@ import numbers
 import os
 import pathlib
 import sys
+
 from dh import STDLIB, get_installed_pkgs
 
 
@@ -102,10 +103,9 @@ def main():
     if cleaned:
         with open(output_file, "w", encoding="utf-8") as f:
             f.write("\n".join(cleaned))
-    else:
-        if os.path.exists(output_file):
-            os.remove(output_file)
-            print(f"empty {output_file} removed")
+    elif os.path.exists(output_file):
+        os.remove(output_file)
+        print(f"empty {output_file} removed")
 
 
 if __name__ == "__main__":

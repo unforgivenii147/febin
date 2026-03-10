@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import mmap
+from multiprocessing import Pool
 import os
 import tokenize
-from multiprocessing import Pool
+
 import regex as re
 
 SIZE_THRESHOLD = 1 * 1024 * 1024

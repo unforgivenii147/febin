@@ -1,41 +1,43 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-import re
-import sys
 from multiprocessing import Pool
 from pathlib import Path
+import re
+import sys
 
+from dh import cprint, format_size, get_pyfiles, get_size, rm_doc, DOC_TH1, DOC_TH2
 import regex as re
-import tree_sitter_python as tspython
-from dh import cprint, format_size, get_pyfiles, get_size, rm_doc
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_python as tspython
 
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
+PRESERVED: dict = {"#!", "# type", "# fmt", "# pylint"}
 
 
 def preprocess(orig):
-    #    content = re.sub(r"#.*", "", content)
-
     cleaned = []
     lines = orig.splitlines()
     for line in lines:
-        if line.startswith("#!"):
+        if line.startswith(DOC_TH1) and line.endswith(DOC_TH1) and line != DOC_TH1 * 2:
+            continue
+        if line.startswith(DOC_TH2) and line.endswith(DOC_TH2) and line != DOC_TH2 * 2:
+            continue
+        if any(pat in line for pat in PRESERVED):
             cleaned.append(line)
             continue
-        if "#" in line and not line.strip().startswith("#"):
+        if "#" in line and not line.startswith("#"):
             indx = line.index("#")
             cleaned.append(line[:indx] + "\n")
             continue
-        if not line.strip().startswith("#"):
+        if not line.startswith("#"):
             cleaned.append(line)
 
     code = "\n".join(cleaned)
-    code = re.sub(r'""".*?"""', "", code)
-    code = re.sub(r"'''.*?'''", "", code)
     try:
         tree = ast.parse(code)
+        del cleaned
         return code
     except:
         return orig
@@ -43,7 +45,7 @@ def preprocess(orig):
 
 def should_preserve_comment(content):
     content = content.strip()
-    return content.startswith("#!") or content.startswith("# fmt:")
+    return any(pat in content for pat in PRESERVED)
 
 
 def strip_code(source_code):
@@ -96,8 +98,10 @@ def strip_code(source_code):
             replacement,
         ) in modifications:
             working_code = working_code[:start] + replacement + working_code[end:]
+        del tree
         return working_code
     except:
+        del tree
         return source_code
 
 
@@ -140,20 +144,27 @@ def process_file(file_path: Path) -> None:
         except:
             modified, removed = rm_doc(code)
 
-        modified = cleanup_blank_lines(modified)
-
-        if removed:
+        try:
+            finalcode = strip_code(modified)
+            finalcode = cleanup_blank_lines(finalcode)
+            tree = ast.parse(finalcode)
+            file_path.write_text(finalcode, encoding="utf-8")
+            after = get_size(file_path)
+            print(f"{file_path.name}", end=" ")
+            cprint(f"{format_size(before - after)}", "blue")
+            return
+        except:
             try:
-                modified = strip_code(modified)
-                ast.parse(modified)
-                file_path.write_text(modified, encoding="utf-8")
+                tree = ast.parse(modified)
+                finalcode = cleanup_blank_lines(modified)
+                file_path.write_text(finalcode, encoding="utf-8")
                 after = get_size(file_path)
                 print(f"{file_path.name}", end=" ")
                 cprint(f"{format_size(before - after)}", "blue")
                 return
             except:
-                cprint(f"{file_path.name} ast parse error", "cyan")
                 return
+
     except Exception as exc:
         print(f"✗ Error processing {file_path}: {exc}")
         return
@@ -161,7 +172,7 @@ def process_file(file_path: Path) -> None:
 
 def main():
     dir = Path.cwd()
-    initsize = get_size(dir)
+    before = get_size(dir)
     args = sys.argv[1:]
     if args:
         files = [Path(f) for f in args]
@@ -174,7 +185,7 @@ def main():
             p.apply_async(process_file, (f,))
         p.close()
         p.join()
-    diff_size = initsize - get_size(dir)
+    diff_size = before - get_size(dir)
     print(f"space saved : {format_size(diff_size)}")
 
 

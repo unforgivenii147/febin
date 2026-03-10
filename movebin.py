@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import shutil
 from pathlib import Path
+import shutil
+
 from dh import is_binary
 
 

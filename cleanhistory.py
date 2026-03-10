@@ -2,9 +2,9 @@
 if __name__ == "__main__":
     fn = "/data/data/com.termux/files/home/.bash_history"
     nl = []
-    with open(fn, "r", encoding="utf-8") as f:
+    with open(fn, encoding="utf-8") as f:
         for line in f:
-            if not 'cd "`printf' in line:
+            if 'cd "`printf' not in line:
                 nl.append(line)
     with open(fn, "w") as fo:
         for k in nl:

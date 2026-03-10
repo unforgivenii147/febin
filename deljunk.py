@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import argparse
 from pathlib import Path
-from sys import argv, exit
+from sys import exit
+
 from dh import format_size, get_size
 from fastwalk import walk_parallel
 
@@ -25,7 +25,7 @@ def load_junk():
 
 def main():
     dir = Path.cwd()
-    initsize = get_size(dir)
+    before = get_size(dir)
     junk_files = load_junk()
     for pth in walk_parallel(dir):
         path = Path(pth)
@@ -34,8 +34,8 @@ def main():
         if any(path.name.lower() == junk for junk in junk_files) and path.exists():
             remove_it(path)
             print(path.name)
-    endsize = get_size(dir)
-    difsize = int(initsize - endsize)
+    after = get_size(dir)
+    difsize = int(before - after)
     print(f"{format_size(difsize)}")
 
 

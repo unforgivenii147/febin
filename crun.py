@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
+
 from dh import format_size, get_size, run_command
 from fastwalk import walk_files
 
@@ -11,10 +11,10 @@ def process_file(fp):
     if not fp.exists():
         return False
     if fp.suffix == ".c":
-        cmd = f"clang {str(fp)} -o {str(fp.with_suffix(''))}"
+        cmd = f"clang {fp!s} -o {fp.with_suffix('')!s}"
     if fp.suffix == ".cpp":
-        cmd = f"clang++ {str(fp)} -o {str(fp.with_suffix(''))}"
-    ret, txt, err = run_command(cmd)
+        cmd = f"clang++ {fp!s} -o {fp.with_suffix('')!s}"
+    ret, txt, _err = run_command(cmd)
     print(txt)
     return ret
     return True
@@ -36,8 +36,8 @@ def main():
         pass
     pool.close()
     pool.join()
-    end_size = get_size(dir)
-    print(f"{format_size(abs(end_size - start_size))}")
+    after = get_size(dir)
+    print(f"{format_size(abs(after - start_size))}")
 
 
 if __name__ == "__main__":

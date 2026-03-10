@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import csv
-import os
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import csv
+import os
+
 from tqdm import tqdm
 
 binf = open("/sdcard/bin")

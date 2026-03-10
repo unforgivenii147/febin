@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-import tarfile
-import zipfile
 from collections import defaultdict
 from pathlib import Path
-import regex as re
+import tarfile
+import zipfile
+
 from dh import STDLIB
+import regex as re
 
 SHEBANG_PATTERNS = [
     r"#!/data/data/com.termux/files/usr/bin/python",

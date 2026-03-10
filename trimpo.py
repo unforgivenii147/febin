@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
-import importlib
-import traceback
-from loguru import logger
 from importlib import import_module
 from importlib.metadata import distributions
+import sys
+import traceback
+
+from loguru import logger
 
 logger.add("/sdcard/allimport.log", diagnose=True)
 

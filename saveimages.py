@@ -2,8 +2,9 @@
 import argparse
 import os
 from urllib.parse import urljoin
-import requests
+
 from bs4 import BeautifulSoup
+import requests
 
 
 def download_image(url, output_dir):

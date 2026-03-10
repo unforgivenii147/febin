@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
+
 import magic
 
 MIME_TO_EXT = {

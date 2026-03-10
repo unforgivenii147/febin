@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-import tree_sitter_cpp
+import sys
+
 from dh import format_size, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_cpp
 
 EXCLUDE_PREFIXES = (b"#!/",)
 parser = Parser()
@@ -80,14 +81,14 @@ def collect_cpp_files(root: Path) -> list[Path]:
 
 def main() -> None:
     root = Path().cwd().resolve()
-    init_size = get_size(root)
+    before = get_size(root)
     files = collect_cpp_files(root)
     if not files:
         sys.exit("No C++ files found")
     with Pool(cpu_count()) as pool:
         pool.map(remove_comments_cpp, files)
-    end_size = get_size(root)
-    difsize = init_size - end_size
+    after = get_size(root)
+    difsize = before - after
     cprint(f"{format_size(difsize)}", "cyan")
 
 

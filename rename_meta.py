@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import shutil
-from multiprocessing import Pool
 from pathlib import Path
+import shutil
 from sys import exit
+
 from dh import unique_path
 from fastwalk import walk_files
 
@@ -23,13 +23,14 @@ def process_file(fp):
             outpath = unique_path(outpath)
         shutil.copy2(fp, outpath)
         print(f"{outpath} created.")
+    return None
 
 
 def main():
     dir = Path.cwd()
     for pth in walk_files(dir):
         path = Path(pth)
-        if path.is_file() and (path.name == "METADATA" or path.suffix == ".metadata" or path.suffix == ".md"):
+        if path.is_file() and (path.name == "METADATA" or path.suffix in {".metadata", ".md"}):
             process_file(path)
 
 

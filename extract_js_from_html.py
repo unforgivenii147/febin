@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from multiprocessing import Pool
 import os
+from pathlib import Path
 import random
 import string
-from multiprocessing import Pool
-from pathlib import Path
 from sys import exit
-import dh
+
 from bs4 import BeautifulSoup
+import dh
 from fastwalk import walk_files
 from termcolor import cprint
 

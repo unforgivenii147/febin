@@ -13,7 +13,7 @@ def delete_lines_from_file():
     fromline = int(fromline)
     toline = int(toline)
     try:
-        with open(filename, "r") as file:
+        with open(filename) as file:
             lines = file.readlines()
     except FileNotFoundError:
         print(f"Error: File '{filename}' not found.")
@@ -21,7 +21,7 @@ def delete_lines_from_file():
     except Exception as e:
         print(f"Error reading file: {e}")
         return
-    total_lines = len(lines)
+    len(lines)
     if fromline > toline:
         temp = fromline
         fromline = toline

@@ -1,15 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
+from multiprocessing import Pool, cpu_count
 import os
+from pathlib import Path
 import shutil
 import tarfile
-import zipfile
-from multiprocessing import Pool, cpu_count
-from pathlib import Path
 from typing import Any
+import zipfile
+
 import regex as re
 
-OUTPUT_DIR = Path("output")
+OUTPUT_DIR = Path("/data/data/com.termux/files/home/tmp/output")
+OUTPUT_DIR.mkdir(exist_ok=True)
+
 ARCHIVE_EXTENSIONS = (
     ".whl",
     ".zip",

@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-from multiprocessing import Pool
 from pathlib import Path
+
 from dh import run_command
 from fastwalk import walk_files
 
 
 def process_file(path) -> bool:
     try:
-        cmd = f"just-the-code -s --language=python {str(path)}"
+        cmd = f"just-the-code -s --language=python {path!s}"
         ret, new_code, _stderr = run_command(cmd)
         if ret == 0:
             try:

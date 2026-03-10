@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import os
+from pathlib import Path
 import shutil
 import sysconfig
-from pathlib import Path
+
 import regex as re
 from wheel.wheelfile import WheelFile
 

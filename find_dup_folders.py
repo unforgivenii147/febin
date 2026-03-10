@@ -1,9 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import json
 from collections import defaultdict
+import json
 from pathlib import Path
+
 from fastwalk import walk, walk_files
 from xxhash import xxh64
+from folder_hash import hash_folder
 
 
 def is_nested(path1: Path, path2: Path) -> bool:
@@ -20,6 +22,7 @@ def is_nested(path1: Path, path2: Path) -> bool:
     return False
 
 
+"""
 def hash_folder(folder_path):
     hasher = xxh64()
     files = []
@@ -42,13 +45,15 @@ def hash_folder(folder_path):
             continue
     return hasher.hexdigest()
 
+"""
+
 
 def find_duplicate_folders(root_dir):
     folder_hashes = defaultdict(list)
     for ppth in walk(root_dir):
         pth = Path(ppth)
         if pth.is_dir():
-            folder_hash = hash_folder(pth)
+            folder_hash = hash_folder(str(pth), hash_algorithm="sha256")
             if folder_hash:
                 folder_hashes[str(folder_hash)].append(str(pth))
     return {h: paths for h, paths in folder_hashes.items() if len(paths) > 1}

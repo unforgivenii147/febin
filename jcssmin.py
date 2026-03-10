@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
 from multiprocessing import Pool
+import os
 from pathlib import Path
 from time import perf_counter
+
 from fastwalk import walk_files
 from rcssmin import cssmin
 

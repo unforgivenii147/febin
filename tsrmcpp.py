@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
-import tree_sitter_cpp as tscpp
+
 from dh import run_command
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_cpp as tscpp
 
 
 class TSCppRemover:
@@ -70,7 +71,7 @@ def validate_with_clang(file_path: Path) -> tuple[bool, str]:
 
 def process_file(fp):
     file_path = Path(fp)
-    init_size = file_path.stat().st_size
+    before = file_path.stat().st_size
     remover = TSCppRemover()
     code = file_path.read_text(encoding="utf-8", errors="ignore")
     result, removed = remover.remove_comments(code)
@@ -86,8 +87,8 @@ def process_file(fp):
         cprint(f"[CLANG ERROR] {file_path.name} - reverting", "red")
         file_path.write_text(code, encoding="utf-8")
         return
-    end_size = file_path.stat().st_size
-    reduced = abs(init_size - end_size)
+    after = file_path.stat().st_size
+    reduced = abs(before - after)
     cprint(
         f"[OK] {file_path.name} - removed {removed} comments, reduced {reduced} bytes",
         "cyan",

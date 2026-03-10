@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
-import unicodedata
 from html.parser import HTMLParser
+import os
 from pathlib import Path
-
+import unicodedata
+import re
 
 class TitleParser(HTMLParser):
     def __init__(self):
@@ -37,9 +37,8 @@ def slugify(text: str) -> str:
     text = unicodedata.normalize("NFKD", text)
     temp = text
     text = text.lower()
-    text = text.strip("?")
-    text = text.replace("=", "").replace(" ", "_")
-    text = text.replace(";", "")
+    text = re.sub(r'(?|\\\||`|<|>|~|:|;|"|'|@|$|#|%|&|^|(|)|{|}|[|])','')
+    text = re.sub(r'(__)+','_'
     if len(text) < 2:
         return temp.strip(":").strip("?").strip("=")
     return text.strip(":")

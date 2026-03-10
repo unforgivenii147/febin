@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
+
 import argparse
 import ast
 import contextlib
@@ -7,12 +8,13 @@ import hashlib
 import json
 import multiprocessing as mp
 import os
+from pathlib import Path
 import sys
 import tarfile
 import zipfile
-from pathlib import Path
-import regex as re
+
 from dh import PKG_MAPPING, STDLIB
+import regex as re
 from tqdm import tqdm
 
 CACHE_FILE = ".reqcache.json"

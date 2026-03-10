@@ -7,9 +7,9 @@ Verifies syntax before committing changes.
 
 import argparse
 import os
+from pathlib import Path
 import subprocess
 import sys
-from pathlib import Path
 
 try:
     from tree_sitter import Language, Parser

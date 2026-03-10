@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from pathlib import Path
+import sys
+
 import regex as re
 
 
@@ -12,6 +13,7 @@ class RegexCommentRemover:
         )
 
     def remove_comments(self, source: str):
+
         def replacer(match):
             s = match.group(0)
             if s.startswith("/"):
@@ -66,14 +68,14 @@ if __name__ == "__main__":
         print("No C/C++ files found")
         sys.exit(0)
     print(f"Found {len(files)} C/C++ files")
-    init_size = sum(f.stat().st_size for f in files)
+    before = sum(f.stat().st_size for f in files)
     remover = RegexCommentRemover()
     results = []
     for i, fp in enumerate(files, 1):
         print(f"[{i}/{len(files)}] Processing {fp.name}...")
         result = process_file(fp, remover)
         results.append(result)
-    end_size = sum(f.stat().st_size for f in files if f.exists())
+    after = sum(f.stat().st_size for f in files if f.exists())
     changed = sum(1 for r in results if r[0] == "changed")
     errors = [r for r in results if r[0] == "error"]
     nochg = sum(1 for r in results if r[0] == "nochange")
@@ -95,5 +97,5 @@ if __name__ == "__main__":
             print(f"  - {fn}")
         if len(errors) > 10:
             print(f"  ... and {len(errors) - 10} more")
-    print(f"Size reduced: {format_size(init_size - end_size)}")
+    print(f"Size reduced: {format_size(before - after)}")
     print(f"{'=' * 60}")

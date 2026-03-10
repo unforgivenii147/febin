@@ -2,8 +2,9 @@
 import argparse
 import os
 import sys
-import regex as re
+
 from dh import is_binary
+import regex as re
 
 
 def process_file(file_path, search_text, replace_text=None, dry_run=False):

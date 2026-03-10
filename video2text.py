@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import pathlib
 import sys
+
 import cv2
-import pytesseract
 from PIL import Image
+import pytesseract
 from termcolor import cprint
 
 video = sys.argv[1]

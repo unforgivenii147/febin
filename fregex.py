@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import os
 from pathlib import Path
+
 import regex as re
 from tqdm import tqdm
 

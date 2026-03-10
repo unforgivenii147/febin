@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
 from datetime import datetime
+import os
 
 
 def list_files_by_modification():

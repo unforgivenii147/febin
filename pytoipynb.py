@@ -4,8 +4,9 @@ Simple converter from .py to .ipynb
 """
 
 import json
-import sys
 from pathlib import Path
+import sys
+
 import nbformat as nbf
 
 
@@ -14,7 +15,7 @@ def simple_convert(py_file, ipynb_file=None):
     if not ipynb_file:
         ipynb_file = Path(py_file).stem + ".ipynb"
     # Read Python file
-    with open(py_file, "r", encoding="utf-8") as f:
+    with open(py_file, encoding="utf-8") as f:
         code = f.read()
     # Create notebook
     nb = nbf.v4.new_notebook()

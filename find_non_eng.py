@@ -4,10 +4,11 @@ Recursively find and report non-English files in current directory using pycld2
 """
 
 import argparse
-import os
-import sys
 from collections import Counter
+import os
 from pathlib import Path
+import sys
+
 import pycld2
 
 # Common binary and non-text file extensions to skip

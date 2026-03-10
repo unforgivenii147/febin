@@ -1,9 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-import shutil
 from pathlib import Path
+import shutil
 from sys import exit
-from time import perf_counter
 
 ALLOWED = ["METADATA", "RECORD", "WHEEL", "entry_points.txt", "top_level.txt"]
 NOT_ALLOWED = [
@@ -59,7 +58,7 @@ def process_lic(fp):
     rett = []
     for f in ALLOWED:
         nf = Path(f"{fp}/{f}")
-        if not nf.exists() and not f == "entry_points.txt":
+        if not nf.exists() and f != "entry_points.txt":
             rett.append(nf)
     return rett
 

@@ -2,6 +2,7 @@
 import argparse
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
+
 import regex as re
 
 NORMAL_IMPORT = r"^import re\b"

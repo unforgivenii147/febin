@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-import os
-import sys
 from multiprocessing import Pool
+import os
 from pathlib import Path
-import tree_sitter_python as tspython
+import sys
+
 from dh import format_size, get_size
 from tree_sitter import Language, Parser, Query, QueryCursor
+import tree_sitter_python as tspython
 
 QUERY_STRING = """
 (comment) @comment
@@ -97,7 +98,7 @@ def process_file(fp):
 
 
 def main():
-    init_size = get_size(".")
+    before = get_size(".")
     args = sys.argv[1:]
     if args:
         files = [f for f in args if Path(f).is_file()]
@@ -111,7 +112,7 @@ def main():
         pass
     pool.close()
     pool.join()
-    diff_size = init_size - get_size(".")
+    diff_size = before - get_size(".")
     if diff_size != 0:
         print(format_size(diff_size))
 

@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 from pprint import pprint
-import stringzilla as sz
+
 from dh import is_binary
 from fastwalk import walk_files
+import stringzilla as sz
 
 
 def find_similar_files(files, threshold=0.8, k=256):

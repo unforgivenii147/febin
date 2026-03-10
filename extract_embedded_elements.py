@@ -1,14 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from __future__ import annotations
+
 import base64
 import hashlib
 from pathlib import Path
 from typing import TYPE_CHECKING
-import regex as re
+
 from dh import MIME_TO_EXT, TXT_EXT
+import regex as re
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
 OUTPUT_DIR = Path("extracted_base64")
 HTML_EXTENSIONS = TXT_EXT
 DATA_URL_RE = re.compile(

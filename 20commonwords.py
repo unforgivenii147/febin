@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from collections import Counter
 from pathlib import Path
-import regex as re
+import sys
+
 from dh import unique_path
+import regex as re
 
 USER_STOPWORDS_FILE = Path("/sdcard/stopwords")
 

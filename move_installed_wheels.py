@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import shutil
-import sys
 from importlib import metadata
 from pathlib import Path
+import shutil
+import sys
+
 from packaging.utils import parse_wheel_filename
 from packaging.version import Version
 from termcolor import cprint

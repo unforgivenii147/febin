@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
 from collections import defaultdict
+import os
 from pathlib import Path
+
 import click
 from fastwalk import walk_files
 from xxhash import xxh64
@@ -41,14 +42,20 @@ def find_and_delete_duplicates(path: Path):
                 key=lambda x: x.stat().st_mtime,
                 reverse=True,
             )
-            for file_to_delete in paths[1:]:
+
+            for dup_found in paths:
                 try:
-                    get_size = file_to_delete.stat().st_size
-                    print(os.path.relpath(file_to_delete))
+                    print(os.path.relpath(dup_found))
+                except Exception as e:
+                    print(f"Error deleting file {dup_found}: {e}")
+            for filetodel in paths[1:]:
+                try:
+                    get_size = filetodel.stat().st_size
+                    print(os.path.relpath(filetodel))
                     deleted_count += 1
                     total_deleted_size += get_size
                 except Exception as e:
-                    print(f"Error deleting file {file_to_delete}: {e}")
+                    print(f"Error deleting file {filetodel}: {e}")
         else:
             continue
     return (

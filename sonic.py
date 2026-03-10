@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
+from collections import Counter
+from collections.abc import Generator
+from datetime import datetime
 import mmap
 import os
+from pathlib import Path
 import shutil
 import sys
 import tempfile
 import time
-from collections import Counter
-from collections.abc import Generator
-from datetime import datetime
-from pathlib import Path
 
 
 class LineProcessor:
@@ -235,9 +235,9 @@ class FileSorter(LineProcessor):
             else:
                 self.log("DRY RUN: File not written")
             if not self.dry_run:
-                final_size = self.get_file_size(output_path)
+                after = self.get_file_size(output_path)
             else:
-                final_size = sum(len(line.encode(encoding)) + 1 for line in lines)
+                after = sum(len(line.encode(encoding)) + 1 for line in lines)
             elapsed_time = time.time() - start_time
             return {
                 "input_file": str(input_path),
@@ -246,13 +246,11 @@ class FileSorter(LineProcessor):
                 "original_size_bytes": original_size,
                 "original_size": self.format_size(original_size),
                 "final_lines": len(lines),
-                "final_size_bytes": final_size,
-                "final_size": self.format_size(final_size),
+                "after_bytes": after,
+                "after": self.format_size(after),
                 "duplicate_lines": unique_count if unique else 0,
-                "size_reduction": (original_size - final_size if original_size > 0 else 0),
-                "size_reduction_pct": (
-                    ((original_size - final_size) / original_size * 100) if original_size > 0 else 0
-                ),
+                "size_reduction": (original_size - after if original_size > 0 else 0),
+                "size_reduction_pct": (((original_size - after) / original_size * 100) if original_size > 0 else 0),
                 "processing_time": elapsed_time,
                 "lines_per_second": (original_lines / elapsed_time if elapsed_time > 0 else 0),
             }
@@ -270,7 +268,7 @@ class FileSorter(LineProcessor):
             print(f"Duplicate lines removed: {stats['duplicate_lines']:,} ({dup_pct:.1f}%)")
         print()
         print(f"Original size: {stats['original_size']}")
-        print(f"Final size: {stats['final_size']}")
+        print(f"Final size: {stats['after']}")
         if stats["size_reduction"] > 0:
             print(f"Size reduction: {self.format_size(stats['size_reduction'])} ({stats['size_reduction_pct']:.1f}%)")
         print()

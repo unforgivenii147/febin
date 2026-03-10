@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool
 from pathlib import Path
-import tree_sitter_python
-from tree_sitter import Language, Parser
+import sys
 
-from dh import get_size, cleanup_blank_lines, get_pyfiles, format_size
+from dh import cleanup_blank_lines, format_size, get_pyfiles, get_size
+from tree_sitter import Language, Parser
+import tree_sitter_python
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 
@@ -14,6 +14,7 @@ parser.language = Language(tree_sitter_python.language())
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:
@@ -75,10 +76,7 @@ def main() -> None:
     root = Path.cwd()
     isz = get_size(root)
     args = sys.argv[1:]
-    if args:
-        files = [Path(arg) for arg in args]
-    else:
-        files = get_pyfiles(root)
+    files = [Path(arg) for arg in args] if args else get_pyfiles(root)
 
     if len(files) == 1:
         process_file(files[0])

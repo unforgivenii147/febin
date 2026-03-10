@@ -1,28 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import tarfile
-import zipfile
 from pathlib import Path
 from sys import argv
-from dh import unique_path
+import tarfile
+import zipfile
 
-
-def whl_to_tar_xz(whl_path: Path):
-    target = whl_path.with_suffix(".tar.xz")
-    if target.exists():
-        target = unique_path(target)
-    print(f"[WHL → TAR.XZ] {whl_path.name}")
-    try:
-        with zipfile.ZipFile(whl_path, "r") as zf, tarfile.open(target, "w:xz") as tf:
-            for member in zf.infolist():
-                if member.is_dir():
-                    continue
-                with zf.open(member) as source:
-                    tarinfo = tarfile.TarInfo(name=member.filename)
-                    tarinfo.size = member.get_size
-                    tf.addfile(tarinfo, source)
-        print(f"[OK] {target.name}")
-    except Exception as e:
-        print(f"[ERROR] {whl_path.name}: {e}")
+from dh import unique_path, get_files
 
 
 def tar_xz_to_whl(tar_path: Path):
@@ -50,10 +32,17 @@ def tar_xz_to_whl(tar_path: Path):
         print(f"[ERROR] {tar_path.name}: {e}")
 
 
-if __name__ == "__main__":
-    fn = Path(argv[1])
-    if fn.suffix == ".whl":
-        whl_to_tar_xz(fn)
+def main():
+    args = sys.argv[1:]
+    dir = Path().cwd()
+    if args:
+        files = [Path(arg) for arg in args]
     else:
-        tar_xz_to_whl(fn)
-    fn.unlink()
+        files = get_files(dir, recursive=False, extensions=[".tar.xz", ".xz"])
+
+    for f in files:
+        tar_xz_to_whl(f)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from pathlib import Path
+import sys
 
 from dh import format_size, get_nobinary, get_size
 
@@ -31,10 +31,7 @@ def main() -> None:
     root = Path.cwd()
     isz = get_size(root)
     args = sys.argv[1:]
-    if args:
-        files = [Path(arg) for arg in args]
-    else:
-        files = get_nobinary(root)
+    files = [Path(arg) for arg in args] if args else get_nobinary(root)
     if len(files) == 1:
         clean_file(files[0])
         sys.exit(0)
@@ -50,7 +47,6 @@ def main() -> None:
 
 
 # (".zip",".whl",".tar.gz",".tgz",".tar",)
-
 
 if __name__ == "__main__":
     main()

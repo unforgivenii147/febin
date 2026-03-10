@@ -1,12 +1,12 @@
 import argparse
 import os
+from pathlib import Path
 import shutil
 import subprocess
 import sys
+from sysconfig import get_path
 import tempfile
 import zipfile
-from pathlib import Path
-from sysconfig import get_path
 
 CYAN = "\033[0;96m"
 GREEN = "\033[0;92m"
@@ -62,7 +62,7 @@ def is_package_directory(pkg_path):
     if not os.path.isdir(pkg_path):
         return False
     py_files = []
-    for root, dirs, files in os.walk(pkg_path):
+    for _root, dirs, files in os.walk(pkg_path):
         dirs[:] = [d for d in dirs if d != "__pycache__"]
         py_files.extend([f for f in files if f.endswith(".py")])
     return len(py_files) > 1
@@ -75,9 +75,7 @@ def compile_to_bytecode(directory, opt_level=2):
             opt_flag = ["-O"]
         elif opt_level == 2:
             opt_flag = ["-OO"]
-        subprocess.run(
-            [sys.executable] + opt_flag + ["-m", "compileall", "-b", "-q", directory], check=True, timeout=60
-        )
+        subprocess.run([sys.executable, *opt_flag, "-m", "compileall", "-b", "-q", directory], check=True, timeout=60)
         for root, dirs, files in os.walk(directory):
             for file in files:
                 if file.endswith(".py"):
@@ -91,14 +89,13 @@ def compile_to_bytecode(directory, opt_level=2):
         return False
 
 
-def find_so_files(directory):
+def have_so_files(directory) -> bool:
 
-    so_files = []
-    for root, dirs, files in os.walk(directory):
+    for root, _dirs, files in os.walk(directory):
         for file in files:
             if file.endswith(".so"):
-                so_files.append(os.path.join(root, file))
-    return so_files
+                return True
+    return False
 
 
 def create_zip(src_path, zip_path, pkg_name):
@@ -109,7 +106,7 @@ def create_zip(src_path, zip_path, pkg_name):
                 arcname = os.path.basename(src_path)
                 zf.write(src_path, arcname)
             else:
-                for root, dirs, files in os.walk(src_path):
+                for root, _dirs, files in os.walk(src_path):
                     for file in files:
                         file_path = os.path.join(root, file)
                         arcname = os.path.relpath(file_path, os.path.dirname(src_path))
@@ -163,7 +160,7 @@ def check_import(pkg_name, backup_path=None):
         return False
 
 
-def zip_package(pkg_name, use_pyc=False, opt_level=2, verbose=False):
+def zip_package(pkg_name, use_pyc=False, opt_level=2, verbose=True):
 
     print_info(f"Processing package: {pkg_name}...")
     pkg_path = get_package_path(pkg_name)
@@ -172,6 +169,8 @@ def zip_package(pkg_name, use_pyc=False, opt_level=2, verbose=False):
         return False
     if verbose:
         print_info(f"Package path: {pkg_path}")
+    if have_so_file(pkg_path):
+        return
     if is_single_file_module(pkg_path):
         print_warning(f"Skipping '{pkg_name}' - single file modules are not supported")
         return False
@@ -204,19 +203,20 @@ def zip_package(pkg_name, use_pyc=False, opt_level=2, verbose=False):
                     if not compile_to_bytecode(tmp_pkg_path, opt_level):
                         print_error("Compilation failed!")
                         return False
-                so_files = find_so_files(tmp_pkg_path)
-                if so_files:
-                    print_warning("C extensions detected. Keeping in site-packages...")
-                    for so_file in so_files:
-                        rel_path = os.path.relpath(so_file, tmp_pkg_path)
-                        if verbose:
-                            print_info(f"Excluding: {rel_path}")
-                        os.remove(so_file)
-                print_warning("Step 2: Creating zip archive...")
-                if not create_zip(tmp_pkg_path, zip_path, pkg_name):
-                    return Faize(zip_path)
-                compression_ratio = (1 - compressed_size / original_size) * 100 if original_size > 0 else 0
-                print_warning("Step 3: Creating loader stub...")
+                #                so_files = find_so_files(tmp_pkg_path)
+                #                if so_files:
+                #                    print_warning("C extensions detected. Keeping in site-packages...")
+                #                    return
+                #                    for so_file in so_files:
+                #                        rel_path = os.path.relpath(so_file, tmp_pkg_path)
+                #                        if verbose:
+                #                            print_info(f"Excluding: {rel_path}")
+                #                        os.remove(so_file)
+                #                print_warning("Step 2: Creating zip archive...")
+                #                if not create_zip(tmp_pkg_path, zip_path, pkg_name):
+                #                    return Faize(zip_path)
+                #                compression_ratio = (1 - compressed_size / original_size) * 100 if original_size > 0 else 0
+                #                print_warning("Step 3: Creating loader stub...")
                 loader_path = os.path.join(site_packages, f"{pkg_name}.py")
                 loader_code = f"""import sys, os
 ZIP_PATH = os.path.join(r'{zip_dir}', r'{pkg_name}.zip')

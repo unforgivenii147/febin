@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-import tree_sitter_python as tsp
+
 from dh import STDLIB, get_installed_pkgs, get_pyfiles
 from tree_sitter import Language, Parser
+import tree_sitter_python as tsp
 
 parser = Parser()
 parser.language = Language(tsp.language())
@@ -25,8 +26,7 @@ def extract_file(src: bytes, tree):
 def process_file(fp):
     src = fp.read_bytes()
     tree = parser.parse(src)
-    imports = extract_file(src, tree)
-    return imports
+    return extract_file(src, tree)
 
 
 if __name__ == "__main__":
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     for imports in results:
         if imports:
             for k in imports:
-                if not k in all_imports:
+                if k not in all_imports:
                     all_imports.append(k)
     all_imports = sorted(set(all_imports))
     outfile.write_text("\n".join(all_imports))
@@ -58,7 +58,7 @@ if __name__ == "__main__":
             if "." in line:
                 indx = line.index(".")
                 line = line[:indx]
-            if not line in impoz and not line.startswith("_"):
+            if line not in impoz and not line.startswith("_"):
                 impoz.append(line + "\n")
         elif line.startswith("from "):
             line = line.replace("from ", "")
@@ -73,10 +73,10 @@ if __name__ == "__main__":
             if " import" in line:
                 indx = line.index(" import")
                 line = line[:indx]
-            if not line in impoz and not line.startswith("_"):
+            if line not in impoz and not line.startswith("_"):
                 impoz.append(line + "\n")
     impoz = sorted(set(impoz))
-    stdlib_plus_installed = [p for p in STDLIB]
+    stdlib_plus_installed = list(STDLIB)
     inpkg = [p.replace("-", "_").lower() for p in get_installed_pkgs()]
     stdlib_plus_installed.extend(inpkg)
     filterd = []

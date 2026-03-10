@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
-import json
-import os
 from collections import defaultdict
 from datetime import datetime
+import json
+import os
+
 import xxhash
 
 BACKUP_FILE = ".symlink_backup.json"

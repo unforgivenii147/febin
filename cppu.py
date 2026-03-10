@@ -1,12 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import subprocess
+from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
+import subprocess
+import sys
+
 from dh import format_size, get_size
 from fastwalk import walk_files
 from termcolor import cprint
 
+MAX_QUEUE = 16
 FILE_EXTENSIONS = {
+    ".java",
     ".c",
     ".cpp",
     ".cxx",
@@ -21,7 +26,8 @@ FILE_EXTENSIONS = {
 
 
 def format_file(file_path):
-    init_size = file_path.stat().st_size
+    before = file_path.stat().st_size
+    print(f"{file_path.name} ", end=" ")
     try:
         res = subprocess.run(
             [
@@ -33,43 +39,63 @@ def format_file(file_path):
             check=True,
             capture_output=True,
         )
-        end_size = file_path.stat().st_size
-        size_diff = init_size - end_size
+        after = file_path.stat().st_size
+        size_diff = before - after
         if size_diff == 0:
-            print(f"[NO CHANGE] {file_path.name}")
+            print("[NO CHANGE]")
         elif size_diff > 0:
-            print(f"[OK] {file_path.name} + {format_size(size_diff)}")
+            print(f"[OK] + {format_size(size_diff)}")
         elif size_diff < 0:
-            print(f"[OK] {file_path.name} - {format_size(abs(size_diff))}")
+            print(f"[OK] - {format_size(size_diff)}")
+        del res
+        del size_diff
+        del after
+        del before
         return True
     except (
         subprocess.CalledProcessError,
         FileNotFoundError,
     ):
-        print(f"[ERR] {res.stderr!s} {file_path.name}")
+        del res
+        del size_diff
+        del after
+        del before
+        print(f"[ERR] {res.stderr!s}")
         return False
 
 
 def main() -> None:
-    cfiles = []
-    dir = str(Path().cwd().resolve())
-    initsize = get_size(dir)
-    for pth in walk_files(dir):
-        path = Path(pth)
-        if any(path.suffix == ext for ext in FILE_EXTENSIONS):
-            cfiles.append(path)
+    cfiles: list = []
+    dir = Path.cwd()
+    before = get_size(dir)
+    args = sys.argv[1:]
+    if args:
+        cfiles = [Path(arg) for arg in args]
+    else:
+        for pth in walk_files(dir):
+            path = Path(pth)
+            if any(path.suffix == ext for ext in FILE_EXTENSIONS):
+                cfiles.append(path)
+    if len(cfiles) == 1:
+        format_file(cfiles[0])
+        sys.exit(0)
     if not cfiles:
         cprint("No files found.", "red")
-        return
-    cprint(f"{len(cfiles)} files found...", "cyan")
-    pool = Pool(6)
-    for f in cfiles:
-        pool.apply_async(format_file, ((f),))
-    pool.close()
-    pool.join()
-    endsize = get_size(dir)
-    diffsize = initsize - endsize
-    print(f"dir size changed: {format_size(abs(diffsize))}")
+        sys.exit(0)
+    all_count = len(cfiles)
+    cprint(f"{all_count} files found...", "cyan")
+
+    with Pool(8) as pool:
+        pending = deque()
+        for f in cfiles:
+            pending.append(pool.apply_async(format_file, ((f),)))
+            if len(pending) > MAX_QUEUE:
+                pending.popleft().get()
+        while pending:
+            pending.popleft().get()
+    after = get_size(dir)
+    diffsize = after - before
+    print(f"space change: {format_size(diffsize)}")
 
 
 if __name__ == "__main__":

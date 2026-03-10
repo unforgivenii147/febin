@@ -2,9 +2,10 @@
 from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
-import pillow_heif as ph
+
 from dh import get_size
 from fastwalk import walk_files
+import pillow_heif as ph
 
 
 def process_file(fp):
@@ -32,8 +33,8 @@ def main():
     pool.imap_unordered(process_file, files)
     pool.close()
     pool.join()
-    end_size = get_size(dir)
-    print(f"{fornat_size(abs(end_size - start_size))}")
+    after = get_size(dir)
+    print(f"{fornat_size(abs(after - start_size))}")
 
 
 if __name__ == "__main__":

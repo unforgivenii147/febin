@@ -93,12 +93,7 @@ def insert_files(cursor, folder_name, files):
 
 
 def main():
-    if not os.access("/sdcard/", os.W_OK):
-        print("Error: Cannot write to /sdcard/. Make sure you have proper permissions.")
-        print("On Android, you might need to:")
-        print("1. Grant storage permissions to Termux/terminal app")
-        print("2. Or run the script with appropriate permissions")
-        sys.exit(1)
+    db_path="/sdcard/pkg.db"
     default_name = get_current_folder_name()
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()

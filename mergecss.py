@@ -20,8 +20,9 @@ Result:
 """
 
 import argparse
-import shutil
 from pathlib import Path
+import shutil
+
 import regex as re
 
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
@@ -79,6 +80,7 @@ def copy_asset(src, assets_dir):
 
 
 def rewrite_urls(css_text, css_dir, assets_dir):
+
     def repl(match):
         url = match.group(2).strip().strip("\"'")
         if url.startswith("http"):

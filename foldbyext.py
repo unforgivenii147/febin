@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-import shutil
 from pathlib import Path
+import shutil
 
 
 def get_size_str(size_bytes):

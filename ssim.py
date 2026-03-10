@@ -1,13 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
-import os
-import shutil
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import os
 from pathlib import Path
+import shutil
+
 import ssdeep
-import xxhash
 from tqdm import tqdm
+import xxhash
 
 EXCLUDE_DIRS = {".git", "__pycache__", "node_modules"}
 
@@ -106,7 +107,7 @@ class FileSimilarityDetector:
 
 def main():
     parser = argparse.ArgumentParser(description="Detect duplicate and similar files")
-    parser.add_argument("threshold", type=int, help="Similarity threshold (0-100)")
+    parser.add_argument("threshold", type=int, default=70, help="Similarity threshold (0-100)")
     parser.add_argument(
         "-m",
         "--move",

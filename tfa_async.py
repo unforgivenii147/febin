@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import time
-from concurrent.futures import ThreadPoolExecutor
+
 from deep_translator import GoogleTranslator
 
 INPUT_FILE = "words.txt"

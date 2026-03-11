@@ -4,10 +4,16 @@ from sys import argv
 
 def main():
     fn = argv[1]
-    template = """#!/usr/bin/env python
-from sys import exit
-from time import perf_counter
-import os
+    template = """#!/data/data/com.termux/files/usr/bin/env python
+from pathlib import Path
+from multiprocessing import Pool
+from collections import deque
+from sys import exit,argv
+from dh import format_size,get_size,get_files
+from termcolor import cprint
+
+MAX_QUEUE = 16
+
 def process_file(fp) -> None:
     nl=[]
     with open(fp,'r') as f:
@@ -18,13 +24,31 @@ def process_file(fp) -> None:
     with open(fp,'w') as fo:
         for k in nl:
             fo.write(k)
-def main() -> None:
-    start=perf_counter()
-    for pth in os.listdir('.'):
-        process_file(pth)
-    print(f'{perf_counter()-start} seconds')
-if __name__=='__main__':
+
+
+def main():
+    dir = Path.cwd()
+    before = get_size(dir)
+    args = argv[1:]
+    if args:
+        files = [Path(f) for f in args]
+    else:
+        files = get_files(dir,recursive=True)
+    with Pool(8) as pool:
+        pending=deque()
+        for f in files:
+            pending.append(pool.apply_async(process_file, (f,)))
+            if len(pending)>MAX_QUEUE:
+                pending.popleft().get()
+        while pending:
+            pending.popleft().get()
+    diff_size = before - get_size(dir)
+    print(f"space saved : {format_size(diff_size)}")
+
+
+if __name__ == "__main__":
     exit(main())
+
 """
     with open(fn, "w") as f:
         f.write(template)

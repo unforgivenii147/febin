@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import os
-from threading import Lock
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Lock
 
 from deep_translator import GoogleTranslator
 from tqdm import tqdm

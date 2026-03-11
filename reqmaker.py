@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
+import subprocess
 from collections.abc import Iterable
 from pathlib import Path
-import subprocess
 
 import regex as re
 
@@ -58,7 +58,9 @@ def main() -> None:
     if not missing_packages:
         print("🎉 No missing libraries detected.")
         return
-    print(f"⚠️ Missing packages detected: {missing_packages}")
+    print(f"⚠️ Missing packages detected: ")
+    for pkg in missing_packages:
+        print(f"    - {pkg}")
     save_to_requirements(missing_packages)
 
 

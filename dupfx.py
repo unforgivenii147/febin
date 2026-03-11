@@ -1,19 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/env python
 
-from collections import defaultdict
 import concurrent.futures as cf
 import os
+from collections import defaultdict
 from pathlib import Path
 
-from dh import format_size, get_size
 import xxhash
+from dh import format_size, get_size
 
 SKIPPED_PATHS = []
 EXCLUDED_DIRS = {".git", ".venv", "venv"}
-EXCLUDED_FILENAMES = {"__init__.py", "__main__.py"}
+EXCLUDED_FILENAMES = {"__init__.py"}
 
 
-def hash_file(path: str, chunk_size: int = 8192):
+def hash_file(path: str, chunk_size: int = 8192 * 10):
     path = Path(path)
     hasher = xxhash.xxh64()
     try:
@@ -43,8 +43,8 @@ def group_by_size(files):
     for f in files:
         try:
             size = f.stat().st_size
-            if size > 0:
-                groups[size].append(f)
+            #            if size > 0: # exclude zero size files
+            groups[size].append(f)
         except (PermissionError, OSError):
             SKIPPED_PATHS.append(str(f))
     return groups
@@ -125,11 +125,9 @@ def main() -> None:
     SKIPPED_PATHS = []
 
     target = Path.cwd()
-    print(f"🔍 Scanning directory: {target}")
 
     before = get_size(target)
     all_files = collect_all_files(target)
-    print(f"📁 Found {len(all_files)} files (excluding zero-size files and __init__.py/__main__.py)")
 
     size_groups = group_by_size(all_files)
     duplicates = hash_groups_in_parallel(size_groups)

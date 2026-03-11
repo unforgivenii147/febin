@@ -1,19 +1,20 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
+from dh import format_size
 
 
 def get_sizes(start_path="."):
-    get_sizes = []
+    sizes = []
     start_path = Path(start_path).resolve()
     try:
         for file_path in start_path.rglob("*"):
             if file_path.is_file():
                 try:
-                    get_size = file_path.stat().st_size
+                    fsize = file_path.stat().st_size
                     relative_path = file_path.relative_to(start_path)
-                    get_sizes.append((relative_path, get_size))
+                    sizes.append((relative_path, fsize))
                 except (OSError, ValueError):
                     continue
     except PermissionError as e:
@@ -22,18 +23,7 @@ def get_sizes(start_path="."):
             file=sys.stderr,
         )
         return []
-    return get_sizes
-
-
-def format_size(size_bytes) -> str:
-    if size_bytes == 0:
-        return "0 B"
-    size_names = ["B", "KB", "MB", "GB", "TB"]
-    i = 0
-    while size_bytes >= 1024 and i < len(size_names) - 1:
-        size_bytes /= 1024.0
-        i += 1
-    return f"{size_bytes:.2f} {size_names[i]}"
+    return sizes
 
 
 def main() -> None:

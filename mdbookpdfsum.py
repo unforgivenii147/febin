@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
-import pypdf
-import lxml.html
-import urllib
 import argparse
+import os
 import re
+import urllib
+
+import lxml.html
+import pypdf
 
 
 class Section:
@@ -29,8 +30,7 @@ class Section:
         while not node.is_root():
             path.append(str(node.index + 1))
             node = node.parent
-        path = path[::-1]
-        return path
+        return path[::-1]
 
     def is_root(self):
         return self.parent is None
@@ -52,7 +52,7 @@ def check_title(prefix_path: str, node: Section, overwrite: bool) -> bool:
     if not os.path.exists(source_file):
         print(f"File {source_file} does not exist")
         return False
-    with open(source_file, "r") as f:
+    with open(source_file) as f:
         lines = f.readlines()
     for idx, line in enumerate(lines):
         if line.startswith("# "):
@@ -60,9 +60,7 @@ def check_title(prefix_path: str, node: Section, overwrite: bool) -> bool:
             if not title.startswith(node.title):
                 all_matched = False
                 print(
-                    "[ERROR] Title not matched: source_file:{}, line num:{}, title:{}, title in `SUMMARY.md`:{}".format(
-                        source_file, idx, title, node.title
-                    )
+                    f"[ERROR] Title not matched: source_file:{source_file}, line num:{idx}, title:{title}, title in `SUMMARY.md`:{node.title}"
                 )
                 break
     if not all_matched and overwrite:
@@ -82,8 +80,7 @@ def get_dom_id(node: Section):
     result = source_path
     result = result.lower()
     result = result.replace("/", "-")
-    result = result.replace(" ", "-")
-    return result
+    return result.replace(" ", "-")
 
 
 def add_outline(html_root, reader: pypdf.PdfReader, writer: pypdf.PdfWriter, node: Section):
@@ -92,12 +89,12 @@ def add_outline(html_root, reader: pypdf.PdfReader, writer: pypdf.PdfWriter, nod
         try:
             results = html_root.get_element_by_id(id)
         except KeyError:
-            print("[ERROR] Element not found: [{}]".format(id))
+            print(f"[ERROR] Element not found: [{id}]")
             return
         if results is None:
-            print("[ERROR] Element is None, id: [{}]".format(id))
+            print(f"[ERROR] Element is None, id: [{id}]")
             return
-        dest = reader.named_destinations["/{}".format(urllib.parse.quote(id))]
+        dest = reader.named_destinations[f"/{urllib.parse.quote(id)}"]
         page = None
         fit = None
         if dest.get("/Type") != "/Fit":
@@ -156,7 +153,7 @@ def main():
         md_text = f.read()
     section_root = parse_section_tree(md_text)
     html_root = None
-    with open(args.html_path, "r", encoding="utf8") as f:
+    with open(args.html_path, encoding="utf8") as f:
         data = f.read()
         html_root = lxml.html.fromstring(data)
     if html_root is None:
@@ -164,7 +161,7 @@ def main():
     add_outline(html_root, reader, writer, section_root)
     with open(args.output_path, "wb") as f:
         writer.write(f)
-        print("[INFO] Write to {}".format(args.output_path))
+        print(f"[INFO] Write to {args.output_path}")
 
 
 def print_section_tree(root: Section):
@@ -179,7 +176,7 @@ def parse_section_tree(md_text: str):
     pattern = re.compile(r"( *)- ([^:\n]+)(?:: ([^\n]*))?\n?")
     tmp = None
     min_indent_num = 4
-    for indent, name, value in pattern.findall(md_text):
+    for indent, name, _value in pattern.findall(md_text):
         title = name.split("](")[0].split("[")[1]
         source_file = name.split("](")[1].split(")")[0]
         indent_num = len(indent)

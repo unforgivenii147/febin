@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
+import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
-from dh import format_size, get_size, run_command, get_files
+from dh import format_size, get_files, get_size, run_command
 from termcolor import cprint
 
 MAX_QUEUE = 16
@@ -37,10 +37,7 @@ def main():
     args = sys.argv[1:]
     dir = Path.cwd()
     before = get_size(dir)
-    if args:
-        files = [Path(arg) for arg in args]
-    else:
-        files = get_files(dir, recursive=True, extensions=[".js"])
+    files = [Path(arg) for arg in args] if args else get_files(dir, recursive=True, extensions=[".js"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

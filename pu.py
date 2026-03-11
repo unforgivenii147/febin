@@ -1,64 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/env python
-"""
-Advanced Pip Package Uninstaller - Using pip's internal API with version compatibility
-"""
-
+from pathlib import Path
 import sys
 import warnings
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+from typing import Dict
+from pip._internal.cli.main import main as pip_main
 
 
-def get_pip_api():
-    """Try to import pip's API with fallbacks for different versions"""
-    try:
-        from pip._internal.cli.main import main as pip_main
-        from pip._internal.metadata import get_default_environment
-        from pip._internal.operations.freeze import freeze
-
-        def get_packages():
-            """Get packages using modern pip API"""
-            try:
-                env = get_default_environment()
-                return {dist.name: dist.version for dist in env.iter_installed_distributions()}
-            except:
-                packages = {}
-                for line in freeze():
-                    if "==" in line:
-                        name, version = line.split("==", 1)
-                        packages[name] = version
-                return packages
-
-        def uninstall(packages: list[str]):
-            """Uninstall using modern pip API"""
-            args = ["uninstall", "-y", *packages]
-            return pip_main(args)
-
-        return get_packages, uninstall
-    except ImportError:
-        try:
-            import pip
-
-            def get_packages():
-                """Get packages using older pip API"""
-                packages = {}
-                for dist in pip.get_installed_distributions():
-                    packages[dist.project_name] = dist.version
-                return packages
-
-            def uninstall(packages: list[str]):
-                """Uninstall using older pip API"""
-                for pkg in packages:
-                    pip.uninstall(pkg)
-                return 0
-
-            return get_packages, uninstall
-        except ImportError:
-            return None, None
-
-
-def display_packages(packages: dict[str, str], title: str = "Packages"):
-    """Display packages in a formatted way"""
+def display_packages(packages: Dict[str, str], title: str = "Packages"):
     if not packages:
         return
     print(f"\n{title}:")
@@ -67,8 +17,7 @@ def display_packages(packages: dict[str, str], title: str = "Packages"):
     print(f"\nTotal: {len(packages)} package(s)")
 
 
-def find_matching_packages(pattern: str, packages: dict[str, str]) -> dict[str, str]:
-    """Find packages that contain the pattern in their name"""
+def find_matching_packages(pattern: str, packages: Dict[str, str]) -> Dict[str, str]:
     matches = {}
     pattern_lower = pattern.lower()
     for package_name, version in packages.items():
@@ -77,48 +26,31 @@ def find_matching_packages(pattern: str, packages: dict[str, str]) -> dict[str, 
     return matches
 
 
+def get_pkgs():
+    pkgfile = Path("/sdcard/pip.freeze")
+    pkgfile_content = pkgfile.read_text()
+    packages = {}
+    for line in pkgfile_content.splitlines():
+        if "==" in line:
+            name, version = line.split("==", 1)
+            packages[name] = version
+    return packages
+
+
+def uninstall(packages: list[str]):
+    args = ["uninstall", "-y", *packages]
+    return pip_main(args)
+
+
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python uninstaller_pip.py <pattern>")
-        print("\nExample: python uninstaller_pip.py sphinx")
-        print("This will uninstall all packages containing 'sphinx' in their name")
-        sys.exit(1)
-    pattern = sys.argv[1]
-    get_packages_func, uninstall_func = get_pip_api()
-    if not get_packages_func or not uninstall_func:
-        print("Error: Could not import pip API. Falling back to subprocess...")
-        print("Please install pip or use the subprocess version of this script.")
-        sys.exit(1)
-    print(f"Searching for packages containing '{pattern}'...")
-    try:
-        installed_packages = get_packages_func()
-    except Exception as e:
-        print(f"Error getting package list: {e}")
-        sys.exit(1)
-    if not installed_packages:
-        print("No installed packages found.")
-        sys.exit(0)
-    matching_packages = find_matching_packages(pattern, installed_packages)
-    if not matching_packages:
+    pat = sys.argv[1]
+    pkgs = get_pkgs()
+    matc = find_matching_packages(pat, pkgs)
+    if not matc:
         print(f"No installed packages found containing '{pattern}' in their name.")
         sys.exit(0)
-    display_packages(matching_packages, "Packages to uninstall")
-    response = input("\nDo you want to proceed with uninstallation? (y/N): ").strip().lower()
-    if response not in ["y", "yes"]:
-        print("Uninstallation cancelled.")
-        sys.exit(0)
-    print("\nUninstalling...")
-    try:
-        result = uninstall_func(list(matching_packages.keys()))
-        if result == 0:
-            print(f"\n✓ Successfully uninstalled {len(matching_packages)} package(s)")
-            sys.exit(0)
-        else:
-            print(f"\n⚠ Uninstallation completed with return code: {result}")
-            sys.exit(1)
-    except Exception as e:
-        print(f"\n✗ Error during uninstallation: {e}")
-        sys.exit(1)
+    display_packages(matc, "Packages to uninstall")
+    uninstall(list(matc.keys()))
 
 
 if __name__ == "__main__":

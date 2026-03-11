@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from dh import cprint, format_size, get_pyfiles, get_size, rm_doc
 import regex as re
+from dh import cprint, format_size, get_pyfiles, get_size, rm_doc
 
 
 def rm_ast(content: str) -> tuple[str, int]:

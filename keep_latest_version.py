@@ -3,8 +3,8 @@ import operator
 import os
 import pathlib
 
-from packaging.version import Version
 import regex as re
+from packaging.version import Version
 
 wheel_pattern = re.compile(r"^(?P<name>.+)-(?P<version>\d+(\.\d+)+).*\.txt$")
 files = [f for f in os.listdir(".") if f.endswith(".txt")]

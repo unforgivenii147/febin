@@ -2,9 +2,9 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import tree_sitter_python as tsp
 from dh import STDLIB, get_installed_pkgs, get_pyfiles
 from tree_sitter import Language, Parser
-import tree_sitter_python as tsp
 
 parser = Parser()
 parser.language = Language(tsp.language())
@@ -29,7 +29,7 @@ def process_file(fp):
     return extract_file(src, tree)
 
 
-if __name__ == "__main__":
+def main():
     outfile = Path("importz.txt")
     all_imports = []
     dir = Path.cwd()
@@ -84,4 +84,8 @@ if __name__ == "__main__":
         if rq.strip() not in stdlib_plus_installed:
             print(rq.strip())
             filterd.append(rq)
-    outfile.write_text("".join(filterd))
+    outfile.write_text("\n".join(filterd))
+
+
+if __name__ == "__main__":
+    sys.exit(main())

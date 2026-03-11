@@ -1,0 +1,75 @@
+#!/data/data/com.termux/files/usr/bin/env python
+import os
+
+TARGET_SHEBANG = "#!/data/data/com.termux/files/usr/bin/bash"
+BASH_KEYWORDS = {
+    "set ",
+    "unset ",
+    "then",
+    "done",
+    "cd",
+    "chdir",
+    "bash",
+    "copy",
+    "not",
+    "del",
+    "do",
+    "echo",
+    "else",
+    "errorlevel",
+    "exist",
+    "exit",
+    "fi",
+    "for",
+    "goto",
+    "if",
+    "in",
+    "md",
+    "mkdir",
+    "move",
+    "not",
+    "pause",
+    "ren",
+    "set",
+    "shift",
+    "export",
+}
+
+
+def is_bash_file(filepath):
+    if filepath.endswith(".sh"):
+        return True
+    else:
+        return False
+
+
+def process_file(filepath):
+    print(f"processing {filepath}")
+    with open(filepath, "r+") as f:
+        lines = f.readlines()
+        if not lines:
+            return
+        if lines and lines[0].startswith("#!"):
+            lines[0] = TARGET_SHEBANG + "\n"
+            if len(lines) > 1 and lines[1].strip() != "":
+                lines.insert(1, "\n")
+        f.seek(0)
+        f.writelines(lines)
+        f.truncate()
+        print(f"{os.path.relpath(filepath)} updated.")
+    if "bin" in filepath.split(os.sep):
+        os.chmod(filepath, 0o755)
+
+
+def traverse_directory(directory):
+    for root, _, files in os.walk(directory):
+        for filename in files:
+            filepath = os.path.join(root, filename)
+            if os.path.islink(filepath):
+                continue
+            if is_bash_file(filepath):
+                process_file(filepath)
+
+
+if __name__ == "__main__":
+    traverse_directory(os.getcwd())

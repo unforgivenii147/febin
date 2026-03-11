@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 
+import regex as re
 from markdown2 import markdown_path
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import TextLexer, get_lexer_by_name
-import regex as re
 from weasyprint import CSS, HTML
 
 

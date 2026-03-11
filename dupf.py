@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from collections import defaultdict
 import os
+from collections import defaultdict
 from pathlib import Path
 
 import click
@@ -44,14 +44,10 @@ def find_and_delete_duplicates(path: Path):
             )
 
             for dup_found in paths:
-                try:
-                    print(os.path.relpath(dup_found))
-                except Exception as e:
-                    print(f"Error deleting file {dup_found}: {e}")
+                print(os.path.relpath(dup_found))
             for filetodel in paths[1:]:
                 try:
                     get_size = filetodel.stat().st_size
-                    print(os.path.relpath(filetodel))
                     deleted_count += 1
                     total_deleted_size += get_size
                 except Exception as e:

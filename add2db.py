@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 import sqlite3
-import sys
 
 
 def get_current_folder_name():
@@ -93,7 +92,7 @@ def insert_files(cursor, folder_name, files):
 
 
 def main():
-    db_path="/sdcard/pkg.db"
+    db_path = "/sdcard/pkg.db"
     default_name = get_current_folder_name()
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()

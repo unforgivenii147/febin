@@ -9,11 +9,11 @@ import contextlib
 import logging
 import lzma
 import os
-from pathlib import Path
 import shutil
 import sys
 import tempfile
 import time
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(

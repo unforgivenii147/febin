@@ -2,11 +2,11 @@
 import base64
 import hashlib
 import mimetypes
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from dh import MIME_TO_EXT
 import regex as re
+from dh import MIME_TO_EXT
 
 DATA_URL_RE = re.compile(
     r"url\(\s*(['\"]?)data:(?P<mime>application/(?:vnd\.ms-fontobject|font-[^;]+|font/[^;]+))(?:;charset=[^;]+)?;base64,(?P<data>[A-Za-z0-9+/=\s]+)\1\s*\)",

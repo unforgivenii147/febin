@@ -1,12 +1,12 @@
 import argparse
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
-from sysconfig import get_path
 import tempfile
 import zipfile
+from pathlib import Path
+from sysconfig import get_path
 
 CYAN = "\033[0;96m"
 GREEN = "\033[0;92m"
@@ -91,7 +91,7 @@ def compile_to_bytecode(directory, opt_level=2):
 
 def have_so_files(directory) -> bool:
 
-    for root, _dirs, files in os.walk(directory):
+    for _root, _dirs, files in os.walk(directory):
         for file in files:
             if file.endswith(".so"):
                 return True
@@ -170,7 +170,7 @@ def zip_package(pkg_name, use_pyc=False, opt_level=2, verbose=True):
     if verbose:
         print_info(f"Package path: {pkg_path}")
     if have_so_file(pkg_path):
-        return
+        return None
     if is_single_file_module(pkg_path):
         print_warning(f"Skipping '{pkg_name}' - single file modules are not supported")
         return False
@@ -256,7 +256,7 @@ sys.modules[r'{pkg_name}'] = module
                 print_info(f"Mode: {mode}")
                 print_info(f"Original size: {original_mb:.2f} MB")
                 print_info(f"Compressed size: {size_mb:.2f} MB")
-                print_info(f"Compression ratio: {compression_ratio:.1f}%")
+                #                print_info(f"Compression ratio: {compression_ratio:.1f}%")
                 print_info(f"Saved to: {zip_path}")
                 return True
         except Exception as e:

@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from collections import defaultdict
 import json
+from collections import defaultdict
 from pathlib import Path
 
-from fastwalk import walk, walk_files
-from xxhash import xxh64
+from fastwalk import walk
 from folder_hash import hash_folder
 
 

@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from pathlib import Path
-from PIL import Image
 import sys
+from pathlib import Path
+
+from PIL import Image
 
 
 def analyze_image(path, dark_threshold=50, ratio_threshold=0.6):

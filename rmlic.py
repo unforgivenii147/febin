@@ -2,8 +2,8 @@
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
-from dh import BIN_EXT, TXT_EXT, format_size, get_size, is_binary
 import regex as re
+from dh import BIN_EXT, TXT_EXT, format_size, get_size, is_binary
 from termcolor import cprint
 
 LIC_FILE = Path("/sdcard/lic")

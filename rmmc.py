@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import ast
+import sys
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
-from dh import format_size, get_nobinary, get_size
 import regex as re
+from dh import format_size, get_nobinary, get_size
 
 
 def process_file(file_path: Path) -> None:

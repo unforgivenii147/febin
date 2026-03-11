@@ -7,11 +7,11 @@ Deletes original archives after successful extraction and reports size change.
 """
 
 import argparse
-from pathlib import Path
 import sys
 import tarfile
 import tempfile
 import time
+from pathlib import Path
 
 import zstd
 

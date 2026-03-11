@@ -1,9 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from html.parser import HTMLParser
 import os
-from pathlib import Path
 import unicodedata
-import re
+from html.parser import HTMLParser
+from pathlib import Path
+
+import regex as re
+
 
 class TitleParser(HTMLParser):
     def __init__(self):
@@ -37,11 +39,11 @@ def slugify(text: str) -> str:
     text = unicodedata.normalize("NFKD", text)
     temp = text
     text = text.lower()
-    text = re.sub(r'(?|\\\||`|<|>|~|:|;|"|'|@|$|#|%|&|^|(|)|{|}|[|])','')
-    text = re.sub(r'(__)+','_'
+    text = re.sub(r"(?|\\\||`|<|>|~|:|;|\"|'|@|$|#|%|&|^|(|)|{|}|[|])", "", text)
+    text = re.sub(r"(__)+", "_", text)
     if len(text) < 2:
-        return temp.strip(":").strip("?").strip("=")
-    return text.strip(":")
+        return temp.replace(":", "").replace("?", "").replace("=", "")
+    return text
 
 
 def unique_path(path: Path) -> Path:

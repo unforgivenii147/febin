@@ -1,14 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
+import sys
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
-from dh import format_size, get_nobinary, get_size
-from termcolor import cprint
-from pathlib import Path
-
+from dh import format_size, get_size
 from PIL import Image, ImageFilter, ImageOps
 from pytesseract import image_to_string
+from termcolor import cprint
 
 
 def preprocess_image(img):
@@ -45,10 +43,7 @@ def main() -> None:
     dir = Path.cwd()
     before = get_size(dir)
     args = sys.argv[1:]
-    if args:
-        files = [Path(arg) for arg in args]
-    else:
-        files = [Path(f) for f in dir.rglob("*") if f.suffix in {".jpg", ".png"}]
+    files = [Path(arg) for arg in args] if args else [Path(f) for f in dir.rglob("*") if f.suffix in {".jpg", ".png"}]
 
     if len(files) == 1:
         process_file(files[0])

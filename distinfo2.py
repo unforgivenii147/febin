@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
 from sys import exit
 
 ALLOWED = ["METADATA", "RECORD", "WHEEL", "entry_points.txt", "top_level.txt"]

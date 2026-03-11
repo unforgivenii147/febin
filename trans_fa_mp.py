@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from deep_translator import GoogleTranslator
 

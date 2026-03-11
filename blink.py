@@ -1,13 +1,20 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
+from pathlib import Path
 
-current_dir = os.getcwd()
-for root, _dirs, files in os.walk(current_dir):
-    for file in files:
-        file_path = os.path.join(root, file)
-        if os.path.islink(file_path) and not os.path.exists(file_path):
+from dh import get_files
+
+if __name__ == "__main__":
+    dir = Path.cwd()
+    files = get_files(dir)
+    bcount = 0
+    for path in files:
+        if path.is_symlink() and not path.exists():
             try:
-                os.remove(file_path)
-                print(f"Deleted broken link: {os.path.relpath(file_path)}")
+                path.unlink()
+                bcount += 1
+                print(f"{os.path.relpath(path)}")
             except Exception as e:
-                print(f"Error deleting {file_path}: {e}")
+                print(f"Error deleting {path}: {e}")
+    if not bcount:
+        print("no broken link found.")

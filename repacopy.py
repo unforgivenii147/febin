@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import logging
-from pathlib import Path
 import shutil
 import sys
+from pathlib import Path
 
 logging.basicConfig(
     level=logging.INFO,

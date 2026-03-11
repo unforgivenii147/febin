@@ -3,8 +3,8 @@ import argparse
 import os
 import sys
 
-from dh import is_binary
 import regex as re
+from dh import is_binary
 
 
 def process_file(file_path, search_text, replace_text=None, dry_run=False):

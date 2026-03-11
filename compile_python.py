@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from collections import deque
 import compileall
-from multiprocessing import Pool
 import os
+from collections import deque
+from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
 from time import perf_counter

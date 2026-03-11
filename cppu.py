@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
+import subprocess
+import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-import subprocess
-import sys
 
 from dh import format_size, get_size
 from fastwalk import walk_files

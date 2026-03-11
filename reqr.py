@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
-from fastwalk import walk_files
 import regex as re
+from fastwalk import walk_files
 
 
 def extract_requirements(metadata_path):

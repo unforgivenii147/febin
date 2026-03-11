@@ -3,11 +3,11 @@ import ast
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
+import tree_sitter_python as tspython
 from dh import format_size, get_size
 from fastwalk import walk_files
 from termcolor import cprint
 from tree_sitter import Language, Parser, Query, QueryCursor
-import tree_sitter_python as tspython
 
 ts_remover = None
 

@@ -1,15 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-from multiprocessing import Pool
-from pathlib import Path
 import re
 import sys
+from collections import deque
+from multiprocessing import Pool
+from pathlib import Path
 
-from dh import cprint, format_size, get_pyfiles, get_size, rm_doc, DOC_TH1, DOC_TH2
 import regex as re
+import tree_sitter_python as tspython
+from dh import DOC_TH1, DOC_TH2, cprint, format_size, get_pyfiles, get_size, rm_doc
 from termcolor import cprint
 from tree_sitter import Language, Parser
-import tree_sitter_python as tspython
+
+MAX_QUEUE = 16
 
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
@@ -36,7 +39,7 @@ def preprocess(orig):
 
     code = "\n".join(cleaned)
     try:
-        tree = ast.parse(code)
+        _ = ast.parse(code)
         del cleaned
         return code
     except:
@@ -142,12 +145,12 @@ def process_file(file_path: Path) -> None:
         try:
             modified, removed = rm_ast(code)
         except:
-            modified, removed = rm_doc(code)
+            modified, _removed = rm_doc(code)
 
         try:
             finalcode = strip_code(modified)
             finalcode = cleanup_blank_lines(finalcode)
-            tree = ast.parse(finalcode)
+            ast.parse(finalcode)
             file_path.write_text(finalcode, encoding="utf-8")
             after = get_size(file_path)
             print(f"{file_path.name}", end=" ")
@@ -155,7 +158,7 @@ def process_file(file_path: Path) -> None:
             return
         except:
             try:
-                tree = ast.parse(modified)
+                ast.parse(modified)
                 finalcode = cleanup_blank_lines(modified)
                 file_path.write_text(finalcode, encoding="utf-8")
                 after = get_size(file_path)
@@ -176,15 +179,16 @@ def main():
     args = sys.argv[1:]
     if args:
         files = [Path(f) for f in args]
-        for f in files:
-            process_file(f)
     else:
         files = get_pyfiles(dir)
-        p = Pool(8)
+    with Pool(8) as pool:
+        pending = deque()
         for f in files:
-            p.apply_async(process_file, (f,))
-        p.close()
-        p.join()
+            pending.append(pool.apply_async(process_file, (f,)))
+            if len(pending) > MAX_QUEUE:
+                pending.popleft().get()
+        while pending:
+            pending.popleft().get()
     diff_size = before - get_size(dir)
     print(f"space saved : {format_size(diff_size)}")
 

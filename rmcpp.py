@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
+import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-import sys
 
-from tree_sitter import Language, Parser, Query, QueryCursor
 import tree_sitter_cpp as tscpp
+from tree_sitter import Language, Parser, Query, QueryCursor
 
 ts_remover = None
 

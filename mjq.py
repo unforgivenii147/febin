@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import contextlib
-from multiprocessing import Pool, cpu_count
 import os
-from pathlib import Path
 import subprocess
+from multiprocessing import Pool, cpu_count
+from pathlib import Path
 
 EXCLUDE_DIRS = {".git", "__pycache__"}
 

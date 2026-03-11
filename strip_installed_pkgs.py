@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
+import sys
 from importlib.metadata import distributions
 from pathlib import Path
-import sys
 
 
 def get_installed_packages():

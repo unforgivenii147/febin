@@ -1,14 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
+import sys
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
 from dh import SOURCE_CODE_EXT, clean_blank_lines, format_size, get_nobinary, get_size, is_binary
 from termcolor import cprint
 
 
 def process_file(fp):
+    if fp.suffix == ".md":
+        return
     removed: int = 0
     inline: int = 0
     if is_binary(fp) or fp.suffix in SOURCE_CODE_EXT:
@@ -46,7 +48,7 @@ def process_file(fp):
         cprint(f"{format_size(diffsize)} | removed : {removed} | inline : {inline}", "yellow")
     else:
         try:
-            ast.parse(code)
+            _ = ast.parse(code)
             with open(fp, "w") as fo:
                 fo.write(code)
             after = get_size(fp)

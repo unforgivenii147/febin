@@ -3,11 +3,13 @@ import os
 import shutil
 import sys
 import time
+from pathlib import Path
 
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
-DEST_DIR = os.path.expanduser("~/tmp/tgz")
+DEST_DIR = Path("/sdcard/whl")
+DEST_DIR.mkdir(exist_ok=True)
 ALLOWED_EXTENSIONS = (
     ".tar.gz",
     ".whl",
@@ -20,7 +22,6 @@ ALLOWED_EXTENSIONS = (
 def copy_if_match(src_path) -> None:
     if src_path.endswith(ALLOWED_EXTENSIONS):
         try:
-            os.makedirs(DEST_DIR, exist_ok=True)
             dest = os.path.join(
                 DEST_DIR,
                 os.path.basename(src_path),

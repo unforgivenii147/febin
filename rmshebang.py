@@ -1,52 +1,49 @@
 #!/data/data/com.termux/files/usr/bin/env python
-TARGET_STR = "#!/data/data/com.termux/files/usr/bin/env python3"
+import sys
+from collections import deque
+from multiprocessing import Pool
+from pathlib import Path
+
+from dh import format_size, get_pyfiles, get_size
+
+MAX_QUEUE = 16
 
 
-def is_text_file(filepath) -> bool | None:
+def process_file(path) -> None:
     try:
-        with Path(filepath).open("r", encoding="utf-8") as f:
-            f.read()
-        return True
-    except (UnicodeDecodeError, PermissionError):
-        return False
-
-
-def process_file(filepath) -> None:
-    try:
-        with Path(filepath).open("r", encoding="utf-8") as f:
-            lines = f.readlines()
-        new_lines = [line for line in lines if TARGET_STR not in line]
-        if len(new_lines) != len(lines):
-            with Path(filepath).open("w", encoding="utf-8") as f:
-                f.writelines(new_lines)
+        content = path.read_text(encoding="utf-8")
+        lines = content.splitlines()
+        new_lines = []
+        if lines[0].startswith("#!/"):
+            new_lines = lines[1:]
+            content = "\n".join(new_lines)
+            path.write_text(content, encoding="utf-8")
+            print(f"{path.name} updated.")
+            return
+        else:
+            return
     except Exception:
         pass
 
 
 def main() -> None:
-    for root, _dirs, files in os.walk("."):
-        for file in files:
-            if file in {"rmshebang", "socket"}:
-                continue
-            if file.endswith((".body", ".rs")):
-                continue
-            if file.endswith((".js", ".json")):
-                continue
-            if file.endswith((".css", ".html")):
-                continue
-            if file.endswith((".jpg", ".png")):
-                continue
-            if file.endswith((".ttf", ".eot")):
-                continue
-            if file.endswith((".md", ".txt")):
-                continue
-            if file.endswith((".woff", ".woff2")):
-                continue
-            filepath = os.path.join(root, file)
-            if not Path(filepath).exists():
-                continue
-            if is_text_file(filepath):
-                process_file(filepath)
+    dir = Path.cwd()
+    before = get_size(dir)
+    args = sys.argv[1:]
+    if args:
+        files = [Path(arg) for arg in args]
+    else:
+        files = get_pyfiles(dir)
+    with Pool(8) as pool:
+        pending = deque()
+        for f in files:
+            pending.append(pool.apply_async(process_file, (f,)))
+            if len(pending) > MAX_QUEUE:
+                pending.popleft().get()
+        while pending:
+            pending.popleft().get()
+    after = get_size(dir)
+    print(f"space saved: {format_size(before - after)}")
 
 
 if __name__ == "__main__":

@@ -2,13 +2,14 @@
 from __future__ import annotations
 
 import argparse
-from collections import deque
 import contextlib
+from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
 
 from dh import format_size, get_size
 from fastwalk import walk_files
+from termcolor import cprint
 
 MAX_IN_FLIGHT = 16
 IGNORED_DIRS = {
@@ -29,11 +30,11 @@ def is_python_file(path: Path) -> bool:
 
 
 def format_single_file(file_path: Path, args) -> bool:
-    start_size = get_size(file_path)
-    after = get_size(file_path)
+    before: int = get_size(file_path)
+    after: int = before
     try:
-        original_code = file_path.read_text(encoding="utf-8")
-        code = original_code
+        original_code: str = file_path.read_text(encoding="utf-8")
+        code: str = original_code
         if args.remove_all_unused_imports:
             import autoflake
 
@@ -49,7 +50,7 @@ def format_single_file(file_path: Path, args) -> bool:
         if args.black:
             import black
 
-            with contextlib.suppress(black.reporr.NothingChanged):
+            with contextlib.suppress(black.report.NothingChanged):
                 code = black.format_str(code, mode=black.Mode(line_length=120))
         elif args.autopep:
             import autopep8
@@ -62,13 +63,16 @@ def format_single_file(file_path: Path, args) -> bool:
         if len(code) != len(original_code):
             file_path.write_text(code, encoding="utf-8")
             after = get_size(file_path)
-            print(f"[OK]  {file_path.name} {format_size(start_size - after)}")
+            print(f"[OK] {file_path.name} ", end=" ")
+            cprint(f"{format_size(before - after)}", "cyan")
             return True
         else:
-            print(f"[NO CHNGE]  {file_path.name}")
+            cprint(f"[NO CHNGE]", end=" ")
+            print(f"{file_path.name}")
             return False
     except Exception as e:
-        print(f"[ERROR]  {file_path.name}: {e}")
+        cprint(f"[ERROR]", "red", end=" ")
+        print(f"{file_path.name}: {e}")
         return False
 
 
@@ -101,6 +105,7 @@ def main() -> None:
     args = p.parse_args()
     dir = Path().cwd()
     files = []
+    before = get_size(dir)
     for pth in walk_files(dir):
         path = Path(pth)
         if (
@@ -130,6 +135,10 @@ def main() -> None:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
+
+    after = get_size(dir)
+    diffsize = before - after
+    cprint(f"{format_size(diffsize)}", "cyan")
 
 
 if __name__ == "__main__":

@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocessing import Pool
 import os
+from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
 from time import perf_counter
 
-from fastwalk import walk_files
 import pdfplumber
+from fastwalk import walk_files
 
 
 def process_file(fp):

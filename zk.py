@@ -2,25 +2,30 @@
 
 import argparse
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
-from sysconfig import get_path
 import tempfile
 import zipfile
 from importlib.metadata import distributions
+from pathlib import Path
+from sysconfig import get_path
+
 from importlib_metadata import _top_level_declared
 
+sitedir = "/data/data/com.termux/files/usr/lib/python3.12/site-packages"
+
+
 def get_pkgs():
-    pkgs=[]
+    pkgs = []
     for pkg in distributions():
-        pkgname=pkg.metadata['name'].lower().replace('-','_')
+        pkgname = pkg.metadata["name"].lower().replace("-", "_")
         pkgs.appens(pkgname)
     return pkgs
 
-get_top_level(pkg):
-    found=[]
+
+def get_top_level(pkg):
+    found = []
     for k in _top_level_infered(pkg):
         found.append(k)
     return found
@@ -143,31 +148,37 @@ def create_zip(src_path, zip_path, pkg_name):
     except Exception as e:
         print_error(f"Failed to create zip: {e}")
         return False
-sitedur='/'
+
+
 def process_pkg(pkgname):
-    pkg_path=get_toplevel(pkgname)
+    pkg_path = get_toplevel(pkgname)
+    if len(pkg_path) > 1:
+        print("{pkgname} have more than one top level dir.")
+        return
+    if is_single_file_module(pkg_path) or have_so(pkg_path):
+        print(f"{pkg_path} have .so file or is a single file midule")
+        return
+
+    zipdir = sitedir
+    zip_path = Path(f"{zipdur}/{pkg_path}.zip")
+    if zip_path.exists():
+        print("already zipped.")
+        return
+
 
 def main(args):
     if args:
-        pkgs=[p for p in args]
-        installed=get_pkgs()
+        pkgs = [p for p in args]
+        installed = get_pkgs()
         for pkg in pkgs:
             if pkg in installed:
                 process_pkg(pkg)
     else:
         sys.exit(0)
 
-if __name__==''__main__:
-   sys.exit(main(args=sys.argv[1:]))
 
-
-
-
-
-
-
-
-
+if __name__ == "__main__":
+    sys.exit(main(args=sys.argv[1:]))
 
 
 """
@@ -244,12 +255,18 @@ def main():
 
         print_warning("Step 3: Creating loader stub...")
         loader_path = os.path.join(site_packages, f"{pkg_name}.py")
-        loader_code = f"""import sys, os
+        loader_code = f
+
+
+
+import sys, os
 ZIP_PATH = os.path.join(r'{zip_dir}', r'{pkg_name}.zip')
 if ZIP_PATH not in sys.path: sys.path.insert(0, ZIP_PATH)
 module = __import__(r'{pkg_name}')
 sys.modules[r'{pkg_name}'] = module
-"""
+
+
+
         try:
             with open(loader_path, "w") as f:
                 f.write(loader_code)

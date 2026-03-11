@@ -4,8 +4,8 @@ Simple converter from .py to .ipynb
 """
 
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import nbformat as nbf
 

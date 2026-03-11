@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
+
 from dh import is_binary
 
 if __name__ == "__main__":

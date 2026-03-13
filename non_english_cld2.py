@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/env python
-#!/usr/bin/env python3
 """
 Recursively find and report non-English files in current directory using pycld2
 """

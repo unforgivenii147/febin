@@ -1,12 +1,14 @@
 import os
-from dh import read_lines
 
 
 def process_file(fp):
-    lines=read_lines(fp)
+    lines=[]
+    with open(fp,encoding='utf-8') as fin:
+        lines=fin.readlines()
     nl=[]
     if lines[0].startswith('#!') and lines[1].startswith('#!'):
-        nl=lines[0]+lines[2:]
+        nl.append(lines[0])
+        nl.extend(lines[2:])
         print(f'{fp} have 2 shebang')
     else:
         nl=lines

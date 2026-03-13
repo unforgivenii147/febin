@@ -21,6 +21,7 @@ QUERY_STRING = """
 
 
 class TSRemover:
+
     def __init__(self):
         self.language = Language(tspython.language())
         self.parser = Parser(self.language)
@@ -42,18 +43,17 @@ class TSRemover:
                     text = source_bytes[start:end].decode("utf-8")
                     if capture_name == "comment":
                         stripped = text.strip()
-                        if (
-                            stripped.startswith("# type:")
-                            or stripped.startswith("# TODO")
-                            or stripped.startswith("# noqa")
-                            or stripped.startswith("#!")
-                            or stripped.startswith("# fmt:")
-                        ):
+                        if (stripped.startswith("# type:")
+                                or stripped.startswith("# TODO")
+                                or stripped.startswith("# noqa")
+                                or stripped.startswith("#!")
+                                or stripped.startswith("# fmt:")):
                             continue
                         comment_count += 1
                     else:
                         docstring_count += 1
-                    if end < len(source_bytes) and source_bytes[end : end + 1] == b"\n":
+                    if end < len(source_bytes) and source_bytes[end:end +
+                                                                1] == b"\n":
                         end += 1
                     deletions.append((start, end))
         deletions = sorted(set(deletions), reverse=True)
@@ -91,7 +91,9 @@ def process_file(fp):
         return
     try:
         ast.parse(result)
-        print(f"{file_path.name}: comments: {comments}   docstrings: {docstrings}")
+        print(
+            f"{file_path.name}: comments: {comments}   docstrings: {docstrings}"
+        )
         fp.write_text(result, encoding="utf-8")
     except:
         print(f"{file_path.name} : invalid code")
@@ -103,7 +105,10 @@ def main():
     if args:
         files = [f for f in args if Path(f).is_file()]
     else:
-        files = [os.path.join(r, f) for r, _, fs in os.walk(".") for f in fs if f.endswith(".py")]
+        files = [
+            os.path.join(r, f) for r, _, fs in os.walk(".") for f in fs
+            if f.endswith(".py")
+        ]
     if not files:
         return
     print(f"Processing {len(files)} files using QueryCursor...")

@@ -1,24 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
-import sys
-import json
-import signal
-import threading
 import hashlib
-from pathlib import Path
+import json
+import os
+import signal
+import sys
+import threading
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from urllib.parse import unquote
 
 import requests
 from rich.console import Console
-from rich.progress import (
-    Progress,
-    TextColumn,
-    BarColumn,
-    DownloadColumn,
-    TransferSpeedColumn,
-    TimeRemainingColumn,
-)
+from rich.progress import (BarColumn, DownloadColumn, Progress, TextColumn,
+                           TimeRemainingColumn, TransferSpeedColumn)
 
 console = Console()
 
@@ -29,6 +23,7 @@ STATE_SUFFIX = ".progress"
 
 
 class Downloader:
+
     def __init__(self, url, output_path=None, expected_hash=None):
         self.url = url
         self.stop_event = threading.Event()
@@ -49,14 +44,15 @@ class Downloader:
             if cd and "filename=" in cd:
                 self.filename = cd.split("filename=")[1].strip(' "')
             else:
-                self.filename = unquote(self.url.split("/")[-1]) or "downloaded_file"
+                self.filename = unquote(
+                    self.url.split("/")[-1]) or "downloaded_file"
 
         self.state_file = Path(f"{self.filename}{STATE_SUFFIX}")
 
     def _verify_integrity(self):
         """Calculate SHA-256 hash of the final file."""
         sha256_hash = hashlib.sha256()
-        console.print(f"\n[bold cyan]Verifying file integrity...[/]")
+        console.print("\n[bold cyan]Verifying file integrity...[/]")
 
         with open(self.filename, "rb") as f:
             # Read in 1MB chunks to be memory efficient
@@ -67,34 +63,40 @@ class Downloader:
 
         if self.expected_hash:
             if calculated_hash.lower() == self.expected_hash.lower():
-                console.print("[bold green]✅ Integrity Verified: Hashes match![/]")
+                console.print(
+                    "[bold green]✅ Integrity Verified: Hashes match![/]")
             else:
-                console.print(f"[bold red]❌ Integrity Check Failed![/]")
+                console.print("[bold red]❌ Integrity Check Failed![/]")
                 console.print(f"Expected: {self.expected_hash}")
                 console.print(f"Got:      {calculated_hash}")
         else:
-            console.print(f"[bold yellow]SHA-256 Checksum:[/] {calculated_hash}")
-            console.print("[italic]Provide this hash next time to verify automatically.[/]")
+            console.print(
+                f"[bold yellow]SHA-256 Checksum:[/] {calculated_hash}")
+            console.print(
+                "[italic]Provide this hash next time to verify automatically.[/]"
+            )
 
     def _load_state(self):
         if self.state_file.exists():
             try:
-                with open(self.state_file, "r") as f:
+                with open(self.state_file) as f:
                     self.progress_data = json.load(f)
             except Exception:
                 pass
 
     def _save_state(self):
-        with self.lock:
-            with open(self.state_file, "w") as f:
-                json.dump(self.progress_data, f)
+        with self.lock, open(self.state_file, "w") as f:
+            json.dump(self.progress_data, f)
 
     def _download_chunk(self, chunk_id, start, end, progress, task_id):
         if self.stop_event.is_set():
             return
         headers = {"Range": f"bytes={start}-{end}"}
         try:
-            with requests.get(self.url, headers=headers, stream=True, timeout=15) as r:
+            with requests.get(self.url,
+                              headers=headers,
+                              stream=True,
+                              timeout=15) as r:
                 r.raise_for_status()
                 with open(self.filename, "r+b") as f:
                     f.seek(start)
@@ -122,37 +124,39 @@ class Downloader:
             chunks.append((i, min(i + CHUNK_SIZE - 1, self.file_size - 1)))
 
         self.progress_data["total_chunks"] = len(chunks)
-        pending_chunks = [
-            (idx, s, e) for idx, (s, e) in enumerate(chunks) if idx not in self.progress_data["downloaded_chunks"]
-        ]
+        pending_chunks = [(idx, s, e) for idx, (s, e) in enumerate(chunks)
+                          if idx not in self.progress_data["downloaded_chunks"]
+                          ]
 
         if not pending_chunks:
-            console.print(f"[bold green]✔ {self.filename} is already finished![/]")
+            console.print(
+                f"[bold green]✔ {self.filename} is already finished![/]")
             self._verify_integrity()
             return
 
         with Progress(
-            TextColumn("[bold blue]{task.fields[filename]}"),
-            BarColumn(),
-            "[progress.percentage]{task.percentage:>3.0f}%",
-            DownloadColumn(),
-            TransferSpeedColumn(),
-            TimeRemainingColumn(),
-            console=console,
+                TextColumn("[bold blue]{task.fields[filename]}"),
+                BarColumn(),
+                "[progress.percentage]{task.percentage:>3.0f}%",
+                DownloadColumn(),
+                TransferSpeedColumn(),
+                TimeRemainingColumn(),
+                console=console,
         ) as progress:
             main_task = progress.add_task(
                 "download",
                 filename=self.filename,
                 total=self.file_size,
-                completed=len(self.progress_data["downloaded_chunks"]) * CHUNK_SIZE,
+                completed=len(self.progress_data["downloaded_chunks"]) *
+                CHUNK_SIZE,
             )
 
             signal.signal(signal.SIGINT, lambda s, f: self.stop_event.set())
 
             with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
                 futures = [
-                    executor.submit(self._download_chunk, cid, s, e, progress, main_task)
-                    for cid, s, e in pending_chunks
+                    executor.submit(self._download_chunk, cid, s, e, progress,
+                                    main_task) for cid, s, e in pending_chunks
                 ]
                 for f in futures:
                     if self.stop_event.is_set():
@@ -161,16 +165,20 @@ class Downloader:
 
         if not self.stop_event.is_set():
             self.state_file.unlink(missing_ok=True)
-            console.print(f"\n[bold green]Download Complete: {self.filename}[/]")
+            console.print(
+                f"\n[bold green]Download Complete: {self.filename}[/]")
             self._verify_integrity()
         else:
-            console.print("\n[bold yellow]Download Paused. Run again to resume.[/]")
+            console.print(
+                "\n[bold yellow]Download Paused. Run again to resume.[/]")
             sys.exit(0)
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        console.print("[bold red]Usage:[/] python downloader.py <URL> [output_name] [expected_sha256]")
+        console.print(
+            "[bold red]Usage:[/] python downloader.py <URL> [output_name] [expected_sha256]"
+        )
         sys.exit(1)
 
     url_arg = sys.argv[1]

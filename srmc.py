@@ -1,26 +1,25 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from pathlib import Path
 import sys
 from multiprocessing import Pool
-from dh import get_size, format_size, get_pyfiles
-from termcolor import cprint
-from typing import Str, Int, List, Dict
+from pathlib import Path
+from typing import Int, Str
+
+from dh import format_size, get_pyfiles, get_size
 
 
-def _get_comments_symbol(text: Str, symbol: Str) -> List[Str]:
-    comments: List = []
+def _get_comments_symbol(text: Str, symbol: Str) -> list[Str]:
+    comments: list = []
     i: Int = 0
-    indexes: List = []
+    indexes: list = []
     for i in range(len(text)):
-        if text[i] == symbol:
-            if len(text) > i + 2:
-                if text[i] == text[i + 1] == text[i + 2]:
-                    if len(indexes) == 0:
-                        indexes.append(i)
-                    elif len(indexes) == 1:
-                        indexes.append(i + 2)
-                        comments.append(text[indexes[0] : indexes[1] + 1])
-                        indexes = []
+        if text[i] == symbol and len(
+                text) > i + 2 and text[i] == text[i + 1] == text[i + 2]:
+            if len(indexes) == 0:
+                indexes.append(i)
+            elif len(indexes) == 1:
+                indexes.append(i + 2)
+                comments.append(text[indexes[0]:indexes[1] + 1])
+                indexes = []
     return comments
 
 
@@ -47,22 +46,18 @@ def remove_comments(text: str) -> str:
             new_lines.append(line_without_comment)
         else:
             new_lines.append(line)
-    text = "\n".join(new_lines)
-    return text
+    return "\n".join(new_lines)
 
 
 def main():
     dir = Path.cwd()
     before = get_size(dir)
     args = sys.argv[1:]
-    if args:
-        files = [Path(f) for f in args]
-    else:
-        files = get_pyfiles(dir)
+    files = [Path(f) for f in args] if args else get_pyfiles(dir)
     with Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f,)))
+            pending.append(pool.apply_async(process_file, (f, )))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:

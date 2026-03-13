@@ -28,8 +28,8 @@ def _collect_docstrings(node, source: bytes, deletions: list):
             if string_node and string_node.type == "string":
                 deletions.append((first.start_byte, first.end_byte))
     if node.type in (
-        "class_definition",
-        "function_definition",
+            "class_definition",
+            "function_definition",
     ):
         body = node.child_by_field_name("body")
         if body:
@@ -50,7 +50,7 @@ def process_file(path: Path) -> None:
 
         def walk_comments(node):
             if node.type == "comment":
-                text = source[node.start_byte : node.end_byte]
+                text = source[node.start_byte:node.end_byte]
                 if not text.lstrip().startswith(EXCLUDE_PREFIXES):
                     deletions.append((node.start_byte, node.end_byte))
             for child in node.children:

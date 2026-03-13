@@ -18,7 +18,8 @@ def process_file(file_path, search_text, replace_text=None, dry_run=False):
         if pattern.search(content):
             if dry_run:
                 matches = list(pattern.finditer(content))
-                print(f"[DRY RUN] Found {len(matches)} match(es) in {file_path}")
+                print(
+                    f"[DRY RUN] Found {len(matches)} match(es) in {file_path}")
                 for i, match in enumerate(matches[:3]):
                     start = max(0, match.start() - 20)
                     end = min(len(content), match.end() + 20)
@@ -41,7 +42,10 @@ def process_file(file_path, search_text, replace_text=None, dry_run=False):
         return False
 
 
-def replace_in_files(search_text, replace_text=None, target_file=None, dry_run=False):
+def replace_in_files(search_text,
+                     replace_text=None,
+                     target_file=None,
+                     dry_run=False):
     """Main function to process files"""
     exclude_dirs = {".git", "build", "dist", "__pycache__", "node_modules"}
     files_processed = 0
@@ -70,11 +74,13 @@ def replace_in_files(search_text, replace_text=None, target_file=None, dry_run=F
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Recursively replace or remove text in files.")
+    parser = argparse.ArgumentParser(
+        description="Recursively replace or remove text in files.")
     parser.add_argument(
         "strings",
         nargs="+",
-        help="Search text and optional replacement text. If only one string is provided, it will be removed.",
+        help=
+        "Search text and optional replacement text. If only one string is provided, it will be removed.",
     )
     parser.add_argument(
         "--dry-run",
@@ -84,7 +90,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "-f",
         "--file",
-        help="Process only the specified file instead of recursive directory search",
+        help=
+        "Process only the specified file instead of recursive directory search",
     )
     args = parser.parse_args()
     if len(args.strings) == 2:
@@ -95,7 +102,9 @@ if __name__ == "__main__":
         replace_text = None
         action = f"REMOVING '{search_text}'"
     else:
-        parser.error("Please provide either one string (to remove) or two strings (search and replace)")
+        parser.error(
+            "Please provide either one string (to remove) or two strings (search and replace)"
+        )
     if search_text.startswith(("'", '"')) and search_text.endswith(("'", '"')):
         search_text = search_text[1:-1]
     if args.dry_run:
@@ -107,4 +116,6 @@ if __name__ == "__main__":
         target_file=args.file,
         dry_run=args.dry_run,
     )
-    print(f"\n--- Complete: Processed {files_processed} files, modified {files_changed} files ---")
+    print(
+        f"\n--- Complete: Processed {files_processed} files, modified {files_changed} files ---"
+    )

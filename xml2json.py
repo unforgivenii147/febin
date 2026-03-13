@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import json
-import xmltodict
-import os
 import sys
-from pathlib import Path
-from multiprocessing import Pool
 from collections import deque
+from multiprocessing import Pool
+from pathlib import Path
+
+import xmltodict
 
 MAX_QUEUE = 16
 
@@ -21,15 +21,12 @@ def process_file(path):
 def main():
     dir = Path.cwd()
     args = sys.argv[1:]
-    if args:
-        files = [Path(p) for p in args]
-    else:
-        files = [p for p in dir.rglob("*.xml")]
+    files = [Path(p) for p in args] if args else list(dir.rglob("*.xml"))
 
     with Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f,)))
+            pending.append(pool.apply_async(process_file, (f, )))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:

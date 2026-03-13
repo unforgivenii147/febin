@@ -40,7 +40,10 @@ def remove_patterns_from_content(content: str, patterns: list[str]) -> str:
     cleaned = content
     for pattern in patterns:
         regex_pattern = escape_for_regex(pattern)
-        cleaned = re.sub(regex_pattern, "", cleaned, flags=re.IGNORECASE | re.MULTILINE)
+        cleaned = re.sub(regex_pattern,
+                         "",
+                         cleaned,
+                         flags=re.IGNORECASE | re.MULTILINE)
     return cleaned
 
 
@@ -59,7 +62,8 @@ def clean_file_worker(args: tuple) -> tuple:
     try:
         with open(file_path, encoding="utf-8", errors="ignore") as f:
             original_content = f.read()
-        cleaned_content = remove_patterns_from_content(original_content, patterns)
+        cleaned_content = remove_patterns_from_content(original_content,
+                                                       patterns)
         if cleaned_content != original_content:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(cleaned_content)
@@ -82,7 +86,9 @@ def main():
     print()
     dir = Path.cwd()
     isz = get_size(dir)
-    all_files = [f for f in dir.rglob("*") if f.is_file() and should_process_file(f)]
+    all_files = [
+        f for f in dir.rglob("*") if f.is_file() and should_process_file(f)
+    ]
     if not all_files:
         print("No files to process.")
         return
@@ -109,7 +115,9 @@ def main():
     esz = get_size(dir)
     print(f"  Processed: {success_count}/{len(all_files)} file(s)\n")
     print(f"  Modified: {modified_count}")
-    print(f"  dir size: \n\tbefore     {format_size(isz)}\n\tafter   -  {format_size(esz)}\n\t\t    _______\n")
+    print(
+        f"  dir size: \n\tbefore     {format_size(isz)}\n\tafter   -  {format_size(esz)}\n\t\t    _______\n"
+    )
     cprint(f"\t\t  {format_size(isz - esz)}\n\n", "cyan")
     if error_count > 0:
         print(f"  Failed: {error_count} file(s)")

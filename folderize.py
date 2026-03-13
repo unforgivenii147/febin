@@ -32,10 +32,11 @@ def is_in_alphabetical_folder(file_path, root_path):
     relative_path = file_path.relative_to(root_path)
     if len(relative_path.parts) > 1:
         parent_folder = relative_path.parts[0]
-        if (len(parent_folder) == 1 and parent_folder.isalpha()) or parent_folder in [
-            "0-9",
-            "Other",
-        ]:
+        if (len(parent_folder) == 1
+                and parent_folder.isalpha()) or parent_folder in [
+                    "0-9",
+                    "Other",
+                ]:
             return True
     return False
 

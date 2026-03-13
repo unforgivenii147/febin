@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from pathlib import Path
 import sys
 import warnings
+from pathlib import Path
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-from typing import Dict
+
 from pip._internal.cli.main import main as pip_main
 
 
-def display_packages(packages: Dict[str, str], title: str = "Packages"):
+def display_packages(packages: dict[str, str], title: str = "Packages"):
     if not packages:
         return
     print(f"\n{title}:")
@@ -17,7 +17,8 @@ def display_packages(packages: Dict[str, str], title: str = "Packages"):
     print(f"\nTotal: {len(packages)} package(s)")
 
 
-def find_matching_packages(pattern: str, packages: Dict[str, str]) -> Dict[str, str]:
+def find_matching_packages(pattern: str,
+                           packages: dict[str, str]) -> dict[str, str]:
     matches = {}
     pattern_lower = pattern.lower()
     for package_name, version in packages.items():
@@ -47,7 +48,7 @@ def main():
     pkgs = get_pkgs()
     matc = find_matching_packages(pat, pkgs)
     if not matc:
-        print(f"No installed packages found containing '{pattern}' in their name.")
+        print(f"No installed packages found containing '{pat}' in their name.")
         sys.exit(0)
     display_packages(matc, "Packages to uninstall")
     uninstall(list(matc.keys()))

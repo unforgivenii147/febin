@@ -32,7 +32,7 @@ def main():
             files.append(path)
     pool = Pool(12)
     for f in files:
-        pool.apply_async(process_file, ((f),))
+        pool.apply_async(process_file, ((f), ))
     pool.close()
     pool.join()
     print(f"{perf_counter() - start} sec")

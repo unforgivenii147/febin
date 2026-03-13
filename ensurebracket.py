@@ -25,14 +25,18 @@ def ensure_bracket(fn):
                 open_cbraket_count += 1
             if content[i] == "}":
                 close_cbraket_count += 1
-    print(f"open_parantez_count : {open_parantez_count}\nclose_parantez_count : {close_parantez_count}")
-    print(f"open_braket_count : {open_braket_count}\nclose_braket_count : {close_braket_count}")
-    print(f"open_cbraket_count : {open_cbraket_count}\nclose_cbraket_count : {close_cbraket_count}")
-    return bool(
-        open_parantez_count == close_parantez_count
-        and open_braket_count == close_braket_count
-        and open_cbraket_count == close_cbraket_count
+    print(
+        f"open_parantez_count : {open_parantez_count}\nclose_parantez_count : {close_parantez_count}"
     )
+    print(
+        f"open_braket_count : {open_braket_count}\nclose_braket_count : {close_braket_count}"
+    )
+    print(
+        f"open_cbraket_count : {open_cbraket_count}\nclose_cbraket_count : {close_cbraket_count}"
+    )
+    return bool(open_parantez_count == close_parantez_count
+                and open_braket_count == close_braket_count
+                and open_cbraket_count == close_cbraket_count)
 
 
 def main():

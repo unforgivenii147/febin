@@ -22,9 +22,9 @@ def is_text_file(pth):
 def contains_non_english(path):
     try:
         with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
+                path,
+                encoding="utf-8",
+                errors="ignore",
         ) as f:
             text = f.read(MAX_CHARS).strip()
             if len(text) < 20:

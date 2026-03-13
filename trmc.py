@@ -11,6 +11,7 @@ from tree_sitter import Language, Parser
 
 
 class TSRemover:
+
     def __init__(self):
         self.parser = Parser()
         self.parser.language = Language(tspython.language())

@@ -4,7 +4,8 @@ import sys
 from multiprocessing import Pool
 from pathlib import Path
 
-from dh import SOURCE_CODE_EXT, clean_blank_lines, format_size, get_nobinary, get_size, is_binary
+from dh import (SOURCE_CODE_EXT, clean_blank_lines, format_size, get_nobinary,
+                get_size, is_binary)
 from termcolor import cprint
 
 
@@ -45,7 +46,9 @@ def process_file(fp):
             fout.write(code)
         after = get_size(fp)
         diffsize = after - before
-        cprint(f"{format_size(diffsize)} | removed : {removed} | inline : {inline}", "yellow")
+        cprint(
+            f"{format_size(diffsize)} | removed : {removed} | inline : {inline}",
+            "yellow")
     else:
         try:
             _ = ast.parse(code)
@@ -53,7 +56,9 @@ def process_file(fp):
                 fo.write(code)
             after = get_size(fp)
             diffsize = after - before
-            cprint(f"{format_size(diffsize)} | removed : {removed} | inline : {inline}", "yellow")
+            cprint(
+                f"{format_size(diffsize)} | removed : {removed} | inline : {inline}",
+                "yellow")
         except:
             cprint("result code invalid.", "magenta")
 

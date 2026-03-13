@@ -30,9 +30,9 @@ def clean_line(line: str) -> str:
 def clean_file(file_path: Path) -> None:
     try:
         with open(
-            file_path,
-            encoding="utf-8",
-            errors="ignore",
+                file_path,
+                encoding="utf-8",
+                errors="ignore",
         ) as f:
             lines = f.readlines()
         cleaned_lines = [clean_line(line) for line in lines]

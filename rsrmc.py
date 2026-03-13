@@ -7,7 +7,7 @@ from dh import format_size, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
 
-EXCLUDE_PREFIXES = (b"#!/",)
+EXCLUDE_PREFIXES = (b"#!/", )
 parser = Parser()
 parser.language = Language(tree_sitter_rust.language())
 
@@ -36,7 +36,7 @@ def process_file(path: Path) -> None:
 
         def walk(node):
             if node.type == "comment":
-                text = source[node.start_byte : node.end_byte]
+                text = source[node.start_byte:node.end_byte]
                 if text.lstrip().startswith(EXCLUDE_PREFIXES):
                     return
                 deletions.append((node.start_byte, node.end_byte))

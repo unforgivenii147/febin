@@ -27,7 +27,6 @@ BASH_KEYWORDS = {
     "md",
     "mkdir",
     "move",
-    "not",
     "pause",
     "ren",
     "set",
@@ -37,10 +36,7 @@ BASH_KEYWORDS = {
 
 
 def is_bash_file(filepath):
-    if filepath.endswith(".sh"):
-        return True
-    else:
-        return False
+    return bool(filepath.endswith(".sh"))
 
 
 def process_file(filepath):

@@ -7,7 +7,8 @@ def find_md_files(directory="."):
     for root, _, files in os.walk(directory):
         for file in files:
             if file.endswith(".md") and file != "SUMMARY.md":
-                rel_path = os.path.relpath(os.path.join(root, file), start=directory)
+                rel_path = os.path.relpath(os.path.join(root, file),
+                                           start=directory)
                 md_files.append(rel_path)
     return md_files
 
@@ -25,7 +26,9 @@ def update_summary():
             break
     new_entries = []
     for md_file in md_files:
-        title = os.path.splitext(md_file)[0].replace("_", " ").replace(os.sep, " ").title()
+        title = os.path.splitext(md_file)[0].replace("_",
+                                                     " ").replace(os.sep,
+                                                                  " ").title()
         entry = f"- [{title}](.{os.sep}{md_file})\n"
         new_entries.append(entry)
     with open("SUMMARY.md", "w") as f:

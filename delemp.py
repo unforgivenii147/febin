@@ -14,14 +14,15 @@ def process_file(filepath) -> int:
     removed: int = 0
     content: str = ""
     line: str = ""
-    if filepath.is_symlink() or filepath.suffix == ".bak" or not get_size(filepath):
+    if filepath.is_symlink(
+    ) or filepath.suffix == ".bak" or not get_size(filepath):
         return 0
     try:
         print(f"[OK] {filepath.name}", end=" ")
         with filepath.open(
-            "r+",
-            encoding="utf-8",
-            errors="replace",
+                "r+",
+                encoding="utf-8",
+                errors="replace",
         ) as f:
             lines = f.readlines()
             for line in lines:
@@ -58,7 +59,7 @@ def main():
     with Pool(8) as p:
         pending = deque()
         for f in files:
-            pending.append(p.apply_async(process_file, (f,)))
+            pending.append(p.apply_async(process_file, (f, )))
             if len(pending) > 16:
                 results.append(pending.popleft().get())
         while pending:

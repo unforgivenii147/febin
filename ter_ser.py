@@ -37,7 +37,8 @@ def main():
     args = sys.argv[1:]
     dir = Path.cwd()
     before = get_size(dir)
-    files = [Path(arg) for arg in args] if args else get_files(dir, recursive=True, extensions=[".js"])
+    files = [Path(arg) for arg in args] if args else get_files(
+        dir, recursive=True, extensions=[".js"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
@@ -45,7 +46,7 @@ def main():
     with Pool(8) as p:
         pending = deque()
         for f in files:
-            pending.append(p.apply_async(process_file, ((f),)))
+            pending.append(p.apply_async(process_file, ((f), )))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:

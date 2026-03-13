@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
+from dh import unique_path
+
 
 def to_lowercase(path):
     path = Path(path)
@@ -14,12 +16,12 @@ def to_lowercase(path):
                 item.rename(new_path)
                 print(f"[{item.name}] -> [{new_path.name}]")
             else:
-                #                new_path=unique_path(new_path)
-                #                item.rename(new_path)
-                print(f"[{item.name}] already lowercase")
+                new_path = unique_path(new_path)
+                item.rename(new_path)
 
 
 if __name__ == "__main__":
     current_dir = Path.cwd()
-    print(f"Converting file and directory names to lowercase in: {current_dir}")
+    print(
+        f"Converting file and directory names to lowercase in: {current_dir}")
     to_lowercase(current_dir)

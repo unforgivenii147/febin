@@ -41,7 +41,8 @@ def format_file(file_path):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Format files using Prettier.")
+    parser = argparse.ArgumentParser(
+        description="Format files using Prettier.")
     parser.add_argument("file", nargs="?", help="File to format")
     args = parser.parse_args()
     if args.file:
@@ -69,7 +70,7 @@ def main() -> None:
         with Pool(8) as p:
             pending = deque()
             for f in jfiles:
-                pending.append(p.apply_async(format_file, (f,)))
+                pending.append(p.apply_async(format_file, (f, )))
                 if len(pending) >= MAX_IN_FLIGHT:
                     pending.popleft().get()
             while pending:

@@ -10,4 +10,6 @@ def get_current_ymd():
 
 
 current_year, current_month, current_day = get_current_ymd()
-perprint(f"{current_year}-{current_month}-{current_day}=={georgian_to_hijri(current_year, current_month, current_day)}")
+perprint(
+    f"{current_year}-{current_month}-{current_day}=={georgian_to_hijri(current_year, current_month, current_day)}"
+)

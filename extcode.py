@@ -32,7 +32,8 @@ def extract_from_file(py_file: Path):
     extracted_chunks = []
     for child in root.children:
         if child.type in VALID_TOP_LEVEL_NODES:
-            extracted_chunks.append(source[child.start_byte : child.end_byte].decode())
+            extracted_chunks.append(
+                source[child.start_byte:child.end_byte].decode())
     return "\n\n".join(extracted_chunks)
 
 

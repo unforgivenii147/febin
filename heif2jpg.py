@@ -25,8 +25,8 @@ def main():
     for pth in walk_files(dir):
         path = Path(pth)
         if path.is_file() and path.suffix in {
-            ".heif",
-            ".heic",
+                ".heif",
+                ".heic",
         }:
             files.append(path)
     pool = Pool(8)

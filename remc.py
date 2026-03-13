@@ -15,19 +15,23 @@ def rm_ast(content: str) -> tuple[str, int]:
     lines = content.split("\n")
     ranges = find_docstring_ranges(tree)
     for start, end in sorted(ranges, reverse=True):
-        del lines[start - 1 : end]
+        del lines[start - 1:end]
     return "\n".join(lines), len(ranges)
 
 
 def find_docstring_ranges(node) -> list[tuple[int, int]]:
     ranges: list[tuple[int, int]] = []
     for child in ast.walk(node):
-        if isinstance(child, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+        if isinstance(
+                child,
+            (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             if child.body and isinstance(child.body[0], ast.Expr):
                 value = child.body[0].value
-                if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                if isinstance(value, ast.Constant) and isinstance(
+                        value.value, str):
                     if child.body[0].lineno and child.body[0].end_lineno:
-                        ranges.append((child.body[0].lineno, child.body[0].end_lineno))
+                        ranges.append(
+                            (child.body[0].lineno, child.body[0].end_lineno))
     return ranges
 
 

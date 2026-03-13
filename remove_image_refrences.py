@@ -4,7 +4,8 @@ from pathlib import Path
 import regex as re
 
 REMOTE_PREFIXES = ("http://", "https://", "//")
-IMG_TAG_RE = re.compile(r'<img\b[^>]*\bsrc\s*=\s*["\']([^"\']+)["\'][^>]*>', re.IGNORECASE)
+IMG_TAG_RE = re.compile(r'<img\b[^>]*\bsrc\s*=\s*["\']([^"\']+)["\'][^>]*>',
+                        re.IGNORECASE)
 
 
 def remove_remote_html_images(text: str) -> str:
@@ -21,7 +22,8 @@ def remove_remote_html_images(text: str) -> str:
 MD_INLINE_IMG_RE = re.compile(r"!\[.*?\]\((.*?)\)", re.IGNORECASE)
 MD_REF_IMG_RE = re.compile(r"!\[.*?\]\[(.*?)\]", re.IGNORECASE)
 MD_REF_DEF_RE = re.compile(r"^\s*\[(.*?)\]:\s*(\S+)", re.MULTILINE)
-RST_IMG_RE = re.compile(r"^\s*\.\. \|[^|]+\| image:: https?://[^\s]+.*$", re.MULTILINE)
+RST_IMG_RE = re.compile(r"^\s*\.\. \|[^|]+\| image:: https?://[^\s]+.*$",
+                        re.MULTILINE)
 
 
 def remove_remote_md_images(text: str) -> str:
@@ -66,7 +68,7 @@ def process_file(path: Path):
     modified = original
     if path.suffix.lower() in (".html", ".htm"):
         modified = remove_remote_html_images(original)
-    elif path.suffix.lower() in (".md",):
+    elif path.suffix.lower() in (".md", ):
         modified = remove_remote_md_images(original)
     elif path.suffix.lower() in (".rst", ".txt"):
         modified = remove_remote_rst_images(original)

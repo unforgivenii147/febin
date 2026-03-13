@@ -45,9 +45,12 @@ def convert_file(file_path: str) -> bool:
                     dtype=np.uint8,
                 )
                 alpha = a.astype(float) / 255.0
-                img_b = (b.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
-                img_g = (g.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
-                img_r = (r.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
+                img_b = (b.astype(float) * alpha + white_bg.astype(float) *
+                         (1 - alpha)).astype(np.uint8)
+                img_g = (g.astype(float) * alpha + white_bg.astype(float) *
+                         (1 - alpha)).astype(np.uint8)
+                img_r = (r.astype(float) * alpha + white_bg.astype(float) *
+                         (1 - alpha)).astype(np.uint8)
                 final_img = cv2.merge((img_b, img_g, img_r))
             else:
                 final_img = img
@@ -91,12 +94,14 @@ def main() -> None:
     args = p.parse_args()
     start_size = get_size(".")
     if args.files:
-        files = [Path(f) for f in args.files if Path(f).is_file() and is_image(f)]
+        files = [
+            Path(f) for f in args.files if Path(f).is_file() and is_image(f)
+        ]
     else:
         files = [
-            f
-            for f in Path(".").rglob("*")
-            if f.is_file() and is_image(f) and not any(part in IGNORED_DIRS for part in f.parts)
+            f for f in Path(".").rglob("*")
+            if f.is_file() and is_image(f) and not any(part in IGNORED_DIRS
+                                                       for part in f.parts)
         ]
     if not files:
         print("No image files detected.")

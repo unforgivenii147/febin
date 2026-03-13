@@ -43,7 +43,9 @@ def main() -> None:
     dir = Path.cwd()
     before = get_size(dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else [Path(f) for f in dir.rglob("*") if f.suffix in {".jpg", ".png"}]
+    files = [Path(arg) for arg in args] if args else [
+        Path(f) for f in dir.rglob("*") if f.suffix in {".jpg", ".png"}
+    ]
 
     if len(files) == 1:
         process_file(files[0])

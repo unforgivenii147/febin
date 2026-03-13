@@ -9,7 +9,9 @@ def sort_uniq(filename):
     if get_size > 10 * 1024 * 1024:
         import mmap
 
-        with open(filename, "r+") as f, mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
+        with open(filename,
+                  "r+") as f, mmap.mmap(f.fileno(), 0,
+                                        access=mmap.ACCESS_READ) as mm:
             lines = mm.read().decode("utf-8").splitlines()
     else:
         with open(filename) as f:

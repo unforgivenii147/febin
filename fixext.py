@@ -65,19 +65,18 @@ def check_files(directory, auto_fix=False):
                         new_name = os.path.splitext(name)[0] + new_ext
                         new_path = os.path.join(root, new_name)
                         new_path = safe_rename(file_path, new_path)
-                    mismatched_files.append(
-                        (
-                            file_path,
-                            ext,
-                            mime,
-                            new_path,
-                        )
-                    )
+                    mismatched_files.append((
+                        file_path,
+                        ext,
+                        mime,
+                        new_path,
+                    ))
     return mismatched_files
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Check and optionally fix mismatched file extensions.")
+    parser = argparse.ArgumentParser(
+        description="Check and optionally fix mismatched file extensions.")
     parser.add_argument(
         "directory",
         nargs="*",
@@ -99,13 +98,15 @@ def main():
     if mismatches:
         print("Files with mismatched extensions:")
         for (
-            file_path,
-            ext,
-            mime,
-            new_path,
+                file_path,
+                ext,
+                mime,
+                new_path,
         ) in mismatches:
             if new_path:
-                print(f"{file_path} -> extension: {ext}, detected: {mime} [Renamed to {new_path}]")
+                print(
+                    f"{file_path} -> extension: {ext}, detected: {mime} [Renamed to {new_path}]"
+                )
             else:
                 print(f"{file_path} -> extension: {ext}, detected: {mime}")
     else:

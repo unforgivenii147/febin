@@ -3,10 +3,9 @@
 Inspect and validate generated .whl files.
 """
 
+import sys
 import zipfile
 from pathlib import Path
-from typing import Dict, List, Tuple
-import sys
 
 
 class WheelInspector:
@@ -26,7 +25,7 @@ class WheelInspector:
         if self.verbose:
             print(f"[INSPECT] {message}")
 
-    def inspect_wheel(self, wheel_path: Path) -> Dict:
+    def inspect_wheel(self, wheel_path: Path) -> dict:
         """
         Inspect a .whl file.
 
@@ -50,25 +49,33 @@ class WheelInspector:
                 }
 
                 # Read METADATA
-                metadata_files = [f for f in zf.namelist() if f.endswith("/METADATA")]
+                metadata_files = [
+                    f for f in zf.namelist() if f.endswith("/METADATA")
+                ]
                 if metadata_files:
-                    metadata_content = zf.read(metadata_files[0]).decode("utf-8")
+                    metadata_content = zf.read(
+                        metadata_files[0]).decode("utf-8")
                     for line in metadata_content.split("\n"):
                         if ":" in line:
                             key, value = line.split(":", 1)
                             info["metadata"][key.strip()] = value.strip()
 
                 # Read WHEEL
-                wheel_files = [f for f in zf.namelist() if f.endswith("/WHEEL")]
+                wheel_files = [
+                    f for f in zf.namelist() if f.endswith("/WHEEL")
+                ]
                 if wheel_files:
                     wheel_content = zf.read(wheel_files[0]).decode("utf-8")
                     info["wheel_metadata"] = wheel_content
 
                 # Count file types
                 info["file_types"] = {
-                    ".py": len([f for f in zf.namelist() if f.endswith(".py")]),
-                    ".so": len([f for f in zf.namelist() if f.endswith(".so")]),
-                    ".pyd": len([f for f in zf.namelist() if f.endswith(".pyd")]),
+                    ".py":
+                    len([f for f in zf.namelist() if f.endswith(".py")]),
+                    ".so": len([f for f in zf.namelist()
+                                if f.endswith(".so")]),
+                    ".pyd":
+                    len([f for f in zf.namelist() if f.endswith(".pyd")]),
                     ".c": len([f for f in zf.namelist() if f.endswith(".c")]),
                 }
 
@@ -77,7 +84,7 @@ class WheelInspector:
         except Exception as e:
             return {"error": str(e)}
 
-    def validate_wheel(self, wheel_path: Path) -> Tuple[bool, List[str]]:
+    def validate_wheel(self, wheel_path: Path) -> tuple[bool, list[str]]:
         """
         Validate a .whl file.
 
@@ -114,11 +121,11 @@ class WheelInspector:
                     issues.append("No dist-info directory found")
 
         except Exception as e:
-            issues.append(f"Error reading wheel: {str(e)}")
+            issues.append(f"Error reading wheel: {e!s}")
 
         return len(issues) == 0, issues
 
-    def inspect_directory(self, directory: Path) -> List[Dict]:
+    def inspect_directory(self, directory: Path) -> list[dict]:
         """
         Inspect all .whl files in a directory.
 
@@ -184,10 +191,16 @@ def main():
     """Main entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Inspect and validate .whl files")
+    parser = argparse.ArgumentParser(
+        description="Inspect and validate .whl files")
 
-    parser.add_argument("wheel", nargs="?", help="Path to .whl file or directory")
-    parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
+    parser.add_argument("wheel",
+                        nargs="?",
+                        help="Path to .whl file or directory")
+    parser.add_argument("-v",
+                        "--verbose",
+                        action="store_true",
+                        help="Verbose output")
 
     args = parser.parse_args()
 
@@ -219,7 +232,9 @@ def main():
             size = result.get("size_mb", 0)
             files = result.get("file_count", 0)
 
-            print(f"{status} {result['filename']:<50} {size:>8.2f} MB ({files} files)")
+            print(
+                f"{status} {result['filename']:<50} {size:>8.2f} MB ({files} files)"
+            )
 
         print(f"\nValid: {valid_count}/{len(results)}")
         print(f"Invalid: {invalid_count}/{len(results)}")

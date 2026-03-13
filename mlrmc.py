@@ -58,9 +58,9 @@ def _collect_python_docstrings(node, deletions):
             if expr and expr.type == "string":
                 deletions.append((first.start_byte, first.end_byte))
     if node.type in (
-        "class_definition",
-        "function_definition",
-        "async_function_definition",
+            "class_definition",
+            "function_definition",
+            "async_function_definition",
     ):
         body = node.child_by_field_name("body")
         if body:
@@ -86,7 +86,7 @@ def process_file(path: Path) -> None:
 
         def walk(node):
             if node.type == "comment":
-                text = source[node.start_byte : node.end_byte]
+                text = source[node.start_byte:node.end_byte]
                 if ext == ".py" and text.lstrip().startswith(EXCLUDE_PREFIXES):
                     return
                 deletions.append((node.start_byte, node.end_byte))
@@ -114,7 +114,10 @@ def process_file(path: Path) -> None:
 def collect_supported_files(root: Path) -> list[Path]:
     if root.is_file():
         return [root] if root.suffix.lower() in LANGUAGES else []
-    return [p for p in root.rglob("*") if p.is_file() and p.suffix.lower() in LANGUAGES]
+    return [
+        p for p in root.rglob("*")
+        if p.is_file() and p.suffix.lower() in LANGUAGES
+    ]
 
 
 def main() -> None:

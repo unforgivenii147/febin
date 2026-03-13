@@ -15,15 +15,15 @@ def convert_html_to_markdown(root_dir):
                     f"{os.path.splitext(file)[0]}.md",
                 )
                 with open(
-                    html_file_path,
-                    encoding="utf-8",
+                        html_file_path,
+                        encoding="utf-8",
                 ) as html_file:
                     html_content = html_file.read()
                     md_content = markdownify(html_content)
                 with open(
-                    md_file_path,
-                    "w",
-                    encoding="utf-8",
+                        md_file_path,
+                        "w",
+                        encoding="utf-8",
                 ) as md_file:
                     md_file.write(md_content)
                 print(f"[\u2714] {Path(md_file_path).name}")

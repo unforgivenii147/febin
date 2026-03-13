@@ -14,7 +14,8 @@ def main():
         sys.exit(1)
     os.makedirs("output", exist_ok=True)
     files = {
-        letter: open(os.path.join("output", f"{letter}.txt"), "w", encoding="utf-8")
+        letter:
+        open(os.path.join("output", f"{letter}.txt"), "w", encoding="utf-8")
         for letter in string.ascii_lowercase
     }
     try:

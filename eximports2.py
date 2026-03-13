@@ -21,7 +21,7 @@ def extract_file(src: bytes, tree):
     chunks = []
     for node in root.children:
         if node.type in VALID:
-            chunks.append(src[node.start_byte : node.end_byte].decode())
+            chunks.append(src[node.start_byte:node.end_byte].decode())
     return chunks
 
 
@@ -40,7 +40,8 @@ processed_files_count = 0
 folders_found = set()
 for py in Path(".").rglob("*.py"):
     # Skip hidden directories and site-packages
-    if any(part.startswith(".") for part in py.parts) or "site-packages" in py.parts:
+    if any(part.startswith(".")
+           for part in py.parts) or "site-packages" in py.parts:
         continue
     # Skip files in the output directory
     if OUT_DIR in py.parents:
@@ -56,14 +57,15 @@ for py in Path(".").rglob("*.py"):
             folders_found.add(str(relative_folder))
             # Add imports with file comment
             file_header = f"# === {py.name} ===\n"
-            folder_imports[relative_folder].append(file_header + "\n".join(imports))
+            folder_imports[relative_folder].append(file_header +
+                                                   "\n".join(imports))
             processed_files_count += 1
     except Exception as e:
         print(f"⚠️  Error processing {py}: {e}")
 # Write collected imports to folder-specific files
 for (
-    folder,
-    imports_list,
+        folder,
+        imports_list,
 ) in folder_imports.items():
     if not imports_list:
         continue
@@ -79,5 +81,7 @@ for (
 """
     out_file.write_text(header + content)
     print(f"✅ saved: {out_file} ({len(imports_list)} files)")
-print(f"\n✨ Done! Processed {processed_files_count} files in {len(folder_imports)} folder(s)")
+print(
+    f"\n✨ Done! Processed {processed_files_count} files in {len(folder_imports)} folder(s)"
+)
 print(f"📁 Folders: {', '.join(sorted(folders_found))}")

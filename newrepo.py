@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 
 
 class GitHubRepoCreator:
+
     def __init__(self):
         self.current_dir = Path.cwd()
         self.repo_name = self.current_dir.name
@@ -44,7 +45,8 @@ class GitHubRepoCreator:
     def _get_github_username(self) -> str:
         """Get GitHub username from git config or token"""
         # Try to get from git config first
-        success, username, _ = self._run_cmd(["git", "config", "--global", "user.name"])
+        success, username, _ = self._run_cmd(
+            ["git", "config", "--global", "user.name"])
         if success and username:
             return username
         # If not in git config, try to get from GitHub API using token
@@ -65,20 +67,30 @@ class GitHubRepoCreator:
                 username = user_data.get("login")
                 if username:
                     # Save to git config for future use
-                    self._run_cmd(["git", "config", "--global", "user.name", username])
+                    self._run_cmd(
+                        ["git", "config", "--global", "user.name", username])
                     print(f"✅ Username found: {username}")
                     return username
             except json.JSONDecodeError:
                 pass
         print("❌ Could not determine GitHub username")
-        print("Please set it manually: git config --global user.name 'your_username'")
+        print(
+            "Please set it manually: git config --global user.name 'your_username'"
+        )
         sys.exit(1)
 
-    def _run_cmd(self, cmd: list, cwd: Path | None = None) -> tuple[bool, str, str]:
+    def _run_cmd(self,
+                 cmd: list,
+                 cwd: Path | None = None) -> tuple[bool, str, str]:
         """Run a command and return success, stdout, stderr"""
         try:
-            result = subprocess.run(cmd, cwd=cwd or self.current_dir, capture_output=True, text=True, check=False)
-            return (result.returncode == 0, result.stdout.strip(), result.stderr.strip())
+            result = subprocess.run(cmd,
+                                    cwd=cwd or self.current_dir,
+                                    capture_output=True,
+                                    text=True,
+                                    check=False)
+            return (result.returncode == 0, result.stdout.strip(),
+                    result.stderr.strip())
         except Exception as e:
             return False, "", str(e)
 
@@ -163,7 +175,9 @@ class GitHubRepoCreator:
 
     def _create_github_repo(self) -> bool:
         """Create repository on GitHub using API"""
-        print(f"\n🌐 Creating GitHub repository: {self.github_username}/{self.repo_name}")
+        print(
+            f"\n🌐 Creating GitHub repository: {self.github_username}/{self.repo_name}"
+        )
         # Check if repo already exists
         if self._check_repo_exists():
             print("⚠️  Repository already exists on GitHub")
@@ -172,15 +186,21 @@ class GitHubRepoCreator:
         # Prepare API request
         api_url = "https://api.github.com/user/repos"
         data = {
-            "name": self.repo_name,
-            "private": False,
-            "auto_init": False,
-            "description": f"Repository created from {self.repo_name} on {datetime.now().strftime('%Y-%m-%d')}",
+            "name":
+            self.repo_name,
+            "private":
+            False,
+            "auto_init":
+            False,
+            "description":
+            f"Repository created from {self.repo_name} on {datetime.now().strftime('%Y-%m-%d')}",
         }
         # Create temp file with JSON data
         import tempfile
 
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w",
+                                         suffix=".json",
+                                         delete=False) as f:
             json.dump(data, f)
             temp_file = f.name
         try:
@@ -235,14 +255,16 @@ class GitHubRepoCreator:
         success, remotes, _ = self._run_cmd(["git", "remote"])
         if "origin" in remotes.split("\n"):
             # Update existing remote
-            success, _, stderr = self._run_cmd(["git", "remote", "set-url", "origin", remote_url])
+            success, _, stderr = self._run_cmd(
+                ["git", "remote", "set-url", "origin", remote_url])
             if success:
                 print("✅ Remote origin updated")
             else:
                 print(f"⚠️  Could not update remote: {stderr}")
         else:
             # Add new remote
-            success, _, stderr = self._run_cmd(["git", "remote", "add", "origin", remote_url])
+            success, _, stderr = self._run_cmd(
+                ["git", "remote", "add", "origin", remote_url])
             if success:
                 print("✅ Remote origin added")
             else:
@@ -263,7 +285,8 @@ class GitHubRepoCreator:
             return False
         # Commit with timestamp
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        success, _, stderr = self._run_cmd(["git", "commit", "-m", f"Initial commit - {timestamp}"])
+        success, _, stderr = self._run_cmd(
+            ["git", "commit", "-m", f"Initial commit - {timestamp}"])
         if not success:
             print(f"❌ Failed to commit: {stderr}")
             sys.exit(1)
@@ -280,7 +303,8 @@ class GitHubRepoCreator:
         # Set remote with token temporarily
         self._run_cmd(["git", "remote", "set-url", "origin", auth_remote_url])
         # Push to GitHub
-        success, _, stderr = self._run_cmd(["git", "push", "-u", "origin", "main"])
+        success, _, stderr = self._run_cmd(
+            ["git", "push", "-u", "origin", "main"])
         # Reset remote to clean URL (without token)
         clean_url = f"https://github.com/{self.github_username}/{self.repo_name}.git"
         self._run_cmd(["git", "remote", "set-url", "origin", clean_url])
@@ -289,7 +313,9 @@ class GitHubRepoCreator:
             print("\nTroubleshooting tips:")
             print("1. Check if your token has 'repo' scope")
             print("2. Verify repository exists on GitHub")
-            print("3. Try pulling first: git pull origin main --allow-unrelated-histories")
+            print(
+                "3. Try pulling first: git pull origin main --allow-unrelated-histories"
+            )
             sys.exit(1)
         print("✅ Successfully pushed to GitHub")
 
@@ -315,7 +341,9 @@ class GitHubRepoCreator:
             # Print success message
             print("\n" + "=" * 60)
             print("✅ SUCCESS! Repository is live on GitHub")
-            print(f"📍 https://github.com/{self.github_username}/{self.repo_name}")
+            print(
+                f"📍 https://github.com/{self.github_username}/{self.repo_name}"
+            )
             print("=" * 60)
         else:
             print("\n⚠️  Operation cancelled")

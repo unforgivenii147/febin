@@ -65,7 +65,8 @@ def main():
     total_before = 0
     total_after = 0
     with Pool(processes=workers) as pool:
-        for filepath, changed, before, after, err in pool.imap_unordered(minify_with_jq, files):
+        for filepath, changed, before, after, err in pool.imap_unordered(
+                minify_with_jq, files):
             if err:
                 print(f"[ERROR] {filepath} -> {err}")
                 errors += 1

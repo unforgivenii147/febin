@@ -18,8 +18,8 @@ def whl_to_tarxz(source_dir: str):
         tar_xz_file = zip_file.with_suffix(".tar.xz")
         print(f"Converting {zip_file} -> {tar_xz_file}")
         with (
-            zipfile.ZipFile(zip_file, "r") as zf,
-            tarfile.open(tar_xz_file, "w:xz") as tf,
+                zipfile.ZipFile(zip_file, "r") as zf,
+                tarfile.open(tar_xz_file, "w:xz") as tf,
         ):
             for member in zf.infolist():
                 if member.is_dir():

@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 import ast
-from pathlib import Path
-from multiprocessing import Pool
+import sys
 from collections import deque
-from dh import format_size, get_size, get_pyfiles, move_file
-from termcolor import cprint
+from multiprocessing import Pool
+from pathlib import Path
+
+from dh import format_size, get_size, move_file
 
 MAX_QUEUE = 16
 
@@ -19,7 +19,7 @@ err_dir.mkdir(exist_ok=True)
 def process_file(fp) -> None:
     content = fp.read_text()
     try:
-        tree = ast.parse(content)
+        ast.parse(content)
         newpath = ok_dir / fp.name
         move_file(fp, newpath)
         print(f"{fp.name} --> {newpath}")
@@ -32,15 +32,13 @@ def process_file(fp) -> None:
 def main():
     before = get_size(dir)
     args = sys.argv[1:]
-    if args:
-        files = [Path(f) for f in args]
-    else:
-        files = [Path(p) for p in dir.glob("*.py")]
+    files = [Path(f)
+             for f in args] if args else [Path(p) for p in dir.glob("*.py")]
 
     with Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f,)))
+            pending.append(pool.apply_async(process_file, (f, )))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:

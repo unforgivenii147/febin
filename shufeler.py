@@ -43,7 +43,9 @@ def enhanced_shuffle(input_file, output_file=None, method="crypto", repeats=1):
     output_path = output_file if output_file else input_file
     with open(output_path, "w", encoding="utf-8") as f:
         f.writelines(shuffled_lines)
-    print(f"Shuffled {original_count} lines using method '{method}' with {repeats} passes")
+    print(
+        f"Shuffled {original_count} lines using method '{method}' with {repeats} passes"
+    )
     print(f"Output written to: {output_path}")
 
 
@@ -89,14 +91,19 @@ def test_randomness(input_file):
     original_order = lines.copy()
     for i in range(5):
         crypto_shuffle(lines)
-        changes = sum(1 for a, b in zip(original_order, lines, strict=False) if a != b)
-        print(f"Shuffle {i + 1}: {changes} out of {len(lines)} positions changed")
+        changes = sum(1 for a, b in zip(original_order, lines, strict=False)
+                      if a != b)
+        print(
+            f"Shuffle {i + 1}: {changes} out of {len(lines)} positions changed"
+        )
 
 
 def main():
     parser = argparse.ArgumentParser(description="Randomize lines in a file")
     parser.add_argument("input_file", help="Input file to shuffle")
-    parser.add_argument("-o", "--output", help="Output file (default: overwrite input)")
+    parser.add_argument("-o",
+                        "--output",
+                        help="Output file (default: overwrite input)")
     parser.add_argument(
         "-m",
         "--method",
@@ -104,13 +111,21 @@ def main():
         default="crypto",
         help="Shuffling method (default: crypto)",
     )
-    parser.add_argument("-r", "--repeats", type=int, default=1, help="Number of shuffle passes (default: 1)")
-    parser.add_argument("-t", "--test", action="store_true", help="Test randomness")
+    parser.add_argument("-r",
+                        "--repeats",
+                        type=int,
+                        default=1,
+                        help="Number of shuffle passes (default: 1)")
+    parser.add_argument("-t",
+                        "--test",
+                        action="store_true",
+                        help="Test randomness")
     args = parser.parse_args()
     if args.test:
         test_randomness(args.input_file)
     else:
-        enhanced_shuffle(args.input_file, args.output, args.method, args.repeats)
+        enhanced_shuffle(args.input_file, args.output, args.method,
+                         args.repeats)
 
 
 if __name__ == "__main__":

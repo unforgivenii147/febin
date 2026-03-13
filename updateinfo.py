@@ -8,7 +8,11 @@ import sys
 from pathlib import Path
 
 # Your information
-NEW_INFO = {"name": "Isaac Onagh", "email": "mkalafsaz@gmail.com", "github_username": "unforgivenii147"}
+NEW_INFO = {
+    "name": "Isaac Onagh",
+    "email": "mkalafsaz@gmail.com",
+    "github_username": "unforgivenii147"
+}
 
 
 def update_setup_py(file_path: Path) -> bool:
@@ -17,19 +21,20 @@ def update_setup_py(file_path: Path) -> bool:
         content = file_path.read_text(encoding="utf-8")
         original_content = content
         # Update author and author_email
-        content = re.sub(r'author\s*=\s*["\'][^"\']*["\']', f'author="{NEW_INFO["name"]}"', content)
-        content = re.sub(r'author_email\s*=\s*["\'][^"\']*["\']', f'author_email="{NEW_INFO["email"]}"', content)
+        content = re.sub(r'author\s*=\s*["\'][^"\']*["\']',
+                         f'author="{NEW_INFO["name"]}"', content)
+        content = re.sub(r'author_email\s*=\s*["\'][^"\']*["\']',
+                         f'author_email="{NEW_INFO["email"]}"', content)
         # Update GitHub URLs
         # Pattern for github.com/username/projectname
-        content = re.sub(
-            r'(https?://github\.com/)[^/]+(/[^"\']*)', rf"\g<1>{NEW_INFO['github_username']}\g<2>", content
-        )
+        content = re.sub(r'(https?://github\.com/)[^/]+(/[^"\']*)',
+                         rf"\g<1>{NEW_INFO['github_username']}\g<2>", content)
         if content != original_content:
             file_path.write_text(content, encoding="utf-8")
             print(f"✅ Updated {file_path}")
             return True
         else:
-            print(f"ℹ️  No changes needed in {file_path}")
+            print(f"No changes needed in {file_path}")
             return False
     except Exception as e:
         print(f"❌ Error updating {file_path}: {e}")
@@ -52,14 +57,21 @@ def update_pyproject_toml(file_path: Path) -> bool:
             def replace_author(match):
                 author_block = match.group(1)
                 # Replace name
-                author_block = re.sub(r'name\s*=\s*["\'][^"\']*["\']', f'name = "{NEW_INFO["name"]}"', author_block)
+                author_block = re.sub(r'name\s*=\s*["\'][^"\']*["\']',
+                                      f'name = "{NEW_INFO["name"]}"',
+                                      author_block)
                 # Replace email
-                return re.sub(r'email\s*=\s*["\'][^"\']*["\']', f'email = "{NEW_INFO["email"]}"', author_block)
+                return re.sub(r'email\s*=\s*["\'][^"\']*["\']',
+                              f'email = "{NEW_INFO["email"]}"', author_block)
 
-            content = re.sub(author_pattern, replace_author, content, flags=re.DOTALL)
+            content = re.sub(author_pattern,
+                             replace_author,
+                             content,
+                             flags=re.DOTALL)
         # Update GitHub URLs in [project.urls] or other sections
         # Pattern for github.com/username/projectname
-        content = re.sub(r"(https?://github\.com/)[^/]+(/)", rf"\g<1>{NEW_INFO['github_username']}\g<2>", content)
+        content = re.sub(r"(https?://github\.com/)[^/]+(/)",
+                         rf"\g<1>{NEW_INFO['github_username']}\g<2>", content)
         if content != original_content:
             file_path.write_text(content, encoding="utf-8")
             print(f"✅ Updated {file_path}")
@@ -80,13 +92,18 @@ def update_setup_cfg(file_path: Path) -> bool:
         # Update author and author_email in metadata section
         if "[metadata]" in content:
             # Update author
-            content = re.sub(r"^author\s*=\s*.*$", f"author = {NEW_INFO['name']}", content, flags=re.MULTILINE)
+            content = re.sub(r"^author\s*=\s*.*$",
+                             f"author = {NEW_INFO['name']}",
+                             content,
+                             flags=re.MULTILINE)
             # Update author_email
-            content = re.sub(
-                r"^author_email\s*=\s*.*$", f"author_email = {NEW_INFO['email']}", content, flags=re.MULTILINE
-            )
+            content = re.sub(r"^author_email\s*=\s*.*$",
+                             f"author_email = {NEW_INFO['email']}",
+                             content,
+                             flags=re.MULTILINE)
         # Update GitHub URLs
-        content = re.sub(r"(https?://github\.com/)[^/]+(/)", rf"\g<1>{NEW_INFO['github_username']}\g<2>", content)
+        content = re.sub(r"(https?://github\.com/)[^/]+(/)",
+                         rf"\g<1>{NEW_INFO['github_username']}\g<2>", content)
         if content != original_content:
             file_path.write_text(content, encoding="utf-8")
             print(f"✅ Updated {file_path}")

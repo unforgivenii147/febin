@@ -37,8 +37,8 @@ def scan_directory(directory="."):
                     stats["total"]["blank"] += blanks
                     continue
             for (
-                lang,
-                extensions,
+                    lang,
+                    extensions,
             ) in LANG_EXTENSIONS.items():
                 if file_extension in extensions:
                     code, comments, blanks = count_lines_of_code(

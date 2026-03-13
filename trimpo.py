@@ -33,7 +33,7 @@ def tryallimport():
 if __name__ == "__main__":
     args = sys.argv[1:]
     if args:
-        pkgs = [pkg for pkg in args]
+        pkgs = list(args)
         for pkg in pkgs:
             tryimport(pkg)
     else:

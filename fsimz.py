@@ -16,7 +16,7 @@ def find_similar_files(files, threshold=0.8, k=256):
         sketches[file] = sz.minhash(content, k)
     for i, (file_a, sketch_a) in enumerate(sketches.items()):
         group = [file_a]
-        for file_b, sketch_b in list(sketches.items())[i + 1 :]:
+        for file_b, sketch_b in list(sketches.items())[i + 1:]:
             similarity = sz.jaccard(sketch_a, sketch_b)
             if similarity >= threshold:
                 group.append(file_b)

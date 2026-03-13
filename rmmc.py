@@ -43,7 +43,7 @@ def main():
         files = get_nobinary(dir)
         p = Pool(8)
         for f in files:
-            p.apply_async(process_file, (f,))
+            p.apply_async(process_file, (f, ))
         p.close()
         p.join()
     diff_size = before - get_size(dir)

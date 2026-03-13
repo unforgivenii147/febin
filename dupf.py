@@ -33,8 +33,8 @@ def find_and_delete_duplicates(path: Path):
                 print(f"Error processing file {path}: {e}")
                 continue
     for (
-        file_hash,
-        paths,
+            file_hash,
+            paths,
     ) in files_by_hash.items():
         if len(paths) > 1:
             duplicate_count += len(paths) - 1

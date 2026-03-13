@@ -8,6 +8,7 @@ from tree_sitter import Language, Parser
 
 
 class TSCppRemover:
+
     def __init__(self):
         self.parser = Parser()
         self.language = Language(tscpp.language())
@@ -31,7 +32,8 @@ class TSCppRemover:
 
     def _collect_comments(self, node, to_delete, source_bytes):
         if node.type == "comment":
-            text = source_bytes[node.start_byte : node.end_byte].decode("utf-8").strip()
+            text = source_bytes[node.start_byte:node.end_byte].decode(
+                "utf-8").strip()
             if text.startswith("#"):
                 return
             to_delete.append((node.start_byte, node.end_byte))

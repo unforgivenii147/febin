@@ -27,8 +27,8 @@ def main():
     for pth in walk_files(dir):
         path = Path(pth)
         if path.is_file() and path.suffix in {
-            ".c",
-            ".cpp",
+                ".c",
+                ".cpp",
         }:
             files.append(path)
     pool = Pool(8)

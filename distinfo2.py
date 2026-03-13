@@ -4,7 +4,9 @@ import shutil
 from pathlib import Path
 from sys import exit
 
-ALLOWED = ["METADATA", "RECORD", "WHEEL", "entry_points.txt", "top_level.txt"]
+from termcolor import cprint
+
+ALLOWED = ["METADATA", "RECORD", "WHEEL", "top_level.txt"]
 NOT_ALLOWED = [
     "AUTHORS",
     "AUTHORS.md",
@@ -21,7 +23,6 @@ NOT_ALLOWED = [
     "COPYING.rst",
     "COPYING.txt",
     "DESCRIPTION.rst",
-    "INSTALLER",
     "LICENCE",
     "LICENCE.rst",
     "LICENSE",
@@ -35,13 +36,9 @@ NOT_ALLOWED = [
     "LICENSE_scipy.txt",
     "NOTICE",
     "NOTICE.txt",
-    "REQUESTED",
     "gpl-3-0.txt",
-    "metadata.json",
-    "namespace_packages.txt",
     "pbr.json",
     "toplevel.txt",
-    "zip-safe",
 ]
 
 
@@ -50,11 +47,13 @@ def process_lic(fp):
     if lic_dir.exists():
         shutil.rmtree(lic_dir)
         print(f"{lic_dir} removed.")
-    for f in NOT_ALLOWED:
-        nf = Path(f"{fp}/{f}")
-        if nf.exists():
-            nf.unlink()
-            print(f"{nf} removed")
+
+
+#    for f in NOT_ALLOWED:
+#        nf = Path(f"{fp}/{f}")
+#        if nf.exists():
+#            nf.unlink()
+#            print(f"{nf} removed")
     rett = []
     for f in ALLOWED:
         nf = Path(f"{fp}/{f}")
@@ -69,9 +68,12 @@ def main():
     for pth in os.listdir(dir):
         path = Path(os.path.join(dir, pth))
         if path.is_dir() and "dist-info" in path.name:
+            if len(os.listdir(path)) < 2:
+                cprint(f'{path.name} empty pkg', "cyan")
             missings.extend(process_lic(path))
     for k in missings:
-        print(f"{k.parent.name}  ==> {k.name} missing")
+        print(f"{k.parent.name}  ==>", end=' ')
+        cprint(f"{k.name}", "yellow")
 
 
 if __name__ == "__main__":

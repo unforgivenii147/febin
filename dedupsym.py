@@ -8,10 +8,10 @@ from pathlib import Path
 
 import xxhash
 
-CACHE_PATH = Path.home() / ".cache" / "dups_xxhash_cache.json"
-DUPS_DIR = Path.home() / "dups"
+CACHE_PATH = Path.home() / ".cache" / "dups_cache.json"
+DUPS_DIR = Path.home() / ".cache" / "dups"
 MANIFEST_PATH = DUPS_DIR / "manifest.json"
-READ_CHUNK = 1 << 20
+READ_CHUNK = 1024 * 8
 
 
 def load_json(path):
@@ -44,6 +44,8 @@ def build_groups(root: Path, cache: dict):
     for dirpath, _dirnames, filenames in os.walk(root):
         for name in filenames:
             fp = Path(dirpath) / name
+            if '.git' in fp.parts:
+                continue
             if fp.is_symlink():
                 continue
             try:
@@ -56,7 +58,8 @@ def build_groups(root: Path, cache: dict):
             size = st.st_size
             mtime = st.st_mtime
             cached = cache.get(key)
-            if cached and cached.get("size") == size and cached.get("mtime") == mtime:
+            if cached and cached.get("size") == size and cached.get(
+                    "mtime") == mtime:
                 h = cached["hash"]
             else:
                 try:
@@ -147,7 +150,8 @@ def restore(dry_run=False):
         originals = [Path(p) for p in info.get("originals", [])]
         for orig in originals:
             if orig.exists() and not orig.is_symlink():
-                print(f"skipping restore for {orig} (exists and not a symlink)")
+                print(
+                    f"skipping restore for {orig} (exists and not a symlink)")
                 continue
             if orig.is_symlink():
                 try:
@@ -188,7 +192,8 @@ def restore(dry_run=False):
 
 def main():
     ap = argparse.ArgumentParser(
-        description="Deduplicate files by moving one copy to ~/dups and symlinking duplicates using xxhash."
+        description=
+        "Deduplicate files by moving one copy to ~/dups and symlinking duplicates using xxhash."
     )
     ap.add_argument(
         "path",

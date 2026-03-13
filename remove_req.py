@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import sys
 from pathlib import Path
-import re
 
 
 def process_file(path, text):
@@ -11,7 +10,7 @@ def process_file(path, text):
         lines = content.splitlines()
         nl = []
         for line in lines:
-            if not target in line:
+            if target not in line:
                 nl.append(line)
         newcontent = "\n".join(nl)
         path.write_text(newcontent, encoding="utf-8")

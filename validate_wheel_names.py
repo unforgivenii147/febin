@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-import regex as re
 import shutil
+
+import regex as re
 
 WHEEL_PATTERN = re.compile(
     r"^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])"

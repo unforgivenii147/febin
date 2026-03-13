@@ -15,23 +15,20 @@ def extract_words(text):
 def process_file(path: Path):
     text = path.read_text()
     words = extract_words(text)
-    filtered = [w for w in words]
-    for word, count in Counter(filtered).most_common(30):
+    filtered = list(words)
+    for word, _count in Counter(filtered).most_common(30):
         print(f"{word}", end=" ")
 
 
 def main():
     args = sys.argv[1:]
     dir = Path.cwd()
-    if args:
-        files = [Path(arg) for arg in args]
-    else:
-        files = get_nobinary(dir)
+    files = [Path(arg) for arg in args] if args else get_nobinary(dir)
 
     with Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f,)))
+            pending.append(pool.apply_async(process_file, (f, )))
             if len(pending) > 16:
                 pending.popleft().get()
         while pending:

@@ -6,15 +6,13 @@ from rcssmin import cssmin
 from rjsmin import jsmin
 
 
-def minify_assets_in_directory(
-    root_dir=".",
-) -> None:
+def minify_assets_in_directory(root_dir=".", ) -> None:
     minified_count = 0
     errors_count = 0
     for (
-        foldername,
-        _subfolders,
-        filenames,
+            foldername,
+            _subfolders,
+            filenames,
     ) in os.walk(root_dir):
         for filename in filenames:
             file_path = os.path.join(foldername, filename)

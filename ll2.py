@@ -4,8 +4,8 @@ import os
 
 directory = "."
 for entry in sorted(
-    os.scandir(directory),
-    key=lambda e: e.name.lower(),
+        os.scandir(directory),
+        key=lambda e: e.name.lower(),
 ):
     st = entry.stat()
     mtime = datetime.datetime.fromtimestamp(st.st_mtime).strftime("%H:%M")

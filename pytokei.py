@@ -51,8 +51,8 @@ def get_language_from_shebang(file_path):
         with open(file_path, encoding="utf-8") as file:
             first_line = file.readline().strip()
             for (
-                lang,
-                shebangs,
+                    lang,
+                    shebangs,
             ) in SHEBANG_LANGUAGES.items():
                 for shebang in shebangs:
                     if first_line.startswith(shebang):
@@ -76,8 +76,8 @@ def count_lines_of_code(file_path, lang):
             if not line.strip():
                 blank_lines += 1
             elif re.match(
-                COMMENT_PATTERNS.get(lang, ""),
-                line,
+                    COMMENT_PATTERNS.get(lang, ""),
+                    line,
             ):
                 comment_lines += 1
             else:
@@ -108,7 +108,8 @@ def scan_directory(directory="."):
             if not file_extension:
                 lang = get_language_from_shebang(file_path)
                 if lang:
-                    code, comments, blanks = count_lines_of_code(file_path, lang)
+                    code, comments, blanks = count_lines_of_code(
+                        file_path, lang)
                     stats["languages"][lang]["code"] += code
                     stats["languages"][lang]["comments"] += comments
                     stats["languages"][lang]["blank"] += blanks
@@ -117,11 +118,12 @@ def scan_directory(directory="."):
                     stats["total"]["blank"] += blanks
                     continue
             for (
-                lang,
-                extensions,
+                    lang,
+                    extensions,
             ) in LANG_EXTENSIONS.items():
                 if file_extension in extensions:
-                    code, comments, blanks = count_lines_of_code(file_path, lang)
+                    code, comments, blanks = count_lines_of_code(
+                        file_path, lang)
                     stats["languages"][lang]["code"] += code
                     stats["languages"][lang]["comments"] += comments
                     stats["languages"][lang]["blank"] += blanks

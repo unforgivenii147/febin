@@ -86,7 +86,8 @@ def main():
     print(f"[INFO] Checking repository size for: {repo}")
     size_mb = get_repo_size(repo)
     if size_mb > 10:
-        print(f"[WARNING] Repository size is {size_mb:.2f} MB. Continue? (y/n)")
+        print(
+            f"[WARNING] Repository size is {size_mb:.2f} MB. Continue? (y/n)")
         if input().lower() != "y":
             print("[INFO] Aborted by user.")
             return

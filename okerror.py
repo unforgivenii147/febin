@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from pathlib import Path
 import shutil
 import subprocess
-from pathlib import Path
 
 ERROR_DIR = Path("error")
 OK_DIR = Path("ok")
@@ -36,7 +36,7 @@ def black_check(file_path: Path) -> bool:
 
 def main():
     ensure_dirs()
-    for py_file in Path(".").glob("*.py"):
+    for py_file in Path().glob("*.py"):
         if py_file.name == Path(__file__).name:
             continue
         print(f"Checking {py_file}...")

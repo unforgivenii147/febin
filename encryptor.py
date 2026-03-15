@@ -1,22 +1,26 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import os
+from pathlib import Path
 import random
 import string
-from pathlib import Path
 
-from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.backends import (
+    default_backend,
+)
 from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.ciphers import (
+    Cipher,
+    algorithms,
+    modes,
+)
 from fastwalk import walk_files
 
 AES_BLOCK_SIZE = 128
 
 
 def random_key(length=32):
-    return "".join(
-        random.choice(string.ascii_letters + string.digits)
-        for _ in range(length))
+    return "".join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
 
 
 def encrypt_file(file_path, key):

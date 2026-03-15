@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
 import os
-import sys
 from pathlib import Path
+import sys
 
 import regex as re
 
@@ -40,15 +40,11 @@ def apply_regex(name):
 def collect_files(path, recursive):
     if recursive:
         return [p for p in path.rglob("*") if p.suffix.lower() in EXTENSIONS]
-    return [
-        p for p in path.iterdir()
-        if p.is_file() and p.suffix.lower() in EXTENSIONS
-    ]
+    return [p for p in path.iterdir() if p.is_file() and p.suffix.lower() in EXTENSIONS]
 
 
 def main():
-    ap = argparse.ArgumentParser(
-        description="Clean repeated words from filenames")
+    ap = argparse.ArgumentParser(description="Clean repeated words from filenames")
     ap.add_argument(
         "-r",
         "--recursive",
@@ -62,7 +58,7 @@ def main():
         help="actually rename files",
     )
     args = ap.parse_args()
-    files = collect_files(Path("."), args.recursive)
+    files = collect_files(Path(), args.recursive)
     if not files:
         print("No matching files found")
         return
@@ -72,7 +68,7 @@ def main():
     print(colored("\nPreview:", "cyan", attrs=["bold"]))
     for f in files:
         name = f.name
-        core = name[len(prefix):len(name) - len(suffix)]
+        core = name[len(prefix) : len(name) - len(suffix)]
         core = apply_regex(core)
         new_name = f"{f.stem.split('.')[0]}.{core}{f.suffix}"
         new_name = re.sub(r"\.+", ".", new_name)
@@ -97,10 +93,12 @@ def main():
             else:
                 f.rename(target)
     if not args.write:
-        print(colored(
-            "\nDry-run only. Use -w to apply changes.",
-            "yellow",
-        ))
+        print(
+            colored(
+                "\nDry-run only. Use -w to apply changes.",
+                "yellow",
+            )
+        )
 
 
 if __name__ == "__main__":

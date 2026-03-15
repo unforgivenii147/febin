@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import argparse
-import contextlib
 from collections import deque
+import contextlib
 from multiprocessing import Pool
 from pathlib import Path
 
@@ -36,8 +36,11 @@ def format_single_file(file_path: Path, args) -> bool:
         original_code: str = file_path.read_text(encoding="utf-8")
         if args.raui:
             import autoflake
-            code = autoflake.fix_code(original_code,
-                                      remove_all_unused_imports=True)
+
+            code = autoflake.fix_code(
+                original_code,
+                remove_all_unused_imports=True,
+            )
             file_path.write_text(code, encoding="utf-8")
         if args.isort:
             import isort
@@ -46,18 +49,22 @@ def format_single_file(file_path: Path, args) -> bool:
             file_path.write_text(code, encoding="utf-8")
 
         if args.black:
-
             import black
 
             with contextlib.suppress(black.report.NothingChanged):
-                code = black.format_str(original_code,
-                                        mode=black.Mode(line_length=120))
-            file_path.write_text(code, encoding="utf-8")
+                code = black.format_str(
+                    original_code,
+                    mode=black.Mode(line_length=120),
+                )
+                file_path.write_text(code, encoding="utf-8")
 
         elif args.autopep:
             import autopep8
 
-            code = autopep8.fix_code(original_code, options={"aggressive": 2})
+            code = autopep8.fix_code(
+                original_code,
+                options={"aggressive": 2},
+            )
             file_path.write_text(code, encoding="utf-8")
         else:
             from yapf.yapflib import yapf_api
@@ -66,7 +73,10 @@ def format_single_file(file_path: Path, args) -> bool:
             file_path.write_text(code, encoding="utf-8")
         after = get_size(file_path)
         print(f"[OK] {file_path.name} ", end=" ")
-        cprint(f"{format_size(before - after)}", "cyan")
+        cprint(
+            f"{format_size(before - after)}",
+            "cyan",
+        )
         return False
     except Exception as e:
         cprint("[ERROR]", "red", end=" ")
@@ -75,8 +85,7 @@ def format_single_file(file_path: Path, args) -> bool:
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(
-        description="Fast Python API-based formatter (Lazy Loading)")
+    p = argparse.ArgumentParser(description="Fast Python API-based formatter (Lazy Loading)")
     p.add_argument(
         "-b",
         "--black",
@@ -102,14 +111,17 @@ def main() -> None:
         help="Autoflake cleanup",
     )
     args = p.parse_args()
-    dir = Path().cwd()
+    root_dir = Path().cwd()
     files = []
-    before = get_size(dir)
-    for pth in walk_files(dir):
+    before = get_size(root_dir)
+    for pth in walk_files(root_dir):
         path = Path(pth)
-        if (path.is_file()
-                and not any(part in IGNORED_DIRS for part in path.parts)
-                and is_python_file(path) and not path.is_symlink()):
+        if (
+            path.is_file()
+            and not any(part in IGNORED_DIRS for part in path.parts)
+            and is_python_file(path)
+            and not path.is_symlink()
+        ):
             files.append(path)
     if not files:
         print("No Python files detected.")
@@ -125,13 +137,14 @@ def main() -> None:
                         (name),
                         (args),
                     ),
-                ))
+                )
+            )
             if len(pending) >= MAX_IN_FLIGHT:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
 
-    after = get_size(dir)
+    after = get_size(root_dir)
     diffsize = before - after
     cprint(f"{format_size(diffsize)}", "cyan")
 

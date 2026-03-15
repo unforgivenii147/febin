@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
 
-import requests
 from packaging import tags
+import requests
 
 
 def is_pure_python(requires_python):
     """Check if the package is pure Python based on its metadata."""
     return requires_python is None or all(
-        tag.interpreter == "py" and tag.abi == "none" and tag.platform == "any"
-        for tag in tags.sys_tags())
+        tag.interpreter == "py" and tag.abi == "none" and tag.platform == "any" for tag in tags.sys_tags()
+    )
 
 
 def get_package_urls(pkg_name):
@@ -21,6 +21,9 @@ def get_package_urls(pkg_name):
     data = response.json()
     releases = data.get("releases", {})
     latest_version = sorted(releases.keys(), reverse=True)[0]
+
+    print(f"latest version : {latest_version}")
+
     release_files = releases[latest_version]
     return release_files, latest_version
 
@@ -28,9 +31,7 @@ def get_package_urls(pkg_name):
 def download_package(pkg_name):
     """Download the appropriate package file."""
     release_files, _version = get_package_urls(pkg_name)
-    wheel_files = [
-        f for f in release_files if f["packagetype"] == "bdist_wheel"
-    ]
+    wheel_files = [f for f in release_files if f["packagetype"] == "bdist_wheel"]
     sdist_files = [f for f in release_files if f["packagetype"] == "sdist"]
     pure_python_wheel = None
     for wheel in wheel_files:
@@ -53,8 +54,10 @@ def download_package(pkg_name):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Download a Python package from PyPI.")
-    parser.add_argument("pkg_name", help="Name of the package to download")
+    parser = argparse.ArgumentParser(description="Download a Python package from PyPI.")
+    parser.add_argument(
+        "pkg_name",
+        help="Name of the package to download",
+    )
     args = parser.parse_args()
     download_package(args.pkg_name)

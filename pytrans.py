@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
+from pathlib import Path
 import sys
 import time
-from pathlib import Path
 
 from deep_translator import GoogleTranslator
 from tqdm import tqdm
@@ -43,14 +43,14 @@ def find_chunk_boundary(text, max_chars):
         return len(text)
     search_area = text[:max_chars]
     for delimiter in [
-            "\n",
-            "\r\n",
-            ".  ",
-            "!  ",
-            "?  ",
-            "; ",
-            ", ",
-            " ",
+        "\n",
+        "\r\n",
+        ".  ",
+        "!  ",
+        "?  ",
+        "; ",
+        ", ",
+        " ",
     ]:
         last_pos = search_area.rfind(delimiter)
         if last_pos > 0:
@@ -93,8 +93,7 @@ def translate_file(input_file, source_lang="auto"):
     content_length = len(content)
     print(f"[INFO] File size: {content_length} characters")
     if content_length <= MAX_CHARS:
-        print(
-            f"[INFO] Content fits in single request ({content_length} chars)")
+        print(f"[INFO] Content fits in single request ({content_length} chars)")
         print("[INFO] Translating...")
         translated, detected_lang = translate_chunk(content, source_lang)
         print(f"[INFO] Detected language: {detected_lang}")
@@ -112,9 +111,7 @@ def translate_file(input_file, source_lang="auto"):
     )
     try:
         for i, chunk in enumerate(chunks):
-            print(
-                f"\n[INFO] Translating chunk {i + 1}/{total_chunks} ({len(chunk)} chars)..."
-            )
+            print(f"\n[INFO] Translating chunk {i + 1}/{total_chunks} ({len(chunk)} chars)...")
             try:
                 (
                     translated_chunk,
@@ -135,15 +132,12 @@ def translate_file(input_file, source_lang="auto"):
 
 def main():
     if len(sys.argv) < 2:
-        print(
-            "Usage:  python translate_file.py <input_file> [source_language]")
+        print("Usage:  python translate_file.py <input_file> [source_language]")
         print("\nExamples:")
         print("  python translate_file.py document.txt")
         print("  python translate_file.py document. fa")
         print("  python translate_file.py document.txt fa")
-        print(
-            "\nSupported languages:  auto, en, fa, fr, de, es, it, pt, ru, zh, ja, ko, ar, etc."
-        )
+        print("\nSupported languages:  auto, en, fa, fr, de, es, it, pt, ru, zh, ja, ko, ar, etc.")
         sys.exit(1)
     input_file = sys.argv[1]
     source_lang = sys.argv[2] if len(sys.argv) > 2 else "auto"
@@ -153,9 +147,7 @@ def main():
     output_file = get_output_filename(input_file)
     if os.path.exists(output_file):
         print(f"[INFO] Output file already exists: {output_file}")
-        print(
-            f"[INFO] Skipping translation (delete {output_file} to re-translate)"
-        )
+        print(f"[INFO] Skipping translation (delete {output_file} to re-translate)")
         sys.exit(0)
     print(f"[INFO] Input:   {input_file}")
     print(f"[INFO] Output: {output_file}")

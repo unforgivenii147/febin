@@ -2,15 +2,18 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 import fnmatch
 import os
 import stat
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TYPE_CHECKING
 
-import regex as re
 from dh import is_binary
+import regex as re
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -37,15 +40,12 @@ def colorize(
 ) -> str:
     if not enable:
         return text
-    return text[:start] + ANSI_HIGHLIGHT + ANSI_BOLD + text[
-        start:end] + ANSI_RESET + text[end:]
+    return text[:start] + ANSI_HIGHLIGHT + ANSI_BOLD + text[start:end] + ANSI_RESET + text[end:]
 
 
 def matches_any_glob(path: str, patterns: Iterable[str]) -> bool:
     basename = os.path.basename(path)
-    return any(
-        fnmatch.fnmatch(path, p) or fnmatch.fnmatch(basename, p)
-        for p in patterns)
+    return any(fnmatch.fnmatch(path, p) or fnmatch.fnmatch(basename, p) for p in patterns)
 
 
 def collect_files(
@@ -63,14 +63,16 @@ def collect_files(
             yield root
             continue
         for (
-                dirpath,
-                dirnames,
-                filenames,
+            dirpath,
+            dirnames,
+            filenames,
         ) in os.walk(root, followlinks=follow_symlinks):
             dirnames[:] = [
-                d for d in dirnames
+                d
+                for d in dirnames
                 if (include_hidden or not d.startswith("."))
-                and d not in IGNORED_DIRS and not matches_any_glob(
+                and d not in IGNORED_DIRS
+                and not matches_any_glob(
                     os.path.join(dirpath, d),
                     exclude_globs,
                 )
@@ -103,15 +105,15 @@ def search_file_text_mode(
     color: bool,
     max_matches: int | None = None,
 ) -> tuple[
-        str,
-        list[tuple[int, str, list[tuple[int, int]]]],
+    str,
+    list[tuple[int, str, list[tuple[int, int]]]],
 ]:
     matches = []
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="replace",
+            path,
+            encoding="utf-8",
+            errors="replace",
         ) as fh:
             for lineno, raw_line in enumerate(fh, start=1):
                 line = raw_line.rstrip("\n")
@@ -127,10 +129,12 @@ def search_file_text_mode(
                         idx = hay.find(needle, start)
                         if idx == -1:
                             break
-                        spans.append((
-                            idx,
-                            idx + len(needle),
-                        ))
+                        spans.append(
+                            (
+                                idx,
+                                idx + len(needle),
+                            )
+                        )
                         start = idx + max(1, len(needle))
                 if spans:
                     matches.append((lineno, line, spans))
@@ -142,8 +146,7 @@ def search_file_text_mode(
 
 
 def build_argparser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(
-        description="ripgrep-like recursive search in Python")
+    p = argparse.ArgumentParser(description="ripgrep-like recursive search in Python")
     p.add_argument(
         "pattern",
         nargs="?",
@@ -266,7 +269,8 @@ def main(argv: list[str] | None = None) -> int:
             exclude_globs=exclude_globs,
             follow_symlinks=args.follow,
             max_filesize=args.max_filesize,
-        ))
+        )
+    )
     if not candidates:
         return 0
     color = not args.no_color and sys.stdout.isatty()
@@ -300,16 +304,16 @@ def main(argv: list[str] | None = None) -> int:
                     print(f"{path}:{len(matches)}")
                 else:
                     for (
-                            lineno,
-                            line,
-                            spans,
+                        lineno,
+                        line,
+                        spans,
                     ) in matches:
                         out_line = line
                         if color and spans:
                             for s, e in sorted(
-                                    spans,
-                                    key=lambda x: x[0],
-                                    reverse=True,
+                                spans,
+                                key=lambda x: x[0],
+                                reverse=True,
                             ):
                                 out_line = colorize(
                                     out_line,

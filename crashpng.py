@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import subprocess
 from pathlib import Path
+import subprocess
 
 
 def optimize_pngs_recursively():
     total_original_size = 0
     total_optimized_size = 0
-    for png_file in Path(".").rglob("*.png"):
+    for png_file in Path().rglob("*.png"):
         original_size = png_file.stat().st_size
         total_original_size += original_size
         subprocess.run(
@@ -24,9 +24,7 @@ def optimize_pngs_recursively():
         optimized_size = png_file.stat().st_size
         size_change = original_size - optimized_size
         print(f"Processed: {png_file}")
-        print(
-            f"  Original: {original_size} bytes, Optimized: {optimized_size} bytes, Change: {size_change} bytes"
-        )
+        print(f"  Original: {original_size} bytes, Optimized: {optimized_size} bytes, Change: {size_change} bytes")
         total_optimized_size += optimized_size
     total_reduction = total_original_size - total_optimized_size
     print("\n--- Summary ---")

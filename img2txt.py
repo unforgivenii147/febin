@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
 from dh import format_size, get_size
 from PIL import Image, ImageFilter, ImageOps
@@ -40,12 +40,10 @@ def process_file(file_path):
 
 
 def main() -> None:
-    dir = Path.cwd()
-    before = get_size(dir)
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else [
-        Path(f) for f in dir.rglob("*") if f.suffix in {".jpg", ".png"}
-    ]
+    files = [Path(arg) for arg in args] if args else [Path(f) for f in dir.rglob("*") if f.suffix in {".jpg", ".png"}]
 
     if len(files) == 1:
         process_file(files[0])
@@ -56,7 +54,7 @@ def main() -> None:
             pass
         p.close()
         p.join()
-        after = get_size(dir)
+        after = get_size(root_dir)
         cprint(
             f"{format_size(before - after)}",
             "cyan",

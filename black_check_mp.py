@@ -1,8 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-import shutil
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import (
+    ProcessPoolExecutor,
+    as_completed,
+)
 from pathlib import Path
+import shutil
 
 ERROR_DIR = Path("error")
 OK_DIR = Path("ok")
@@ -27,7 +30,9 @@ def unique_destination(dest: Path) -> Path:
         counter += 1
 
 
-def black_check(file_path: Path, ) -> tuple[Path, bool]:
+def black_check(
+    file_path: Path,
+) -> tuple[Path, bool]:
     print(f"[OK] {file_path}")
     """
     result = subprocess.run(
@@ -47,7 +52,7 @@ def black_check(file_path: Path, ) -> tuple[Path, bool]:
 def collect_python_files() -> list[Path]:
     current_script = Path(__file__).resolve()
     files = []
-    for file in Path(".").rglob("*.py"):
+    for file in Path().rglob("*.py"):
         resolved = file.resolve()
         if resolved == current_script:
             continue

@@ -11,15 +11,14 @@ dh = lazy_import("dh")
 pathlib = lazy_import("pathlib")
 importlib_metadata = lazy_import("importlib_metadata")
 
-sitedir = pathlib.Path(
-    "/data/data/com.termux/files/usr/lib/python3.12/site-packages")
+site_dir = pathlib.Path("/data/data/com.termux/files/usr/lib/python3.12/site-packages")
 
 
 def get_pkgs():
     pkgs = []
     for pkg in importlib_metadata.distributions():
         pkgname = pkg.metadata["name"].lower().replace("-", "_")
-        pkgs.appens(pkgname)
+        pkgs.append(pkgname)
     return pkgs
 
 
@@ -58,8 +57,9 @@ def get_package_path(pkg_name):
     try:
         result = subprocess.run(
             [
-                sys.executable, "-c",
-                f"import {pkg_name}; print({pkg_name}.__file__)"
+                sys.executable,
+                "-c",
+                f"import {pkg_name}; print({pkg_name}.__file__)",
             ],
             capture_output=True,
             text=True,
@@ -89,7 +89,7 @@ def is_package_directory(pkg_path):
     if not os.path.isdir(pkg_path):
         return False
 
-    py_files = dh.get_pyfiles(pkg_path)
+    py_files = dh.get_files(pkg_path, extensions=[".py"])
     return len(py_files) > 1
 
 
@@ -102,25 +102,16 @@ def compile_to_bytecode(directory):
         for pyfile in dirpath.rglob("*.py"):
             pyfile.unlink()
 
-        for dir in pathlib.Path(directory).rglob("__pycache__"):
-            shutil.rmtree(str(dir))
+        for dir_path in pathlib.Path(directory).rglob("__pycache__"):
+            shutil.rmtree(str(dir_path))
         return True
     except Exception as e:
         print_error(f"Compilation failed: {e}")
         return False
 
 
-def find_so_files(directory):
-    path = pathlib.Path(directory)
-    return list(path.rglob("*.so"))
-
-
 def have_so(directory) -> bool:
-    for _root, _dirs, files in os.walk(directory):
-        for file in files:
-            if file.endswith(".so"):
-                return True
-    return False
+    return any(str(path).endswith(".so") for path in directory.rglob("*"))
 
 
 def create_zip(src_path, zip_path, pkg_name):
@@ -134,8 +125,10 @@ def create_zip(src_path, zip_path, pkg_name):
                 for root, _dirs, files in os.walk(src_path):
                     for file in files:
                         file_path = os.path.join(root, file)
-                        arcname = os.path.relpath(file_path,
-                                                  os.path.dirname(src_path))
+                        arcname = os.path.relpath(
+                            file_path,
+                            os.path.dirname(src_path),
+                        )
                         zf.write(file_path, arcname)
         return True
     except Exception as e:
@@ -151,8 +144,8 @@ def process_pkg(pkgname):
     if is_single_file_module(pkg_path) or have_so(pkg_path):
         print(f"{pkg_path} have .so file or is a single file midule")
         return
-    zipdir = sitedir
-    zip_path = pathlib.Path(f"{zipdir}/{pkg_path}.zip")
+    zip_dir = site_dir
+    zip_path = pathlib.Path(f"{zip_dir}/{pkg_path}.zip")
     if zip_path.exists():
         print("already zipped.")
         return
@@ -171,6 +164,7 @@ def main(args):
 
 if __name__ == "__main__":
     sys.exit(main(args=sys.argv[1:]))
+
 """
 def main():
     parser = argparse.ArgumentParser(description="Convert Python packages to zipped format for efficient storage")

@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-import sys
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool
 from pathlib import Path
+import sys
 
-import tree_sitter_python
 from dh import format_size, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_python
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 parser = Parser()
@@ -21,8 +21,7 @@ def process_again(pt):
         lines = text.splitlines()
         for line in lines:
             striped = line.strip()
-            if striped.startswith('"""') and striped.endswith(
-                    '"""') and striped != '"""':
+            if striped.startswith('"""') and striped.endswith('"""') and striped != '"""':
                 print(line)
                 continue
             new_lines.append(line)
@@ -50,7 +49,6 @@ def _cleanup_blank_lines(text: str) -> str:
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
-
     def first_named_child(block):
         for child in block.children:
             if child.is_named:
@@ -62,11 +60,16 @@ def _collect_docstrings(node, source: bytes, deletions: list):
         if first and first.type == "expression_statement":
             string_node = first.child_by_field_name("expression")
             if string_node and string_node.type == "string":
-                deletions.append((first.start_byte, first.end_byte))
+                deletions.append(
+                    (
+                        first.start_byte,
+                        first.end_byte,
+                    )
+                )
     if node.type in (
-            "class_definition",
-            "function_definition",
-            "async_function_definition",
+        "class_definition",
+        "function_definition",
+        "async_function_definition",
     ):
         body = node.child_by_field_name("body")
         if body:
@@ -74,12 +77,19 @@ def _collect_docstrings(node, source: bytes, deletions: list):
             if first and first.type == "expression_statement":
                 string_node = first.child_by_field_name("expression")
                 if string_node and string_node.type == "string":
-                    deletions.append((first.start_byte, first.end_byte))
+                    deletions.append(
+                        (
+                            first.start_byte,
+                            first.end_byte,
+                        )
+                    )
     for child in node.children:
         _collect_docstrings(child, source, deletions)
 
 
-def remove_comments_and_docstrings(path: Path) -> None:
+def remove_comments_and_docstrings(
+    path: Path,
+) -> None:
     try:
         source = path.read_bytes()
         tree = parser.parse(source)
@@ -87,9 +97,14 @@ def remove_comments_and_docstrings(path: Path) -> None:
 
         def walk_comments(node):
             if node.type == "comment":
-                text = source[node.start_byte:node.end_byte]
+                text = source[node.start_byte : node.end_byte]
                 if not text.lstrip().startswith(EXCLUDE_PREFIXES):
-                    deletions.append((node.start_byte, node.end_byte))
+                    deletions.append(
+                        (
+                            node.start_byte,
+                            node.end_byte,
+                        )
+                    )
             for child in node.children:
                 walk_comments(child)
 
@@ -109,23 +124,24 @@ def remove_comments_and_docstrings(path: Path) -> None:
         cprint(f"[FAIL] {path.name} -> {e}", "cyan")
 
 
-def get_pyfiles(root: Path) -> list[Path]:
-    if root.is_file() and root.suffix == ".py":
+def get_files(root_dir, extensions=None) -> list[Path]:
+    if extensions is None:
+        extensions = [".py"]
+    if root_dir.is_file() and root_dir.suffix == ".py":
         return [root]
-    return [p for p in root.rglob("*.py") if p.is_file()]
+    return [p for p in root_dir.rglob("*.py") if p.is_file()]
 
 
 def main() -> None:
-    root = Path().cwd().resolve()
-    files = get_pyfiles(root)
+    root_dir = Path.cwd()
+    files = get_files(root_dir, extensions=[".py"])
     if not files:
         sys.exit("No Python files found")
-    before = get_size(root)
-    with Pool(cpu_count()) as pool:
+    before = get_size(root_dir)
+    with Pool(8) as pool:
         pool.map(remove_comments_and_docstrings, files)
-    after = get_size(root)
-    difsize = before - after
-    cprint(f"{format_size(difsize)}", "cyan")
+    diffsize = before - get_size(root_dir)
+    cprint(f"{format_size(diffsize)}", "cyan")
 
 
 if __name__ == "__main__":

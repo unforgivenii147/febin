@@ -21,13 +21,16 @@ def detect_text_based_extension(text):
     text = text.strip()
     if text.startswith("#!") and "python" in text:
         return "py"
-    if any(k in text for k in [
+    if any(
+        k in text
+        for k in [
             "def ",
             "class ",
             "import ",
             "from ",
             "__main__",
-    ]):
+        ]
+    ):
         return "py"
     if text.startswith("#!") and ("sh" in text or "bash" in text):
         return "sh"
@@ -39,13 +42,16 @@ def detect_text_based_extension(text):
         return "toml"
     if text.startswith("[") and "]" in text:
         return "ini"
-    if any(text.lower().startswith(cmd) for cmd in [
+    if any(
+        text.lower().startswith(cmd)
+        for cmd in [
             "select ",
             "insert ",
             "update ",
             "delete ",
             "create ",
-    ]):
+        ]
+    ):
         return "sql"
     if "{" in text and "}" in text and ":" in text:
         return "css"
@@ -110,9 +116,7 @@ def correct_file_extension(root="."):
             print(f"Renaming: {name}  →  {new_name}")
             final_path = safe_rename(path, new_path)
             if final_path != new_path:
-                print(
-                    f" ⚠  Collision detected. Saved as: {os.path.basename(final_path)}"
-                )
+                print(f" ⚠  Collision detected. Saved as: {os.path.basename(final_path)}")
 
 
 if __name__ == "__main__":

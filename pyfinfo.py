@@ -13,11 +13,13 @@ def levenshtein_distance(a: str, b: str) -> int:
             insertions = previous_row[j] + 1
             deletions = current_row[j - 1] + 1
             substitutions = previous_row[j - 1] + (ca != cb)
-            current_row.append(min(
-                insertions,
-                deletions,
-                substitutions,
-            ))
+            current_row.append(
+                min(
+                    insertions,
+                    deletions,
+                    substitutions,
+                )
+            )
         previous_row = current_row
     return previous_row[-1]
 
@@ -48,7 +50,7 @@ def group_similar(names: list[str], threshold: float = 0.8):
 
 
 def main():
-    root = Path(".")
+    root = Path()
     counter = Counter(p.name for p in root.rglob("*") if p.is_file())
     print("=== Filename Counts ===")
     for name, count in counter.most_common():

@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from collections import Counter, deque
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
-import regex as re
 from dh import get_nobinary
+import regex as re
 
 
 def extract_words(text):
@@ -22,13 +22,13 @@ def process_file(path: Path):
 
 def main():
     args = sys.argv[1:]
-    dir = Path.cwd()
-    files = [Path(arg) for arg in args] if args else get_nobinary(dir)
+    root_dir = Path.cwd()
+    files = [Path(arg) for arg in args] if args else get_nobinary(root_dir)
 
     with Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f, )))
+            pending.append(pool.apply_async(process_file, (f,)))
             if len(pending) > 16:
                 pending.popleft().get()
         while pending:

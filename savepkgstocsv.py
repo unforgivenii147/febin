@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import csv
+from pathlib import Path
 import subprocess
 import sys
-from pathlib import Path
 
 OUTPUT_DIR = Path("/sdcard/backups")
 TSV_FILE = OUTPUT_DIR / "installed.tsv"
@@ -24,21 +24,23 @@ FIELDS = [
     "Origin",
     "Bugs",
 ]
-FORMAT = ("${binary:Package}\t"
-          "${Version}\t"
-          "${Architecture}\t"
-          "${Status}\t"
-          "${Priority}\t"
-          "${Section}\t"
-          "${Installed-Size}\t"
-          "${Maintainer}\t"
-          "${Homepage}\t"
-          "${binary:Summary}\t"
-          "${Source}\t"
-          "${Essential}\t"
-          "${Multi-Arch}\t"
-          "${Origin}\t"
-          "${Bugs}\n")
+FORMAT = (
+    "${binary:Package}\t"
+    "${Version}\t"
+    "${Architecture}\t"
+    "${Status}\t"
+    "${Priority}\t"
+    "${Section}\t"
+    "${Installed-Size}\t"
+    "${Maintainer}\t"
+    "${Homepage}\t"
+    "${binary:Summary}\t"
+    "${Source}\t"
+    "${Essential}\t"
+    "${Multi-Arch}\t"
+    "${Origin}\t"
+    "${Bugs}\n"
+)
 
 
 def query_packages() -> list[list[str]]:

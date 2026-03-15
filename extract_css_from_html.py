@@ -1,18 +1,20 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from multiprocessing import Pool
 import os
+from pathlib import Path
 import random
 import string
-from multiprocessing import Pool
-from pathlib import Path
+import sys
 from sys import exit
 
-import dh
 from bs4 import BeautifulSoup
-from fastwalk import walk_files
+from dh import format_size, get_files, get_size
 from termcolor import cprint
 
 
 def save_style(str1):
+    if not str1:
+        return None
     fn = "css/"
     if not os.path.exists("css"):
         os.mkdir("css")
@@ -45,19 +47,25 @@ def process_file(fp):
 
 
 def main():
-    files = []
-    dir = Path.cwd()
-    start = dh.get_size(dir)
-    for pth in walk_files(str(dir)):
-        path = Path(os.path.join(dir, pth))
-        if path.is_file() and path.suffix == ".html":
-            files.append(path)
+    root_dir = Path.cwd()
+    args = sys.argv[1:]
+    files = (
+        [Path(arg) for arg in args]
+        if args
+        else get_files(
+            root_dir,
+            recursive=True,
+            extensions=[".html", ".htm"],
+        )
+    )
+    before = get_size(root_dir)
     pool = Pool(8)
-    pool.imap_unordered(process_file, files)
+    for _ in pool.imap_unordered(process_file, files):
+        pass
     pool.close()
     pool.join()
-    end = dh.get_size(dir)
-    print(f"{dh.format_size(end - start)}")
+    diffsize = before - get_size(root_dir)
+    print(f"{format_size(diffsize)}")
 
 
 if __name__ == "__main__":

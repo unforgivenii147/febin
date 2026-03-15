@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
 from dh import format_size, get_nobinary, get_size
 from termcolor import cprint
@@ -14,15 +14,14 @@ def process_file(filepath) -> int:
     removed: int = 0
     content: str = ""
     line: str = ""
-    if filepath.is_symlink(
-    ) or filepath.suffix == ".bak" or not get_size(filepath):
+    if filepath.is_symlink() or filepath.suffix == ".bak" or not get_size(filepath):
         return 0
     try:
         print(f"[OK] {filepath.name}", end=" ")
         with filepath.open(
-                "r+",
-                encoding="utf-8",
-                errors="replace",
+            "r+",
+            encoding="utf-8",
+            errors="replace",
         ) as f:
             lines = f.readlines()
             for line in lines:
@@ -33,7 +32,13 @@ def process_file(filepath) -> int:
             content = "".join(non_empty_lines)
             if not removed:
                 cprint(f" {removed}", "green")
-                del lines, line, removed, content, non_empty_lines
+                del (
+                    lines,
+                    line,
+                    removed,
+                    content,
+                    non_empty_lines,
+                )
                 return 0
             f.seek(0)
             f.write(content)
@@ -47,10 +52,10 @@ def process_file(filepath) -> int:
 
 def main():
     files = []
-    dir = Path.cwd()
-    start_size = get_size(dir)
+    root_dir = Path.cwd()
+    start_size = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_nobinary(dir)
+    files = [Path(arg) for arg in args] if args else get_nobinary(root_dir)
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
@@ -59,7 +64,7 @@ def main():
     with Pool(8) as p:
         pending = deque()
         for f in files:
-            pending.append(p.apply_async(process_file, (f, )))
+            pending.append(p.apply_async(process_file, (f,)))
             if len(pending) > 16:
                 results.append(pending.popleft().get())
         while pending:
@@ -67,10 +72,16 @@ def main():
     for result in results:
         if result:
             lines_removed += result
-    cprint(f"total empty lines removed : {lines_removed}", "green")
-    after = get_size(dir)
+    cprint(
+        f"total empty lines removed : {lines_removed}",
+        "green",
+    )
+    after = get_size(root_dir)
     print("space freed: ", end=" ")
-    cprint(f"{format_size(start_size - after)}", "green")
+    cprint(
+        f"{format_size(start_size - after)}",
+        "green",
+    )
 
 
 if __name__ == "__main__":

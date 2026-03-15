@@ -5,7 +5,10 @@ from time import perf_counter
 
 
 def process_pkg(pk):
-    return subprocess.run(["pip", "download", "--no-deps", pk], check=False)
+    return subprocess.run(
+        ["pip", "download", "--no-deps", pk],
+        check=False,
+    )
 
 
 def main():

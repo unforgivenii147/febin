@@ -27,13 +27,13 @@ def process_file(fp) -> None:
 
 
 def main():
-    dir = Path.cwd()
-    before = get_size(dir)
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
     args = argv[1:]
     if args:
         files = [Path(f) for f in args]
     else:
-        files = get_files(dir,recursive=True)
+        files = get_files(root_dir,recursive=True)
     with Pool(8) as pool:
         pending=deque()
         for f in files:
@@ -42,7 +42,7 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(dir)
+    diff_size = before - get_size(root_dir)
     print(f"space saved : {format_size(diff_size)}")
 
 

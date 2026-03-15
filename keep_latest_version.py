@@ -3,15 +3,17 @@ import operator
 import os
 import pathlib
 
-import regex as re
 from packaging.version import Version
+import regex as re
 
-wheel_pattern = re.compile(r"^(?P<name>.+)-(?P<version>\d+(\.\d+)+).*\.txt$")
-files = [f for f in os.listdir(".") if f.endswith(".txt")]
+wheel_pattern = re.compile(r"^(?P<name>.+)-(?P<version>\d+(\.\d+)+).*\.metadata$")
+
+files = [f for f in os.listdir(".") if (f.endswith(".metadata") or f.endswith(".whl"))]
+print(f"{len(files)} files found.")
 packages = {}
 for f in files:
     matchz = wheel_pattern.match(f)
-    if not match:
+    if not matchz:
         continue
     name = matchz.group("name")
     version = Version(matchz.group("version"))

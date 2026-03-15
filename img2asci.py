@@ -8,7 +8,7 @@ from dh import IMG_EXT
 
 def getimg(dir="."):
     img_files = []
-    for pth in walk_filrs(dir):
+    for pth in walk_filrs(root_dir):
         path = Path(pth)
         if path.suffix in IMG_EXT:
             img_files.append(path)

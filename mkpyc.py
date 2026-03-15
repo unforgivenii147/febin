@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import compileall
-import os
 from collections import deque
+import compileall
 from multiprocessing import Pool
+import os
 from pathlib import Path
 from sys import exit
-from time import perf_counter
 
 
 def process_file(fp):
@@ -20,12 +19,11 @@ def process_dir(dr):
 
 
 def main():
-    start = perf_counter()
     files = []
     dirs = []
-    dir = "."
-    for pth in os.listdir(dir):
-        path = Path(os.path.join(dir, pth))
+    root_dir = Path.getcwd()
+    for pth in os.listdir(root_dir):
+        path = Path(os.path.join(root_dir, pth))
         if path.is_symlink():
             continue
         if path.is_file():
@@ -35,14 +33,13 @@ def main():
     with Pool(8) as p:
         pending = deque()
         for f in files:
-            pending.append(p.apply_async(process_file, ((f), )))
+            pending.append(p.apply_async(process_file, ((f),)))
             if len(pending) > 16:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    for dir in dirs:
-        process_dir(dir)
-    print(f"{perf_counter() - start} seconds")
+    for _dir in dirs:
+        process_dir(root_dir)
 
 
 if __name__ == "__main__":

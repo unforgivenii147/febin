@@ -1,13 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 import contextlib
 import multiprocessing
 import os
+from pathlib import Path
 import shutil
 import subprocess
 import tarfile
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import Path
 
 BASE_DIR = Path.home() / "tmp" / "debs"
 BASE_DIR.mkdir(parents=True, exist_ok=True)
@@ -39,11 +42,13 @@ def get_package_metadata(pkg):
 
 
 def create_control_file(path, meta) -> None:
-    control_content = (f"Package: {meta['Package']}\n"
-                       f"Version: {meta['Version']}\n"
-                       f"Architecture: {meta['Architecture']}\n"
-                       f"Maintainer: {meta['Maintainer']}\n"
-                       f"Description: {meta['Description']}\n")
+    control_content = (
+        f"Package: {meta['Package']}\n"
+        f"Version: {meta['Version']}\n"
+        f"Architecture: {meta['Architecture']}\n"
+        f"Maintainer: {meta['Maintainer']}\n"
+        f"Description: {meta['Description']}\n"
+    )
     (path / "control").write_text(control_content)
 
 

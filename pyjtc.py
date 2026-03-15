@@ -8,7 +8,12 @@ import regex as re
 def remove_comments_and_strings(content, filetype, keep_strings=False):
     if filetype in ["c", "cpp", "h", "hpp"]:
         content = re.sub(r"//.*", "", content)
-        content = re.sub(r"/\*.*?\*/", "", content, flags=re.DOTALL)
+        content = re.sub(
+            r"/\*.*?\*/",
+            "",
+            content,
+            flags=re.DOTALL,
+        )
         if not keep_strings:
             content = re.sub(r"\"[^\"]*\"", "", content)
             content = re.sub(r"'[^']*'", "", content)
@@ -31,12 +36,12 @@ def process_file(filepath, inplace=False, keep_strings=False):
     _, ext = os.path.splitext(filepath)
     ext = ext[1:].lower()
     if ext not in [
-            "hpp",
-            "h",
-            "c",
-            "cpp",
-            "py",
-            "sh",
+        "hpp",
+        "h",
+        "c",
+        "cpp",
+        "py",
+        "sh",
     ]:
         print(f"Unsupported file type: {ext}")
         return
@@ -53,8 +58,7 @@ def process_file(filepath, inplace=False, keep_strings=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description=
-        "Remove comments and docstrings from code files, optionally keeping strings."
+        description="Remove comments and docstrings from code files, optionally keeping strings."
     )
     parser.add_argument(
         "files",

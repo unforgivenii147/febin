@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from os.path import exists
+from pathlib import Path
 import shutil
 import subprocess
 import sys
-from os.path import exists
-from pathlib import Path
 
 from dh import move_file
 
 if __name__ == "__main__":
-    dir = Path.cwd()
-    if "dist-info" in str(dir):
+    root_dir = Path.cwd()
+    if "dist-info" in str(root_dir):
         print("dist-info dir.")
         sys.exit(0)
     if exists("importz.txt"):

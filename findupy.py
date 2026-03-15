@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from collections import defaultdict
 import hashlib
 import json
 import os
-from collections import defaultdict
 from pathlib import Path
 
 from tqdm import tqdm
@@ -15,15 +15,15 @@ def hash_file(path: Path, chunk_size: int = 8192) -> str:
     try:
         get_size = path.stat().st_size
         with (
-                open(path, "rb") as f,
-                tqdm(
-                    total=get_size,
-                    unit="B",
-                    unit_scale=True,
-                    unit_divisor=1024,
-                    desc=f"Hashing {path.name}",
-                    leave=False,
-                ) as pbar,
+            open(path, "rb") as f,
+            tqdm(
+                total=get_size,
+                unit="B",
+                unit_scale=True,
+                unit_divisor=1024,
+                desc=f"Hashing {path.name}",
+                leave=False,
+            ) as pbar,
         ):
             for chunk in iter(lambda: f.read(chunk_size), b""):
                 sha.update(chunk)
@@ -54,9 +54,9 @@ def find_duplicate_files(directory: str):
     duplicates = defaultdict(list)
     print(f"📁 Scanning {len(all_files)} files...\n")
     for file_path in tqdm(
-            all_files,
-            desc="Overall Progress",
-            unit="file",
+        all_files,
+        desc="Overall Progress",
+        unit="file",
     ):
         file_hash = hash_file(file_path)
         if file_hash:

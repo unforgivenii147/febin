@@ -20,8 +20,8 @@ Result:
 """
 
 import argparse
-import shutil
 from pathlib import Path
+import shutil
 
 import regex as re
 
@@ -80,7 +80,6 @@ def copy_asset(src, assets_dir):
 
 
 def rewrite_urls(css_text, css_dir, assets_dir):
-
     def repl(match):
         url = match.group(2).strip().strip("\"'")
         if url.startswith("http"):
@@ -131,7 +130,7 @@ def main():
     args = ap.parse_args()
     assets_dir = Path(args.assets_dir)
     assets_dir.mkdir(parents=True, exist_ok=True)
-    files = args.files or [str(p) for p in Path(".").glob("*.css")]
+    files = args.files or [str(p) for p in Path().glob("*.css")]
     chunks = []
     for f in files:
         p = Path(f)

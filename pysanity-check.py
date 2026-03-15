@@ -11,7 +11,9 @@ def get_installed_python_packages() -> list[tuple[str, str]]:
     return [(d.project_name, d.version) for d in pkg_resources.working_set]
 
 
-def check_package_importable(package_name: str, ) -> tuple[bool, str]:
+def check_package_importable(
+    package_name: str,
+) -> tuple[bool, str]:
     try:
         importlib.import_module(package_name)
         return True, "OK"
@@ -62,18 +64,23 @@ def main():
     outdated_pkgs = []
     for pkg_name, pkg_version in installed_pkgs:
         latest_version = get_latest_version(pkg_name)
-        if latest_version not in ("Unknown", pkg_version):
-            outdated_pkgs.append((
-                pkg_name,
-                pkg_version,
-                latest_version,
-            ))
+        if latest_version not in (
+            "Unknown",
+            pkg_version,
+        ):
+            outdated_pkgs.append(
+                (
+                    pkg_name,
+                    pkg_version,
+                    latest_version,
+                )
+            )
     if outdated_pkgs:
         print("Outdated packages found:")
         for (
-                pkg_name,
-                pkg_version,
-                latest_version,
+            pkg_name,
+            pkg_version,
+            latest_version,
         ) in outdated_pkgs:
             print(f"- {pkg_name}: {pkg_version} (latest: {latest_version})")
     else:

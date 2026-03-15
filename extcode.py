@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
-import tree_sitter_python as tsp
 from tree_sitter import Language, Parser
+import tree_sitter_python as tsp
 
 LANG = Language(tsp)
 parser = Parser()
 parser.set_language(LANG)
-ROOT_DIR = Path(".").resolve()
+ROOT_DIR = Path().resolve()
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 VALID_TOP_LEVEL_NODES = {
@@ -32,8 +32,7 @@ def extract_from_file(py_file: Path):
     extracted_chunks = []
     for child in root.children:
         if child.type in VALID_TOP_LEVEL_NODES:
-            extracted_chunks.append(
-                source[child.start_byte:child.end_byte].decode())
+            extracted_chunks.append(source[child.start_byte : child.end_byte].decode())
     return "\n\n".join(extracted_chunks)
 
 

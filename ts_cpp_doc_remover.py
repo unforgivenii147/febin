@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
-import tree_sitter_cpp as tscpp
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_cpp as tscpp
 
 
 class TSCppRemover:
-
     def __init__(self):
         self.parser = Parser()
         self.parser.language = Language(tscpp.language())
@@ -19,7 +18,12 @@ class TSCppRemover:
 
         def walk(node):
             if node.type == "comment":
-                to_delete.append((node.start_byte, node.end_byte))
+                to_delete.append(
+                    (
+                        node.start_byte,
+                        node.end_byte,
+                    )
+                )
             for child in node.children:
                 walk(child)
 
@@ -56,13 +60,28 @@ def process_file(fp):
         file_path.write_text(result, encoding="utf-8")
         after = file_path.stat().st_size
         reduced = abs(before - after)
-        cprint(f"[OK] {file_path.name} - reduced {reduced} bytes", "cyan")
+        cprint(
+            f"[OK] {file_path.name} - reduced {reduced} bytes",
+            "cyan",
+        )
     else:
-        cprint(f"[NO CHANGE] {file_path.name}", "blue")
+        cprint(
+            f"[NO CHANGE] {file_path.name}",
+            "blue",
+        )
 
 
 if __name__ == "__main__":
-    exts = {".cpp", ".cc", ".cxx", ".hpp", ".h", ".hh", ".hxx", ".c"}
+    exts = {
+        ".cpp",
+        ".cc",
+        ".cxx",
+        ".hpp",
+        ".h",
+        ".hh",
+        ".hxx",
+        ".c",
+    }
     for path in Path().rglob("*"):
         if path.is_file() and path.suffix in exts:
             process_file(path)

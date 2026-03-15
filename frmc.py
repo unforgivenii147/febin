@@ -1,11 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-import sys
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
-from dh import (SOURCE_CODE_EXT, clean_blank_lines, format_size, get_nobinary,
-                get_size, is_binary)
+from dh import (
+    SOURCE_CODE_EXT,
+    clean_blank_lines,
+    format_size,
+    get_nobinary,
+    get_size,
+    is_binary,
+)
 from termcolor import cprint
 
 
@@ -19,7 +25,7 @@ def process_file(fp):
         return
     before: int = get_size(fp)
     lines: list[str] = []
-    print(f"[Ok] {fp.name} ", end=" ")
+    print(f"[Ok] {fp.name} ", end="")
     with open(fp, encoding="utf-8") as fin:
         lines = fin.readlines()
         if not lines:
@@ -48,7 +54,8 @@ def process_file(fp):
         diffsize = after - before
         cprint(
             f"{format_size(diffsize)} | removed : {removed} | inline : {inline}",
-            "yellow")
+            "yellow",
+        )
     else:
         try:
             _ = ast.parse(code)
@@ -58,16 +65,17 @@ def process_file(fp):
             diffsize = after - before
             cprint(
                 f"{format_size(diffsize)} | removed : {removed} | inline : {inline}",
-                "yellow")
+                "yellow",
+            )
         except:
             cprint("result code invalid.", "magenta")
 
 
 def main() -> None:
-    dir = Path.cwd()
-    before = get_size(dir)
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_nobinary(dir)
+    files = [Path(arg) for arg in args] if args else get_nobinary(root_dir)
     if not files:
         print("no files found")
         return
@@ -80,7 +88,7 @@ def main() -> None:
             pass
         p.close()
         p.join()
-        after = get_size(dir)
+        after = get_size(root_dir)
         cprint(
             f"{format_size(before - after)}",
             "cyan",

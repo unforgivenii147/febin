@@ -9,11 +9,11 @@ import contextlib
 import logging
 import lzma
 import os
+from pathlib import Path
 import shutil
 import sys
 import tempfile
 import time
-from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -21,7 +21,7 @@ logging.basicConfig(
     format="%(message)s",
     handlers=[
         logging.FileHandler("compression_errors.log"),
-        logging.StreamHandler()
+        logging.StreamHandler(),
     ],
 )
 logger = logging.getLogger(__name__)
@@ -36,11 +36,13 @@ def atomic_write(data, final_path):
     os.makedirs(temp_dir, exist_ok=True)
     temp_path = None
     try:
-        with tempfile.NamedTemporaryFile(mode="wb",
-                                         dir=temp_dir,
-                                         prefix=".tmp_",
-                                         suffix=".xz",
-                                         delete=False) as temp_file:
+        with tempfile.NamedTemporaryFile(
+            mode="wb",
+            dir=temp_dir,
+            prefix=".tmp_",
+            suffix=".xz",
+            delete=False,
+        ) as temp_file:
             temp_path = temp_file.name
             temp_file.write(data)
             temp_file.flush()
@@ -72,8 +74,7 @@ def safe_delete(file_path, max_retries=3, delay=0.5):
             if attempt < max_retries - 1:
                 time.sleep(delay * (attempt + 1))  # Increasing delay
                 continue
-            logger.error(
-                f"Cannot delete {file_path} after {max_retries} attempts")
+            logger.error(f"Cannot delete {file_path} after {max_retries} attempts")
         except Exception as e:
             logger.error(f"Error deleting {file_path}: {e}")
             return False
@@ -92,8 +93,15 @@ def should_compress(file_path):
         if not os.path.isfile(file_path):
             return False
         # Skip already compressed files
-        compressed_extensions = (".xz", ".lzma", ".gz", ".bz2", ".zip", ".7z",
-                                 ".rar")
+        compressed_extensions = (
+            ".xz",
+            ".lzma",
+            ".gz",
+            ".bz2",
+            ".zip",
+            ".7z",
+            ".rar",
+        )
         if str(file_path).lower().endswith(compressed_extensions):
             return False
         # Skip empty files
@@ -123,9 +131,7 @@ def compress_file(file_path, delete_delay=0.5):
             compressed_data = lzma.compress(data, preset=9)  # Max compression
         except MemoryError:
             # Fall back to lower compression if memory error
-            logger.warning(
-                f"Memory error with preset 9, trying preset 6 for {original_path}"
-            )
+            logger.warning(f"Memory error with preset 9, trying preset 6 for {original_path}")
             compressed_data = lzma.compress(data, preset=6)
         # Write compressed data atomically
         if not atomic_write(compressed_data, compressed_path):
@@ -144,13 +150,10 @@ def compress_file(file_path, delete_delay=0.5):
         if safe_delete(original_path, delay=delete_delay):
             reduction = (1 - compressed_size / original_size) * 100
             logger.info(f"✓ Compressed: {os.path.basename(original_path)}")
-            logger.info(
-                f"  {original_size} → {compressed_size} bytes ({reduction:.1f}% reduction)"
-            )
+            logger.info(f"  {original_size} → {compressed_size} bytes ({reduction:.1f}% reduction)")
             return True
         else:
-            logger.warning(
-                f"Compressed but couldn't delete original: {original_path}")
+            logger.warning(f"Compressed but couldn't delete original: {original_path}")
             return True  # Compression succeeded even if deletion failed
     except lzma.LZMAError as e:
         logger.error(f"LZMA error compressing {original_path}: {e}")
@@ -214,23 +217,26 @@ def scan_files(directory):
 
 
 def main(argz=sys.argv[1:]) -> None:
-    parser = argparse.ArgumentParser(
-        description="Compress files using xz compression")
+    parser = argparse.ArgumentParser(description="Compress files using xz compression")
     parser.add_argument(
         "directory",
         nargs="?",
         default=".",
-        help="Directory to process (default: current directory)")
+        help="Directory to process (default: current directory)",
+    )
     parser.add_argument(
         "--delay",
         "-d",
         type=float,
         default=0.5,
-        help="Delay in seconds before deleting original files (default: 0.5)")
-    parser.add_argument("--verbose",
-                        "-v",
-                        action="store_true",
-                        help="Enable verbose logging")
+        help="Delay in seconds before deleting original files (default: 0.5)",
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="Enable verbose logging",
+    )
     parser.add_argument(
         "--preset",
         "-p",
@@ -246,13 +252,11 @@ def main(argz=sys.argv[1:]) -> None:
     if not os.path.isdir(start_dir):
         logger.error(f"Directory does not exist: {start_dir}")
         sys.exit(1)
-    logger.infgger.info(f"Compression preset: {args.preset}")
+    logger.info(f"Compression preset: {args.preset}")
     logger.info(f"Delete delay: {args.delay} seconds")
     # Calculate initial directory size
     before, initial_files = calculate_directory_size(start_dir)
-    logger.info(
-        f"Initial directory: {format_size(before)} across {initial_files} files"
-    )
+    logger.info(f"Initial directory: {format_size(before)} across {initial_files} files")
     # Find files to compress
     files_to_compress = scan_files(start_dir)
     if not files_to_compress:
@@ -305,15 +309,11 @@ def main(argz=sys.argv[1:]) -> None:
         savings = total_original - total_compressed
         if total_original > 0:
             savings_percent = (savings / total_original) * 100
-            logger.info(
-                f"Space saved: {format_size(savings)} ({savings_percent:.1f}%)"
-            )
+            logger.info(f"Space saved: {format_size(savings)} ({savings_percent:.1f}%)")
     logger.info("-" * 40)
     logger.info(f"Initial: {format_size(before)} across {initial_files} files")
     logger.info(f"Final:   {format_size(after)} across {final_files} files")
-    logger.info(
-        f"Overall reduction: {format_size(before - after)} ({(1 - after / before) * 100:.1f}%)"
-    )
+    logger.info(f"Overall reduction: {format_size(before - after)} ({(1 - after / before) * 100:.1f}%)")
     logger.info("=" * 60)
     logger.info("Check compression_errors.log for any errors")
 

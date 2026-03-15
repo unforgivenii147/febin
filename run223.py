@@ -1,0 +1,36 @@
+#!/data/data/com.termux/files/usr/bin/env python
+from pathlib import Path
+import subprocess
+import sys
+
+from dh import get_files
+
+
+def run_2to3(file_path) -> None:
+    if not file_path.is_file():
+        print(f"File not found: {file_path.name}")
+        return
+
+    try:
+        subprocess.run(
+            [
+                "2to3",
+                "-w",  # Write changes to file
+                "-n",  # No backup
+                "-f",
+                "all",  # Apply all fixers
+                file_path,
+            ],
+            check=True,
+        )
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error running 2to3: {e}")
+
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    root_dir = Path.cwd()
+    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".py"])
+    for file_path in files:
+        run2to3(file_path)

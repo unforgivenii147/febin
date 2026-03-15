@@ -5,8 +5,15 @@ import cv2
 import numpy as np
 import pytesseract
 
-SUPPORTED_EXT = {".jpg", ".jpeg", ".png", ".tiff", ".bmp", ".webp"}
-BASE_DIR = Path(".").resolve()
+SUPPORTED_EXT = {
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".tiff",
+    ".bmp",
+    ".webp",
+}
+BASE_DIR = Path().resolve()
 OUTPUT_DIR = BASE_DIR / "ocr_ready"
 
 
@@ -33,7 +40,13 @@ def preprocess_image(img_path):
     if img is None:
         return None
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+    gray = cv2.resize(
+        gray,
+        None,
+        fx=2,
+        fy=2,
+        interpolation=cv2.INTER_CUBIC,
+    )
     gray = cv2.fastNlMeansDenoising(gray, None, 30, 7, 21)
     clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
     gray = clahe.apply(gray)

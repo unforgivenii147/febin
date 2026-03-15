@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
-from dh import format_size, get_pyfiles, get_size
+from dh import format_size, get_files, get_size
 
 MAX_QUEUE = 16
 
@@ -27,20 +27,20 @@ def process_file(path) -> None:
 
 
 def main() -> None:
-    dir = Path.cwd()
-    before = get_size(dir)
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_pyfiles(dir)
+    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".py"])
     with Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f, )))
+            pending.append(pool.apply_async(process_file, (f,)))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    after = get_size(dir)
-    print(f"space saved: {format_size(before - after)}")
+    diffsize = before - get_size(root_dir)
+    print(f"space saved: {format_size(diffsize)}")
 
 
 if __name__ == "__main__":

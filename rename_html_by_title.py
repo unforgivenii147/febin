@@ -1,14 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
-import unicodedata
 from html.parser import HTMLParser
+import os
 from pathlib import Path
+import unicodedata
 
 import regex as re
 
 
 class TitleParser(HTMLParser):
-
     def __init__(self):
         super().__init__()
         self.in_title = False
@@ -40,8 +39,11 @@ def slugify(text: str) -> str:
     text = unicodedata.normalize("NFKD", text)
     temp = text
     text = text.lower()
-    text = re.sub(r"(?|\\\||`|<|>|~|:|;|\"|'|@|$|#|%|&|^|(|)|{|}|[|])", "",
-                  text)
+    text = re.sub(
+        r"(?|\\\||`|<|>|~|:|;|\"|'|@|$|#|%|&|^|(|)|{|}|[|])",
+        "",
+        text,
+    )
     text = re.sub(r"(__)+", "_", text)
     if len(text) < 2:
         return temp.replace(":", "").replace("?", "").replace("=", "")
@@ -78,5 +80,5 @@ def rename_html_files(root: Path):
 
 
 if __name__ == "__main__":
-    dir = Path().cwd()
-    rename_html_files(dir)
+    root_dir = Path().cwd()
+    rename_html_files(root_dir)

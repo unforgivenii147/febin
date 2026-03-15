@@ -3,8 +3,8 @@ import pathlib
 import sys
 
 import cv2
-import pytesseract
 from PIL import Image
+import pytesseract
 from termcolor import cprint
 
 video = sys.argv[1]
@@ -12,21 +12,29 @@ txtfile = pathlib.Path(video).with_suffix(".txt")
 
 
 def process_frame(frame_id, frame):
-    frame = cv2.resize(frame,
-                       None,
-                       fx=1.5,
-                       fy=1.5,
-                       interpolation=cv2.INTER_CUBIC)
+
+    frame = cv2.resize(
+        frame,
+        None,
+        fx=1.5,
+        fy=1.5,
+        interpolation=cv2.INTER_CUBIC,
+    )
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     gray = 255 - gray
-    text = pytesseract.image_to_string(Image.fromarray(gray),
-                                       lang="eng",
-                                       config="--oem 3 --psm 6")
+    text = pytesseract.image_to_string(
+        Image.fromarray(gray),
+        lang="eng",
+        config="--oem 3 --psm 6",
+    )
     if text and len(text.strip()) > 5:
         cprint(f"frame {frame_id} --> {text}", "cyan")
         txtfile.open("a", encoding="utf-8").write(text + "\n")
     else:
-        cprint(f"frame {frame_id} --> no text", "blue")
+        cprint(
+            f"frame {frame_id} --> no text",
+            "blue",
+        )
 
 
 def main():

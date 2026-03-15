@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
 from multiprocessing import Pool
+import os
 from pathlib import Path
 
 import pdfplumber
@@ -12,7 +12,7 @@ def process_file(fp):
     with pdfplumber.open(fp) as pdf:
         numpages = len(pdf.pages)
         strn = len(str(numpages))
-        outdir = Path(fp).stem.replace(str(numpages), "")
+        Path(fp).stem.replace(str(numpages), "")
         if not os.path.exists(outdir):
             os.mkdir(outdir)
         for page in pdf.pages:
@@ -49,7 +49,7 @@ def main():
         return
     pool = Pool(4)
     for f in files:
-        _ = pool.apply_async(process_file, ((f), ))
+        _ = pool.apply_async(process_file, ((f),))
     pool.close()
     pool.join()
     del pool

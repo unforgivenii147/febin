@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python3
 import io
+from pathlib import Path
 import tarfile
 import zipfile
-from pathlib import Path
 
 
 def whl_to_tarxz(source_dir: str):
@@ -18,8 +18,8 @@ def whl_to_tarxz(source_dir: str):
         tar_xz_file = zip_file.with_suffix(".tar.xz")
         print(f"Converting {zip_file} -> {tar_xz_file}")
         with (
-                zipfile.ZipFile(zip_file, "r") as zf,
-                tarfile.open(tar_xz_file, "w:xz") as tf,
+            zipfile.ZipFile(zip_file, "r") as zf,
+            tarfile.open(tar_xz_file, "w:xz") as tf,
         ):
             for member in zf.infolist():
                 if member.is_dir():
@@ -27,7 +27,10 @@ def whl_to_tarxz(source_dir: str):
                 file_data = zf.read(member.filename)
                 tar_info = tarfile.TarInfo(name=member.filename)
                 tar_info.size = len(file_data)
-                tf.addfile(tar_info, fileobj=io.BytesIO(file_data))
+                tf.addfile(
+                    tar_info,
+                    fileobj=io.BytesIO(file_data),
+                )
         print(f"Created {tar_xz_file}")
 
 

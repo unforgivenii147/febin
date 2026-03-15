@@ -6,8 +6,10 @@ import sys
 if len(sys.argv) != 2:
     print("Usage: python extract_subtitles.py <input_file>")
     sys.exit(1)
+
 input_file = sys.argv[1]
 output_dir = "subtitles"
+
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 command = f"ffmpeg -i {input_file} -map_metadata:s:0 {output_dir}/subtitles.srt"

@@ -9,7 +9,11 @@ VENV_PATH = os.path.expanduser("~/venv")
 def get_installed_version(pkg_name):
     try:
         result = subprocess.run(
-            [os.path.join(VENV_PATH, "bin", "pip"), "show", pkg_name],
+            [
+                os.path.join(VENV_PATH, "bin", "pip"),
+                "show",
+                pkg_name,
+            ],
             capture_output=True,
             text=True,
         )
@@ -34,7 +38,10 @@ def get_wheel_package_info(wheel_file):
                                 pkg_name = line.split(":")[1].strip()
                             if line.startswith("Version:"):
                                 pkg_version = line.split(":")[1].strip()
-                        return pkg_name, pkg_version
+                        return (
+                            pkg_name,
+                            pkg_version,
+                        )
     except Exception as e:
         print(f"Error reading {wheel_file}: {e}")
     return None, None
@@ -61,9 +68,7 @@ def main():
                 installed_version = get_installed_version(pkg_name)
                 if installed_version:
                     if installed_version == pkg_version:
-                        print(
-                            f"{pkg_name} {pkg_version} is already installed in the venv, removing {wheel_file}"
-                        )
+                        print(f"{pkg_name} {pkg_version} is already installed in the venv, removing {wheel_file}")
                         remove_wheel_file(wheel_file)
                     elif installed_version > pkg_version:
                         print(
@@ -75,9 +80,7 @@ def main():
                             f"{pkg_name} {pkg_version} is newer than the installed version {installed_version} in venv. Keeping {wheel_file}"
                         )
                 else:
-                    print(
-                        f"{pkg_name} is not installed in the venv, keeping {wheel_file}"
-                    )
+                    print(f"{pkg_name} is not installed in the venv, keeping {wheel_file}")
             else:
                 print(f"Could not extract info from {wheel_file}")
 

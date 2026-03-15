@@ -1,19 +1,30 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
 from collections import defaultdict
+import os
 from pathlib import Path
 
 import click
 from fastwalk import walk_files
-from xxhash import xxh64
+
+# from xxhash import xxh64
+from stringzilla import File, Sha256
 
 
+def get_file_hash(file_path):
+    mapped_file = File(str(file_path))
+    return Sha256().update(mapped_file).hexdigest()
+
+
+"""
 def get_file_hash(path):
+
     h = xxh64()
     with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             h.update(chunk)
     return h.hexdigest()
+
+"""
 
 
 def find_and_delete_duplicates(path: Path):
@@ -33,8 +44,8 @@ def find_and_delete_duplicates(path: Path):
                 print(f"Error processing file {path}: {e}")
                 continue
     for (
-            file_hash,
-            paths,
+        file_hash,
+        paths,
     ) in files_by_hash.items():
         if len(paths) > 1:
             duplicate_count += len(paths) - 1

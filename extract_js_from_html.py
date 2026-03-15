@@ -1,15 +1,24 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from collections import deque
+from multiprocessing import Pool
+from pathlib import Path
+import sys
+
+from dh import (
+    cprint,
+    format_size,
+    get_files,
+    get_size,
+)
+from termcolor import cprint
+
+MAX_QUEUE = 16
+
 import os
 import random
 import string
-from multiprocessing import Pool
-from pathlib import Path
-from sys import exit
 
-import dh
 from bs4 import BeautifulSoup
-from fastwalk import walk_files
-from termcolor import cprint
 
 
 def save_script(str1):
@@ -45,20 +54,21 @@ def process_file(fp):
 
 
 def main():
-    files = []
-    dir = Path.cwd()
-    start = dh.get_size(dir)
-    for pth in walk_files(str(dir)):
-        path = Path(os.path.join(dir, pth))
-        if path.is_file() and path.suffix == ".html":
-            files.append(path)
-    pool = Pool(8)
-    pool.imap_unordered(process_file, files)
-    pool.close()
-    pool.join()
-    end = dh.get_size(dir)
-    print(f"{dh.format_size(end - start)}")
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
+    args = sys.argv[1:]
+    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".html", "htm"])
+    with Pool(8) as pool:
+        pending = deque()
+        for f in files:
+            pending.append(pool.apply_async(process_file, (f,)))
+            if len(pending) > MAX_QUEUE:
+                pending.popleft().get()
+        while pending:
+            pending.popleft().get()
+    diff_size = before - get_size(root_dir)
+    print(f"space saved : {format_size(diff_size)}")
 
 
 if __name__ == "__main__":
-    exit(main())
+    main()

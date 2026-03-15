@@ -1,8 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 import os
-import subprocess
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+import subprocess
 from sys import exit
 from time import perf_counter
 
@@ -13,8 +16,11 @@ def process_file(fp):
     if not fp.exists():
         return (False, fp)
     ret = subprocess.run(
-        ["prettier", "-w",
-         str(fp).replace("/storage/emulated/0", "/sdcard")],
+        [
+            "prettier",
+            "-w",
+            str(fp).replace("/storage/emulated/0", "/sdcard"),
+        ],
         check=True,
     )
     if ret:
@@ -26,8 +32,8 @@ def process_file(fp):
 def main():
     start = perf_counter()
     files = []
-    dir = str(os.getcwd())
-    for pth in walk_files(dir):
+    root_dir = str(os.getcwd())
+    for pth in walk_files(root_dir):
         path = Path(pth)
         if path.is_symlink():
             continue

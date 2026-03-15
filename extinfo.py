@@ -4,8 +4,8 @@ python script to read an extension name via sys.argv[1] and reports:
     - how many files with that extension are there in current dir recursively and total size of them
 """
 
-import sys
 from pathlib import Path
+import sys
 
 
 def format_size(sb):
@@ -20,7 +20,7 @@ def main():
     ext = sys.argv[1]
     total_size = 0
     count = 0
-    dir = Path.cwd()
+    Path.cwd()
     for f in dir.rglob(f"*.{ext}"):
         total_size += f.stat().st_size
         count += 1

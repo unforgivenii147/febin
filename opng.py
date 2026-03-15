@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
-import subprocess
 from multiprocessing import Pool
+import os
 from pathlib import Path
+import subprocess
 
 from fastwalk import walk_files
 
@@ -35,9 +35,9 @@ def main():
         return
     print(f"Found {len(png_files)} PNG files to optimize.")
     with Pool(8) as pool:
-        for result in pool.imap_unordered(optimize_png, png_files):
-            if result:
-                print(result)
+        for _ in pool.imap_unordered(optimize_png, png_files):
+            pass
+
     print("\nOptimization complete.")
 
 

@@ -1,6 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 
@@ -9,14 +12,17 @@ def has_native_wheels(info) -> bool:
     urls = info.get("urls", [])
     for u in urls:
         filename = u.get("filename", "").lower()
-        if any(ext in filename for ext in [
+        if any(
+            ext in filename
+            for ext in [
                 ".so",
                 ".pyd",
                 ".dll",
                 "win_amd64",
                 "manylinux",
                 "macosx",
-        ]):
+            ]
+        ):
             return True
     return False
 
@@ -47,10 +53,7 @@ def main() -> None:
     with open(infile) as f:
         packages = [line.strip() for line in f if line.strip()]
     with ThreadPoolExecutor(max_workers=10) as executor:
-        futures = {
-            executor.submit(check_package, pkg): pkg
-            for pkg in packages
-        }
+        futures = {executor.submit(check_package, pkg): pkg for pkg in packages}
         for future in as_completed(futures):
             pkg, result = future.result()
             if result == "pure":

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import shutil
-import sys
 from importlib import metadata
 from pathlib import Path
+import shutil
+import sys
 
 from packaging.utils import parse_wheel_filename
 from packaging.version import Version
@@ -68,16 +68,16 @@ def main():
             if norm_name in installed_pkgs:
                 installed_version = installed_pkgs[norm_name]
                 if installed_version == Version(str(version)):
-                    cprint(f"[MATCH] {dist_name}=={version} → removing",
-                           "cyan")
+                    cprint(
+                        f"[MATCH] {dist_name}=={version} → removing",
+                        "cyan",
+                    )
                     wheel.unlink()
                     moved += 1
                 else:
                     wheel.unlink()
                     moved += 1
-                    print(
-                        f"[DIFF VERSION] {dist_name} (installed {installed_version}, wheel {version}) -> removed"
-                    )
+                    print(f"[DIFF VERSION] {dist_name} (installed {installed_version}, wheel {version}) -> removed")
         except Exception as e:
             print(f"[ERROR] {wheel.name}: {e}")
             shutil.move(str(wheel), DEST_DIR2 / wheel.name)

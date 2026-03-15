@@ -7,8 +7,8 @@ Removes references to .pyc files and direct_url.json, and logs missing files.
 import base64
 import hashlib
 import logging
-import sys
 from pathlib import Path
+import sys
 
 # Set up logging
 logging.basicConfig(
@@ -16,7 +16,7 @@ logging.basicConfig(
     format="%(message)s",
     handlers=[
         logging.FileHandler("record_updater.log"),
-        logging.StreamHandler(sys.stdout)
+        logging.StreamHandler(sys.stdout),
     ],
 )
 logger = logging.getLogger(__name__)
@@ -47,8 +47,7 @@ def calculate_file_hash(filepath: Path) -> str:
                 sha256_hash.update(chunk)
         # Get the hash and encode in base64 (without padding)
         hash_bytes = sha256_hash.digest()
-        hash_b64 = base64.urlsafe_b64encode(hash_bytes).decode("ascii").rstrip(
-            "=")
+        hash_b64 = base64.urlsafe_b64encode(hash_bytes).decode("ascii").rstrip("=")
         return f"sha256={hash_b64}"
     except Exception as e:
         logger.error(f"Error calculating hash for {filepath}: {e}")
@@ -64,7 +63,9 @@ def get_size(filepath: Path) -> int:
         return 0
 
 
-def parse_record_line(line: str) -> tuple[str, str, str]:
+def parse_record_line(
+    line: str,
+) -> tuple[str, str, str]:
     """Parse a line from a RECORD file into path, hash, and size."""
     parts = line.strip().split(",")
     if len(parts) == 3:
@@ -134,18 +135,14 @@ def update_record_file(record_path: Path, dist_info_dir: Path) -> bool:
             new_lines.append(f"{relative_path},{new_hash},{new_size}")
         else:
             # If hash calculation failed, keep the original line
-            logger.warning(
-                f"Failed to calculate hash for {relative_path}, keeping original"
-            )
+            logger.warning(f"Failed to calculate hash for {relative_path}, keeping original")
             new_lines.append(line)
     # Add the RECORD file entry (will be updated with its own hash after writing)
     record_relative = str(record_path.relative_to(dist_info_dir.parent))
     new_lines.append(f"{record_relative},,")
     # Log missing files summary
     if missing_files:
-        logger.info(
-            f"Found {len(missing_files)} missing files in {dist_info_dir.name}:"
-        )
+        logger.info(f"Found {len(missing_files)} missing files in {dist_info_dir.name}:")
         for missing in missing_files:
             logger.info(f"  - {missing}")
     # Write the updated RECORD file
@@ -204,9 +201,7 @@ def scan_and_update():
             updated_count += 1
         else:
             failed_count += 1
-    logger.info(
-        f"Summary: {updated_count} RECORD files updated, {failed_count} failed"
-    )
+    logger.info(f"Summary: {updated_count} RECORD files updated, {failed_count} failed")
 
 
 def main():

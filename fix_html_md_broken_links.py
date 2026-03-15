@@ -7,9 +7,8 @@ import regex as re
 static_dir = "/sdcard/_static"
 
 
-def fix_links(file_path):
-    with open(file_path) as file:
-        content = file.read()
+def fix_links(file_path: Path):
+    content: str = file_path.read_text(encoding="utf-8", errors="replace")
     links = re.findall(r'href=[\'"]?([^\'" >]+)', content)
     for link in links:
         if not Path(link).exists():

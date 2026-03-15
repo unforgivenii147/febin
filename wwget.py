@@ -1,11 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 import json
 import os
 import signal
 import sys
 import threading
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 
@@ -56,7 +59,9 @@ def save_meta(meta_path: str, meta: dict):
     os.replace(tmp, meta_path)
 
 
-def build_chunks(size: int) -> list[tuple[int, int]]:
+def build_chunks(
+    size: int,
+) -> list[tuple[int, int]]:
     chunks = []
     for i in range(0, size, CHUNK_SIZE):
         end = min(i + CHUNK_SIZE - 1, size - 1)
@@ -78,8 +83,12 @@ def download_chunk(
     headers = {"Range": f"bytes={downloaded}-{end}"}
     for attempt in range(MAX_RETRIES):
         try:
-            with requests.get(url, headers=headers, stream=True,
-                              timeout=15) as r:
+            with requests.get(
+                url,
+                headers=headers,
+                stream=True,
+                timeout=15,
+            ) as r:
                 r.raise_for_status()
                 with open(path, "r+b") as f:
                     f.seek(downloaded)
@@ -117,7 +126,8 @@ def download(url: str, output: str, workers: int = 4):
                         end,
                         meta,
                         meta_lock,
-                    ))
+                    )
+                )
             for f in as_completed(futures):
                 f.result()
     except GracefulExit:

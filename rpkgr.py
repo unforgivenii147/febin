@@ -1,10 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 import os
+from pathlib import Path
 import shutil
 import sysconfig
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import Path
 
 import regex as re
 from wheel.wheelfile import WheelFile
@@ -120,8 +123,7 @@ def repack(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Repack installed Python packages")
+    parser = argparse.ArgumentParser(description="Repack installed Python packages")
     parser.add_argument(
         "packages",
         nargs="*",

@@ -2,11 +2,10 @@
 import ast
 from pathlib import Path
 
-from dh import STDLIB, get_pyfiles
+from dh import STDLIB, get_files
 
 
-def extract_imports_from_py(code: str,
-                            base_path: Path | None = None) -> set[str]:
+def extract_imports_from_py(code: str, base_path: Path | None = None) -> set[str]:
     results = set()
     try:
         tree = ast.parse(code)
@@ -58,9 +57,9 @@ def is_local_module(base_path: Path, module: str) -> bool:
 
 
 def main():
-    dir = Path.cwd()
+    root_dir = Path.cwd()
     importz = []
-    for file in get_pyfiles(dir):
+    for file in get_files(root_dir, extensions=[".py"]):
         with open(file) as f:
             contents = f.read()
             importz.append(extract_imports_from_py(contents))

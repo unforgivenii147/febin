@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import itertools
-import time
 from pathlib import Path
+import time
 
 import cv2
-import pytesseract
 from dh import IMG_EXT
+import pytesseract
 
 OUTPUT_DIR = Path("ocr_results")
 OUTPUT_DIR.mkdir(exist_ok=True)
@@ -19,8 +19,14 @@ def prepare_image_for_ocr(img_path: Path):
         raise ValueError(f"Could not read image: {img_path}")
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.fastNlMeansDenoising(gray, h=15)
-    thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                   cv2.THRESH_BINARY, 31, 2)
+    thresh = cv2.adaptiveThreshold(
+        gray,
+        255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY,
+        31,
+        2,
+    )
     coords = cv2.findNonZero(thresh)
     rect = cv2.minAreaRect(coords)
     angle = rect[-1]
@@ -43,16 +49,13 @@ def run_tesseract_on_image(img, oem, psm):
 
 
 def main():
-    image_files = [
-        f for f in Path(".").iterdir() if f.suffix.lower() in IMG_EXT
-    ]
+    image_files = [f for f in Path().iterdir() if f.suffix.lower() in IMG_EXT]
     all_results = []
     for img_path in image_files:
         print(f"Processing: {img_path}")
         processed = prepare_image_for_ocr(img_path)
         for oem, psm in itertools.product(OEM_OPTIONS, PSM_OPTIONS):
-            text, config, duration, error = run_tesseract_on_image(
-                processed, oem, psm)
+            text, config, duration, error = run_tesseract_on_image(processed, oem, psm)
             result = {
                 "image": img_path.name,
                 "config": config,
@@ -66,8 +69,14 @@ def main():
             out_file = OUTPUT_DIR / f"{img_path.stem}__oem{oem}_psm{psm}.txt"
             out_file.write_text(text)
     df = pd.DataFrame(all_results)
-    df.to_csv(OUTPUT_DIR / "ocr_summary.csv", index=False)
-    print("\nDone. All results saved in:", OUTPUT_DIR)
+    df.to_csv(
+        OUTPUT_DIR / "ocr_summary.csv",
+        index=False,
+    )
+    print(
+        "\nDone. All results saved in:",
+        OUTPUT_DIR,
+    )
 
 
 if __name__ == "__main__":

@@ -3,10 +3,10 @@ import argparse
 import datetime
 import grp
 import os
+from pathlib import Path
 import pwd
 import stat
 import sys
-from pathlib import Path
 
 COLORS = {
     "dir": "\033[34m",
@@ -96,10 +96,7 @@ def scan_dir(path, args):
         return []
     if not args.a:
         if args.A:
-            entries = [
-                e for e in entries
-                if e.name not in (".", "..") and not e.name.startswith(".")
-            ]
+            entries = [e for e in entries if e.name not in (".", "..") and not e.name.startswith(".")]
         else:
             entries = [e for e in entries if not e.name.startswith(".")]
 

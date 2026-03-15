@@ -1,13 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 import os
+from pathlib import Path
 import tarfile
 import zipfile
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import Path
 
+from dh import BIN_EXT, TXT_EXT
 import py7zr
 import regex as re
-from dh import BIN_EXT, TXT_EXT
 
 url_pattern = re.compile(r'https?://[^\s"\']+')
 EXT = BIN_EXT
@@ -22,9 +25,9 @@ def extract_urls_from_file(filepath):
     urls = set()
     try:
         with open(
-                filepath,
-                encoding="utf-8",
-                errors="ignore",
+            filepath,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             content = f.read()
             urls.update(extract_urls_from_text(content))
@@ -97,10 +100,10 @@ def extract_urls(filepath):
     elif path.suffix in [".zip", ".whl"]:
         return extract_urls_from_zip(filepath)
     elif path.suffix.startswith(".tar") or path.suffix in [
-            ".tar.gz",
-            ".tar.xz",
-            ".tar.zst",
-            ".tar.7z",
+        ".tar.gz",
+        ".tar.xz",
+        ".tar.zst",
+        ".tar.7z",
     ]:
         return extract_urls_from_tar(filepath)
     elif path.suffix == ".7z":

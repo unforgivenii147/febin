@@ -1,11 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 import json
 import math
 import os
 import signal
 import sys
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 
@@ -48,7 +51,9 @@ def save_meta(path: str, meta: dict):
     os.replace(tmp, path)
 
 
-def build_parts(size: int) -> list[tuple[int, int, int]]:
+def build_parts(
+    size: int,
+) -> list[tuple[int, int, int]]:
     parts = []
     count = math.ceil(size / PART_SIZE)
     for i in range(count):
@@ -71,8 +76,12 @@ def download_part(
     headers = {"Range": f"bytes={downloaded}-{end}"}
     for attempt in range(MAX_RETRIES):
         try:
-            with requests.get(url, headers=headers, stream=True,
-                              timeout=15) as r:
+            with requests.get(
+                url,
+                headers=headers,
+                stream=True,
+                timeout=15,
+            ) as r:
                 r.raise_for_status()
                 mode = "ab" if os.path.exists(part_path) else "wb"
                 with open(part_path, mode) as f:
@@ -101,7 +110,11 @@ def merge_parts(output: str, parts: list[tuple[int, int, int]]):
                     out.write(buf)
 
 
-def cleanup(output: str, parts: list[tuple[int, int, int]], meta_path: str):
+def cleanup(
+    output: str,
+    parts: list[tuple[int, int, int]],
+    meta_path: str,
+):
     for part_id, _, _ in parts:
         os.remove(f"{output}.part{part_id}")
     os.remove(meta_path)
@@ -127,7 +140,8 @@ def download(url: str, output: str, workers: int):
                         start,
                         end,
                         meta,
-                    ))
+                    )
+                )
             for f in as_completed(futures):
                 f.result()
     except GracefulExit:

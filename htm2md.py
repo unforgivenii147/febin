@@ -1,22 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
-import subprocess
-import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
+import subprocess
+import sys
 
 
-def convert_html_to_md(html_file: Path,
-                       executable: str = "html2md") -> tuple[Path, bool]:
+def convert_html_to_md(html_file: Path, executable: str = "html2md") -> tuple[Path, bool]:
     if html_file.suffix.lower() in [
-            ".html",
-            ".htm",
+        ".html",
+        ".htm",
     ]:
         md_file = html_file.with_suffix(".md")
     else:
-        print(
-            f"Warning: {html_file} doesn't have .html/.htm extension, skipping."
-        )
+        print(f"Warning: {html_file} doesn't have .html/.htm extension, skipping.")
         return (html_file, False)
     try:
         result = subprocess.run(
@@ -50,15 +47,15 @@ def convert_html_to_md(html_file: Path,
 
 def find_html_files(directory: Path, recursive: bool = True) -> list[Path]:
     if recursive:
-        html_files = list(directory.rglob("*.html")) + list(
-            directory.rglob("*.htm"))
+        html_files = list(directory.rglob("*.html")) + list(directory.rglob("*.htm"))
     else:
-        html_files = list(directory.glob("*.html")) + list(
-            directory.glob("*.htm"))
+        html_files = list(directory.glob("*.html")) + list(directory.glob("*.htm"))
     return sorted(html_files)
 
 
-def process_file_wrapper(args: tuple, ) -> tuple[Path, bool]:
+def process_file_wrapper(
+    args: tuple,
+) -> tuple[Path, bool]:
     html_file, executable = args
     return convert_html_to_md(html_file, executable)
 
@@ -137,9 +134,7 @@ Examples:
             results = pool.map(process_file_wrapper, process_args)
         successful = sum(1 for _, success in results if success)
         print(f"\n{'=' * 50}")
-        print(
-            f"Conversion complete: {successful}/{len(html_files)} files converted successfully"
-        )
+        print(f"Conversion complete: {successful}/{len(html_files)} files converted successfully")
 
 
 if __name__ == "__main__":

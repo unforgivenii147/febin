@@ -1,10 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 from pathlib import Path
+import sys
 
-import tree_sitter_python as tsp
-from dh import STDLIB, get_installed_pkgs, get_pyfiles
+from dh import (
+    STDLIB,
+    get_files,
+    get_installed_pkgs,
+)
 from tree_sitter import Language, Parser
+import tree_sitter_python as tsp
 
 parser = Parser()
 parser.language = Language(tsp.language())
@@ -19,7 +27,7 @@ def extract_file(src: bytes, tree):
     chunks = []
     for node in root.children:
         if node.type in VALID:
-            chunks.append(src[node.start_byte:node.end_byte].decode())
+            chunks.append(src[node.start_byte : node.end_byte].decode())
     return chunks
 
 
@@ -32,8 +40,8 @@ def process_file(fp):
 def main():
     outfile = Path("importz.txt")
     all_imports = []
-    dir = Path.cwd()
-    files = get_pyfiles(dir)
+    root_dir = Path.cwd()
+    files = get_files(root_dir, extensions=[".py"])
     results = []
     with ThreadPoolExecutor(max_workers=8) as ex:
         futures = [ex.submit(process_file, f) for f in files]

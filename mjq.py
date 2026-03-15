@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import contextlib
-import os
-import subprocess
 from multiprocessing import Pool, cpu_count
+import os
 from pathlib import Path
+import subprocess
 
 EXCLUDE_DIRS = {".git", "__pycache__"}
 
@@ -21,15 +21,33 @@ def minify_with_jq(path: Path):
             capture_output=True,
         )
         if result.returncode != 0:
-            return str(path), False, 0, 0, result.stderr.decode().strip()
+            return (
+                str(path),
+                False,
+                0,
+                0,
+                result.stderr.decode().strip(),
+            )
         minified_bytes = result.stdout.strip()
         size_after = len(minified_bytes)
         if size_before == size_after:
-            return str(path), False, size_before, size_after, None
+            return (
+                str(path),
+                False,
+                size_before,
+                size_after,
+                None,
+            )
         with open(tmp_path, "wb") as f:
             f.write(minified_bytes)
         os.replace(tmp_path, path)
-        return str(path), True, size_before, size_after, None
+        return (
+            str(path),
+            True,
+            size_before,
+            size_after,
+            None,
+        )
     except Exception as e:
         return str(path), False, 0, 0, str(e)
     finally:
@@ -53,7 +71,7 @@ def human_readable(n: int) -> str:
 
 
 def main():
-    root = Path(".").resolve()
+    root = Path().resolve()
     files = list(collect_json_files(root))
     if not files:
         print("No JSON files found.")
@@ -65,8 +83,13 @@ def main():
     total_before = 0
     total_after = 0
     with Pool(processes=workers) as pool:
-        for filepath, changed, before, after, err in pool.imap_unordered(
-                minify_with_jq, files):
+        for (
+            filepath,
+            changed,
+            before,
+            after,
+            err,
+        ) in pool.imap_unordered(minify_with_jq, files):
             if err:
                 print(f"[ERROR] {filepath} -> {err}")
                 errors += 1

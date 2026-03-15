@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import subprocess
-import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
+import subprocess
+import sys
 
 from dh import format_size, get_size
 from fastwalk import walk_files
@@ -53,8 +53,8 @@ def format_file(file_path):
         del before
         return True
     except (
-            subprocess.CalledProcessError,
-            FileNotFoundError,
+        subprocess.CalledProcessError,
+        FileNotFoundError,
     ):
         del res
         del size_diff
@@ -66,13 +66,13 @@ def format_file(file_path):
 
 def main() -> None:
     cfiles: list = []
-    dir = Path.cwd()
-    before = get_size(dir)
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
     args = sys.argv[1:]
     if args:
         cfiles = [Path(arg) for arg in args]
     else:
-        for pth in walk_files(dir):
+        for pth in walk_files(root_dir):
             path = Path(pth)
             if any(path.suffix == ext for ext in FILE_EXTENSIONS):
                 cfiles.append(path)
@@ -88,12 +88,12 @@ def main() -> None:
     with Pool(8) as pool:
         pending = deque()
         for f in cfiles:
-            pending.append(pool.apply_async(format_file, ((f), )))
+            pending.append(pool.apply_async(format_file, ((f),)))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    after = get_size(dir)
+    after = get_size(root_dir)
     diffsize = after - before
     print(f"space change: {format_size(diffsize)}")
 

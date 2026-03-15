@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from pathlib import Path
+import sys
 
-import regex as re
 from dh import atomic_write
+import regex as re
 
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
 FONT_EXTS = {

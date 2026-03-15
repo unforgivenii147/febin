@@ -34,8 +34,8 @@ def walk_directory(root) -> list[str]:
 
 
 def main():
-    dir = Path.cwd()
-    files = walk_directory(dir)
+    root_dir = Path.cwd()
+    files = walk_directory(root_dir)
     for f in files:
         print(process_file(f))
 

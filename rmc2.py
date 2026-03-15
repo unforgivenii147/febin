@@ -1,11 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
-import tree_sitter_python
-from dh import cleanup_blank_lines, format_size, get_pyfiles, get_size
+from dh import (
+    cleanup_blank_lines,
+    format_size,
+    get_files,
+    get_size,
+)
 from tree_sitter import Language, Parser
+import tree_sitter_python
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 
@@ -14,7 +19,6 @@ parser.language = Language(tree_sitter_python.language())
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
-
     def first_named_child(block):
         for child in block.children:
             if child.is_named:
@@ -26,10 +30,15 @@ def _collect_docstrings(node, source: bytes, deletions: list):
         if first and first.type == "expression_statement":
             string_node = first.child_by_field_name("expression")
             if string_node and string_node.type == "string":
-                deletions.append((first.start_byte, first.end_byte))
+                deletions.append(
+                    (
+                        first.start_byte,
+                        first.end_byte,
+                    )
+                )
     if node.type in (
-            "class_definition",
-            "function_definition",
+        "class_definition",
+        "function_definition",
     ):
         body = node.child_by_field_name("body")
         if body:
@@ -37,7 +46,12 @@ def _collect_docstrings(node, source: bytes, deletions: list):
             if first and first.type == "expression_statement":
                 string_node = first.child_by_field_name("expression")
                 if string_node and string_node.type == "string":
-                    deletions.append((first.start_byte, first.end_byte))
+                    deletions.append(
+                        (
+                            first.start_byte,
+                            first.end_byte,
+                        )
+                    )
     for child in node.children:
         _collect_docstrings(child, source, deletions)
 
@@ -50,9 +64,14 @@ def process_file(path: Path) -> None:
 
         def walk_comments(node):
             if node.type == "comment":
-                text = source[node.start_byte:node.end_byte]
+                text = source[node.start_byte : node.end_byte]
                 if not text.lstrip().startswith(EXCLUDE_PREFIXES):
-                    deletions.append((node.start_byte, node.end_byte))
+                    deletions.append(
+                        (
+                            node.start_byte,
+                            node.end_byte,
+                        )
+                    )
             for child in node.children:
                 walk_comments(child)
 
@@ -73,19 +92,15 @@ def process_file(path: Path) -> None:
 
 def main() -> None:
 
-    root = Path.cwd()
-    isz = get_size(root)
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_pyfiles(root)
-
-    if len(files) == 1:
-        process_file(files[0])
-        sys.exit(0)
+    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".py"])
 
     with Pool(8) as pool:
         pool.map(process_file, files)
-    esz = get_size(root)
-    print(f"space freed: {format_size(isz - esz)}")
+    diffsize = before - get_size(root_dir)
+    print(f"space freed: {format_size(diffsize)}")
 
 
 if __name__ == "__main__":

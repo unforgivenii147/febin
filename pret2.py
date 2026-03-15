@@ -1,13 +1,21 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
+from pathlib import Path
 import shutil
 import subprocess
-from pathlib import Path
 
 from dh import unique_path
 
 EXTENSIONS = {
-    ".js", ".css", ".html", ".json", ".mjs", ".cjs", ".ts", ".jsx", ".tsx"
+    ".js",
+    ".css",
+    ".html",
+    ".json",
+    ".mjs",
+    ".cjs",
+    ".ts",
+    ".jsx",
+    ".tsx",
 }
 EXCLUDE_PATTERNS = {".py", ".ipynb"}
 
@@ -18,7 +26,9 @@ def should_format(file_path: Path) -> bool:
     return all(not file_path.name.endswith(p) for p in EXCLUDE_PATTERNS)
 
 
-def get_files_to_format(root_dir: str = ".") -> list[Path]:
+def get_files_to_format(
+    root_dir: str = ".",
+) -> list[Path]:
     root = Path(root_dir).resolve()
     files: list[Path] = []
     for path in root.rglob("*"):
@@ -40,19 +50,33 @@ def move_to_error_folder(file_path: Path) -> None:
     print(f"  ❌ Moved to error folder: {dest}")
 
 
-def format_file(file_path: Path) -> tuple[Path, bool, str | None]:
+def format_file(
+    file_path: Path,
+) -> tuple[Path, bool, str | None]:
     try:
         result = subprocess.run(
-            ["prettier", "--write", str(file_path)],
+            [
+                "prettier",
+                "--write",
+                str(file_path),
+            ],
             capture_output=True,
             text=True,
             timeout=900,
         )
         if result.returncode == 0:
             return file_path, True, None
-        return file_path, False, result.stderr or result.stdout or "Unknown error"
+        return (
+            file_path,
+            False,
+            result.stderr or result.stdout or "Unknown error",
+        )
     except subprocess.TimeoutExpired:
-        return file_path, False, "Timeout: formatting took too long"
+        return (
+            file_path,
+            False,
+            "Timeout: formatting took too long",
+        )
     except FileNotFoundError:
         return (
             file_path,

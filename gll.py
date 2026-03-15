@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from pathlib import Path
+import sys
 
 
 def main() -> int:
@@ -33,18 +33,17 @@ def main() -> int:
             file=sys.stderr,
         )
         return 1
-    stem = path.stem
     ext = path.suffix
-    outname = f"{stem}__{start}_end{ext}" if end == -1 else f"{stem}__{start}_{end}{ext}"
-    outname = "all.xtx"
+    outname = f"{start}{ext}" if end == -1 else f"{start}_{end}{ext}"
+    #    outname = "all.xtx"
     try:
         with (
-                path.open(
-                    "r",
-                    encoding="utf-8",
-                    errors="replace",
-                ) as infile,
-                open(outname, "w", encoding="utf-8") as outfile,
+            path.open(
+                "r",
+                encoding="utf-8",
+                errors="replace",
+            ) as infile,
+            open(outname, "w", encoding="utf-8") as outfile,
         ):
             for lineno, line in enumerate(infile, start=1):
                 if lineno < start:

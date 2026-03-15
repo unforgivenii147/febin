@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import subprocess
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
+import subprocess
 from time import perf_counter
 
 import fastwalk
@@ -36,8 +36,8 @@ def format_file(file_path):
         )
         return True
     except (
-            subprocess.CalledProcessError,
-            FileNotFoundError,
+        subprocess.CalledProcessError,
+        FileNotFoundError,
     ):
         return False
 

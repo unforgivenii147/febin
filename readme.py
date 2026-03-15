@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from pathlib import Path
 import pydoc
 import sys
-from pathlib import Path
 
 README_CANDIDATES = [
     "README.md",
@@ -12,7 +12,7 @@ README_CANDIDATES = [
 
 
 def find_readme():
-    files = {p.name.lower(): p for p in Path(".").iterdir() if p.is_file()}
+    files = {p.name.lower(): p for p in Path().iterdir() if p.is_file()}
     for name in README_CANDIDATES:
         p = files.get(name.lower())
         if p:
@@ -23,7 +23,10 @@ def find_readme():
 def main():
     readme = find_readme()
     if not readme:
-        print("No README file found in current directory.", file=sys.stderr)
+        print(
+            "No README file found in current directory.",
+            file=sys.stderr,
+        )
         sys.exit(1)
     try:
         text = readme.read_text(encoding="utf-8")

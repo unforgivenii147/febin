@@ -1,9 +1,9 @@
 
 def main():
-    dir = Path.cwd()
-    before = get_size(dir)
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_pyfiles(dir)
+    files = [Path(f) for f in args] if args else get_files(extensions=['.py'],root_dir)
     with Pool(8) as pool:
         pending = deque()
         for f in files:
@@ -12,7 +12,7 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(dir)
+    diff_size = before - get_size(root_dir)
     print(f"space saved : {format_size(diff_size)}")
 
 

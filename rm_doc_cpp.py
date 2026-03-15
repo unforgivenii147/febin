@@ -1,12 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from pathlib import Path
+import sys
 
 import regex as re
 
 
 class RegexCommentRemover:
-
     def __init__(self):
         self.pattern = re.compile(
             r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
@@ -14,7 +13,6 @@ class RegexCommentRemover:
         )
 
     def remove_comments(self, source: str):
-
         def replacer(match):
             s = match.group(0)
             if s.startswith("/"):
@@ -31,7 +29,11 @@ class RegexCommentRemover:
 
 def process_file(file_path, remover):
     try:
-        with open(file_path, encoding="utf-8", errors="ignore") as f:
+        with open(
+            file_path,
+            encoding="utf-8",
+            errors="ignore",
+        ) as f:
             code = f.read()
     except Exception as e:
         print(f"[ERROR] {file_path.name} read: {e}")
@@ -48,9 +50,12 @@ def process_file(file_path, remover):
         try:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(result)
-            print(
-                f"[OK] {file_path.name}: ~{comments} comment markers removed")
-            return ("changed", file_path, comments)
+            print(f"[OK] {file_path.name}: ~{comments} comment markers removed")
+            return (
+                "changed",
+                file_path,
+                comments,
+            )
         except Exception as e:
             print(f"[ERROR] {file_path.name} write: {e}")
             return ("error", file_path, comments)
@@ -62,8 +67,20 @@ def process_file(file_path, remover):
 if __name__ == "__main__":
     dir_path = Path.cwd()
     files = [
-        p for p in dir_path.rglob("*") if p.suffix in
-        [".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".C", ".H"]
+        p
+        for p in dir_path.rglob("*")
+        if p.suffix
+        in [
+            ".c",
+            ".cpp",
+            ".cc",
+            ".cxx",
+            ".h",
+            ".hpp",
+            ".hxx",
+            ".C",
+            ".H",
+        ]
         and p.is_file()
     ]
     if not files:
@@ -91,9 +108,7 @@ if __name__ == "__main__":
         return f"{size:.2f} TB"
 
     print(f"\n{'=' * 60}")
-    print(
-        f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}"
-    )
+    print(f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}")
     print(f"Total comment markers removed: ~{total_comments}")
     if errors:
         print("\nErrors in:")

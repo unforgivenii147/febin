@@ -10,8 +10,7 @@ def clean_requirements(fname):
         line = line.strip()
         if not line or line.startswith("#"):
             continue
-        pkg = line.split(">")[0].split("<")[0].split("=")[0].split(
-            "~")[0].strip()
+        pkg = line.split(">")[0].split("<")[0].split("=")[0].split("~")[0].strip()
         if pkg:
             packages.add(pkg)
     with open(fname, "w") as f:

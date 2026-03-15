@@ -1,17 +1,21 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-import sys
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
-import tree_sitter_python as tspython
-from dh import clean_blank_lines, format_size, get_pyfiles, get_size
+from dh import (
+    clean_blank_lines,
+    format_size,
+    get_files,
+    get_size,
+)
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_python as tspython
 
 
 class TSRemover:
-
     def __init__(self):
         self.parser = Parser()
         self.parser.language = Language(tspython.language())
@@ -23,11 +27,21 @@ class TSRemover:
 
         def walk(node):
             if node.type == "comment":
-                to_delete.append((node.start_byte, node.end_byte))
+                to_delete.append(
+                    (
+                        node.start_byte,
+                        node.end_byte,
+                    )
+                )
             if node.type == "expression_statement" and len(node.children) == 1:
                 child = node.children[0]
                 if child.type == "string":
-                    to_delete.append((node.start_byte, node.end_byte))
+                    to_delete.append(
+                        (
+                            node.start_byte,
+                            node.end_byte,
+                        )
+                    )
             for child in node.children:
                 walk(child)
 
@@ -51,31 +65,37 @@ def process_file(fp):
             file_path.write_text(result, encoding="utf-8")
             after = file_path.stat().st_size
             sr = int(abs(before - after))
-            cprint(f"[OK] {file_path.name} {format_size(sr)}", "cyan")
+            cprint(
+                f"[OK] {file_path.name} {format_size(sr)}",
+                "cyan",
+            )
             return
         except:
-            cprint(f"[ERROR] {file_path.name}", "yellow")
+            cprint(
+                f"[ERROR] {file_path.name}",
+                "yellow",
+            )
             return
     else:
-        cprint(f"[NO CHANGE] {file_path.name}", "blue")
+        cprint(
+            f"[NO CHANGE] {file_path.name}",
+            "blue",
+        )
         return
 
 
 if __name__ == "__main__":
-    dir = Path.cwd()
-    before = get_size(dir)
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
     args = sys.argv[1:]
-    if args:
-        files = [Path(f) for f in args]
-        if len(file) == 1:
-            process_file(files[0])
-            sys.exit(0)
-    else:
-        files = get_pyfiles(dir)
+    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".py"])
     pool = Pool(8)
     for _ in pool.imap_unordered(process_file, files):
         pass
     pool.close()
     pool.join()
-    sres = before - get_size(dir)
-    cprint(f"dir size reduced: {format_size(sres)}", "cyan")
+    sres = before - get_size(root_dir)
+    cprint(
+        f"dir size reduced: {format_size(sres)}",
+        "cyan",
+    )

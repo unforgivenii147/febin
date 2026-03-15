@@ -36,15 +36,25 @@ def py_to_ipynb(input_file, output_file=None):
         line = lines[i]
         # Check for potential cell breaks
         if i > 0 and (
-                # Function or class definition
-                line.startswith("def ") or line.startswith("class ") or
-                # Import statements (group them)
-            ((line.startswith("import ") or line.startswith("from "))
-             and not current_cell[-1].startswith(("import ", "from "))) or
-                # Empty line after some code
-            (line.strip() == "" and current_cell and i + 1 < len(lines)
-             and lines[i + 1].strip() and not lines[i + 1].startswith(
-                 (" ", "\t")))):
+            # Function or class definition
+            line.startswith("def ")
+            or line.startswith("class ")
+            or
+            # Import statements (group them)
+            (
+                (line.startswith("import ") or line.startswith("from "))
+                and not current_cell[-1].startswith(("import ", "from "))
+            )
+            or
+            # Empty line after some code
+            (
+                line.strip() == ""
+                and current_cell
+                and i + 1 < len(lines)
+                and lines[i + 1].strip()
+                and not lines[i + 1].startswith((" ", "\t"))
+            )
+        ):
             # Create a cell from accumulated lines
             if current_cell:
                 cell_code = "\n".join(current_cell).strip()
@@ -72,16 +82,18 @@ def py_to_ipynb(input_file, output_file=None):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Convert a Python script to a Jupyter notebook")
+    parser = argparse.ArgumentParser(description="Convert a Python script to a Jupyter notebook")
     parser.add_argument("input", help="Input Python file (.py)")
-    parser.add_argument("output",
-                        nargs="?",
-                        help="Output notebook file (.ipynb) (optional)")
+    parser.add_argument(
+        "output",
+        nargs="?",
+        help="Output notebook file (.ipynb) (optional)",
+    )
     parser.add_argument(
         "--no-split",
         action="store_true",
-        help="Don't split code into multiple cells (one cell only)")
+        help="Don't split code into multiple cells (one cell only)",
+    )
     args = parser.parse_args()
     # Override splitting behavior if requested
     if args.no_split:
@@ -92,10 +104,13 @@ def main():
         nb["cells"] = [nbf.v4.new_code_cell(code)]
         output_file = args.output or Path(args.input).stem + ".ipynb"
         with open(output_file, "w", encoding="utf-8") as f:
-            json.dump(nb, f, indent=1, ensure_ascii=False)
-        print(
-            f"Successfully converted '{args.input}' to '{output_file}' (single cell)"
-        )
+            json.dump(
+                nb,
+                f,
+                indent=1,
+                ensure_ascii=False,
+            )
+        print(f"Successfully converted '{args.input}' to '{output_file}' (single cell)")
     else:
         # Use the smart splitting conversion
         py_to_ipynb(args.input, args.output)

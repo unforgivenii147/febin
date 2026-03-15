@@ -4,8 +4,7 @@ from pathlib import Path
 
 import regex as re
 
-TIMESTAMP_RE = re.compile(
-    r"(\d{2}:\d{2}:\d{2},\d{3})\s-->\s(\d{2}:\d{2}:\d{2},\d{3})")
+TIMESTAMP_RE = re.compile(r"(\d{2}:\d{2}:\d{2},\d{3})\s-->\s(\d{2}:\d{2}:\d{2},\d{3})")
 
 
 def to_ms(ts: str) -> int:
@@ -23,7 +22,6 @@ def from_ms(ms: int) -> str:
 
 
 def shift_content(text: str, shift_ms: int) -> str:
-
     def repl(m):
         start, end = m.groups()
         return f"{from_ms(to_ms(start) + shift_ms)} --> {from_ms(to_ms(end) + shift_ms)}"
@@ -39,8 +37,7 @@ def process_file(path: Path, shift_ms: int):
 
 
 def main():
-    ap = argparse.ArgumentParser(
-        description="Shift SRT subtitles inplace (batch folder supported)")
+    ap = argparse.ArgumentParser(description="Shift SRT subtitles inplace (batch folder supported)")
     ap.add_argument(
         "path",
         nargs="?",

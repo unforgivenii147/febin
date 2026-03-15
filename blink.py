@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
-from pathlib import Path
+from lazyloader import lazy_import
 
-from dh import get_files
+os = lazy_import("os")
+pathlib = lazy_import("pathlib")
+sys = lazy_import("sys")
 
 if __name__ == "__main__":
-    dir = Path.cwd()
-    files = get_files(dir)
+    root_dir = pathlib.Path.cwd()
+    files = list(root_dir.rglob("*"))
     bcount = 0
     for path in files:
         if path.is_symlink() and not path.exists():
@@ -18,3 +19,5 @@ if __name__ == "__main__":
                 print(f"Error deleting {path}: {e}")
     if not bcount:
         print("no broken link found.")
+        sys.exit(0)
+    print(f"{bcount} broken link removed.")

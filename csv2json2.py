@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import csv
 import json
-import sys
 from pathlib import Path
+import sys
 
 
 def csv_to_json(csv_file):

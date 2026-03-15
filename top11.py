@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-import sys
 from pathlib import Path
+import sys
 
 from dh import format_size
 
@@ -48,7 +48,7 @@ def main() -> None:
     for i, (file_path, size) in enumerate(top_files, 1):
         path_str = str(file_path)
         if len(path_str) > max_path_len:
-            path_str = "..." + path_str[-(max_path_len - 3):]
+            path_str = "..." + path_str[-(max_path_len - 3) :]
         size_str = format_size(size)
         print(f"{i:<4} {path_str:<{max_path_len}} {size_str:>12}")
     total_files = len(get_sizes)

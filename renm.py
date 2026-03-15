@@ -1,12 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 import os
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-import regex as re
 from deep_translator import GoogleTranslator
 from dh import unique_path
 from fastwalk import walk_files
+import regex as re
 from tqdm import tqdm
 
 DIRECTORY = "."
@@ -27,8 +30,7 @@ def translate_name(name):
     if base in translation_cache:
         return name, translation_cache[base] + ext
     try:
-        translated = GoogleTranslator(source="auto",
-                                      target="en").translate(base)
+        translated = GoogleTranslator(source="auto", target="en").translate(base)
         translation_cache[base] = translated
         return name, translated + ext
     except Exception:
@@ -37,26 +39,21 @@ def translate_name(name):
 
 def rename_files(directory):
     paths = [Path(p) for p in walk_files(directory)]
-    unique_names_to_translate = list(
-        {p.name
-         for p in paths if not is_english(p.name)})
+    unique_names_to_translate = list({p.name for p in paths if not is_english(p.name)})
     translation_map = {}
     with ThreadPoolExecutor(8) as executor:
-        futures = [
-            executor.submit(translate_name, name)
-            for name in unique_names_to_translate
-        ]
+        futures = [executor.submit(translate_name, name) for name in unique_names_to_translate]
         for future in tqdm(
-                as_completed(futures),
-                total=len(unique_names_to_translate),
-                desc="Translating filenames",
+            as_completed(futures),
+            total=len(unique_names_to_translate),
+            desc="Translating filenames",
         ):
             original, translated = future.result()
             translation_map[original] = translated
     for fp in sorted(
-            paths,
-            key=lambda x: len(x.parts),
-            reverse=True,
+        paths,
+        key=lambda x: len(x.parts),
+        reverse=True,
     ):
         if fp.name not in translation_map:
             continue

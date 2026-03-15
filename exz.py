@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
+from datetime import datetime
 import logging
 import lzma
+from multiprocessing import Pool, cpu_count
 import os
+from pathlib import Path
 import shutil
 import sys
-from datetime import datetime
-from multiprocessing import Pool, cpu_count
-from pathlib import Path
 
 
 def setup_logging(verbose=True):
@@ -41,8 +41,8 @@ def extract_with_lzma(xz_path, remove_original=True):
                 "Output file already exists",
             )
         with (
-                lzma.open(xz_path, "rb") as compressed_file,
-                open(output_path, "wb") as output_file,
+            lzma.open(xz_path, "rb") as compressed_file,
+            open(output_path, "wb") as output_file,
         ):
             shutil.copyfileobj(compressed_file, output_file)
         if remove_original:
@@ -164,8 +164,7 @@ Examples:
         "-s",
         "--system",
         action="store_true",
-        help=
-        "Use system xz command instead of Python lzma (faster for large files)",
+        help="Use system xz command instead of Python lzma (faster for large files)",
     )
     parser.add_argument(
         "-w",
@@ -207,8 +206,8 @@ Examples:
     try:
         with Pool(processes=args.workers) as pool:
             for i, result in enumerate(
-                    pool.imap_unordered(process_file, process_args),
-                    1,
+                pool.imap_unordered(process_file, process_args),
+                1,
             ):
                 (
                     success,
@@ -224,15 +223,13 @@ Examples:
                     logging.info(status)
                 else:
                     error_count += 1
-                    logging.error(
-                        f"[{i}/{len(xz_files)}] ✗ {xz_path.name}: {error}")
+                    logging.error(f"[{i}/{len(xz_files)}] ✗ {xz_path.name}: {error}")
     except KeyboardInterrupt:
         logging.warning("\nExtraction interrupted by user")
         return 1
     elapsed_time = datetime.now() - start_time
     logging.info("=" * 50)
-    logging.info(
-        f"Extraction complete in {elapsed_time.total_seconds():.2f} seconds")
+    logging.info(f"Extraction complete in {elapsed_time.total_seconds():.2f} seconds")
     logging.info(f"Successfully extracted: {success_count} files")
     if error_count > 0:
         logging.warning(f"Failed to extract: {error_count} files")

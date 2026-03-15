@@ -6,16 +6,16 @@ Saves .whl files to ~/tmp/whl directory.
 """
 
 import base64
+from dataclasses import dataclass
+from datetime import datetime
 import hashlib
 import json
 import os
+from pathlib import Path
 import shutil
 import sys
 import tempfile
 import zipfile
-from dataclasses import dataclass
-from datetime import datetime
-from pathlib import Path
 
 
 @dataclass
@@ -52,8 +52,7 @@ class PackageDetector:
         if self.verbose:
             print(f"[DETECT] {message}")
 
-    def detect_package_type(self,
-                            package_dir: Path) -> tuple[bool, bool, bool]:
+    def detect_package_type(self, package_dir: Path) -> tuple[bool, bool, bool]:
         """
         Detect if package is pure Python, has C extensions, or has binaries.
 
@@ -75,18 +74,27 @@ class PackageDetector:
         if so_files or pyd_files or dll_files:
             has_c_extension = True
             is_pure_python = False
-            self.log(
-                f"Found C extensions: {len(so_files)} .so, {len(pyd_files)} .pyd, {len(dll_files)} .dll"
-            )
+            self.log(f"Found C extensions: {len(so_files)} .so, {len(pyd_files)} .pyd, {len(dll_files)} .dll")
 
         # Check for binary files
-        binary_extensions = {".exe", ".bin", ".dylib", ".so", ".pyd", ".dll"}
+        binary_extensions = {
+            ".exe",
+            ".bin",
+            ".dylib",
+            ".so",
+            ".pyd",
+            ".dll",
+        }
         for file_path in package_dir.rglob("*"):
             if file_path.suffix.lower() in binary_extensions:
                 has_binary = True
                 break
 
-        return is_pure_python, has_c_extension, has_binary
+        return (
+            is_pure_python,
+            has_c_extension,
+            has_binary,
+        )
 
     def get_python_version(self) -> str:
         """Get Python version tag."""
@@ -100,8 +108,7 @@ class PackageDetector:
         flags = sys.abiflags if hasattr(sys, "abiflags") else ""
 
         # CPython ABI tag
-        if hasattr(sys,
-                   "implementation") and sys.implementation.name == "cpython":
+        if hasattr(sys, "implementation") and sys.implementation.name == "cpython":
             return f"cp{major}{minor}{flags}"
 
         return f"cp{major}{minor}"
@@ -142,7 +149,10 @@ class PackageDetector:
 
         if metadata_file.exists():
             try:
-                with open(metadata_file, encoding="utf-8") as f:
+                with open(
+                    metadata_file,
+                    encoding="utf-8",
+                ) as f:
                     for line in f:
                         if ":" in line:
                             key, value = line.split(":", 1)
@@ -152,8 +162,11 @@ class PackageDetector:
 
         return metadata
 
-    def analyze_package(self, site_packages: Path,
-                        package_name: str) -> PackageInfo | None:
+    def analyze_package(
+        self,
+        site_packages: Path,
+        package_name: str,
+    ) -> PackageInfo | None:
         """
         Analyze a single package.
 
@@ -172,12 +185,10 @@ class PackageDetector:
 
         try:
             # Detect package type
-            is_pure, has_c_ext, has_binary = self.detect_package_type(
-                package_dir)
+            is_pure, has_c_ext, has_binary = self.detect_package_type(package_dir)
 
             # Find dist-info directory
-            dist_info_dirs = list(
-                site_packages.glob(f"{package_name}*.dist-info"))
+            dist_info_dirs = list(site_packages.glob(f"{package_name}*.dist-info"))
 
             if not dist_info_dirs:
                 self.log(f"No dist-info found for {package_name}")
@@ -194,8 +205,7 @@ class PackageDetector:
             platform_tag = "any" if is_pure else self.get_platform_tag()
 
             # Create wheel filename
-            normalized_name = package_name.lower().replace("-", "_").replace(
-                ".", "_")
+            normalized_name = package_name.lower().replace("-", "_").replace(".", "_")
             wheel_filename = f"{normalized_name}-{version}-{py_version}-{abi_tag}-{platform_tag}.whl"
 
             return PackageInfo(
@@ -233,9 +243,11 @@ class WheelBuilder:
         if self.verbose:
             print(f"[BUILD] {message}")
 
-    def calculate_hash(self,
-                       file_path: Path,
-                       algorithm: str = "sha256") -> str:
+    def calculate_hash(
+        self,
+        file_path: Path,
+        algorithm: str = "sha256",
+    ) -> str:
         """
         Calculate hash of a file.
 
@@ -284,20 +296,22 @@ class WheelBuilder:
                 hasher = hashlib.sha256()
                 hasher.update(content)
                 digest = hasher.digest()
-                hash_str = base64.urlsafe_b64encode(digest).decode(
-                    "ascii").rstrip("=")
+                hash_str = base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
 
                 # Add record
-                records.append(
-                    f"{info.filename},sha256={hash_str},{len(content)}")
+                records.append(f"{info.filename},sha256={hash_str},{len(content)}")
 
         # Add RECORD itself (with empty hash)
         records.append(f"{dist_info_dir}/RECORD,,")
 
         return "\n".join(records) + "\n"
 
-    def create_wheel(self, package_info: PackageInfo, source_dir: Path,
-                     output_dir: Path) -> tuple[bool, str]:
+    def create_wheel(
+        self,
+        package_info: PackageInfo,
+        source_dir: Path,
+        output_dir: Path,
+    ) -> tuple[bool, str]:
         """
         Create a .whl file from a package directory.
 
@@ -326,11 +340,13 @@ class WheelBuilder:
                 if source_dir.is_dir():
                     shutil.copytree(source_dir, pkg_dest)
                 else:
-                    return False, f"Source directory not found: {source_dir}"
+                    return (
+                        False,
+                        f"Source directory not found: {source_dir}",
+                    )
 
                 # Create dist-info directory
-                normalized_name = package_info.name.lower().replace(
-                    "-", "_").replace(".", "_")
+                normalized_name = package_info.name.lower().replace("-", "_").replace(".", "_")
                 dist_info_name = f"{normalized_name}-{package_info.version}.dist-info"
                 dist_info_dir = temp_path / dist_info_name
                 dist_info_dir.mkdir(parents=True, exist_ok=True)
@@ -363,9 +379,16 @@ Platform: UNKNOWN
                 (dist_info_dir / "top_level.txt").write_text(top_level + "\n")
 
                 # Create wheel file
-                with zipfile.ZipFile(wheel_path, "w",
-                                     zipfile.ZIP_DEFLATED) as zf:
-                    for root, _dirs, files in os.walk(temp_path):
+                with zipfile.ZipFile(
+                    wheel_path,
+                    "w",
+                    zipfile.ZIP_DEFLATED,
+                ) as zf:
+                    for (
+                        root,
+                        _dirs,
+                        files,
+                    ) in os.walk(temp_path):
                         for file in files:
                             file_path = Path(root) / file
                             arcname = file_path.relative_to(temp_path)
@@ -378,27 +401,42 @@ Platform: UNKNOWN
                 temp_wheel = wheel_path.with_suffix(".whl.tmp")
                 shutil.move(wheel_path, temp_wheel)
 
-                with zipfile.ZipFile(temp_wheel, "r") as zf_read:
-                    with zipfile.ZipFile(wheel_path, "w",
-                                         zipfile.ZIP_DEFLATED) as zf_write:
-                        for item in zf_read.infolist():
-                            zf_write.writestr(item,
-                                              zf_read.read(item.filename))
+                with (
+                    zipfile.ZipFile(temp_wheel, "r") as zf_read,
+                    zipfile.ZipFile(
+                        wheel_path,
+                        "w",
+                        zipfile.ZIP_DEFLATED,
+                    ) as zf_write,
+                ):
+                    for item in zf_read.infolist():
+                        zf_write.writestr(
+                            item,
+                            zf_read.read(item.filename),
+                        )
 
-                        # Add RECORD
-                        record_path = f"{dist_info_name}/RECORD"
-                        zf_write.writestr(record_path, record_content)
+                    # Add RECORD
+                    record_path = f"{dist_info_name}/RECORD"
+                    zf_write.writestr(
+                        record_path,
+                        record_content,
+                    )
 
                 temp_wheel.unlink()
 
             size_mb = wheel_path.stat().st_size / (1024 * 1024)
-            self.log(
-                f"Wheel created successfully: {wheel_path} ({size_mb:.2f} MB)")
+            self.log(f"Wheel created successfully: {wheel_path} ({size_mb:.2f} MB)")
 
-            return True, f"Successfully created {package_info.wheel_filename}"
+            return (
+                True,
+                f"Successfully created {package_info.wheel_filename}",
+            )
 
         except Exception as e:
-            return False, f"Error creating wheel: {e!s}"
+            return (
+                False,
+                f"Error creating wheel: {e!s}",
+            )
 
 
 class VenvRepacker:
@@ -430,8 +468,7 @@ class VenvRepacker:
         self.site_packages = Path(site_packages_dir).resolve()
 
         if not self.site_packages.exists():
-            raise ValueError(
-                f"Site-packages directory not found: {site_packages_dir}")
+            raise ValueError(f"Site-packages directory not found: {site_packages_dir}")
 
         # Setup output directory
         if output_dir is None:
@@ -456,7 +493,10 @@ class VenvRepacker:
 
     def log(self, message: str, level: str = "INFO"):
         """Log message."""
-        if self.verbose or level in ["ERROR", "WARNING"]:
+        if self.verbose or level in [
+            "ERROR",
+            "WARNING",
+        ]:
             timestamp = datetime.now().strftime("%H:%M:%S")
             print(f"[{timestamp}] [{level}] {message}")
 
@@ -474,15 +514,20 @@ class VenvRepacker:
             if item.is_dir() and not item.name.startswith("."):
                 # Skip dist-info, egg-info, etc.
                 if not item.name.endswith(
-                    (".dist-info", ".egg-info", ".egg", "__pycache__")):
+                    (
+                        ".dist-info",
+                        ".egg-info",
+                        ".egg",
+                        "__pycache__",
+                    )
+                ):
                     packages.add(item.name)
 
         self.log(f"Found {len(packages)} packages")
 
         return sorted(packages)
 
-    def repack_package(
-            self, package_name: str) -> tuple[bool, str, PackageInfo | None]:
+    def repack_package(self, package_name: str) -> tuple[bool, str, PackageInfo | None]:
         """
         Repack a single package.
 
@@ -495,25 +540,36 @@ class VenvRepacker:
         try:
             # Analyze package
             package_info = self.detector.analyze_package(
-                self.site_packages, package_name)
+                self.site_packages,
+                package_name,
+            )
 
             if not package_info:
-                return False, "Failed to analyze package", None
+                return (
+                    False,
+                    "Failed to analyze package",
+                    None,
+                )
 
             self.log(f"Repacking: {package_name} v{package_info.version}")
-            self.log(
-                f"  Type: {'Pure Python' if package_info.is_pure_python else 'With C extensions'}"
-            )
+            self.log(f"  Type: {'Pure Python' if package_info.is_pure_python else 'With C extensions'}")
             self.log(f"  Wheel: {package_info.wheel_filename}")
 
             if self.dry_run:
                 self.log("DRY RUN: Would create wheel")
-                return True, "Dry run - wheel not created", package_info
+                return (
+                    True,
+                    "Dry run - wheel not created",
+                    package_info,
+                )
 
             # Create wheel
             package_dir = self.site_packages / package_name
             success, message = self.builder.create_wheel(
-                package_info, package_dir, self.output_dir)
+                package_info,
+                package_dir,
+                self.output_dir,
+            )
 
             return success, message, package_info
 
@@ -527,11 +583,9 @@ class VenvRepacker:
         Returns:
             Dictionary with statistics
         """
-        print(
-            "\n╔════════════════════════════════════════════════════════════╗")
+        print("\n╔════════════════════════════════════════════════════════════╗")
         print("║         Virtual Environment Package Repacker               ║")
-        print(
-            "╚════════════════════════════════════════════════════════════╝\n")
+        print("╚════════════════════════════════════════════════════════════╝\n")
 
         print(f"Site-packages: {self.site_packages}")
         print(f"Output directory: {self.output_dir}")
@@ -552,9 +606,11 @@ class VenvRepacker:
         print(f"\nRepacking {len(packages)} packages...\n")
 
         for i, package_name in enumerate(packages, 1):
-            print(f"[{i}/{len(packages)}] {package_name}...",
-                  end=" ",
-                  flush=True)
+            print(
+                f"[{i}/{len(packages)}] {package_name}...",
+                end=" ",
+                flush=True,
+            )
 
             success, message, package_info = self.repack_package(package_name)
 
@@ -569,24 +625,28 @@ class VenvRepacker:
 
                 print(f"✓ {message}")
 
-                self.results.append({
-                    "package": package_name,
-                    "version": package_info.version,
-                    "is_pure_python": package_info.is_pure_python,
-                    "wheel_filename": package_info.wheel_filename,
-                    "success": True,
-                })
+                self.results.append(
+                    {
+                        "package": package_name,
+                        "version": package_info.version,
+                        "is_pure_python": package_info.is_pure_python,
+                        "wheel_filename": package_info.wheel_filename,
+                        "success": True,
+                    }
+                )
 
             else:
                 self.stats["failed_packages"] += 1
                 self.stats["total_packages"] += 1
                 print(f"✗ {message}")
 
-                self.results.append({
-                    "package": package_name,
-                    "success": False,
-                    "error": message,
-                })
+                self.results.append(
+                    {
+                        "package": package_name,
+                        "success": False,
+                        "error": message,
+                    }
+                )
 
         return self.stats
 
@@ -600,12 +660,13 @@ class VenvRepacker:
         print(f"Failed: {self.stats['failed_packages']}")
         print()
         print(f"Pure Python packages: {self.stats['pure_python_packages']}")
-        print(
-            f"Packages with C extensions: {self.stats['packages_with_c_extensions']}"
-        )
+        print(f"Packages with C extensions: {self.stats['packages_with_c_extensions']}")
         print("=" * 60)
 
-    def save_report(self, report_file: str = "repack_report.json"):
+    def save_report(
+        self,
+        report_file: str = "repack_report.json",
+    ):
         """
         Save detailed report to JSON file.
 
@@ -693,21 +754,27 @@ Examples:
         default=None,
         help="Output directory for .whl files (default: ~/tmp/whl)",
     )
-    parser.add_argument("-v",
-                        "--verbose",
-                        action="store_true",
-                        help="Verbose output")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Verbose output",
+    )
     parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show what would be done without creating files",
     )
-    parser.add_argument("--report",
-                        metavar="FILE",
-                        help="Save detailed report to JSON file")
-    parser.add_argument("--list-wheels",
-                        action="store_true",
-                        help="List generated .whl files")
+    parser.add_argument(
+        "--report",
+        metavar="FILE",
+        help="Save detailed report to JSON file",
+    )
+    parser.add_argument(
+        "--list-wheels",
+        action="store_true",
+        help="List generated .whl files",
+    )
 
     args = parser.parse_args()
 

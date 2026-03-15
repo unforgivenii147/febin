@@ -1,76 +1,115 @@
 [project]
 name = "home"
-version = "0.1.0"
-description = "Short description of the library"
-readme = "README.md"
+version = "1.4.7"
+description = "home project"
 requires-python = ">=3.9"
-license = { text = "MIT" }
-authors = [{ name = "Your Name", email = "you@example.com" }]
+
 [tool.ruff]
 target-version = "py312"
 line-length = 120
 indent-width = 4
 fix = true
+
 exclude = [
   ".git",
   ".venv",
-  "venv",
   "__pycache__",
-  "build",
-  "dist",
   ".mypy_cache",
   ".ruff_cache",
-  "bin/yap.py",
 ]
+
 [tool.ruff.lint]
-select = ["E", "W", "F", "I", "B", "C4", "UP", "SIM", "RET", "ARG", "PL", "RUF"]
-ignore = [
-  "E501",
-  "PLR2004",
-  "RET505",
-  "PLC0415",
-  "PLR0913",
-  "ARG001",
-  "E722",
-  "PLR0911",
+select = [
+  "E",   # pycodestyle
+  "W",
+  "F",   # pyflakes
+  "I",   # import sorting
+  "B",   # bugbear
+  "C4",  # comprehensions
+  "UP",  # pyupgrade
+  "SIM", # simplify
+  "RET", # return issues
+  "ARG", # unused arguments
+  "PL",  # pylint-compatible subset
+  "RUF", # ruff-specific
+  "PTH",
 ]
+
+ignore = [
+  "E501",    
+  "PLR2004", 
+  "RET505", 
+  "PLC0415",
+  "ANN201",
+  "ANN202",
+  "ANN001",
+  "PLR0915",
+  "PLR0912",
+  "RUF001",
+]
+
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
+
 [tool.ruff.lint.isort]
 known-first-party = ["home"]
 combine-as-imports = true
 force-sort-within-sections = true
+
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["ARG001", "PLR0915"]
+
+
 [tool.pylint.master]
 py-version = "3.12"
 jobs = 8
 persistent = true
 load-plugins = ["pylint.extensions.docparams"]
+
 [tool.pylint.messages_control]
 disable = [
-  "C0114",
-  "C0115",
-  "C0116",
-  "R0903",
-  "R0913",
-  "R0914",
-  "R0915",
+  "C0114", # missing-module-docstring
+  "C0115", # missing-class-docstring
+  "C0116", # missing-function-docstring
+  "R0903", # too-few-public-methods
+  "R0913", # too-many-arguments
+  "R0914", # too-many-locals
+  "R0915", # too-many-statements
   "W0511", # TODO
-  "W0703",
+  "W0703", # broad-except
 ]
+
 [tool.pylint.format]
-max-line-length = 88
+max-line-length = 120
+
 [tool.pylint.design]
 max-args = 10
 max-locals = 20
 max-branches = 15
 max-statements = 50
+
 [tool.pylint.variables]
 dummy-variables-rgx = "_|dummy|unused|ignore"
+
 [tool.pylint.reports]
 output-format = "colorized"
 reports = false
 score = true
+
+[tool.autoflake]
+ignore-init-module-imports = true
+remove-all-unused-imports = true
+remove-duplicate-keys = false
+remove-unused-variables = false
+in-place = true
+recursive = true
+
+[tool.black]
+skip-string-normalization = true
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+

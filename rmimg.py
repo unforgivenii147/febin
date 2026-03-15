@@ -1,10 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
 from bs4 import BeautifulSoup
-from dh import cprint, format_size, get_files, get_size
+from dh import (
+    cprint,
+    format_size,
+    get_files,
+    get_size,
+)
 from termcolor import cprint
 
 
@@ -19,8 +24,7 @@ def process_file(file_path: Path) -> None:
 
         for tag in soup.find_all(style=True):
             style = tag["style"]
-            new_style = "; ".join(s for s in style.split(";")
-                                  if "background-image" not in s).strip()
+            new_style = "; ".join(s for s in style.split(";") if "background-image" not in s).strip()
             if new_style:
                 tag["style"] = new_style
             else:
@@ -42,21 +46,29 @@ def process_file(file_path: Path) -> None:
 
 
 def main():
-    dir = Path.cwd()
-    before = get_size(dir)
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
     args = sys.argv[1:]
     if args:
         files = [Path(f) for f in args]
     else:
-        files = get_files(dir,
-                          recursive=True,
-                          extensions=[".html", ".htm", ".md", ".rst", ".txt"])
+        files = get_files(
+            root_dir,
+            recursive=True,
+            extensions=[
+                ".html",
+                ".htm",
+                ".md",
+                ".rst",
+                ".txt",
+            ],
+        )
     p = Pool(8)
     for f in files:
-        p.apply_async(process_file, (f, ))
+        p.apply_async(process_file, (f,))
     p.close()
     p.join()
-    diff_size = before - get_size(dir)
+    diff_size = before - get_size(root_dir)
     print(f"space saved : {format_size(diff_size)}")
 
 

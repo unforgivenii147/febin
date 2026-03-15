@@ -5,8 +5,8 @@ from multiprocessing import Pool
 from pathlib import Path
 from time import perf_counter
 
-import htmlmin
 from fastwalk import walk_files
+import htmlmin
 
 
 # fmt: off
@@ -31,8 +31,8 @@ def process_file(file: Path) -> bool:
 def main() -> None:
     start_time = perf_counter()
     files = []
-    dir = Path().cwd().resolve()
-    for pth in walk_files(str(dir)):
+    root_dir = Path().cwd().resolve()
+    for pth in walk_files(str(root_dir)):
         path = Path(pth)
         if path.is_file() and (path.suffix in {".html", ".htm"}):
             files.append(path)

@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from multiprocessing import Lock, Pool
 import os
+from pathlib import Path
 import subprocess
 import sys
-from multiprocessing import Lock, Pool
-from pathlib import Path
 
 from fastwalk import walk_files
 
@@ -97,8 +97,8 @@ def main() -> None:
             check=True,
         )
     except (
-            FileNotFoundError,
-            subprocess.CalledProcessError,
+        FileNotFoundError,
+        subprocess.CalledProcessError,
     ):
         print("Error: 'ruff' is not installed or not in PATH.")
         print("Please run: pip install ruff")
@@ -110,7 +110,7 @@ def main() -> None:
         return
     pool = Pool(8)
     for f in files:
-        pool.apply_async(process_file, ((f), ))
+        pool.apply_async(process_file, ((f),))
     pool.close()
     pool.join()
 

@@ -1,12 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-import shutil
 from pathlib import Path
+import shutil
 from sys import exit
 
 from termcolor import cprint
 
-ALLOWED = ["METADATA", "RECORD", "WHEEL", "top_level.txt"]
+ALLOWED = [
+    "METADATA",
+    "RECORD",
+    "WHEEL",
+    "top_level.txt",
+]
 NOT_ALLOWED = [
     "AUTHORS",
     "AUTHORS.md",
@@ -48,12 +53,11 @@ def process_lic(fp):
         shutil.rmtree(lic_dir)
         print(f"{lic_dir} removed.")
 
-
-#    for f in NOT_ALLOWED:
-#        nf = Path(f"{fp}/{f}")
-#        if nf.exists():
-#            nf.unlink()
-#            print(f"{nf} removed")
+    #    for f in NOT_ALLOWED:
+    #        nf = Path(f"{fp}/{f}")
+    #        if nf.exists():
+    #            nf.unlink()
+    #            print(f"{nf} removed")
     rett = []
     for f in ALLOWED:
         nf = Path(f"{fp}/{f}")
@@ -64,15 +68,18 @@ def process_lic(fp):
 
 def main():
     missings = []
-    dir = "/data/data/com.termux/files/usr/lib/python3.12/site-packages"
-    for pth in os.listdir(dir):
-        path = Path(os.path.join(dir, pth))
+    root_dir = Path("/data/data/com.termux/files/usr/lib/python3.12/site-packages")
+    for pth in os.listdir(root_dir):
+        path = Path(os.path.join(root_dir, pth))
         if path.is_dir() and "dist-info" in path.name:
             if len(os.listdir(path)) < 2:
-                cprint(f'{path.name} empty pkg', "cyan")
+                cprint(
+                    f"{path.name} empty pkg",
+                    "cyan",
+                )
             missings.extend(process_lic(path))
     for k in missings:
-        print(f"{k.parent.name}  ==>", end=' ')
+        print(f"{k.parent.name}  ==>", end=" ")
         cprint(f"{k.name}", "yellow")
 
 

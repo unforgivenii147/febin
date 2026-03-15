@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 from typing import Int, Str
 
-from dh import format_size, get_pyfiles, get_size
+from dh import format_size, get_files, get_size
 
 
 def _get_comments_symbol(text: Str, symbol: Str) -> list[Str]:
@@ -12,22 +12,25 @@ def _get_comments_symbol(text: Str, symbol: Str) -> list[Str]:
     i: Int = 0
     indexes: list = []
     for i in range(len(text)):
-        if text[i] == symbol and len(
-                text) > i + 2 and text[i] == text[i + 1] == text[i + 2]:
+        if text[i] == symbol and len(text) > i + 2 and text[i] == text[i + 1] == text[i + 2]:
             if len(indexes) == 0:
                 indexes.append(i)
             elif len(indexes) == 1:
                 indexes.append(i + 2)
-                comments.append(text[indexes[0]:indexes[1] + 1])
+                comments.append(text[indexes[0] : indexes[1] + 1])
                 indexes = []
     return comments
 
 
-def _get_comments_simplequot(text: Str) -> list[str]:
+def _get_comments_simplequot(
+    text: Str,
+) -> list[str]:
     return _get_comments_symbol(text=text, symbol="'")
 
 
-def _get_comments_doublequot(text: str) -> list[str]:
+def _get_comments_doublequot(
+    text: str,
+) -> list[str]:
     return _get_comments_symbol(text=text, symbol='"')
 
 
@@ -50,19 +53,19 @@ def remove_comments(text: str) -> str:
 
 
 def main():
-    dir = Path.cwd()
-    before = get_size(dir)
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_pyfiles(dir)
+    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".py"])
     with Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f, )))
+            pending.append(pool.apply_async(process_file, (f,)))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(dir)
+    diff_size = before - get_size(root_dir)
     print(f"space saved : {format_size(diff_size)}")
 
 

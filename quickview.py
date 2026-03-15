@@ -7,7 +7,7 @@ LINES_PER_FILE = 20
 
 def list_files():
     return sorted(
-        [p for p in Path(".").iterdir() if p.is_file()],
+        [p for p in Path().iterdir() if p.is_file()],
         key=lambda p: p.name.lower(),
     )
 
@@ -15,7 +15,11 @@ def list_files():
 def head_lines(path, n):
     lines = []
     try:
-        with open(path, encoding="utf-8", errors="replace") as f:
+        with open(
+            path,
+            encoding="utf-8",
+            errors="replace",
+        ) as f:
             for _ in range(n):
                 line = f.readline()
                 if not line:

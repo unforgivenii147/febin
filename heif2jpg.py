@@ -3,9 +3,9 @@ from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
 
-import pillow_heif as ph
 from dh import get_size
 from fastwalk import walk_files
+import pillow_heif as ph
 
 
 def process_file(fp):
@@ -19,21 +19,21 @@ def process_file(fp):
 
 
 def main():
-    dir = Path().cwd()
-    start_size = get_size(dir)
+    root_dir = Path().cwd()
+    start_size = get_size(root_dir)
     files = []
-    for pth in walk_files(dir):
+    for pth in walk_files(root_dir):
         path = Path(pth)
         if path.is_file() and path.suffix in {
-                ".heif",
-                ".heic",
+            ".heif",
+            ".heic",
         }:
             files.append(path)
     pool = Pool(8)
     pool.imap_unordered(process_file, files)
     pool.close()
     pool.join()
-    after = get_size(dir)
+    after = get_size(root_dir)
     print(f"{fornat_size(abs(after - start_size))}")
 
 

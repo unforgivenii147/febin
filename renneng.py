@@ -2,9 +2,9 @@
 import os
 from pathlib import Path
 
-import regex as re
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
+import regex as re
 
 DIRECTORY = "."
 non_english_pattern = re.compile(r"[^\x00-\x7F]")
@@ -15,8 +15,7 @@ def translate_if_needed(name: str) -> str:
     if not non_english_pattern.search(base):
         return name
     try:
-        translated = GoogleTranslator(source="auto",
-                                      target="en").translate(base)
+        translated = GoogleTranslator(source="auto", target="en").translate(base)
         return translated + ext
     except Exception as e:
         print(f"Translation error for '{name}': {e}")

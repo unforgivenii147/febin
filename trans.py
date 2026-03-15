@@ -1,9 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
-import sys
 from pathlib import Path
+import sys
 
-from deep_translator import GoogleTranslator, single_detection
+from deep_translator import (
+    GoogleTranslator,
+    single_detection,
+)
 
 CHUNK_SIZE = 2000
 ALLOWED_EXT = {
@@ -23,7 +26,7 @@ def read_text_file(path: Path) -> str:
 
 
 def chunk_text(text: str, size: int = CHUNK_SIZE) -> list[str]:
-    return [text[i:i + size] for i in range(0, len(text), size)]
+    return [text[i : i + size] for i in range(0, len(text), size)]
 
 
 def detect_lang(text: str) -> str:

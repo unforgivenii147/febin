@@ -18,7 +18,11 @@ def clean_svg_inplace(in_file, svgcleaner_path="svgcleaner"):
         tmp_out_path = tmp_out.name
     try:
         subprocess.run(
-            [svgcleaner_path, in_file, tmp_out_path],
+            [
+                svgcleaner_path,
+                in_file,
+                tmp_out_path,
+            ],
             check=True,
             capture_output=True,
         )

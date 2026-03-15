@@ -6,15 +6,15 @@ Uses OpenAI API or local AST-based conversion with js2py library.
 
 import argparse
 import os
-import sys
 from pathlib import Path
+import sys
 
 import regex as re
 
 
 def install_js2py():
     try:
-        import js2py
+        pass
 
         return True
     except ImportError:
@@ -22,13 +22,15 @@ def install_js2py():
         import subprocess
 
         try:
-            subprocess.check_call([
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "js2py",
-            ])
+            subprocess.check_call(
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "js2py",
+                ]
+            )
             print("✅ js2py installed successfully")
             return True
         except subprocess.CalledProcessError:
@@ -49,8 +51,7 @@ def convert_with_js2py(js_file: Path, outfile: Path) -> bool:
         )
 
 
-def convert_with_openai(js_code: str,
-                        api_key: str | None = None) -> tuple[bool, str]:
+def convert_with_openai(js_code: str, api_key: str | None = None) -> tuple[bool, str]:
     try:
         import openai
     except ImportError:
@@ -77,10 +78,8 @@ python code:"""
             model="gpt-4",
             messages=[
                 {
-                    "role":
-                    "system",
-                    "content":
-                    "You are an expert programmer who converts JavaScript to Python accurately.",
+                    "role": "system",
+                    "content": "You are an expert programmer who converts JavaScript to Python accurately.",
                 },
                 {
                     "role": "user",
@@ -251,8 +250,7 @@ def main():
     )
     parser.add_argument(
         "--api-key",
-        help=
-        "OpenAI API key (for openai method, or set OPENAI_API_KEY env var)",
+        help="OpenAI API key (for openai method, or set OPENAI_API_KEY env var)",
     )
     args = parser.parse_args()
     if not args.input.exists():

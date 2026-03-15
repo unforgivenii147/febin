@@ -13,7 +13,13 @@ def is_valid_wheel_name(filename):
         parts = basename.split("-")
         if len(parts) != 5:
             return False
-        dist_name, version, build_tag, py_tag, abi_platform = parts
+        (
+            dist_name,
+            version,
+            build_tag,
+            py_tag,
+            abi_platform,
+        ) = parts
         if canonicalize_name(dist_name) != dist_name.lower():
             return False
         try:
@@ -23,8 +29,7 @@ def is_valid_wheel_name(filename):
         if not build_tag[0].isdigit():
             return False
         try:
-            parse_tag(py_tag + "-" + abi_platform + "-" +
-                      abi_platform.split("-")[-1])
+            parse_tag(py_tag + "-" + abi_platform + "-" + abi_platform.split("-")[-1])
         except Exception:
             return False
         return True
@@ -39,7 +44,10 @@ def main():
         if filename.endswith(".whl"):
             if not is_valid_wheel_name(filename):
                 print(f"Invalid wheel name: {filename}")
-                shutil.move(filename, os.path.join(invalid_dir, filename))
+                shutil.move(
+                    filename,
+                    os.path.join(invalid_dir, filename),
+                )
             else:
                 print(f"Valid wheel name: {filename}")
 

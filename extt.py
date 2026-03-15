@@ -3,8 +3,8 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
-import tree_sitter_python as tsp
 from tree_sitter import Language, Parser
+import tree_sitter_python as tsp
 
 parser = Parser()
 parser.language = Language(tsp.language())
@@ -18,7 +18,7 @@ VALID = {
 
 def get_node_text(src: bytes, node):
     """Extract text for a node safely."""
-    return src[node.start_byte:node.end_byte].decode()
+    return src[node.start_byte : node.end_byte].decode()
 
 
 def get_node_name(node):
@@ -46,12 +46,14 @@ def extract_functions_and_classes(src: bytes, tree):
                 prev_node = prev_node.prev_sibling
             if decorators:
                 node_text = "\n".join(reversed(decorators)) + "\n" + node_text
-            definitions.append({
-                "type": node.type.replace("_definition", ""),
-                "name": name,
-                "text": node_text,
-                "line": node.start_point.row + 1,
-            })
+            definitions.append(
+                {
+                    "type": node.type.replace("_definition", ""),
+                    "name": name,
+                    "text": node_text,
+                    "line": node.start_point.row + 1,
+                }
+            )
         for child in node.children:
             traverse(child)
 
@@ -72,10 +74,9 @@ folder_definitions = defaultdict(lambda: defaultdict(list))
 processed_files_count = 0
 folders_found = set()
 total_definitions = 0
-for py in Path(".").rglob("*.py"):
+for py in Path().rglob("*.py"):
     # Skip hidden directories and site-packages
-    if any(part.startswith(".")
-           for part in py.parts) or "site-packages" in py.parts:
+    if any(part.startswith(".") for part in py.parts) or "site-packages" in py.parts:
         continue
     # Skip files in the output directory
     if OUT_DIR in py.parents:
@@ -87,7 +88,7 @@ for py in Path(".").rglob("*.py"):
         if definitions:
             # Get the folder containing the Python file
             folder_path = py.parent
-            relative_folder = get_relative_path(folder_path, Path("."))
+            relative_folder = get_relative_path(folder_path, Path())
             folders_found.add(str(relative_folder))
             # Store definitions by file
             folder_definitions[relative_folder][py.name] = {
@@ -100,8 +101,8 @@ for py in Path(".").rglob("*.py"):
         print(f"⚠️  Error processing {py}: {e}")
 # Write collected definitions to folder-specific files
 for (
-        folder,
-        files_dict,
+    folder,
+    files_dict,
 ) in folder_definitions.items():
     if not files_dict:
         continue
@@ -137,9 +138,7 @@ for (
         content_parts.append(f"# {'=' * 76}\n")
         # Group by type (classes first, then functions)
         classes = [d for d in file_data["definitions"] if d["type"] == "class"]
-        functions = [
-            d for d in file_data["definitions"] if d["type"] == "function"
-        ]
+        functions = [d for d in file_data["definitions"] if d["type"] == "function"]
         if classes:
             content_parts.append("#" + "-" * 40)
             content_parts.append("# CLASSES")
@@ -180,8 +179,7 @@ for (
 """
     out_file.write_text(header + content)
     # Statistics
-    total_defs_in_folder = sum(
-        len(f["definitions"]) for f in files_dict.values())
+    total_defs_in_folder = sum(len(f["definitions"]) for f in files_dict.values())
     print(f"✅ saved: {out_file}")
     print(f"   📊 {len(files_dict)} files, {total_defs_in_folder} definitions")
     print(f"   📁 {folder}")
@@ -191,8 +189,6 @@ print(
 if folders_found:
     print("📁 Folders:")
     for folder in sorted(folders_found):
-        def_count = sum(
-            len(f["definitions"])
-            for f in folder_definitions[Path(folder)].values())
+        def_count = sum(len(f["definitions"]) for f in folder_definitions[Path(folder)].values())
         file_count = len(folder_definitions[Path(folder)])
         print(f"   • {folder}: {file_count} files, {def_count} definitions")

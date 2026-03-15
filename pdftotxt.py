@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
-import sys
 from pathlib import Path
+import sys
 
 import pdfplumber
 
@@ -11,7 +11,7 @@ def process_file(fp):
     with pdfplumber.open(fp) as pdf:
         for page in pdf.pages:
             text = page.extract_text(encoding="utf-8")
-            outdir = Path(fp).stem
+            Path(fp).stem
             if not os.path.exists(outdir):
                 os.mkdir(outdir)
             if i < 10:

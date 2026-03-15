@@ -29,7 +29,7 @@ def fix_file(path: Path) -> bool:
 
 def main() -> None:
     fixed = 0
-    for file in Path(".").rglob("*.py"):
+    for file in Path().rglob("*.py"):
         if fix_file(file):
             fixed += 1
             print(f"Updated: {file}")

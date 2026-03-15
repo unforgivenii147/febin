@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
+from difflib import get_close_matches
 import json
+from pathlib import Path
 import readline
 import subprocess
 import sys
-from difflib import get_close_matches
-from pathlib import Path
 
 DICT_FILE = "/sdcard/isaac/dic.json"
 
@@ -89,8 +89,7 @@ def interactive_mode(fa_en, en_fa):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Offline Persian ↔ English translator")
+    parser = argparse.ArgumentParser(description="Offline Persian ↔ English translator")
     parser.add_argument(
         "word",
         nargs="*",

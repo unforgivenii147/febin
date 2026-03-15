@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from importlib.metadata import distributions
 from pathlib import Path
+import sys
 
 
 def get_installed_packages():
@@ -13,10 +13,7 @@ def read_requirements(filename):
     if not req_file.exists():
         raise FileNotFoundError("file not found in current directory")
     with open(req_file) as f:
-        return [
-            line.strip().replace("-", "_").lower() for line in f
-            if line.strip() and not line.startswith("#")
-        ]
+        return [line.strip().replace("-", "_").lower() for line in f if line.strip() and not line.startswith("#")]
 
 
 def write_requirements(lines, filename):

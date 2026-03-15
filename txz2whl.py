@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from pathlib import Path
 import tarfile
 import zipfile
-from pathlib import Path
 
 from dh import get_files, unique_path
 
@@ -16,9 +16,12 @@ def tar_xz_to_whl(tar_path: Path):
     print(f"[TAR.XZ → WHL] {tar_path.name}")
     try:
         with (
-                tarfile.open(tar_path, "r:xz") as tf,
-                zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED)
-                as zf,
+            tarfile.open(tar_path, "r:xz") as tf,
+            zipfile.ZipFile(
+                target,
+                "w",
+                compression=zipfile.ZIP_DEFLATED,
+            ) as zf,
         ):
             for member in tf.getmembers():
                 if member.isdir():
@@ -34,9 +37,16 @@ def tar_xz_to_whl(tar_path: Path):
 
 def main():
     args = sys.argv[1:]
-    dir = Path().cwd()
-    files = [Path(arg) for arg in args] if args else get_files(
-        dir, recursive=False, extensions=[".tar.xz", ".xz"])
+    root_dir = Path().cwd()
+    files = (
+        [Path(arg) for arg in args]
+        if args
+        else get_files(
+            root_dir,
+            recursive=False,
+            extensions=[".tar.xz", ".xz"],
+        )
+    )
 
     for f in files:
         tar_xz_to_whl(f)

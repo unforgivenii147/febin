@@ -4,7 +4,9 @@ from pathlib import Path
 
 from dh import BIN_EXT, TXT_EXT, is_binary
 from langdetect import DetectorFactory, detect
-from langdetect.lang_detect_exception import LangDetectException
+from langdetect.lang_detect_exception import (
+    LangDetectException,
+)
 
 DetectorFactory.seed = 0
 MAX_CHARS = 5000
@@ -22,9 +24,9 @@ def is_text_file(pth):
 def contains_non_english(path):
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             text = f.read(MAX_CHARS).strip()
             if len(text) < 20:

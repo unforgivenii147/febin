@@ -20,8 +20,7 @@ def cleanup_wheels(whl_files):
             python_variant = match.group("python")
             if "-" in version:
                 date_part = version.split("-")[-1]
-                if package_name not in latest_versions or date_part > latest_versions[
-                        package_name][0]:
+                if package_name not in latest_versions or date_part > latest_versions[package_name][0]:
                     latest_versions[package_name] = (date_part, version)
     for file in whl_files:
         match = whl_pattern.match(file)
@@ -29,9 +28,9 @@ def cleanup_wheels(whl_files):
             package_name = match.group("name")
             version = match.group("version")
             python_variant = match.group("python")
-            if (package_name == "pycryptodome" and python_variant
-                    == "py3-none-any") or (package_name == "matplotlib" and
-                                           python_variant == "py3-none-any"):
+            if (package_name == "pycryptodome" and python_variant == "py3-none-any") or (
+                package_name == "matplotlib" and python_variant == "py3-none-any"
+            ):
                 os.remove(os.path.join(whl_directory, file))
                 print(f"Deleted: {file}")
                 deleted_files += 1

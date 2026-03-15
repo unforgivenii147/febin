@@ -1,14 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
 
-import tree_sitter_cpp as tscpp
 from dh import run_command
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_cpp as tscpp
 
 
 class TSCppRemover:
-
     def __init__(self):
         self.parser = Parser()
         self.language = Language(tscpp.language())
@@ -32,8 +31,7 @@ class TSCppRemover:
 
     def _collect_comments(self, node, to_delete, source_bytes):
         if node.type == "comment":
-            text = source_bytes[node.start_byte:node.end_byte].decode(
-                "utf-8").strip()
+            text = source_bytes[node.start_byte : node.end_byte].decode("utf-8").strip()
             if text.startswith("#"):
                 return
             to_delete.append((node.start_byte, node.end_byte))
@@ -61,7 +59,9 @@ def validate_with_treesitter(parser, code: str) -> bool:
     return not tree.root_node.has_error
 
 
-def validate_with_clang(file_path: Path) -> tuple[bool, str]:
+def validate_with_clang(
+    file_path: Path,
+) -> tuple[bool, str]:
     cmd = f"clang++ -std=c++20 -fsyntax-only {file_path!s}"
     ret, txt, err = run_command(cmd)
     if ret != 0:
@@ -78,15 +78,24 @@ def process_file(fp):
     code = file_path.read_text(encoding="utf-8", errors="ignore")
     result, removed = remover.remove_comments(code)
     if removed == 0:
-        cprint(f"[NO CHANGE] {file_path.name}", "blue")
+        cprint(
+            f"[NO CHANGE] {file_path.name}",
+            "blue",
+        )
         return
     if not validate_with_treesitter(remover.parser, result):
-        cprint(f"[TS ERROR] {file_path.name} - changes discarded", "red")
+        cprint(
+            f"[TS ERROR] {file_path.name} - changes discarded",
+            "red",
+        )
         return
     file_path.write_text(result, encoding="utf-8")
     ok, _err = validate_with_clang(file_path)
     if not ok:
-        cprint(f"[CLANG ERROR] {file_path.name} - reverting", "red")
+        cprint(
+            f"[CLANG ERROR] {file_path.name} - reverting",
+            "red",
+        )
         file_path.write_text(code, encoding="utf-8")
         return
     after = file_path.stat().st_size
@@ -98,7 +107,16 @@ def process_file(fp):
 
 
 if __name__ == "__main__":
-    exts = {".cpp", ".cc", ".cxx", ".hpp", ".h", ".hh", ".hxx", ".c"}
+    exts = {
+        ".cpp",
+        ".cc",
+        ".cxx",
+        ".hpp",
+        ".h",
+        ".hh",
+        ".hxx",
+        ".c",
+    }
     for path in Path().rglob("*"):
         if path.is_file() and path.suffix in exts:
             process_file(path)

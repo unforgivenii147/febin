@@ -1,10 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 from pathlib import Path
 
-import regex as re
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
+import regex as re
 
 DIRECTORY = "."
 CHUNK_SIZE = 2000
@@ -22,7 +25,7 @@ def is_text_file(path: Path) -> bool:
 
 
 def split_into_chunks(text: str, size: int):
-    return [text[i:i + size] for i in range(0, len(text), size)]
+    return [text[i : i + size] for i in range(0, len(text), size)]
 
 
 def translate_chunk(chunk: str) -> str:

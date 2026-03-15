@@ -6,8 +6,7 @@ from pathlib import Path
 
 import regex as re
 
-BASE64_IMG_REGEX = re.compile(
-    r"data:image/(?P<ext>[a-zA-Z0-9+]+);base64,(?P<data>[A-Za-z0-9+/=\n\r]+)")
+BASE64_IMG_REGEX = re.compile(r"data:image/(?P<ext>[a-zA-Z0-9+]+);base64,(?P<data>[A-Za-z0-9+/=\n\r]+)")
 
 
 def extract_images_from_file(file_path: Path, output_dir: Path):
@@ -52,6 +51,6 @@ def scan_and_extract(base_dir: Path, output_dir: Path) -> None:
 
 
 if __name__ == "__main__":
-    base_dir = Path(".")
+    base_dir = Path()
     output_dir = Path("extracted_images")
     scan_and_extract(base_dir, output_dir)

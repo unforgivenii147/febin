@@ -6,6 +6,7 @@ from pathlib import Path
 
 from dh import format_size, get_size, run_command
 from fastwalk import walk_files
+from termcolor import cprint
 
 MAX_IN_FLIGHT = 16
 FILE_EXTENSIONS = {
@@ -22,27 +23,42 @@ FILE_EXTENSIONS = {
 
 
 def format_file(file_path):
-    start = get_size(file_path)
-    print(f"{file_path.name}", end="  ")
+    before = get_size(file_path)
     cmd = f"prettier -w {file_path!s}"
-    code, _out, err = run_command(cmd)
+    code, _out, _err = run_command(cmd)
     if code == 0:
-        result = start - get_size(file_path)
-        if int(result) == 0:
-            print("[OK] no change")
-        elif result < 0:
-            print(f"[OK] + {format_size(abs(result))}")
-        elif result > 0:
-            print(f"[OK] - {format_size(result)}")
+        diffsize = before - get_size(file_path)
+        if not diffsize:
+            cprint("[NO CHANGE] ", "green", end="")
+            cprint(f"{file_path.name}", "white")
+        elif diffsize < 0:
+            cprint(
+                f"[OK] {file_path.name} ",
+                "white",
+                end="",
+            )
+            cprint(
+                f" + {format_size(diffsize)}",
+                "green",
+            )
+        elif diffsize > 0:
+            cprint(
+                f"[OK] {file_path.name} ",
+                "white",
+                end="",
+            )
+            cprint(
+                f" - {format_size(diffsize)}",
+                "cyan",
+            )
         return True
     else:
-        print(f"[ERROR] {err}")
+        cprint(f"[ERROR] {file_path.name}", "red")
         return False
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Format files using Prettier.")
+    parser = argparse.ArgumentParser(description="Format files using Prettier.")
     parser.add_argument("file", nargs="?", help="File to format")
     args = parser.parse_args()
     if args.file:
@@ -70,7 +86,7 @@ def main() -> None:
         with Pool(8) as p:
             pending = deque()
             for f in jfiles:
-                pending.append(p.apply_async(format_file, (f, )))
+                pending.append(p.apply_async(format_file, (f,)))
                 if len(pending) >= MAX_IN_FLIGHT:
                     pending.popleft().get()
             while pending:

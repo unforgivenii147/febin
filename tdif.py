@@ -5,19 +5,32 @@ File Diff Viewer - A Textual-based application to show differences between two f
 
 import argparse
 import difflib
-import sys
 from pathlib import Path
+import sys
 
 from textual.app import App, ComposeResult
 from textual.color import Color
-from textual.containers import Horizontal, ScrollableContainer
-from textual.widgets import Footer, Header, Label, Static
+from textual.containers import (
+    Horizontal,
+    ScrollableContainer,
+)
+from textual.widgets import (
+    Footer,
+    Header,
+    Label,
+    Static,
+)
 
 
 class DiffLine(Static):
     """A widget representing a single line in the diff."""
 
-    def __init__(self, text: str, line_type: str, line_num: int | None = None):
+    def __init__(
+        self,
+        text: str,
+        line_type: str,
+        line_num: int | None = None,
+    ):
         """
         Initialize a diff line.
         Args:
@@ -66,7 +79,11 @@ class DiffLine(Static):
 class DiffPanel(ScrollableContainer):
     """A panel that displays one side of the diff."""
 
-    def __init__(self, title: str, lines: list[tuple[str, str, int]]):
+    def __init__(
+        self,
+        title: str,
+        lines: list[tuple[str, str, int]],
+    ):
         """
         Initialize a diff panel.
         Args:
@@ -79,8 +96,15 @@ class DiffPanel(ScrollableContainer):
 
     def compose(self) -> ComposeResult:
         """Create child widgets."""
-        yield Label(f"[bold]{self.panel_title}[/bold]", classes="panel-title")
-        for text, line_type, line_num in self.lines:
+        yield Label(
+            f"[bold]{self.panel_title}[/bold]",
+            classes="panel-title",
+        )
+        for (
+            text,
+            line_type,
+            line_num,
+        ) in self.lines:
             yield DiffLine(text, line_type, line_num)
 
     def on_mount(self) -> None:
@@ -130,7 +154,11 @@ class DiffViewerApp(App):
     """
     BINDINGS = [
         ("q", "quit", "Quit"),
-        ("f1", "toggle_panel", "Focus Next Panel"),
+        (
+            "f1",
+            "toggle_panel",
+            "Focus Next Panel",
+        ),
         ("ctrl+c", "quit", "Quit"),
         ("/", "search", "Search"),
         ("n", "next_search", "Next Result"),
@@ -156,10 +184,16 @@ class DiffViewerApp(App):
                 with open(filepath, encoding="latin-1") as f:
                     return f.readlines()
             except Exception as e:
-                self.notify(f"Error reading {filepath}: {e}", severity="error")
+                self.notify(
+                    f"Error reading {filepath}: {e}",
+                    severity="error",
+                )
                 return []
         except Exception as e:
-            self.notify(f"Error reading {filepath}: {e}", severity="error")
+            self.notify(
+                f"Error reading {filepath}: {e}",
+                severity="error",
+            )
             return []
 
     def compute_diff(self) -> None:
@@ -178,16 +212,40 @@ class DiffViewerApp(App):
             if line_type == " ":
                 left_line_num += 1
                 right_line_num += 1
-                self.left_lines.append((content, line_type, left_line_num))
-                self.right_lines.append((content, line_type, right_line_num))
+                self.left_lines.append(
+                    (
+                        content,
+                        line_type,
+                        left_line_num,
+                    )
+                )
+                self.right_lines.append(
+                    (
+                        content,
+                        line_type,
+                        right_line_num,
+                    )
+                )
             elif line_type == "-":
                 left_line_num += 1
-                self.left_lines.append((content, line_type, left_line_num))
+                self.left_lines.append(
+                    (
+                        content,
+                        line_type,
+                        left_line_num,
+                    )
+                )
                 self.right_lines.append(("", " ", None))
             elif line_type == "+":
                 right_line_num += 1
                 self.left_lines.append(("", " ", None))
-                self.right_lines.append((content, line_type, right_line_num))
+                self.right_lines.append(
+                    (
+                        content,
+                        line_type,
+                        right_line_num,
+                    )
+                )
             elif line_type == "?":
                 self.left_lines.append((content, line_type, None))
                 self.right_lines.append((content, line_type, None))
@@ -232,10 +290,12 @@ class DiffViewerApp(App):
                 self.search_term = submitted_text
                 self.highlight_search_results()
 
-        self.push_screen("input",
-                         on_input,
-                         title="Search",
-                         instructions="Enter text to search for:")
+        self.push_screen(
+            "input",
+            on_input,
+            title="Search",
+            instructions="Enter text to search for:",
+        )
 
     def highlight_search_results(self) -> None:
         """Highlight search results in both panels."""

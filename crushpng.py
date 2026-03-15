@@ -1,7 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 import os
 import subprocess
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from tqdm import tqdm
 
@@ -34,22 +37,18 @@ def main():
         return
     print(f"Found {len(png_files)} PNG files to optimize.")
     with ThreadPoolExecutor(max_workers=4) as executor:
-        futures = {
-            executor.submit(optimize_png, file): file
-            for file in png_files
-        }
+        futures = {executor.submit(optimize_png, file): file for file in png_files}
         results = []
         with tqdm(
-                total=len(png_files),
-                desc="Optimizing PNGs",
-                unit="file",
+            total=len(png_files),
+            desc="Optimizing PNGs",
+            unit="file",
         ) as pbar:
             for future in as_completed(futures):
                 results.append(future.result())
                 pbar.update(1)
     success = sum(1 for r in results if r[0])
-    print(
-        f"\nOptimization complete. Success: {success}/{len(png_files)} files.")
+    print(f"\nOptimization complete. Success: {success}/{len(png_files)} files.")
 
 
 if __name__ == "__main__":

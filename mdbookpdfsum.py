@@ -9,8 +9,13 @@ import pypdf
 
 
 class Section:
-
-    def __init__(self, title: str, source_file: str, depth: int, index: int):
+    def __init__(
+        self,
+        title: str,
+        source_file: str,
+        depth: int,
+        index: int,
+    ):
         self.title = title
         self.source_file = source_file
         self.depth = depth
@@ -41,7 +46,11 @@ class Section:
         return "{}. {}".format(".".join(path), self.title)
 
 
-def check_title(prefix_path: str, node: Section, overwrite: bool) -> bool:
+def check_title(
+    prefix_path: str,
+    node: Section,
+    overwrite: bool,
+) -> bool:
     all_matched = True
     for child in node.children:
         child_result = check_title(prefix_path, child, overwrite)
@@ -84,8 +93,12 @@ def get_dom_id(node: Section):
     return result.replace(" ", "-")
 
 
-def add_outline(html_root, reader: pypdf.PdfReader, writer: pypdf.PdfWriter,
-                node: Section):
+def add_outline(
+    html_root,
+    reader: pypdf.PdfReader,
+    writer: pypdf.PdfWriter,
+    node: Section,
+):
     if not node.is_root():
         id = get_dom_id(node)
         try:
@@ -103,19 +116,27 @@ def add_outline(html_root, reader: pypdf.PdfReader, writer: pypdf.PdfWriter,
             page = reader.get_destination_page_number(dest)
             fit = pypdf.generic.Fit(
                 dest.get("/Type"),
-                (dest.get("/Left"), dest.get("/Top"), dest.get("/Zoom")),
+                (
+                    dest.get("/Left"),
+                    dest.get("/Top"),
+                    dest.get("/Zoom"),
+                ),
             )
-        node.outline_item = writer.add_outline_item(str(node),
-                                                    page,
-                                                    node.parent.outline_item,
-                                                    fit=fit)
+        node.outline_item = writer.add_outline_item(
+            str(node),
+            page,
+            node.parent.outline_item,
+            fit=fit,
+        )
     for child in node.children:
         add_outline(html_root, reader, writer, child)
 
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="mdbook_pdf_summary", description="Add outline to the PDF file.")
+        prog="mdbook_pdf_summary",
+        description="Add outline to the PDF file.",
+    )
     parser.add_argument(
         "--html_path",
         type=str,

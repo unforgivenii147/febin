@@ -1,16 +1,20 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
+import sys
 
+from tree_sitter import (
+    Language,
+    Parser,
+    Query,
+    QueryCursor,
+)
 import tree_sitter_cpp as tscpp
-from tree_sitter import Language, Parser, Query, QueryCursor
 
 ts_remover = None
 
 
 class TSCppRemover:
-
     def __init__(self):
         self.language = Language(tscpp.language())
         self.parser = Parser(self.language)
@@ -28,25 +32,32 @@ class TSCppRemover:
         matches = cursor.matches(tree.root_node)
         deletions = []
         comment_count = 0
-        for _pattern_idx, captures_dict in matches:
-            for _capture_name, nodes in captures_dict.items():
+        for (
+            _pattern_idx,
+            captures_dict,
+        ) in matches:
+            for (
+                _capture_name,
+                nodes,
+            ) in captures_dict.items():
                 for node in nodes:
                     start = node.start_byte
                     end = node.end_byte
                     text = source_bytes[start:end].decode("utf-8")
                     stripped = text.strip()
-                    if stripped.startswith((
+                    if stripped.startswith(
+                        (
                             "//!",
                             "///",
                             "/**",
                             "/*!",
                             "///<",
                             "//!<",
-                    )):
+                        )
+                    ):
                         continue
                     comment_count += 1
-                    if end < len(source_bytes) and source_bytes[end:end +
-                                                                1] == b"\n":
+                    if end < len(source_bytes) and source_bytes[end : end + 1] == b"\n":
                         end += 1
                     deletions.append((start, end))
         deletions = sorted(set(deletions), reverse=True)
@@ -56,8 +67,7 @@ class TSCppRemover:
         new_source = bytes(new_source)
         tree = self.parser.parse(new_source)
         if tree.root_node.has_error:
-            print(
-                "Warning: Resulted code has syntax errors, returning original")
+            print("Warning: Resulted code has syntax errors, returning original")
             return source, 0
         cleaned = new_source.decode("utf-8")
         cleaned = self._cleanup_blank_lines(cleaned)
@@ -106,7 +116,11 @@ def process_file(fp):
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(result)
             print(f"[OK] {file_path.name}: {comments} comments removed")
-            return ("changed", file_path, comments)
+            return (
+                "changed",
+                file_path,
+                comments,
+            )
         except Exception as e:
             print(f"[ERROR] {file_path.name} write: {e}")
             return ("error", file_path, comments)
@@ -125,32 +139,43 @@ if __name__ == "__main__":
             return [str(p) for p in Path(path).rglob("*")]
 
         def get_size(path):
-            return sum(f.stat().st_size for f in Path(path).rglob("*")
-                       if f.is_file())
+            return sum(f.stat().st_size for f in Path(path).rglob("*") if f.is_file())
 
         def format_size(size):
             return f"{size / 1024:.2f} KB"
 
     dir_path = Path.cwd()
     files = [
-        p for p in walk_files(dir_path) if Path(p).suffix in
-        [".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".hh"]
+        p
+        for p in walk_files(dir_path)
+        if Path(p).suffix
+        in [
+            ".c",
+            ".cpp",
+            ".cc",
+            ".cxx",
+            ".h",
+            ".hpp",
+            ".hxx",
+            ".hh",
+        ]
     ]
     if not files:
         print("No C/C++ files found")
         sys.exit(0)
     before = get_size(dir_path)
     nproc = min(cpu_count() or 1, 8)
-    with Pool(processes=nproc, initializer=ts_remover_initializer) as pool:
+    with Pool(
+        processes=nproc,
+        initializer=ts_remover_initializer,
+    ) as pool:
         results = pool.map(process_file, files)
     after = get_size(dir_path)
     changed = sum(1 for r in results if r[0] == "changed")
     errors = [r for r in results if r[0] == "error"]
     nochg = sum(1 for r in results if r[0] == "nochange")
     print(f"\n{'=' * 60}")
-    print(
-        f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}"
-    )
+    print(f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}")
     if errors:
         print("\nErrors in:")
         for _, fn, *_ in errors:

@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import mmap
+from multiprocessing import Pool
 import os
 import tokenize
-from multiprocessing import Pool
 
+from dh import get_files
 import regex as re
 
 SIZE_THRESHOLD = 1 * 1024 * 1024
@@ -21,9 +22,9 @@ def _open_source(filepath: str):
 def _read_text(filepath: str) -> str | None:
     try:
         with open(
-                filepath,
-                encoding="utf-8",
-                errors="ignore",
+            filepath,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             return f.read()
     except Exception:
@@ -43,7 +44,9 @@ def regex_flag(filepath: str) -> bool:
     return bool(OLD_PRINT_RE.search(text))
 
 
-def tokenizer_confirm(filepath: str, ) -> str | None:
+def tokenizer_confirm(
+    filepath: str,
+) -> str | None:
     try:
         src = _open_source(filepath)
         tokens = list(tokenize.tokenize(src.readline))
@@ -56,10 +59,10 @@ def tokenizer_confirm(filepath: str, ) -> str | None:
                 continue
             j = i + 1
             while j < len(tokens) and tokens[j].type in {
-                    tokenize.NL,
-                    tokenize.NEWLINE,
-                    tokenize.INDENT,
-                    tokenize.DEDENT,
+                tokenize.NL,
+                tokenize.NEWLINE,
+                tokenize.INDENT,
+                tokenize.DEDENT,
             }:
                 j += 1
             if j < len(tokens) and tokens[j].string != "(":
@@ -78,19 +81,11 @@ def process_file(filepath):
     return confirmed
 
 
-def get_pyfiles(root: str) -> list[str]:
-    out: list[str] = []
-    for dirpath, _, filenames in os.walk(root):
-        for name in filenames:
-            if name.endswith(".py"):
-                out.append(os.path.join(dirpath, name))
-    return out
-
-
 def main() -> None:
+    root_dir = Path.getcwd()
     pool = Pool(8)
-    for f in get_pyfiles("."):
-        pool.apply_async(process_file, ((f), ))
+    for f in get_files(root_dir, extensions=[".py"]):
+        pool.apply_async(process_file, ((f),))
     pool.close()
     pool.join()
 

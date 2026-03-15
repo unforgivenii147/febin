@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
-import sys
 from pathlib import Path
+import sys
 
 import regex as re
 
@@ -44,10 +44,7 @@ def clean_name(fname: str):
 def collect_files(path: Path, recursive: bool):
     if recursive:
         return [p for p in path.rglob("*") if p.suffix.lower() in VIDEO_EXTS]
-    return [
-        p for p in path.iterdir()
-        if p.is_file() and p.suffix.lower() in VIDEO_EXTS
-    ]
+    return [p for p in path.iterdir() if p.is_file() and p.suffix.lower() in VIDEO_EXTS]
 
 
 def main():
@@ -55,7 +52,7 @@ def main():
     ap.add_argument("-r", "--recursive", action="store_true")
     ap.add_argument("-w", "--write", action="store_true")
     args = ap.parse_args()
-    files = collect_files(Path("."), args.recursive)
+    files = collect_files(Path(), args.recursive)
     if not files:
         print("No subtitle files found")
         return
@@ -75,17 +72,21 @@ def main():
         )
         if args.write:
             if target.exists():
-                print(colored(
-                    "  EXISTS, skipped",
-                    "yellow",
-                ))
+                print(
+                    colored(
+                        "  EXISTS, skipped",
+                        "yellow",
+                    )
+                )
             else:
                 f.rename(target)
     if not args.write:
-        print(colored(
-            "\nDry-run only. Use -w to apply.",
-            "yellow",
-        ))
+        print(
+            colored(
+                "\nDry-run only. Use -w to apply.",
+                "yellow",
+            )
+        )
 
 
 if __name__ == "__main__":

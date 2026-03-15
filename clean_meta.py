@@ -1,16 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
-import regex as re
 from dh import format_size, get_files, get_size
+import regex as re
 
 MAX_QUEUE = 16
 
 image_re = re.compile(
-    r"((.*)+ image::(.*)+)|((.*)+:target:(.*)+)|((.*)+:alt:(.*)+)", re.I)
+    r"((.*)+ image::(.*)+)|((.*)+:target:(.*)+)|((.*)+:alt:(.*)+)",
+    re.I,
+)
+blank_line = "\n"
 
 
 def process_file(path):
@@ -23,6 +26,7 @@ def process_file(path):
         if not matc:
             nl.append(line)
         else:
+            nl.append(blank_line)
             print(line)
             c += 1
     if not c:
@@ -33,25 +37,32 @@ def process_file(path):
 
 
 def main():
-    dir = Path.cwd()
-    before = get_size(dir)
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
     args = sys.argv[1:]
 
-    files = ([Path(f) for f in args] if args else get_files(
-        dir, recursive=True, extensions=[".metadata", ".md", ".txt", ".rst"]))
-    metafiles = list(dir.rglob("METADATA"))
+    files = (
+        [Path(f) for f in args]
+        if args
+        else get_files(
+            root_dir,
+            recursive=True,
+            extensions=[".metadata", ".md"],
+        )
+    )
+    metafiles = list(root_dir.rglob("METADATA"))
     if metafiles:
         files.extend(metafiles)
 
     with Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f, )))
+            pending.append(pool.apply_async(process_file, (f,)))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(dir)
+    diff_size = before - get_size(root_dir)
     print(f"space saved : {format_size(diff_size)}")
 
 

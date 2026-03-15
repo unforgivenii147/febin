@@ -21,8 +21,8 @@ def format_file(file_path):
         )
         return None
     except (
-            subprocess.CalledProcessError,
-            FileNotFoundError,
+        subprocess.CalledProcessError,
+        FileNotFoundError,
     ) as e:
         return f"{file_path}: {e.stderr if hasattr(e, 'stderr') else e!s}"
 
@@ -46,25 +46,21 @@ def main():
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         for file in files:
-            if file.endswith(target_extensions
-                             ) and not file.endswith(exclude_extensions):
+            if file.endswith(target_extensions) and not file.endswith(exclude_extensions):
                 files_to_format.append(os.path.join(root, file))
     if not files_to_format:
         print("No matching files found.")
         return
     errors = []
     with (
-            tqdm(
-                total=len(files_to_format),
-                desc="Beautifying",
-                unit="file",
-            ) as pbar,
-            concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor,
+        tqdm(
+            total=len(files_to_format),
+            desc="Beautifying",
+            unit="file",
+        ) as pbar,
+        concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor,
     ):
-        future_to_file = {
-            executor.submit(format_file, f): f
-            for f in files_to_format
-        }
+        future_to_file = {executor.submit(format_file, f): f for f in files_to_format}
         for future in concurrent.futures.as_completed(future_to_file):
             err = future.result()
             if err:

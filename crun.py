@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from multiprocessing import Pool
+from multiprocess import Pool
 from pathlib import Path
 from sys import exit
 

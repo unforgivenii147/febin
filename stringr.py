@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from multiprocessing import Pool
+from multiprocess import Pool
 from pathlib import Path
 
 from dh import (
@@ -7,17 +7,18 @@ from dh import (
     get_files,
     get_size,
     run_command,
+    is_binary,
 )
 
 
 def process_file(fp):
-    if not fp.exists():
-        return False
+    if not fp.exists() or not is_binary(fp):
+        return
     outfile = fp.with_name(f"{fp.stem}_strings")
     cmd = f"strings {fp!s}"
     _code, txt, _err = run_command(cmd)
     outfile.write_text(txt)
-    return None
+    return
 
 
 def main():

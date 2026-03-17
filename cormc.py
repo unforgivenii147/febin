@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import glob
 import logging
-from multiprocessing import Pool, cpu_count
+from multiprocess import Pool, cpu_count
 import os
 import sys
 

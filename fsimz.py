@@ -1,38 +1,58 @@
 #!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/env python
+import sys
+from collections import defaultdict
+import os
 from pathlib import Path
-from pprint import pprint
-
-from dh import is_binary
-from fastwalk import walk_files
-import stringzilla as sz
+from dh import get_files
+from ppdeep import hash_from_file, _levenstein, compare
 
 
-def find_similar_files(files, threshold=0.8, k=256):
-    """Find files with similar content using MinHash"""
-    similar_groups = []
-    sketches = {}
-    for file in files:
-        content = Path(file).read_bytes()
-        sketches[file] = sz.minhash(content, k)
-    for i, (file_a, sketch_a) in enumerate(sketches.items()):
-        group = [file_a]
-        for file_b, sketch_b in list(sketches.items())[i + 1 :]:
-            similarity = sz.jaccard(sketch_a, sketch_b)
-            if similarity >= threshold:
-                group.append(file_b)
-                del sketches[file_b]
-        if len(group) > 1:
-            similar_groups.append(group)
-    return similar_groups
+def find_dups(root_dir):
+    files_by_hash = defaultdict(list)
+    duplicate_count = 0
+    deleted_count = 0
+    total_deleted_size = 0
+    files = get_files(root_dir)
+    for path in files:
+        if path.is_symlink():
+            continue
+        if path.is_file():
+            try:
+                file_hash = hash_from_file(str(path))
+                files_by_hash[file_hash].append(path)
+            except Exception as e:
+                print(f"Error processing file {path}: {e}")
+                continue
+    for (
+        file_hash,
+        paths,
+    ) in files_by_hash.items():
+        if len(paths) > 1:
+            duplicate_count += len(paths) - 1
+            paths.sort(
+                key=lambda x: x.stat().st_mtime,
+                reverse=True,
+            )
+
+            for dup_found in paths:
+                print(os.path.relpath(dup_found))
+            for filetodel in paths[1:]:
+                try:
+                    get_size = filetodel.stat().st_size
+                    deleted_count += 1
+                    total_deleted_size += get_size
+                except Exception as e:
+                    print(f"Error deleting file {filetodel}: {e}")
+        else:
+            continue
+    return (
+        duplicate_count,
+        deleted_count,
+        total_deleted_size,
+    )
 
 
 if __name__ == "__main__":
-    fz = []
-    root_dir = Path.cwd()
-    for pth in walk_files(root_dir):
-        path = Path(pth)
-        if path.is_file() and not is_binary(path):
-            fz.append(path)
-    simg = find_similar_files(fz)
-    for grp in simg:
-        pprint(grp)
+    root_folder = sys.argv[1].strip()
+    find_dups(root_folder)

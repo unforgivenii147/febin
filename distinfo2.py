@@ -68,7 +68,8 @@ def process_lic(fp):
 
 def main():
     missings = []
-    root_dir = Path("/data/data/com.termux/files/usr/lib/python3.12/site-packages")
+    root_dir = Path(
+        "/data/data/com.termux/files/usr/lib/python3.12/site-packages")
     for pth in os.listdir(root_dir):
         path = Path(os.path.join(root_dir, pth))
         if path.is_dir() and "dist-info" in path.name:

@@ -4,6 +4,7 @@ persistent=yes
 jobs=8
 py-version=3.12
 load-plugins=pylint.extensions.docparams
+
 [MESSAGES CONTROL]
 disable=
     C0114,  # missing-module-docstring
@@ -21,28 +22,38 @@ disable=
     E1101, 
     W0707, 
     W0719, 
-    C0301
+    C0301,
+    R0801,
+
 [FORMAT]
 max-line-length=100
 indent-string='    '
+
 [DESIGN]
 max-args=10
 max-locals=20
 max-branches=15
 max-statements=50
+
+
 [VARIABLES]
 dummy-variables-rgx=_|dummy|unused|ignore
+
 [LOGGING]
 logging-format-style=new
+
 [EXCEPTIONS]
 overgeneral-exceptions=builtins.Exception,builtins.BaseException
+
 [SIMILARITIES]
 min-similarity-lines=6
+
 [REPORTS]
 output-format=colorized
 reports=no
 score=yes
+
 [DOCSTRING]
 accept-no-param-doc=True
 accept-no-raise-doc=True
-disable=
+

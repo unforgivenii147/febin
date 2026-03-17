@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from collections import defaultdict
 import concurrent.futures as cf
 import os
+from collections import defaultdict
 from pathlib import Path
 
 from dh import format_size, get_size
@@ -15,7 +15,7 @@ EXCLUDED_FILENAMES = {"__init__.py"}
 
 
 def hash_file(file_path):
-    if file_path.stat().st_size == 0:
+    if Path(file_path).stat().st_size == 0:
         return ""
     mapped_file = File(str(file_path))
     return (
@@ -56,7 +56,7 @@ def group_by_size(files):
     groups = defaultdict(list)
     for f in files:
         try:
-            size = f.stat().st_size
+            size = Path(f).stat().st_size
             #            if size > 0: # exclude zero size files
             groups[size].append(f)
         except (PermissionError, OSError):
@@ -114,24 +114,29 @@ def auto_delete_duplicates(dups) -> None:
                 size = Path(f).stat().st_size
                 os.remove(f)
                 rel_path = os.path.relpath(f, start=os.getcwd())
-                print(f"🗑️ {rel_path} removed ({size:,} bytes)")
+                print(f"{rel_path} removed ({format_size(size)})")
                 deleted_count += 1
                 deleted_size += size
             except Exception as e:
-                print(f"⚠️ Could not delete {f}: {e}")
-    print(f"\n✅ Deleted {deleted_count} duplicate files (total: {deleted_size:,} bytes).")
+                print(f"Could not delete {f}: {e}")
+    print(
+        f"\n✅ Deleted {deleted_count} duplicate files (total: {format_size(deleted_size)})."
+    )
 
 
 def report_duplicates(dups):
     dup_count = sum(len(files) - 1 for files in dups.values())
-    dup_size = sum(Path(f).stat().st_size for files in dups.values() for f in files[1:])
+    dup_size = sum(
+        Path(f).stat().st_size for files in dups.values() for f in files[1:])
     print("\n📊 Summary Report:")
     print(f"   • Duplicate groups: {len(dups)}")
     print(f"   • Total duplicate files: {dup_count}")
     print(f"   • Total duplicate size: {dup_size / 1024 / 1024:.2f} MB")
 
     if SKIPPED_PATHS:
-        print(f"\n⚠️ Skipped {len(SKIPPED_PATHS)} files due to permissions/errors")
+        print(
+            f"\n⚠️ Skipped {len(SKIPPED_PATHS)} files due to permissions/errors"
+        )
 
 
 def main() -> None:
@@ -159,7 +164,9 @@ def main() -> None:
         print(f"\n💾 Space saved: {format_size(saved)}")
 
     if SKIPPED_PATHS:
-        print(f"\n⚠️ Skipped {len(SKIPPED_PATHS)} files (see SKIPPED_PATHS list for details)")
+        print(
+            f"\n⚠️ Skipped {len(SKIPPED_PATHS)} files (see SKIPPED_PATHS list for details)"
+        )
 
 
 if __name__ == "__main__":

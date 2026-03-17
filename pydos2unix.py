@@ -15,7 +15,7 @@ import argparse
 import fnmatch
 import logging
 import mmap
-from multiprocessing import Pool
+from multiprocess import Pool
 import os
 from pathlib import Path
 

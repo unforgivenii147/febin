@@ -7,7 +7,7 @@ import regex as re
 def replace_multiprocessing_patterns(content):
     replacements = [
         (
-            r"from multiprocessing import Pool\b",
+            r"from multiprocess import Pool\b",
             "from concurrent.futures import ProcessPoolExecutor",
         ),
         (

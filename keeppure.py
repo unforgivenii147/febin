@@ -5,7 +5,7 @@ Minimal output - only reports removed packages
 """
 
 import csv
-from multiprocessing import Pool, cpu_count
+from multiprocess import Pool, cpu_count
 import os
 import site
 

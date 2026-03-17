@@ -12,7 +12,7 @@ for root, _dirs, files in os.walk(current_dir):
                 if search_string in content:
                     print(f"Found in file: {file_path}")
         except (
-            UnicodeDecodeError,
-            PermissionError,
+                UnicodeDecodeError,
+                PermissionError,
         ):
             continue

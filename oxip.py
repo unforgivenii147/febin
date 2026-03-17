@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocessing import Pool, cpu_count
+from multiprocess import Pool, cpu_count
 import os
 import subprocess
 

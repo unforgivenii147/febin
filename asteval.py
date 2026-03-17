@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
 from collections import deque
-from multiprocessing import Pool
+from multiprocess import Pool
 from pathlib import Path
 import sys
 
-from dh import format_size, get_size, move_file
+from dh import move_file
 
 MAX_QUEUE = 16
 
@@ -21,19 +21,24 @@ def process_file(fp) -> None:
     try:
         ast.parse(content)
         newpath = ok_dir / fp.name
+        newpath = Path(newpath)
         move_file(fp, newpath)
         print(f"{fp.name} --> {newpath}")
     except:
         newpath = err_dir / fp.name
+        newpath = Path(newpath)
         move_file(fp, newpath)
         print(f"{fp.name} --> {newpath}")
 
 
 def main():
-    before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else [Path(p) for p in dir.glob("*.py")]
+    files = [Path(f) for f in args] if args else [Path(p) for p in root_dir.glob("*.py")]
+    for f in files:
+        process_file(f)
 
+
+"""
     with Pool(8) as pool:
         pending = deque()
         for f in files:
@@ -42,9 +47,8 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(root_dir)
-    print(f"space saved : {format_size(diff_size)}")
 
+"""
 
 if __name__ == "__main__":
     sys.exit(main())

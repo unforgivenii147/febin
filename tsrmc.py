@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-from multiprocessing import Pool, cpu_count
+from multiprocess import Pool, cpu_count
 from pathlib import Path
 
 from dh import format_size, get_size

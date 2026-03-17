@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from __future__ import annotations
 
 import argparse
 from collections import deque
 import contextlib
-from multiprocessing import Pool
+from multiprocess import Pool
 from pathlib import Path
 
 from dh import format_size, get_size

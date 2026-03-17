@@ -6,7 +6,7 @@ def main():
     fn = argv[1]
     template = """#!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
-from multiprocessing import Pool
+from multiprocess import Pool
 from collections import deque
 from sys import exit,argv
 from dh import format_size,get_size,get_files

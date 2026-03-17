@@ -7,12 +7,9 @@ import click
 from fastwalk import walk_files
 
 # from xxhash import xxh64
-from stringzilla import File, Sha256
+from file_hash import hash_file
 
 
-def get_file_hash(file_path):
-    mapped_file = File(str(file_path))
-    return Sha256().update(mapped_file).hexdigest()
 
 
 """
@@ -38,14 +35,13 @@ def find_and_delete_duplicates(path: Path):
             continue
         if path.is_file():
             try:
-                file_hash = get_file_hash(path)
-                files_by_hash[file_hash].append(path)
+                files_by_hash[hash_file(path)].append(path)
             except Exception as e:
                 print(f"Error processing file {path}: {e}")
                 continue
     for (
-        file_hash,
-        paths,
+            file_hash,
+            paths,
     ) in files_by_hash.items():
         if len(paths) > 1:
             duplicate_count += len(paths) - 1

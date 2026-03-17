@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
 import io
-from multiprocessing import Pool
+from multiprocess import Pool
 from pathlib import Path
 import shutil
 import tempfile

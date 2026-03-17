@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from datetime import datetime
 import itertools
-from multiprocessing import Pool, cpu_count
+from multiprocess import Pool, cpu_count
 import os
 from subprocess import getoutput
 import sys
@@ -194,8 +194,7 @@ def remove_empty_rules(css: str) -> str:
 
 def condense_zero_units(css: str) -> str:
     return re.sub(
-        r"([\s:])(0)(px|em|%|in|q|ch|cm|mm|pc|pt|ex|rem|s|ms|"
-        r"deg|grad|rad|turn|vw|vh|vmin|vmax|fr)",
+        r"([\s:])(0)(px|em|%|in|q|ch|cm|mm|pc|pt|ex|rem|s|ms|" r"deg|grad|rad|turn|vw|vh|vmin|vmax|fr)",
         r"\1\2",
         css,
     )
@@ -516,10 +515,8 @@ def main():
     if args.after and getoutput:
         print(getoutput(str(args.after)))
     print(f"\n {'-' * 80} \n Files Processed: {list_of_files}.")
-    print(
-        f"""Number of Files Processed:
-          {len(list_of_files) if isinstance(list_of_files, tuple) else 1}"""
-    )
+    print(f"""Number of Files Processed:
+          {len(list_of_files) if isinstance(list_of_files, tuple) else 1}""")
 
 
 if __name__ in "__main__":

@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import mmap
-from multiprocessing import Pool
+from multiprocess import Pool
 import os
 import tokenize
 

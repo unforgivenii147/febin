@@ -36,7 +36,7 @@ def group_similar_files(hashes, threshold):
             continue
         group = [f1]
         visited.add(f1)
-        for f2 in files[i + 1 :]:
+        for f2 in files[i + 1:]:
             if f2 in visited:
                 continue
             score = ssdeep.compare(hashes[f1], hashes[f2])
@@ -55,7 +55,7 @@ def copy_groups(groups, output_dir="output"):
         os.makedirs(group_dir, exist_ok=True)
         for f in group:
             try:
-                shutil.copy2(f, group_dir)
+                shutil.move(f, group_dir)
             except Exception as e:
                 print(f"Failed to copy {f}: {e}")
 

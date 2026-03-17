@@ -3,38 +3,25 @@ import os
 from pathlib import Path
 import sys
 
-from dh import format_size
+from dh import format_size, get_files
+
+ROOT_DIR = Path.cwd()
 
 
-def get_sizes(start_path="."):
-    sizes = []
-    start_path = Path(start_path).resolve()
-    try:
-        for file_path in start_path.rglob("*"):
-            if file_path.is_file():
-                try:
-                    fsize = file_path.stat().st_size
-                    relative_path = file_path.relative_to(start_path)
-                    sizes.append((relative_path, fsize))
-                except (OSError, ValueError):
-                    continue
-    except PermissionError as e:
-        print(
-            f"Permission denied: {e}",
-            file=sys.stderr,
-        )
-        return []
-    return sizes
+def get_sizes():
+    sz = []
+    for file_path in get_files(ROOT_DIR):
+        sz.append((file_path.relative_to(ROOT_DIR), file_path.stat().st_size))
+    return sz
 
 
 def main() -> None:
-    print("Scanning files...")
-    get_sizes = get_sizes()
-    if not get_sizes:
+    sizez = get_sizes()
+    if not sizez:
         print("No files found or unable to access directory.")
         return
-    get_sizes.sort(key=lambda x: x[1], reverse=True)
-    top_files = get_sizes[:10]
+    sizez.sort(key=lambda x: x[1], reverse=True)
+    top_files = sizez[:10]
     print("\n" + "=" * 60)
     print(f"TOP 10 LARGEST FILES (in {os.getcwd()})")
     print("=" * 60)
@@ -51,7 +38,7 @@ def main() -> None:
             path_str = "..." + path_str[-(max_path_len - 3) :]
         size_str = format_size(size)
         print(f"{i:<4} {path_str:<{max_path_len}} {size_str:>12}")
-    total_files = len(get_sizes)
+    total_files = len(sizez)
     print("-" * (max_path_len + 20))
     print(f"Total files scanned: {total_files}")
     if total_files > 10:
@@ -59,12 +46,12 @@ def main() -> None:
 
 
 def alternative_version_with_details() -> None:
-    get_sizes = get_sizes()
-    if not get_sizes:
+    sizez = get_sizes()
+    if not sizez:
         print("No files found.")
         return
-    get_sizes.sort(key=lambda x: x[1], reverse=True)
-    top_files = get_sizes[:10]
+    sizez.sort(key=lambda x: x[1], reverse=True)
+    top_files = sizez[:10]
     print("\nTOP 10 LARGEST FILES (Detailed View)")
     print("=" * 70)
     for i, (file_path, size) in enumerate(top_files, 1):
@@ -73,14 +60,5 @@ def alternative_version_with_details() -> None:
 
 
 if __name__ == "__main__":
-    try:
-        alternative_version_with_details()
-    except KeyboardInterrupt:
-        print("\nOperation cancelled by user.")
-        sys.exit(1)
-    except Exception as e:
-        print(
-            f"An error occurred: {e}",
-            file=sys.stderr,
-        )
-        sys.exit(1)
+    main()
+#    alternative_version_with_details()

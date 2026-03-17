@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
 from collections import deque
-from multiprocessing import Pool
+from multiprocess import Pool
 from pathlib import Path
 
 from dh import format_size, get_size, run_command

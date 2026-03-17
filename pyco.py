@@ -16,7 +16,6 @@ def get_skip_dirs():
         "pip",
         "wheel",
         "setuptools",
-        "packaging",
     ):
         skip.add(str(site_packages / d))
     return skip
@@ -32,7 +31,7 @@ def clean_pyc_and_pycache(
     skip_dirs = get_skip_dirs()
     for pth in walk_files(start_dir):
         path = Path(pth)
-        if path.is_file() and any(pat in str(path) for pat in skip_dirs):
+        if path.is_file() and any(pat in path.parts for pat in skip_dirs):
             continue
         if path.is_file() and path.suffix == ".pyc":
             try:
@@ -40,8 +39,10 @@ def clean_pyc_and_pycache(
                     twin_path = path.with_suffix(".py")
                 else:
                     parent_dir = path.parent.parent
-                    twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".cpython-312", "") + ".py")
-                #                print(twin_path)
+                    if "312" in path.stem:
+                        twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".cpython-312", "") + ".py")
+                    if "313" in path.stem:
+                        twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".cpython-313", "") + ".py")
                 if twin_path.exists():
                     size = path.stat().st_size
                     path.unlink()

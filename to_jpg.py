@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import argparse
-from multiprocessing import Pool
+from multiprocess import Pool
 from pathlib import Path
 
 from dh import (

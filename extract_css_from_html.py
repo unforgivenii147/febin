@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocessing import Pool
+from multiprocess import Pool
 import os
 from pathlib import Path
 import random

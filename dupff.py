@@ -34,8 +34,8 @@ def find_duplicates(path: Path):
                     print(f"Error processing file {file_path}: {e}")
                     continue
     for (
-        file_hash,
-        file_paths,
+            file_hash,
+            file_paths,
     ) in files_by_hash.items():
         if len(file_paths) > 1:
             duplicate_count += len(file_paths) - 1

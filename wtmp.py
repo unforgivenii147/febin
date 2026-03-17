@@ -8,14 +8,15 @@ import time
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
-DEST_DIR = Path("/sdcard/whl")
-DEST_DIR.mkdir(exist_ok=True)
+DEST_DIR = Path("/data/data/com.termux/files/home/tmp/tgz")
+if not DEST_DIR.exists():
+    DEST_DIR.mkdir(exist_ok=True)
 ALLOWED_EXTENSIONS = (
     ".tar.gz",
     ".whl",
     ".tar.xz",
     ".zip",
-    ".tar.bz2",
+    ".tar.zst",
 )
 
 

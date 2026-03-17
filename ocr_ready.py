@@ -13,7 +13,7 @@ SUPPORTED_EXT = {
     ".bmp",
     ".webp",
 }
-BASE_DIR = Path().resolve()
+BASE_DIR = Path.cwd()
 OUTPUT_DIR = BASE_DIR / "ocr_ready"
 
 

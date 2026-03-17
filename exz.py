@@ -3,7 +3,7 @@ import argparse
 from datetime import datetime
 import logging
 import lzma
-from multiprocessing import Pool, cpu_count
+from multiprocess import Pool, cpu_count
 import os
 from pathlib import Path
 import shutil

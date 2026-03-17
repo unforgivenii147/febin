@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocessing import Pool
+from multiprocess import Pool
 from pathlib import Path
 import string
 from sys import exit

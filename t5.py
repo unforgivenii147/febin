@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-from multiprocessing import Pool
+from multiprocess import Pool
 import os
 from pathlib import Path
 import sys

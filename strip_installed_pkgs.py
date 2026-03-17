@@ -2,6 +2,7 @@
 from importlib.metadata import distributions
 from pathlib import Path
 import sys
+from dh import STDLIB
 
 
 def get_installed_packages():
@@ -26,6 +27,8 @@ def strip_installed_from_requirements(fname):
     installed = [p.lower().replace("-", "_") for p in installed if p]
     lines = read_requirements(fname)
     new_lines = [line for line in lines if line not in installed]
+    stdlib = list(STDLIB)
+    new_lines = [line for line in new_lines if line not in stdlib]
     write_requirements(new_lines, fname)
     removed = len(lines) - len(new_lines)
     print(f"Removed {removed} installed package(s).")

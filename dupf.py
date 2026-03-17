@@ -2,93 +2,30 @@
 from collections import defaultdict
 import os
 from pathlib import Path
-
-import click
-from fastwalk import walk_files
-
-# from xxhash import xxh64
 from file_hash import hash_file
 
 
-
-
-"""
-def get_file_hash(path):
-
-    h = xxh64()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-"""
-
-
-def find_and_delete_duplicates(path: Path):
+def find_duplicates():
+    root_dir=Path.cwd()
     files_by_hash = defaultdict(list)
     duplicate_count = 0
-    deleted_count = 0
-    total_deleted_size = 0
-    for pth in walk_files("."):
-        path = Path(pth)
-        if path.is_symlink():
+    for path in root_dir.rglob("*"):
+        if ".git" in path.parts or "__pycache__" in path.parts:
             continue
         if path.is_file():
-            try:
-                files_by_hash[hash_file(path)].append(path)
-            except Exception as e:
-                print(f"Error processing file {path}: {e}")
-                continue
+            files_by_hash[file_hash(path)].append(path)
     for (
-            file_hash,
+            hash,
             paths,
     ) in files_by_hash.items():
         if len(paths) > 1:
             duplicate_count += len(paths) - 1
-            paths.sort(
-                key=lambda x: x.stat().st_mtime,
-                reverse=True,
-            )
-
-            for dup_found in paths:
-                print(os.path.relpath(dup_found))
-            for filetodel in paths[1:]:
-                try:
-                    get_size = filetodel.stat().st_size
-                    deleted_count += 1
-                    total_deleted_size += get_size
-                except Exception as e:
-                    print(f"Error deleting file {filetodel}: {e}")
-        else:
-            continue
-    return (
-        duplicate_count,
-        deleted_count,
-        total_deleted_size,
-    )
-
-
-@click.command()
-@click.argument(
-    "path",
-    default=".",
-    type=click.Path(
-        exists=True,
-        file_okay=False,
-        dir_okay=True,
-    ),
-)
-def remove_duplicates(path) -> None:
-    print(f"Searching for duplicates in directory: {path}")
-    (
-        _duplicate_count,
-        deleted_count,
-        total_deleted_size,
-    ) = find_and_delete_duplicates(Path(path))
-    print("\nSummary:")
-    print(f"dup found: {deleted_count}")
-    print(f"del  size: {total_deleted_size} bytes")
+            print(f"Duplicate files found for hash {hash}:")
+            for file_path in paths:
+                relative_path = file_path.relative_to(root_dir)
+                print(f"  {relative_path}")
+            print()
 
 
 if __name__ == "__main__":
-    remove_duplicates()
+    find_duplicates()

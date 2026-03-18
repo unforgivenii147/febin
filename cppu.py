@@ -53,8 +53,8 @@ def format_file(file_path):
         del before
         return True
     except (
-            subprocess.CalledProcessError,
-            FileNotFoundError,
+        subprocess.CalledProcessError,
+        FileNotFoundError,
     ):
         del res
         del size_diff
@@ -88,7 +88,7 @@ def main() -> None:
     with Pool(8) as pool:
         pending = deque()
         for f in cfiles:
-            pending.append(pool.apply_async(format_file, ((f), )))
+            pending.append(pool.apply_async(format_file, ((f),)))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:

@@ -158,9 +158,7 @@ def main():
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".py", ".pyi", ".pyx"])
 
-
-
-    logger.info("processing {len(files)} files")
+    logger.info(f"processing {len(files)} files")
     with Pool(8) as pool:
         pending = deque()
         for f in files:
@@ -170,9 +168,10 @@ def main():
         while pending:
             pending.popleft().get()
 
+
 """
 
-    logger.info("processing {len(importable)} importable")
+    logger.info(f"processing {len(importable)} importable")
     with Pool(8) as pool:
         pending=deque()
         for x in importables:

@@ -6,13 +6,12 @@ from fastwalk import walk_files
 
 
 def process_file(fp) -> None:
-    #    if fp.stat().st_size < 100:
-    #        fp.unlink()
-    with open(fp) as f:
-        lines = f.readlines()
-        if len(lines) < 2:
-            fp.unlink()
-            print(f"{fp.name} removed")
+    if fp.stat().st_size < 50 and len(fp.read_text().splitlines()) < 3:
+        fp.unlink()
+        print(f"{fp.name} removed")
+    if len(fp.read_text().splitlines()) < 2:
+        fp.unlink()
+        print(f"{fp.name} removed")
 
 
 def main() -> None:

@@ -64,16 +64,16 @@ def create_range_folders(base_dir, files, num_folders):
 def distribute_files(files, folders, base_dir):
     size_to_folder = {}
     for (
-            min_size,
-            max_size,
-            folder_name,
+        min_size,
+        max_size,
+        folder_name,
     ) in folders:
         size_to_folder[(min_size, max_size)] = folder_name
     moved_count = 0
     for filepath, size in files:
         for (
-                min_size,
-                max_size,
+            min_size,
+            max_size,
         ), folder_name in size_to_folder.items():
             if min_size <= size <= max_size:
                 dest_folder = os.path.join(base_dir, folder_name)
@@ -91,9 +91,7 @@ def distribute_files(files, folders, base_dir):
                     print(f"Failed to move {filepath}: {e}")
                 break
         else:
-            print(
-                f"No folder match for {os.path.basename(filepath)} ({size:,} bytes)"
-            )
+            print(f"No folder match for {os.path.basename(filepath)} ({size:,} bytes)")
 
 
 #    print(f"\nMoved {moved_count}/{len(files)} files successfully.")

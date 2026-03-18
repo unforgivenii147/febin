@@ -4,10 +4,7 @@ import zipfile
 
 def is_empty_wheel(wheel_path) -> bool:
     with zipfile.ZipFile(wheel_path, "r") as z:
-        dist_info_dirs = [
-            name for name in z.namelist()
-            if name.endswith((".dist-info/", ".dist-info"))
-        ]
+        dist_info_dirs = [name for name in z.namelist() if name.endswith((".dist-info/", ".dist-info"))]
         if not dist_info_dirs:
             return False
         dist_info = dist_info_dirs[0].rstrip("/")

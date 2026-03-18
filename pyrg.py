@@ -25,8 +25,8 @@ IGNORED_DIRS = {
     "node_modules",
     "__pycache__",
 }
-BINARY_CHUNK = 4096
-DEFAULT_THREADS = max(4, (os.cpu_count() or 4))
+BINARY_CHUNK = 4096 * 8
+DEFAULT_THREADS = 8
 ANSI_BOLD = "\033[1m"
 ANSI_RESET = "\033[0m"
 ANSI_HIGHLIGHT = "\033[31m"
@@ -165,14 +165,15 @@ def build_argparser() -> argparse.ArgumentParser:
         help="Case-insensitive search",
     )
     p.add_argument(
-        "-F",
         "--fixed-strings",
         action="store_true",
+        default=True,
         help="Fixed string search (no regex)",
     )
     p.add_argument(
         "-n",
         "--line-number",
+        default=True,
         action="store_true",
         help="Show line numbers",
     )
@@ -196,32 +197,39 @@ def build_argparser() -> argparse.ArgumentParser:
         help="Number of worker threads",
     )
     p.add_argument(
+        "-H",
         "--hidden",
         action="store_true",
+        default=True,
         help="Search hidden files and directories",
     )
     p.add_argument(
+        "-g",
         "--glob",
         action="append",
         help="Include glob (fnmatch); can be repeated",
     )
     p.add_argument(
+        "-x",
         "--exclude",
         action="append",
         help="Exclude glob (fnmatch); can be repeated",
     )
     p.add_argument(
+        "-C",
         "--no-color",
         action="store_true",
         help="Disable colorized output",
     )
     p.add_argument(
+        "-m",
         "--max-filesize",
         type=int,
         default=10_000_000,
         help="Skip files larger than size (bytes)",
     )
     p.add_argument(
+        "-F",
         "--follow",
         action="store_true",
         help="Follow symlinks",

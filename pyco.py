@@ -39,17 +39,23 @@ def clean_pyc_and_pycache(
                     twin_path = path.with_suffix(".py")
                 else:
                     parent_dir = path.parent.parent
-                    if "312" in path.stem:
+                    if ".cpython-312" in path.stem:
                         twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".cpython-312", "") + ".py")
-                    if "313" in path.stem:
+                    if ".cpython-313" in path.stem:
                         twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".cpython-313", "") + ".py")
+                    if ".opt-1" in path.stem:
+                        twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".opt-1", "") + ".py")
+                    if ".opt-2" in path.stem:
+                        twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".opt-2", "") + ".py")
                 if twin_path.exists():
                     size = path.stat().st_size
                     path.unlink()
                     total_size += size
                     files_removed += 1
                 else:
-                    cprint("lonely pyc file", "cyan")
+                    cprint(twin_path, "green")
+                    cprint(f"{path} : lonely pyc", "cyan")
+
             except Exception as e:
                 print(f"⚠️ error deleting {path}: {e}")
 

@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocess import Pool, cpu_count
+from multiprocess import Pool
 from pathlib import Path
 
 from dh import (
@@ -14,7 +14,7 @@ from termcolor import cprint
 
 LIC_FILE = Path("/sdcard/lic")
 MIN_BLANK_LINES = 3
-NUM_WORKERS = max(cpu_count(), 8)
+NUM_WORKERS = 8
 EXCLUDE_EXTS = BIN_EXT
 
 
@@ -29,12 +29,9 @@ def load_patterns(lic_path: Path) -> list[str]:
         pattern_separator = r"\n(?:\s*\n){" + str(MIN_BLANK_LINES) + r",}"
         patterns = re.split(pattern_separator, content)
         patterns = [p.strip() for p in patterns if p.strip()]
-        print(f"Loaded {len(patterns)} pattern(s) from {lic_path}")
+        #        print(f"Loaded {len(patterns)} pattern(s) from {lic_path}")
         for idx, pattern in enumerate(patterns, 1):
             preview = pattern[:50].replace("\n", "\\n")
-            if len(pattern) > 50:
-                preview += "..."
-            print(f"  Pattern {idx}: {preview}")
         return patterns
     except Exception as e:
         print(f"Error loading patterns from {lic_path}: {e}")
@@ -54,12 +51,14 @@ def remove_patterns_from_content(content: str, patterns: list[str]) -> str:
             regex_pattern,
             "",
             cleaned,
-            flags=re.IGNORECASE | re.MULTILINE,
+            flags=re.IGNORECASE,
         )
     return cleaned
 
 
 def should_process_file(file_path: Path) -> bool:
+    if file_path.stat().st_size == 0:
+        return False
     if file_path.suffix.lower() in EXCLUDE_EXTS:
         return False
     if file_path.suffix.lower() in TXT_EXT:
@@ -79,7 +78,8 @@ def clean_file_worker(args: tuple) -> tuple:
         ) as f:
             original_content = f.read()
         cleaned_content = remove_patterns_from_content(original_content, patterns)
-        if cleaned_content != original_content:
+
+        if len(cleaned_content) != len(original_content):
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(cleaned_content)
             removed_chars = len(original_content) - len(cleaned_content)
@@ -105,12 +105,10 @@ def main():
     print()
     root_dir = Path.cwd()
     isz = get_size(root_dir)
-    all_files = [f for f in dir.rglob("*") if f.is_file() and should_process_file(f)]
+    all_files = [f for f in root_dir.rglob("*") if f.is_file() and should_process_file(f) and not f.is_symlink()]
     if not all_files:
         print("No files to process.")
         return
-    print(f"Found {len(all_files)} file(s) to process.")
-    print(f"Using {NUM_WORKERS} worker(s).\n")
     print("Processing...\n")
     worker_args = [(file_path, patterns) for file_path in all_files]
     with Pool(processes=NUM_WORKERS) as pool:
@@ -123,14 +121,11 @@ def main():
             if "no changes" not in message:
                 print(f"✓ Modified: {file_path} ({message})")
                 modified_count += 1
-            else:
-                print(f"○ Unchanged: {file_path}")
             success_count += 1
         else:
             print(f"✗ Error: {file_path} - {message}")
             error_count += 1
     esz = get_size(root_dir)
-    print(f"  Processed: {success_count}/{len(all_files)} file(s)\n")
     print(f"  Modified: {modified_count}")
     print(f"  dir size: \n\tbefore     {format_size(isz)}\n\tafter   -  {format_size(esz)}\n\t\t    _______\n")
     cprint(

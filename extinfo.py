@@ -6,22 +6,15 @@ python script to read an extension name via sys.argv[1] and reports:
 
 from pathlib import Path
 import sys
-
-
-def format_size(sb):
-    for unit in ["B", "KB", "MB", "GB", "TB"]:
-        if sb < 1024:
-            return f"{sb:.2f} {unit}"
-        sb /= 1024
-    return f"{sb:.2f} PB"
+from dh import format_size
 
 
 def main():
     ext = sys.argv[1]
     total_size = 0
     count = 0
-    Path.cwd()
-    for f in dir.rglob(f"*.{ext}"):
+    root_dir = Path.cwd()
+    for f in root_dir.rglob(f"*.{ext}"):
         total_size += f.stat().st_size
         count += 1
     print(f"Total number of .{ext} files: {count}")

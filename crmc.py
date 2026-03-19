@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocess import Pool, cpu_count
 from pathlib import Path
 import sys
 
 from dh import format_size, get_size
+from multiprocessing import Pool, cpu_count
 from termcolor import cprint
 from tree_sitter import Language, Parser
 import tree_sitter_cpp

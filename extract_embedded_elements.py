@@ -6,7 +6,6 @@ import hashlib
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from dh import get_nobinary, get_random_name
 import regex as re
 
 if TYPE_CHECKING:

@@ -4,13 +4,15 @@ from pathlib import Path
 import sys
 
 
-def decode_base64_lines(input_txt_path, output_folder="decoded_files"):
+def decode_base64_lines(input_path, output_folder="decoded_files"):
     output_dir = Path(output_folder)
     output_dir.mkdir(parents=True, exist_ok=True)
     success_count = 0
     error_count = 0
+    failed = []
+    remained = []
     try:
-        with open(input_txt_path, encoding="utf-8") as f:
+        with open(input_path, encoding="utf-8") as f:
             for i, line in enumerate(f, 1):
                 line = line.strip()
                 if not line:
@@ -21,21 +23,25 @@ def decode_base64_lines(input_txt_path, output_folder="decoded_files"):
                     output_path = output_dir / output_filename
                     with open(output_path, "wb") as out_file:
                         out_file.write(decoded_bytes)
-                    print(f"✓ Line {i:4d} → {output_path}")
+                    #                    print(f"✓ Line {i:4d} → {output_path}")
                     success_count += 1
                 except Exception as e:
                     print(f"✗ Line {i:4d} failed: {e}")
                     error_count += 1
-        print("\n" + "=" * 50)
-        print("Finished!")
-        print(f"Successfully decoded: {success_count} files")
-        print(f"Failed            : {error_count} lines")
+                    failed.append(i)
+                    remained.append(line)
+
+        print(f"Failed : {error_count} lines")
+        print(failed)
         if success_count > 0:
             print(f"Files saved in: {output_dir.resolve()}")
     except FileNotFoundError:
-        print(f"Error: Input file not found: {input_txt_path}")
+        print(f"Error: Input file not found: {input_path}")
     except Exception as e:
         print(f"Unexpected error: {e}")
+    with open(input_path, "w") as fo:
+        for k in remained:
+            fo.write(f"{k}\n")
 
 
 if __name__ == "__main__":

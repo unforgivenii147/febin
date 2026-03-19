@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-from multiprocess import Pool
 import os
 from pathlib import Path
 import sys
 
 from dh import format_size, get_size
+from multiprocessing import Pool
 from tree_sitter import (
     Language,
     Parser,

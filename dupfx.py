@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from collections import defaultdict
 from pathlib import Path
+
 from file_hash import hash_file
 
 
@@ -13,7 +14,7 @@ def remove_duplicates() -> None:
         if path.is_file():
             files_by_hash[hash_file(path)].append(path)
     for (
-        file_hash,
+        _file_hash,
         paths,
     ) in files_by_hash.items():
         if len(paths) > 1:

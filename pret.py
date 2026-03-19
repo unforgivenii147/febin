@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import argparse
 from collections import deque
-from multiprocess import Pool
 from pathlib import Path
 
 from dh import format_size, get_size, run_command
 from fastwalk import walk_files
+from multiprocessing import Pool
 from termcolor import cprint
 
 MAX_IN_FLIGHT = 16

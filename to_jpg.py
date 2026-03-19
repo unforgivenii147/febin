@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import argparse
-from multiprocess import Pool
 from pathlib import Path
 
 from dh import (
@@ -11,6 +10,7 @@ from dh import (
     is_image,
     unique_path,
 )
+from multiprocessing import Pool
 
 try:
     import cv2

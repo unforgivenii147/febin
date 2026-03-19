@@ -2,12 +2,12 @@
 from argparse import ArgumentParser
 from datetime import datetime
 import itertools
-from multiprocess import Pool, cpu_count
 import os
 from subprocess import getoutput
 import sys
 from time import sleep
 
+from multiprocessing import Pool, cpu_count
 import regex as re
 
 try:

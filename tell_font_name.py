@@ -1,10 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import os
+from pathlib import Path
 import sys
 
+from dh import get_files, unique_path
 from fontTools.ttLib import TTFont
+from multiprocessing import Pool
 import regex as re
 from termcolor import cprint
+
+MAX_QUEUE = 16
 
 
 def is_ascii_printable(s: str) -> bool:
@@ -14,16 +18,6 @@ def is_ascii_printable(s: str) -> bool:
 def clean_filename(s: str) -> str:
     s = re.sub(r"[^\w\-\.]", "", s)
     return s.strip("_-.")
-
-
-def unique_path(path: str) -> str:
-    base, ext = os.path.splitext(path)
-    i = 2
-    new = path
-    while os.path.exists(new):
-        new = f"{base}_{i}{ext}"
-        i += 1
-    return new
 
 
 def get_best_name(font, name_id):
@@ -55,11 +49,7 @@ def get_font_names(path):
     return family, subfamily
 
 
-def main():
-    if len(sys.argv) < 2:
-        print("usage: font_rename.py <fontfile>")
-        return 1
-    fn = sys.argv[1]
+def process_file(fn):
     try:
         family, style = get_font_names(fn)
     except Exception as e:
@@ -68,15 +58,30 @@ def main():
     if not family:
         cprint("name not found", "magenta")
         return 1
-    ext = os.path.splitext(fn)[1].lower()
-    new_name = f"{family}-{style}{ext}"
-    new_name = unique_path(new_name)
-    if os.path.abspath(fn) == os.path.abspath(new_name):
+    ext = fn.suffix.lower()
+    new_path = Path(fn.parent / f"{family}-{style}{ext}")
+    if new_path.exists():
+        new_path = unique_path(new_path)
+    if fn.name == new_path.name:
         cprint("no change", "blue")
         return 0
-    os.rename(fn, new_name)
-    cprint(f"{fn} -> {new_name}", "green")
+    fn.rename(new_path)
+    cprint(f"{fn.name} -> {new_path.name}", "green")
     return 0
+
+
+def main() -> None:
+    root_dir = Path.cwd()
+    args = sys.argv[1:]
+    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".ttf", ".woff", ".woff2"])
+    if not files:
+        print("no files found")
+        return
+    p = Pool(8)
+    for _ in p.imap_unordered(process_file, files):
+        pass
+    p.close()
+    p.join()
 
 
 if __name__ == "__main__":

@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocess import Pool
 from pathlib import Path
 import subprocess
 import sys
 
 from fastwalk import walk_files
+from multiprocessing import Pool
 
 
 def process_file(fpath):

@@ -40,10 +40,12 @@ def slugify(text: str) -> str:
     temp = text
     text = text.lower()
     text = re.sub(
-        r"(?|\\\||`|<|>|~|:|;|\"|'|@|$|#|%|&|^|(|)|{|}|[|])",
+        r"(\?|\\|\||\`|\<|\>|\~|\:|\;|\"|\'|\@|\$|\#|\%|\&|\^|\(|\)|\{|\}|\[|\])",
         "",
         text,
     )
+    text = re.sub(r"( )+", "_", text)
+    text = re.sub(r"(/)+", "_", text)
     text = re.sub(r"(__)+", "_", text)
     if len(text) < 2:
         return temp.replace(":", "").replace("?", "").replace("=", "")

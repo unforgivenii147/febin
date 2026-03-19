@@ -1,5 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from os.path import relpath
+#!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
 EXCLUDED = {
@@ -32,9 +31,9 @@ def delete_empty_dirs(root: Path) -> None:
                     COUNT += 1
                     REMOVED_DIRS.append(relpath(path))
             except PermissionError:
-                print(f"[ERR] {relpath(path)}")
+                print(f"[ERR] {path.relative_to(root)}")
             except OSError as e:
-                print(f"[ERROR] {relpath(path)}: {e}")
+                print(f"[ERROR] {path.relative_to(root)}: {e}")
 
 
 if __name__ == "__main__":
@@ -43,4 +42,4 @@ if __name__ == "__main__":
     print("\nRemoved directories:")
     for d in REMOVED_DIRS:
         print(f"- {d}")
-    print(f"removed: {COUNT} emptybdirs removed.")
+    print(f"removed: {COUNT} dirs")

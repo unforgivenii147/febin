@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
 import io
-from multiprocess import Pool
 from pathlib import Path
 import shutil
 import tempfile
@@ -9,6 +8,7 @@ import tokenize
 
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
+from multiprocessing import Pool
 import regex as re
 
 DIRECTORY = "."

@@ -1,9 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/env python
-"""
-Compress files in current directory recursively using xz (lzma) compression.
-Single-threaded version for maximum reliability.
-"""
-
 import argparse
 import contextlib
 import logging
@@ -28,9 +23,6 @@ logger = logging.getLogger(__name__)
 
 
 def atomic_write(data, final_path):
-    """
-    Write data atomically using a temporary file.
-    """
     # Create temporary file in same directory
     temp_dir = os.path.dirname(final_path)
     os.makedirs(temp_dir, exist_ok=True)
@@ -47,7 +39,6 @@ def atomic_write(data, final_path):
             temp_file.write(data)
             temp_file.flush()
             os.fsync(temp_file.fileno())
-        # Rename temporary file to final destination
         shutil.move(temp_path, final_path)
         return True
     except Exception as e:
@@ -59,13 +50,10 @@ def atomic_write(data, final_path):
 
 
 def safe_delete(file_path, max_retries=3, delay=0.5):
-    """
-    Safely delete a file with retries.
-    """
     for attempt in range(max_retries):
         try:
             if os.path.exists(file_path):
-                time.sleep(delay)  # Delay before deletion
+                time.sleep(delay)
                 os.remove(file_path)
                 logger.debug(f"Deleted: {file_path}")
                 return True
@@ -82,17 +70,12 @@ def safe_delete(file_path, max_retries=3, delay=0.5):
 
 
 def should_compress(file_path):
-    """
-    Determine if a file should be compressed.
-    """
+    path = Path(file_path)
     try:
-        # Skip if it's a symlink
-        if os.path.islink(file_path):
+        if path.is_symlink():
             return False
-        # Skip if it's not a regular file
-        if not os.path.isfile(file_path):
+        if not path.is_file():
             return False
-        # Skip already compressed files
         compressed_extensions = (
             ".xz",
             ".lzma",
@@ -102,21 +85,16 @@ def should_compress(file_path):
             ".7z",
             ".rar",
         )
-        if str(file_path).lower().endswith(compressed_extensions):
+        if file_path.suffix in compressed_extensions:
             return False
-        # Skip empty files
-        return os.path.getsize(file_path) != 0
+        return get_size(file_path) != 0
     except (OSError, PermissionError):
         return False
 
 
 def compress_file(file_path, delete_delay=0.5):
-    """
-    Compress a single file using lzma compression.
-    """
     original_path = str(file_path)
     compressed_path = original_path + ".xz"
-    # Skip if compressed file already exists
     if os.path.exists(compressed_path):
         logger.warning(f"Compressed file exists, skipping: {compressed_path}")
         return False
@@ -173,7 +151,6 @@ def compress_file(file_path, delete_delay=0.5):
 
 
 def calculate_directory_size(path="."):
-    """Calculate total size of all files in directory recursively."""
     total_size = 0
     file_count = 0
     for root, dirs, files in os.walk(path):
@@ -192,7 +169,6 @@ def calculate_directory_size(path="."):
 
 
 def format_size(size_bytes):
-    """Format bytes to human readable format."""
     if size_bytes == 0:
         return "0 B"
     for unit in ["B", "KB", "MB", "GB"]:
@@ -203,7 +179,6 @@ def format_size(size_bytes):
 
 
 def scan_files(directory):
-    """Scan directory for files to compress."""
     files_to_compress = []
     logger.info(f"Scanning directory: {directory}")
     for root, dirs, files in os.walk(directory):

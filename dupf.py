@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from collections import defaultdict
-import os
 from pathlib import Path
+
 from file_hash import hash_file
 from termcolor import cprint
 

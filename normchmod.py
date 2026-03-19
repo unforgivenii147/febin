@@ -35,16 +35,15 @@ def normalize_permissions(homedir: str) -> None:
                             errors="ignore",
                             encoding=encod,
                         ) as f:
-                            h10 = f.read()
-                            print(f"{h10!s}")
+                            f.read()
                 except:
-                    pribt(f"error reading {path}")
+                    print(f"error reading {path.name}")
         except PermissionError as e:
-            print(f"Permission denied: {path} ({e})")
+            print(f"Permission denied: {path.name} ({e})")
         except FileNotFoundError:
             continue
         except OSError as e:
-            print(f"OS error on {path}: {e}")
+            print(f"OS error on {path.name}: {e}")
 
 
 if __name__ == "__main__":

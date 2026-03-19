@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-from multiprocess import Pool
 from pathlib import Path
 import sys
 
@@ -12,6 +11,7 @@ from dh import (
     get_size,
     is_binary,
 )
+from multiprocessing import Pool
 from termcolor import cprint
 
 

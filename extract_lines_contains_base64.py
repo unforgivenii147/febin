@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
-from dh import get_files
 import sys
+
+from dh import get_nobinary
 
 
 def process_file(fp):
@@ -28,7 +29,7 @@ def process_file(fp):
 def main():
     args = sys.argv[1:]
     root_dir = Path.cwd()
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".html"])
+    files = [Path(arg) for arg in args] if args else get_nobinary(root_dir)
     for f in files:
         process_file(f)
 

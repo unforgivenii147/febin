@@ -1,8 +1,9 @@
+import argparse
+import os
+
+import cv2
 from imutils import paths
 import numpy as np
-import argparse
-import cv2
-import os
 
 
 def dhash(image, hashSize=8):
@@ -63,7 +64,7 @@ Examples:
     # basic validation
     dataset_path = args["path"]
     if not os.path.isdir(dataset_path):
-        raise SystemExit("[ERROR] dataset path does not exist or is not a directory: {}".format(dataset_path))
+        raise SystemExit(f"[ERROR] dataset path does not exist or is not a directory: {dataset_path}")
 
     # conflict check: if both --dry-run and --remove, prefer --remove
     is_remove_mode = args["remove"]
@@ -76,7 +77,7 @@ Examples:
         print("[INFO] no images found in directory")
         return
 
-    print("[INFO] found {} unique image(s)".format(len(hashes)))
+    print(f"[INFO] found {len(hashes)} unique image(s)")
 
     # loop over the image hashes
     for h, hashedPaths in hashes.items():
@@ -106,14 +107,14 @@ Examples:
                         montage = np.hstack([montage, image])
 
                 # show the montage for the hash
-                print("[INFO] found {} duplicates with hash: {}".format(len(hashedPaths) - 1, h))
+                print(f"[INFO] found {len(hashedPaths) - 1} duplicates with hash: {h}")
                 # cv2.imshow("Montage", montage)
                 # cv2.waitKey(0)
             else:
                 # remove all image paths with the same hash except
                 # for the first image in the list (since we want to keep
                 # one, and only one, of the duplicate images)
-                print("[INFO] removing {} duplicates with hash: {}".format(len(hashedPaths) - 1, h))
+                print(f"[INFO] removing {len(hashedPaths) - 1} duplicates with hash: {h}")
                 for p in hashedPaths[1:]:
                     os.remove(p)
 

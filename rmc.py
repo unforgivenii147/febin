@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
 from collections import deque
-from multiprocess import Pool
 from pathlib import Path
 import sys
 
@@ -14,6 +13,7 @@ from dh import (
     get_size,
     rm_doc,
 )
+from multiprocessing import Pool
 import regex as re
 from termcolor import cprint
 from tree_sitter import Language, Parser

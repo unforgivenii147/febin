@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-from multiprocess import Pool
 from pathlib import Path
-
+import sys
 from dh import (
     format_size,
     get_files,
     get_size,
-    run_command,
     is_binary,
+    run_command,
 )
+from multiprocessing import Pool
 
 
 def process_file(fp):

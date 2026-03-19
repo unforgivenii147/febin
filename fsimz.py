@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
 #!/data/data/com.termux/files/usr/bin/env python
-import sys
 from collections import defaultdict
 import os
-from pathlib import Path
+import sys
+
 from dh import get_files
-from ppdeep import hash_from_file, _levenstein, compare
+from ppdeep import hash_from_file
 
 
 def find_dups(root_dir):

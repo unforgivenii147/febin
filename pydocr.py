@@ -1,18 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
+from collections import deque
 import importlib
 import inspect
 import os
-import site
-import sys
-import zipfile
-from multiprocess import Pool
 from pathlib import Path
-from collections import deque
+import sys
 from textwrap import dedent
-from loguru import logger
 
 from dh import get_files, unique_path
+from loguru import logger
+from multiprocessing import Pool
 
 BASE_DIR = Path("doc")
 
@@ -156,7 +154,7 @@ def main():
         BASE_DIR.mkdir(exist_ok=True)
     root_dir = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".py", ".pyi", ".pyx"])
+    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".py", ".pyi", ".pyx", ".pxd"])
 
     logger.info(f"processing {len(files)} files")
     with Pool(8) as pool:
@@ -182,7 +180,6 @@ def main():
             pending.popleft().get()
 
 """
-
 
 if __name__ == "__main__":
     main()

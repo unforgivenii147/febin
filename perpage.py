@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocess import Pool
 import os
 from pathlib import Path
 
+from multiprocessing import Pool
 import pdfplumber
 from termcolor import cprint
 

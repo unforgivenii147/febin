@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocess import Pool
 from pathlib import Path
 import sys
 
-from dh import format_size, get_size, get_files
+from dh import format_size, get_files, get_size
+from multiprocessing import Pool
 from PIL import Image, ImageFilter, ImageOps
 from pytesseract import image_to_string
 from termcolor import cprint
@@ -43,7 +43,7 @@ def main() -> None:
     root_dir = Path.cwd()
     before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [arg for arg in args] if args else get_files(root_dir, extensions=[".jpg", ".png"])
+    files = list(args) if args else get_files(root_dir, extensions=[".jpg", ".png"])
 
     if len(files) == 1:
         process_file(files[0])

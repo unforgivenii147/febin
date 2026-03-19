@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import subprocess
 import sys
-from time import perf_counter
 
 
 def process_pkg(pk):
@@ -12,10 +11,8 @@ def process_pkg(pk):
 
 
 def main():
-    start = perf_counter()
     pkgname = sys.argv[1]
     process_pkg(pkgname)
-    print(f"{perf_counter() - start} sec")
 
 
 if __name__ == "__main__":

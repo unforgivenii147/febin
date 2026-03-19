@@ -3,11 +3,11 @@
 import argparse
 from collections import deque
 import contextlib
-from multiprocess import Pool
 from pathlib import Path
 
 from dh import format_size, get_size
 from fastwalk import walk_files
+from multiprocessing import Pool
 from termcolor import cprint
 
 MAX_IN_FLIGHT = 16

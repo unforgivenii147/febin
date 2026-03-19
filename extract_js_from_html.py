@@ -1,6 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
+from bs4 import BeautifulSoup
+import string
+import random
+import os
 from collections import deque
-from multiprocess import Pool
 from pathlib import Path
 import sys
 
@@ -10,15 +13,10 @@ from dh import (
     get_files,
     get_size,
 )
+from multiprocessing import Pool
 from termcolor import cprint
 
 MAX_QUEUE = 16
-
-import os
-import random
-import string
-
-from bs4 import BeautifulSoup
 
 
 def save_script(str1):

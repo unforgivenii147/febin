@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
-import json
-import sys
-from pathlib import Path
-from multiprocess import Pool
 from collections import deque
-from dh import get_nobinary, format_size, get_size
+import json
+from pathlib import Path
+import sys
+
+from dh import get_nobinary
 from loguru import logger
+from multiprocessing import Pool
 from toolz import compose, frequencies
 from toolz.curried import map
 
@@ -22,9 +23,8 @@ def process_file(fp):
     logger.info(f"{fp.name}")
     word_count = compose(frequencies, map(stem), str.split)
     content = fp.read_text(encoding="utf-8")
-    result = word_count(content)
+    return word_count(content)
     #    logger.info(sorted(result))
-    return result
 
 
 def main():
@@ -38,22 +38,22 @@ def main():
             pending.append(pool.apply_async(process_file, (f,)))
             if len(pending) > MAX_QUEUE:
                 result = pending.popleft().get()
-                for x in result.keys():
-                    if not x in results.keys():
+                for x in result:
+                    if x not in results:
                         results[x] = result.get(x)
                     else:
                         results[x] += result.get(x)
         while pending:
             result = pending.popleft().get()
-            for x in result.keys():
-                if not x in results.keys():
+            for x in result:
+                if x not in results:
                     results[x] = result.get(x)
                 else:
                     results[x] += result.get(x)
 
     outfile = Path("word_count.json")
     wsorted = []
-    for key in results.keys():
+    for key in results:
         wsorted.append(results.get(key))
     wsorted = sorted(wsorted, reverse=True)
     word_sorted = {}
@@ -65,7 +65,6 @@ def main():
 
 #        for v in results.keys():
 #            fo.write(f"{str(v)} : {str(results.get(v))}\n")
-
 
 if __name__ == "__main__":
     main()

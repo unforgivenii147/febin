@@ -3,15 +3,10 @@ import ast
 import importlib.metadata
 import importlib.util
 import numbers
-import os
-import pathlib
+from pathlib import Path
 import sys
 
-from dh import STDLIB, get_installed_pkgs
-
-
-def get_py_files(start_path):
-    return list(pathlib.Path(start_path).rglob("*.py*"))
+from dh import STDLIB, get_files, get_installed_pkgs
 
 
 class ImportVisitor(ast.NodeVisitor):
@@ -19,8 +14,8 @@ class ImportVisitor(ast.NodeVisitor):
         self.imports = set()
 
     def visit_Import(self, node):
-        for name in node.names:
-            self.imports.add(name.name.split(".")[0])
+        for node_name in node.names:
+            self.imports.add(node_name.name.split(".")[0])
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node):
@@ -32,19 +27,17 @@ class ImportVisitor(ast.NodeVisitor):
 def find_imports(start_path):
     all_imports = set()
     std_libs = STDLIB
-    for py_file in get_py_files(start_path):
+    files = get_files(start_path, extensions=[".py"])
+    for f in files:
         try:
-            with open(py_file, encoding="utf-8") as f:
-                tree = ast.parse(
-                    f.read(),
-                    filename=str(py_file),
-                )
+            code = f.read_text(encoding="utf-8")
+            tree = ast.parse(code)
             visitor = ImportVisitor()
             visitor.visit(tree)
             all_imports.update(visitor.imports)
         except (SyntaxError, UnicodeDecodeError):
             continue
-    local_files = {p.stem for p in pathlib.Path(start_path).glob("*.py")}
+    local_files = {p.stem for p in start_path.glob("*.py")}
     return sorted(
         [imp for imp in all_imports if imp not in std_libs and imp not in local_files and imp != "__future__"]
     )
@@ -69,22 +62,22 @@ def get_version(module_name):
 
 
 def main():
-    search_path = sys.argv[1]
-    output_file = f"{search_path}/importz.txt"
-    print(f"Scanning directory: {os.path.abspath(search_path)}...")
-    modules = find_imports(search_path)
+    root_dir = Path.cwd()
+    sys.argv[1:]
+    output_file = root_dir / "importz.txt"
+    modules = find_imports(root_dir)
     results = []
     print(f"{'Module':<20} | {'Version':<15}")
     print("-" * 40)
     for mod in modules:
-        if mod not in STDLIB:
-            if mod.startswith("_"):
-                continue
-            ver = get_version(mod)
-            line = f"{mod:<20} | {ver:<15}"
-            print(line)
-            if "Not Installed" in ver:
-                results.append(f"{mod}=={ver}")
+        if mod.startswith("_"):
+            continue
+        ver = get_version(mod)
+        line = f"{mod:<20} | {ver:<15}"
+        print(line)
+        if "Not Installed" in ver:
+            results.append(f"{mod}=={ver}")
+
     with open(output_file, "w", encoding="utf-8") as f:
         f.write("\n".join(results))
     cleaned = []
@@ -101,11 +94,13 @@ def main():
     pkgz = get_installed_pkgs()
     cleaned = [p for p in cleaned if p not in pkgz and not p.startswith("_")]
     if cleaned:
-        with open(output_file, "w", encoding="utf-8") as f:
+        with output_file.open("w", encoding="utf-8") as f:
             f.write("\n".join(cleaned))
-    elif os.path.exists(output_file):
-        os.remove(output_file)
+    elif output_file.exists():
+        output_file.unlink()
         print(f"empty {output_file} removed")
+    if output_file.stat().st_size < 2:
+        output_file.unlink()
 
 
 if __name__ == "__main__":

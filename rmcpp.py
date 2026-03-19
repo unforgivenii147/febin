@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocess import Pool, cpu_count
 from pathlib import Path
 import sys
 
+from multiprocessing import Pool, cpu_count
 from tree_sitter import (
     Language,
     Parser,
@@ -150,7 +150,7 @@ if __name__ == "__main__":
         for p in walk_files(dir_path)
         if Path(p).suffix
         in [
-            ".c",
+            ".js",
             ".cpp",
             ".cc",
             ".cxx",

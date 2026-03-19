@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from collections import deque
-from multiprocess import Pool
 from pathlib import Path
 import subprocess
 import sys
 
 from dh import format_size, get_size
 from fastwalk import walk_files
+from multiprocessing import Pool
 from termcolor import cprint
 
 MAX_QUEUE = 16

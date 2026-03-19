@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import glob
 import logging
-from multiprocess import Pool, cpu_count
 import os
 import sys
+
+from multiprocessing import Pool, cpu_count
 
 try:
     from tree_sitter_languages import (

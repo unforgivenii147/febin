@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from collections import Counter, deque
-from multiprocess import Pool
 from pathlib import Path
 import sys
 
 from dh import get_nobinary
+from multiprocessing import Pool
 import regex as re
 
 

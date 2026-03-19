@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from collections import deque
-from multiprocess import Pool
 from pathlib import Path
 import sys
 
 from dh import format_size, get_files, get_size
+from multiprocessing import Pool
 
 MAX_QUEUE = 16
 

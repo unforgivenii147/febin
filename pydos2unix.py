@@ -15,11 +15,11 @@ import argparse
 import fnmatch
 import logging
 import mmap
-from multiprocess import Pool
 import os
 from pathlib import Path
 
 from dh import is_binary
+from multiprocessing import Pool
 from tqdm import tqdm
 
 

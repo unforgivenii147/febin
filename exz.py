@@ -3,11 +3,12 @@ import argparse
 from datetime import datetime
 import logging
 import lzma
-from multiprocess import Pool, cpu_count
 import os
 from pathlib import Path
 import shutil
 import sys
+
+from multiprocessing import Pool, cpu_count
 
 
 def setup_logging(verbose=True):

@@ -63,7 +63,6 @@ def detect_version(file_path) -> None:
 #    for reason in reasons:
 #        print(f"- {reason}")
 
-
 if __name__ == "__main__":
     args = sys.argv[1:]
     root_dir = Path.cwd()

@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocess import Pool
 import os
 from pathlib import Path
 import subprocess
 
 from fastwalk import walk_files
+from multiprocessing import Pool
 
 
 def find_png_files(directory):

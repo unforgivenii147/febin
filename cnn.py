@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocess import Pool, cpu_count
 import os
 from pathlib import Path
 import shutil
+
+from multiprocessing import Pool, cpu_count
 
 FILE_EXTENSIONS = [".pyc", ".log", ".bak"]
 DIR_NAMES = [

@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-from multiprocess import Pool, cpu_count
 from pathlib import Path
 
 from dh import format_size, get_size
 from fastwalk import walk_files
+from multiprocessing import Pool, cpu_count
 from termcolor import cprint
 from tree_sitter import (
     Language,

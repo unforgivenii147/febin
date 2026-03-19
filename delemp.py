@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from collections import deque
-from multiprocess import Pool
 from pathlib import Path
 import sys
 
 from dh import format_size, get_nobinary, get_size
+from multiprocessing import Pool
 from termcolor import cprint
 
 

@@ -5,9 +5,10 @@ Minimal output - only reports removed packages
 """
 
 import csv
-from multiprocess import Pool, cpu_count
 import os
 import site
+
+from multiprocessing import Pool, cpu_count
 
 
 def get_all_dist_info_dirs():

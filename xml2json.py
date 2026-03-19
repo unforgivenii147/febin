@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from collections import deque
 import json
-from multiprocess import Pool
 from pathlib import Path
 import sys
 
+from multiprocessing import Pool
 from termcolor import cprint
 import xmltodict
 

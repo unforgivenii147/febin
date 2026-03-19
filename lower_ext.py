@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocess import Pool
 from pathlib import Path
 import string
 from sys import exit
 from time import perf_counter
 
 from fastwalk import walk_files
+from multiprocessing import Pool
 
 
 def is_all_upper(str1):

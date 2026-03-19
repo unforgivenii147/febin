@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocess import Pool
 import os
 from pathlib import Path
 import random
@@ -9,6 +8,7 @@ from sys import exit
 
 from bs4 import BeautifulSoup
 from dh import format_size, get_files, get_size
+from multiprocessing import Pool
 from termcolor import cprint
 
 

@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from multiprocess import Pool
 from pathlib import Path
 import sys
 
@@ -9,6 +8,7 @@ from dh import (
     get_files,
     get_size,
 )
+from multiprocessing import Pool
 from tree_sitter import Language, Parser
 import tree_sitter_python
 
@@ -19,6 +19,7 @@ parser.language = Language(tree_sitter_python.language())
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:

@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import ast
-from multiprocess import Pool
 from pathlib import Path
 import sys
 
 from dh import format_size, get_size
+from multiprocessing import Pool
 from termcolor import cprint
 from tree_sitter import Language, Parser
 import tree_sitter_python
@@ -49,6 +49,7 @@ def _cleanup_blank_lines(text: str) -> str:
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:

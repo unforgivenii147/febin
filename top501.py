@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/env python
 from collections import Counter
-from multiprocess import Pool, cpu_count
 import os
 from pathlib import Path
 import time
+
+from multiprocessing import Pool, cpu_count
 
 
 def is_text_file(file_path, text_extensions):

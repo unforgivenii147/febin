@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/env python
 import os
 from pathlib import Path
-import sys
 
 from dh import format_size, get_files
 

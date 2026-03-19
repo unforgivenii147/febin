@@ -11,10 +11,11 @@ from pathlib import Path
 import sys
 import tarfile
 import zipfile
-import xxhash
+
 from dh import PKG_MAPPING, STDLIB
 import regex as re
 from tqdm import tqdm
+import xxhash
 
 CACHE_FILE = ".reqcache.json"
 

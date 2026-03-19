@@ -1,17 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/env python
 #!/usr/bin/env python
-from collections import defaultdict
-from operator import itemgetter
 from pathlib import Path
 from sys import exit
-from termcolor import cprint
+
 from dh import get_size
+from termcolor import cprint
 
 
 def main() -> None:
     root = Path.cwd()
     kp = {}
-    files = [p for p in root.rglob("*") if p.is_file() and p.exists() and not p.is_symlink() and not ".git" in p.parts]
+    files = [p for p in root.rglob("*") if p.is_file() and p.exists() and not p.is_symlink() and ".git" not in p.parts]
     for f in files:
         path = Path(root / f)
         psz = get_size(path)

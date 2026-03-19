@@ -1,10 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from pathlib import Path
+#!/data/data/com.termux/files/usr/bin/python
 import sys
+from multiprocessing import Pool
+from pathlib import Path
 from typing import Int, Str
 
 from dh import format_size, get_files, get_size
-from multiprocessing import Pool
 
 
 def _get_comments_symbol(text: Str, symbol: Str) -> list[Str]:

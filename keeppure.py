@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """
 Fast script to clean requirements.txt using multiprocessing
 Minimal output - only reports removed packages
@@ -7,7 +7,6 @@ Minimal output - only reports removed packages
 import csv
 import os
 import site
-
 from multiprocessing import Pool, cpu_count
 
 

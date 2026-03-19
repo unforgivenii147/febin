@@ -1,11 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from collections import deque
+#!/data/data/com.termux/files/usr/bin/python
 import compileall
 import os
+from collections import deque
+from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
-
-from multiprocessing import Pool
 
 
 def process_file(fp):

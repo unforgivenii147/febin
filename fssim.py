@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import csv
 import json
 import os
@@ -6,8 +6,8 @@ import pathlib
 import shutil
 import sys
 
-from ppdeep import compare, hash_from_file
 import ssdeep
+from ppdeep import compare, hash_from_file
 
 try:
     from tabulate import tabulate

@@ -1,12 +1,12 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """
 File Diff Viewer - A Textual-based application to show differences between two files
 """
 
 import argparse
 import difflib
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from textual.app import App, ComposeResult
 from textual.color import Color

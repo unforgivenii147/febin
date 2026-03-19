@@ -1,15 +1,15 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import ast
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tarfile
-from typing import Any
 import zipfile
-
 from multiprocessing import Pool, cpu_count
+from pathlib import Path
+from typing import Any
+
 import regex as re
 
 OUTPUT_DIR = Path("output")

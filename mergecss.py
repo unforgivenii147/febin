@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """
 css_bundle.py — merge CSS, deduplicate rules, and bundle assets.
 Features
@@ -20,8 +20,8 @@ Result:
 """
 
 import argparse
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 import regex as re
 

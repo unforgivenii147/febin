@@ -1,12 +1,12 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from multiprocessing import Pool
+from pathlib import Path
 
 from dh import format_size, get_files, get_size, move_file
-from multiprocessing import Pool
 from termcolor import cprint
 
 MAX_QUEUE = 16

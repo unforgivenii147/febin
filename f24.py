@@ -1,11 +1,11 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
+import os
+import time
 from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed,
 )
-import os
 from pathlib import Path
-import time
 
 from tqdm import tqdm
 

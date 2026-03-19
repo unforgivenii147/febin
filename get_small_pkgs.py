@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """
 Fast script to clean requirements.txt using multiprocessing
 Minimal output - only reports removed packages

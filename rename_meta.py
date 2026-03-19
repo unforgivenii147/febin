@@ -1,6 +1,6 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from pathlib import Path
+#!/data/data/com.termux/files/usr/bin/python
 import shutil
+from pathlib import Path
 from sys import exit
 
 from dh import unique_path

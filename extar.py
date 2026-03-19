@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """
 Script to extract .zst, .tar.zst, and .tar.xz archives.
 If a filename is provided, process only that file.
@@ -7,11 +7,11 @@ Deletes original archives after successful extraction and reports size change.
 """
 
 import argparse
-from pathlib import Path
 import sys
 import tarfile
 import tempfile
 import time
+from pathlib import Path
 
 import zstd
 

@@ -1,8 +1,8 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import os
 
-from dh import is_binary
 import regex as re
+from dh import is_binary
 
 LANG_EXTENSIONS = {
     "python": [".py", ".pyi"],

@@ -1,10 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import contextlib
 import os
 import tarfile
 import zipfile
-
 from multiprocessing import Pool, cpu_count
+
 import regex as re
 
 OUTPUT_FILE = "gitlinks.txt"

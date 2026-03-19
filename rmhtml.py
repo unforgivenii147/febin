@@ -1,17 +1,18 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from collections import deque
-from pathlib import Path
+#!/data/data/com.termux/files/usr/bin/python
 import sys
-
-from dh import format_size, get_files, get_size
+from collections import deque
 from multiprocessing import Pool
+from pathlib import Path
+
 import regex as re
+from dh import format_size, get_files, get_size
 from termcolor import cprint
 
 MAX_QUEUE = 16
 
 
 def process_file(fp) -> None:
+
     before = get_size(fp)
     src = fp.read_text(encoding="utf-8")
     pattern = re.compile(r"<!--[\s\S]*?-->", re.MULTILINE)

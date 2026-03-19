@@ -1,7 +1,7 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import ast
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from dh import get_files
 

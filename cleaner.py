@@ -1,10 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from fastwalk import walk_files
 import regex as re
+from fastwalk import walk_files
 
 
 def clean_log(path):

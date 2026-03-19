@@ -1,19 +1,19 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from bs4 import BeautifulSoup
-import string
-import random
+#!/data/data/com.termux/files/usr/bin/python
 import os
-from collections import deque
-from pathlib import Path
+import random
+import string
 import sys
+from collections import deque
+from multiprocessing import Pool
+from pathlib import Path
 
+from bs4 import BeautifulSoup
 from dh import (
     cprint,
     format_size,
     get_files,
     get_size,
 )
-from multiprocessing import Pool
 from termcolor import cprint
 
 MAX_QUEUE = 16

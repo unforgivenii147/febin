@@ -1,10 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import ast
 import importlib.metadata
 import importlib.util
 import numbers
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from dh import STDLIB, get_files, get_installed_pkgs
 

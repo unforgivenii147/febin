@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """
 File: file_type_checker.py
 Description: Recursively checks files in a directory to detect mismatched file extensions using Linux `file` command.

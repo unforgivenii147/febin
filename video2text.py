@@ -1,10 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import pathlib
 import sys
 
 import cv2
-from PIL import Image
 import pytesseract
+from PIL import Image
 from termcolor import cprint
 
 video = sys.argv[1]

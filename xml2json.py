@@ -1,12 +1,12 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from collections import deque
+#!/data/data/com.termux/files/usr/bin/python
 import json
-from pathlib import Path
 import sys
-
+from collections import deque
 from multiprocessing import Pool
-from termcolor import cprint
+from pathlib import Path
+
 import xmltodict
+from termcolor import cprint
 
 MAX_QUEUE = 16
 

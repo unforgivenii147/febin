@@ -1,11 +1,11 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from collections import deque
-from pathlib import Path
+#!/data/data/com.termux/files/usr/bin/python
 import sys
-
-from dh import format_size, get_files, get_size
+from collections import deque
 from multiprocessing import Pool
+from pathlib import Path
+
 import regex as re
+from dh import format_size, get_files, get_size
 
 MAX_QUEUE = 16
 

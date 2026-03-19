@@ -1,8 +1,8 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from collections import defaultdict
+#!/data/data/com.termux/files/usr/bin/python
 import contextlib
 import os
 import site
+from collections import defaultdict
 
 import regex as re
 

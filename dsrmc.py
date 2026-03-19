@@ -1,10 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import multiprocessing as mp
 import os
 import sys
 
-from tree_sitter import Node, Parser
 import tree_sitter_python
+from tree_sitter import Node, Parser
 
 _parser = None
 

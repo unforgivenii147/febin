@@ -1,9 +1,9 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from pathlib import Path
+#!/data/data/com.termux/files/usr/bin/python
 import sys
+from multiprocessing import Pool
+from pathlib import Path
 
 from dh import format_size, get_files, get_size
-from multiprocessing import Pool
 from PIL import Image, ImageFilter, ImageOps
 from pytesseract import image_to_string
 from termcolor import cprint

@@ -1,13 +1,13 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from argparse import ArgumentParser
-from datetime import datetime
+#!/data/data/com.termux/files/usr/bin/python
 import itertools
 import os
-from subprocess import getoutput
 import sys
+from argparse import ArgumentParser
+from datetime import datetime
+from multiprocessing import Pool, cpu_count
+from subprocess import getoutput
 from time import sleep
 
-from multiprocessing import Pool, cpu_count
 import regex as re
 
 try:

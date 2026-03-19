@@ -1,11 +1,11 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from collections import Counter, deque
-from pathlib import Path
+#!/data/data/com.termux/files/usr/bin/python
 import sys
-
-from dh import get_nobinary
+from collections import Counter, deque
 from multiprocessing import Pool
+from pathlib import Path
+
 import regex as re
+from dh import get_nobinary
 
 
 def extract_words(text):

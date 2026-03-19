@@ -1,14 +1,14 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import random
 import string
 import sys
+from multiprocessing import Pool
+from pathlib import Path
 from sys import exit
 
 from bs4 import BeautifulSoup
 from dh import format_size, get_files, get_size
-from multiprocessing import Pool
 from termcolor import cprint
 
 

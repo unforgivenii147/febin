@@ -1,8 +1,8 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from importlib import import_module
-from importlib.metadata import distributions
+#!/data/data/com.termux/files/usr/bin/python
 import sys
 import traceback
+from importlib import import_module
+from importlib.metadata import distributions
 
 from loguru import logger
 

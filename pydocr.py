@@ -1,16 +1,16 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import ast
-from collections import deque
 import importlib
 import inspect
 import os
-from pathlib import Path
 import sys
+from collections import deque
+from multiprocessing import Pool
+from pathlib import Path
 from textwrap import dedent
 
 from dh import get_files, unique_path
 from loguru import logger
-from multiprocessing import Pool
 
 BASE_DIR = Path("doc")
 

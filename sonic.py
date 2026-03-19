@@ -1,15 +1,15 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import argparse
-from collections import Counter
-from collections.abc import Generator
-from datetime import datetime
 import mmap
 import os
-from pathlib import Path
 import shutil
 import sys
 import tempfile
 import time
+from collections import Counter
+from collections.abc import Generator
+from datetime import datetime
+from pathlib import Path
 
 
 class LineProcessor:
@@ -499,11 +499,13 @@ Examples:
     parser.add_argument(
         "--no-backup",
         action="store_true",
+        default=True,
         help="Do not create backup file",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
+        default=False,
         help="Preview without modifying files",
     )
     parser.add_argument(
@@ -520,6 +522,7 @@ Examples:
     parser.add_argument(
         "-v",
         "--verbose",
+        default=True,
         action="store_true",
         help="Verbose output",
     )

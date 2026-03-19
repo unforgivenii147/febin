@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import os
 
 TARGET_SHEBANG = "#!/data/data/com.termux/files/usr/bin/bash"

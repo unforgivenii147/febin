@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """Insert author metadata header into python files (with or without extension)."""
 
 import datetime

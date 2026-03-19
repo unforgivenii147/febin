@@ -1,6 +1,6 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from pathlib import Path
+#!/data/data/com.termux/files/usr/bin/python
 import shutil
+from pathlib import Path
 
 BASE_DIR = Path.cwd()
 for item in BASE_DIR.iterdir():

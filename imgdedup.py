@@ -2,8 +2,8 @@ import argparse
 import os
 
 import cv2
-from imutils import paths
 import numpy as np
+from imutils import paths
 
 
 def dhash(image, hashSize=8):

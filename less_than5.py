@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """
 Move files created less than 5 minutes ago to a subdirectory called '5min'
 Recursively processes all files starting from current directory

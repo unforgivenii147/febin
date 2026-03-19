@@ -1,15 +1,15 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import argparse
+import mmap
+import os
+import tokenize
 from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed,
 )
-import mmap
-import os
-import tokenize
 
-from dh import get_files
 import regex as re
+from dh import get_files
 from tqdm import tqdm
 
 SIZE_THRESHOLD = 1 * 1024 * 1024

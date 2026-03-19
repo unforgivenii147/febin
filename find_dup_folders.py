@@ -1,6 +1,6 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from collections import defaultdict
+#!/data/data/com.termux/files/usr/bin/python
 import json
+from collections import defaultdict
 from pathlib import Path
 
 from fastwalk import walk

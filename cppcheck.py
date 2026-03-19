@@ -1,6 +1,6 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from pathlib import Path
+#!/data/data/com.termux/files/usr/bin/python
 import subprocess
+from pathlib import Path
 
 from fastwalk import walk_files
 

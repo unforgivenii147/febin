@@ -1,12 +1,12 @@
-#!/data/data/com.termux/files/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
 from multiprocessing import Pool
 from pathlib import Path
 from time import perf_counter
 
-from fastwalk import walk_files
 import htmlmin
+from fastwalk import walk_files
 
 
 # fmt: off

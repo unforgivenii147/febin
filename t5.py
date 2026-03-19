@@ -1,18 +1,18 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import ast
 import os
-from pathlib import Path
 import sys
-
-from dh import format_size, get_size
 from multiprocessing import Pool
+from pathlib import Path
+
+import tree_sitter_python as tspython
+from dh import format_size, get_size
 from tree_sitter import (
     Language,
     Parser,
     Query,
     QueryCursor,
 )
-import tree_sitter_python as tspython
 
 QUERY_STRING = """
 (comment) @comment

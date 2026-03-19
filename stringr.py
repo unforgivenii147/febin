@@ -1,6 +1,8 @@
-#!/usr/bin/env python3
-from pathlib import Path
+#!/data/data/com.termux/files/usr/bin/python
 import sys
+from multiprocessing import Pool
+from pathlib import Path
+
 from dh import (
     format_size,
     get_files,
@@ -8,7 +10,6 @@ from dh import (
     is_binary,
     run_command,
 )
-from multiprocessing import Pool
 
 
 def process_file(fp):

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/python
 """
 Script to scan site-packages directories and update RECORD files by removing
 references to .pyc files and direct_url.json

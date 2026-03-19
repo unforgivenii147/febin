@@ -1,8 +1,8 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import mmap
+from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
-from multiprocessing import Pool, cpu_count
 import regex as re
 
 LOG_EXT = ".log"

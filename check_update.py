@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """
 Script to check for package updates by querying PyPI directly.
 Shows results in real-time as each package is checked.
@@ -8,12 +8,12 @@ import json
 import sys
 import time
 
+import requests
 from dh import get_installed_packages
 from packaging.version import (
     InvalidVersion,
     Version,
 )
-import requests
 
 
 def check_package_on_pypi(package_name: str, current_version: str) -> str | None:

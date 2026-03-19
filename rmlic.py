@@ -1,9 +1,9 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
+from multiprocessing import Pool
 from pathlib import Path
 
-from dh import format_size, get_size, get_nobinary
-from multiprocessing import Pool
 import regex as re
+from dh import format_size, get_nobinary, get_size
 from termcolor import cprint
 
 LIC_FILE = Path("/sdcard/lic")

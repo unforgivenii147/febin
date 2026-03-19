@@ -1,9 +1,9 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 from collections import defaultdict
 from pathlib import Path
 
-from tree_sitter import Language, Parser
 import tree_sitter_python as tsp
+from tree_sitter import Language, Parser
 
 parser = Parser()
 parser.language = Language(tsp.language())

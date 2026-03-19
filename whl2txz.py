@@ -1,8 +1,8 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from pathlib import Path
+#!/data/data/com.termux/files/usr/bin/python
 import sys
 import tarfile
 import zipfile
+from pathlib import Path
 
 from dh import get_files, unique_path
 

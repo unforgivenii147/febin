@@ -1,12 +1,12 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from collections import deque
+#!/data/data/com.termux/files/usr/bin/python
 import json
-from pathlib import Path
 import sys
+from collections import deque
+from multiprocessing import Pool
+from pathlib import Path
 
 from dh import get_nobinary
 from loguru import logger
-from multiprocessing import Pool
 from toolz import compose, frequencies
 from toolz.curried import map
 

@@ -1,11 +1,11 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from collections import Counter, defaultdict
+#!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import sys
+from collections import Counter, defaultdict
+from pathlib import Path
 
-from dh import TXT_EXT
 import pycld2
+from dh import TXT_EXT
 
 MIN_TEXT_LENGTH = 20
 SUPPORTED_EXTENSIONS = TXT_EXT

@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/python
+from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
 
 from dh import format_size, get_size, run_command
 from fastwalk import walk_files
-from multiprocessing import Pool
 
 
 def process_file(fp):

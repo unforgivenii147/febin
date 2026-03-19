@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """
 Repack Python packages from site-packages directory into .whl files.
 Automatically detects if packages are pure Python or have C extensions.
@@ -6,16 +6,16 @@ Saves .whl files to ~/tmp/whl directory.
 """
 
 import base64
-from dataclasses import dataclass
-from datetime import datetime
 import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
 import sys
 import tempfile
 import zipfile
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
 
 
 @dataclass

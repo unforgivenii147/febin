@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/python
 """
 open uv.lock file
 extract python package name and version from lines that contain (name = ")

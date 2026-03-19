@@ -1,9 +1,9 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 
+import sys
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
-import sys
 from typing import Any
 
 import markdown

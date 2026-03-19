@@ -1,11 +1,11 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import argparse
-from pathlib import Path
 import sys
+from multiprocessing import Pool, cpu_count
+from pathlib import Path
 
 from bs4 import BeautifulSoup
 from html_to_markdown import Options, convert
-from multiprocessing import Pool, cpu_count
 
 
 def clean_html(html_content: str) -> str:

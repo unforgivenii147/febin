@@ -1,19 +1,19 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
 import argparse
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
 import fnmatch
 import os
 import stat
 import sys
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 from typing import TYPE_CHECKING
 
-from dh import is_binary
 import regex as re
+from dh import is_binary
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

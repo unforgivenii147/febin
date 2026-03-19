@@ -1,9 +1,12 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import ast
-from collections import deque
-from pathlib import Path
 import sys
+from collections import deque
+from multiprocessing import Pool
+from pathlib import Path
 
+import regex as re
+import tree_sitter_python as tspython
 from dh import (
     DOC_TH1,
     DOC_TH2,
@@ -13,11 +16,8 @@ from dh import (
     get_size,
     rm_doc,
 )
-from multiprocessing import Pool
-import regex as re
 from termcolor import cprint
 from tree_sitter import Language, Parser
-import tree_sitter_python as tspython
 
 MAX_QUEUE = 16
 

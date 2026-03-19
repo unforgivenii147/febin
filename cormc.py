@@ -1,9 +1,8 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import glob
 import logging
 import os
 import sys
-
 from multiprocessing import Pool, cpu_count
 
 try:

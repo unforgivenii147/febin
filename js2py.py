@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """
 Convert JavaScript code to Python using AI-powered translation.
 Uses OpenAI API or local AST-based conversion with js2py library.
@@ -6,8 +6,8 @@ Uses OpenAI API or local AST-based conversion with js2py library.
 
 import argparse
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import regex as re
 

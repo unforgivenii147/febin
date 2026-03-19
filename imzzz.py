@@ -1,10 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import ast
 import multiprocessing as mp
 import os
-from pathlib import Path
 import tarfile
 import zipfile
+from pathlib import Path
 
 from dh import PKG_MAPPING, STDLIB
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/python
 """
 Script to delete a range of lines from a file.
 Gets filename and line numbers (x, y) from user input.

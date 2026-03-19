@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/python
 """
 Script to scan site-packages directories and update RECORD files with new hashes.
 Removes references to .pyc files and direct_url.json, and logs missing files.
@@ -7,8 +7,8 @@ Removes references to .pyc files and direct_url.json, and logs missing files.
 import base64
 import hashlib
 import logging
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Set up logging
 logging.basicConfig(

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 if __name__ == "__main__":
     fn = "/data/data/com.termux/files/home/.bash_history"
     nl = []

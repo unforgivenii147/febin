@@ -1,10 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from datetime import UTC, datetime, timedelta
+#!/data/data/com.termux/files/usr/bin/python
 import os
+from datetime import UTC, datetime, timedelta
 
+import regex as re
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
-import regex as re
 
 load_dotenv()
 API_KEY = os.getenv("YOUTUBE_API_KEY")

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """Production-grade dos2unix utility.
 Includes:
 - mmap fast-path conversions
@@ -16,10 +16,10 @@ import fnmatch
 import logging
 import mmap
 import os
+from multiprocessing import Pool
 from pathlib import Path
 
 from dh import is_binary
-from multiprocessing import Pool
 from tqdm import tqdm
 
 

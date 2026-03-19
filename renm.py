@@ -1,15 +1,15 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
+import os
 from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed,
 )
-import os
 from pathlib import Path
 
+import regex as re
 from deep_translator import GoogleTranslator
 from dh import unique_path
 from fastwalk import walk_files
-import regex as re
 from tqdm import tqdm
 
 DIRECTORY = "."

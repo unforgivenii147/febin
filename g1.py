@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """
 Clone a GitHub repository with options:
 --depth 1 --single-branch --branch main

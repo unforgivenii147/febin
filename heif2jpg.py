@@ -1,11 +1,11 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
+from multiprocessing import Pool
 from pathlib import Path
 from sys import exit
 
+import pillow_heif as ph
 from dh import get_size
 from fastwalk import walk_files
-from multiprocessing import Pool
-import pillow_heif as ph
 
 
 def process_file(fp):

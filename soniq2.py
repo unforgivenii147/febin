@@ -1,9 +1,9 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from concurrent.futures import ThreadPoolExecutor
+#!/data/data/com.termux/files/usr/bin/python
 import mmap
 import os
 import sys
 import tempfile
+from concurrent.futures import ThreadPoolExecutor
 
 
 def sort_and_uniq(file_path):

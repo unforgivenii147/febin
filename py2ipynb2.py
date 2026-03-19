@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """
 Convert a Python script to a Jupyter notebook.
 Usage: python py2ipynb.py input.py [output.ipynb]

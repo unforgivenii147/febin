@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 """Git Repository Cleaner
 Deletes all commits except the last one and all branches except main/master.
 WARNING: This is a destructive operation! Use with caution.

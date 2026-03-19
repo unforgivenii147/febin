@@ -1,10 +1,9 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
 import argparse
-from pathlib import Path
 import subprocess
 import sys
-
 from multiprocessing import Pool, cpu_count
+from pathlib import Path
 
 
 def convert_html_to_md(html_file: Path, executable: str = "html2md") -> tuple[Path, bool]:

@@ -1,6 +1,7 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from pathlib import Path
+#!/data/data/com.termux/files/usr/bin/python
 import sys
+from multiprocessing import Pool
+from pathlib import Path
 
 from bs4 import BeautifulSoup
 from dh import (
@@ -9,7 +10,6 @@ from dh import (
     get_files,
     get_size,
 )
-from multiprocessing import Pool
 from termcolor import cprint
 
 

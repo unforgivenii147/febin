@@ -1,10 +1,10 @@
-#!/data/data/com.termux/files/usr/bin/env python
-from pathlib import Path
+#!/data/data/com.termux/files/usr/bin/python
 import sys
+from multiprocessing import Pool
+from pathlib import Path
 
 import cv2 as cv
 from dh import get_files
-from multiprocessing import Pool
 
 
 def process_file(fp):

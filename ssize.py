@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-import json
+from pprint import pprint
 from pathlib import Path
 
 
@@ -14,13 +14,10 @@ def list_and_sort_by_size(path: Path = Path()):
     for p in path.glob("*"):
         size = get_size(p)
         items.append({"name": p.name, "size": size})
-    items.sort(key=lambda x: x["size"], reverse=True)
+    items.sort(key=lambda x: x["size"], reverse=False)
     return items
 
 
 data = list_and_sort_by_size()
-
-with open("directory_sizes.json", "w") as out:
-    json.dump(data, out, indent=4)
-
-print("Saved to directory_sizes.json")
+for k in data:
+    print(f"{k['name']}:{k['size']}")

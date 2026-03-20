@@ -53,7 +53,7 @@ def calculate_xorhash(path: Path) -> tuple[str, Path]:
     except Exception as e:
         # Handle potential errors during file reading or hashing
         print(f"Error hashing file {path}: {e}")
-        return None, path # Return None for hash to indicate failure
+        return None, path  # Return None for hash to indicate failure
 
 
 def find_dups_optimized(root: Path, max_workers: int = None):
@@ -68,11 +68,8 @@ def find_dups_optimized(root: Path, max_workers: int = None):
     file_hashes = {}
     paths_to_process = []
 
-
     # Inside find_dups_optimized
     # ... then use ThreadPoolExecutor on paths_to_hash
-
-
 
     # First, collect all relevant files
     for path in root.rglob("*"):
@@ -81,7 +78,7 @@ def find_dups_optimized(root: Path, max_workers: int = None):
                 paths_to_process.append(path)
         except OSError as e:
             print(f"Error accessing path {path}: {e}")
-            continue # Skip this path if there's an OS error
+            continue  # Skip this path if there's an OS error
 
     if not paths_to_process:
         return {}
@@ -108,7 +105,7 @@ def find_dups_optimized(root: Path, max_workers: int = None):
 
         for future in as_completed(future_to_path):
             hash_result, path = future.result()
-            if hash_result is not None: # Only process if hashing was successful
+            if hash_result is not None:  # Only process if hashing was successful
                 file_hashes.setdefault(hash_result, []).append(path)
 
     # Filter for duplicates

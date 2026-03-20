@@ -73,7 +73,7 @@ def compress_file(file_path: Path, delete_delay: float = 0.5) -> bool:
         compressed_data = lzma.compress(data, preset=9)
         if not atomic_write(compressed_data, compressed_path):
             return False
-        if not compressed_path.exists() or compressed_path.stat().st_size==0:
+        if not compressed_path.exists() or compressed_path.stat().st_size == 0:
             return False
         if safe_delete(file_path, delay=delete_delay):
             compressed_size = compressed_path.stat().st_size

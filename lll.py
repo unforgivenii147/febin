@@ -12,6 +12,7 @@ if __name__ == "__main__":
     for path in sorted(
         root_dir.rglob("*"),
         key=lambda e: e.stat().st_mtime,
+        reverse=True,
     ):
         if any(pat in path.parts for pat in EXCLUDED):
             continue

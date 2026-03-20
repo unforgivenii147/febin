@@ -3,8 +3,24 @@ import os
 import subprocess
 import sys
 
-TERMUX_PYTHON = "#!/data/data/com.termux/files/usr/bin/env python\n"
+TERMUX_PYTHON = "#!/data/data/com.termux/files/usr/bin/python\n"
 TERMUX_BASH = "#!/data/data/com.termux/files/usr/bin/bash\n"
+
+
+def dcheck(fname) -> None:
+    lines = []
+    with open(fname, encoding="utf-8") as fin:
+        lines = fin.readlines()
+    nl = []
+    if lines[0].startswith("#!") and lines[1].startswith("#!"):
+        nl.append(lines[0])
+        nl.extend(lines[2:])
+        print(f"{fp} had 2 shebang")
+        with open(fp, "w", encoding="utf-8") as fout:
+            for k in nl:
+                fout.write(k)
+    else:
+        return
 
 
 def get_clipboard():
@@ -93,6 +109,8 @@ def main():
             final_content = shebang + clipboard
     with open(out_file, "w") as f:
         f.write(final_content)
+
+    dcheck(out_file)
     if cwd == bin_dir:
         os.chmod(out_file, 0o755)
     if cwd == bin_dir2:

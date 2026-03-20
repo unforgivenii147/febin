@@ -14,15 +14,15 @@ def is_python_file(filepath):
             first_line = f.readline().strip()
             if first_line.startswith("#!") and "python" in first_line:
                 return True
-            if first_line.startswith("#") and (
-                "python" in first_line or "encoding" in first_line or "noqa" in first_line
+            if first_line.startswith("#!") and (
+                "python" in first_line
             ):
                 return True
             f.seek(0)
             for line in f:
                 line = line.strip()
                 if line and not line.startswith("#"):
-                    return line.startswith(("import ", "from "))
+                    return line.startswith(("import ", "from ","class ","def "))
             return False
     except (OSError, UnicodeDecodeError):
         return False

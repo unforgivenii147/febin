@@ -9,7 +9,7 @@ def main() -> None:
         return
     with hist_file.open("r", encoding="utf-8", errors="ignore") as f:
         lines = f.readlines()
-    seen=set()
+    seen = set()
     unique_lines = []
     histlen = len(lines)
     print(f"history length: {histlen}")
@@ -20,7 +20,8 @@ def main() -> None:
             unique_lines.append(line)
     with hist_file.open("w", encoding="utf-8") as f:
         f.writelines(unique_lines)
-    print(f"{histlen-len(unique_lines)} lines removed")
+    print(f"{histlen - len(unique_lines)} lines removed")
+
 
 if __name__ == "__main__":
     main()

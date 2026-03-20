@@ -13,6 +13,7 @@ def process_file(fp):
     if ".git" in fp.parts:
         return
     compileall.compile_file(fp, legacy=True, optimize=2)
+    fp.unlink()
     return True
 
 

@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-#!/usr/bin/env python
 from pathlib import Path
 from sys import exit
 

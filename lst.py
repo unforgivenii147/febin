@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 import datetime
-import os
 from pathlib import Path
 
 from dh import format_size, get_size

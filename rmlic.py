@@ -1,9 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import Pool
 from pathlib import Path
 
-import regex as re
 from dh import format_size, get_nobinary, get_size
+import regex as re
 from termcolor import cprint
 
 LIC_FILE = Path("/sdcard/lic")
@@ -22,7 +21,6 @@ def load_patterns(lic_path: Path) -> list[str]:
         pattern_separator = r"\n(?:\s*\n){" + str(MIN_BLANK_LINES) + r",}"
         patterns = re.split(pattern_separator, content)
         patterns = [p.strip() for p in patterns if p.strip()]
-        #        print(f"Loaded {len(patterns)} pattern(s) from {lic_path}")
         for _idx, pattern in enumerate(patterns, 1):
             pattern[:50].replace("\n", "\\n")
         return patterns
@@ -57,6 +55,7 @@ def process_file(file_path, patterns) -> tuple:
         cprint(f"{path.name} updated", "green", end=" | ")
         ds = before - get_size(path)
         cprint(f"{format_size(ds)}")
+        del before, ds, cleaned_content, original_content, path
 
 
 def main():

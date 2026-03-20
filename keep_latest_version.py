@@ -3,8 +3,8 @@ import operator
 import os
 import pathlib
 
-import regex as re
 from packaging.version import Version
+import regex as re
 
 wheel_pattern = re.compile(r"^(?P<name>.+)-(?P<version>\d+(\.\d+)+).*\.metadata$")
 

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import shutil
 from pathlib import Path
+import shutil
 from sys import exit
 
 from termcolor import cprint

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import unicodedata
 from html.parser import HTMLParser
+import os
 from pathlib import Path
+import unicodedata
 
 import regex as re
 

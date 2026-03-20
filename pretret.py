@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import subprocess
 from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed,
 )
+import os
 from pathlib import Path
+import subprocess
 from sys import exit
 from time import perf_counter
 

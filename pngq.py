@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import glob
-import subprocess
 from multiprocessing import Pool
 from pathlib import Path
+import subprocess
 
 QUALITY_RANGE = "60-70"
 START_DIR = Path()

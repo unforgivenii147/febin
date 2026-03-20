@@ -1,22 +1,25 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
-import compileall
 from collections import deque
+import compileall
 from multiprocessing import Pool
 from pathlib import Path
-from dh import get_files,format_size,get_size
-MAX_QUEUE=16
+import sys
+
+from dh import format_size, get_files, get_size
+
+MAX_QUEUE = 16
+REMOVE_ORIG = FALSE
+
 
 def process_file(fp):
     if not fp.exists():
         return False
     if ".git" in fp.parts:
-        return
+        return None
     compileall.compile_file(fp, legacy=True, optimize=2)
-    fp.unlink()
+    if REMOVE_ORIG:
+        fp.unlink()
     return True
-
-
 
 
 def main():

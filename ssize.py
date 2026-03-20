@@ -1,19 +1,22 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import json
+from pathlib import Path
+
 
 def get_size(path: Path) -> int:
     if path.is_file():
         return path.stat().st_size
     return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
 
-def list_and_sort_by_size(path: Path = Path(".")):
+
+def list_and_sort_by_size(path: Path = Path()):
     items = []
     for p in path.glob("*"):
         size = get_size(p)
         items.append({"name": p.name, "size": size})
-    items.sort(key=lambda x: x["size"],reverse=True)
+    items.sort(key=lambda x: x["size"], reverse=True)
     return items
+
 
 data = list_and_sort_by_size()
 

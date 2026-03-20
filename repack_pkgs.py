@@ -6,16 +6,16 @@ Saves .whl files to ~/tmp/whl directory.
 """
 
 import base64
+from dataclasses import dataclass
+from datetime import datetime
 import hashlib
 import json
 import os
+from pathlib import Path
 import shutil
 import sys
 import tempfile
 import zipfile
-from dataclasses import dataclass
-from datetime import datetime
-from pathlib import Path
 
 
 @dataclass

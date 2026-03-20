@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+from importlib.machinery import SourceFileLoader
 import random
 import string
 import sys
 import traceback
-from importlib.machinery import SourceFileLoader
 
 if __name__ == "__main__":
     files = sys.argv[1:]

@@ -19,7 +19,7 @@ if __name__ == "__main__":
         if path.is_dir():
             continue
         elif path.is_symlink():
-            sz = f" \033[05;95msymlink "
+            sz = " \033[05;95msymlink "
         else:
             sz = str(format_size(get_size(path)))
             if len(sz) == 7:

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import os
-import sys
 from pathlib import Path
+import sys
 
 
 def get_unique_name(path, base_name):

@@ -1,16 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
+from os.path import relpath
 from pathlib import Path
 
 EXCLUDED = {
-    ".git",
     "tmp",
-    "var",
     "cache",
-    "etc",
-    "android",
     "bin",
+}
+EXCLUDED2 = {
+    "Android",
+    ".git",
+    "etc",
     "config",
-    "lib",
+    "var",
 }
 COUNT = 0
 REMOVED_DIRS = []
@@ -24,6 +26,8 @@ def delete_empty_dirs(root: Path) -> None:
                 continue
             if path.name.startswith("mc") and path.parent.name == "tmp":
                 continue
+            if any(pat in path.parts for pat in EXCLUDED2):
+                continue
             delete_empty_dirs(path)
             try:
                 if not any(path.iterdir()):
@@ -31,15 +35,18 @@ def delete_empty_dirs(root: Path) -> None:
                     COUNT += 1
                     REMOVED_DIRS.append(relpath(path))
             except PermissionError:
-                print(f"[ERR] {path.relative_to(root)}")
+                print(f"[ERR] {relpath(path)}")
             except OSError as e:
-                print(f"[ERROR] {path.relative_to(root)}: {e}")
+                print(f"[ERROR] {relpath(path)}: {e}")
 
 
 if __name__ == "__main__":
     root = Path.cwd()
     delete_empty_dirs(root)
-    print("\nRemoved directories:")
-    for d in REMOVED_DIRS:
-        print(f"- {d}")
-    print(f"removed: {COUNT} dirs")
+    if COUNT:
+        print("\nRemoved directories:")
+        for d in REMOVED_DIRS:
+            print(f"- {d}")
+        print(f"count: {COUNT}")
+    else:
+        print("no empty dirs found.")

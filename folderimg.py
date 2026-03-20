@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import shutil
 from pathlib import Path
+import shutil
 
 import dh
 from PIL import Image

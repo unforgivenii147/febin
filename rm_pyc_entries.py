@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sysconfig
 from pathlib import Path
+import sysconfig
+
 
 def clean_record_file(record_path: Path):
     lines = record_path.read_text().splitlines()
@@ -10,6 +11,8 @@ def clean_record_file(record_path: Path):
     cleaned = [line for line in cleaned if "license.txt" not in line.lower()]
     record_path.write_text("\n".join(cleaned) + "\n")
     print(f"{record_path.name} in {record_path.parent.name} cleaned")
+
+
 def remove_pyc_entries():
     site_packages = Path(sysconfig.get_paths()["purelib"])
 
@@ -17,6 +20,7 @@ def remove_pyc_entries():
         record = dist_info / "RECORD"
         if record.exists():
             clean_record_file(record)
+
 
 if __name__ == "__main__":
     remove_pyc_entries()

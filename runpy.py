@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import subprocess
-import sys
 from multiprocessing import Pool
 from pathlib import Path
+import subprocess
+import sys
 
 from fastwalk import walk_files
 

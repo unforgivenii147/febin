@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
 from dh import format_size, get_nobinary, get_size
 from termcolor import cprint

@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
-import regex as re
 from dh import get_files, unique_path
 from fontTools.ttLib import TTFont
+import regex as re
 from termcolor import cprint
 
 MAX_QUEUE = 16

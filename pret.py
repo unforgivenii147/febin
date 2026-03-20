@@ -1,25 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
-from dh import format_size, get_size, run_command
-from fastwalk import walk_files
+from dh import format_size, get_files, get_size, run_command
 from termcolor import cprint
 
 MAX_IN_FLIGHT = 16
-FILE_EXTENSIONS = {
-    ".js",
-    ".css",
-    ".ts",
-    ".tsx",
-    ".jsx",
-    ".json",
-    ".html",
-    ".cjs",
-    ".mjs",
-}
 
 
 def format_file(file_path):
@@ -58,41 +46,41 @@ def format_file(file_path):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Format files using Prettier.")
-    parser.add_argument("file", nargs="?", help="File to format")
-    args = parser.parse_args()
-    if args.file:
-        file_path = Path(args.file)
-        if not file_path.exists():
-            print(f"Error: File '{args.file}' not found.")
-            return
-        if any(file_path.suffix == ext for ext in FILE_EXTENSIONS):
-            format_file(file_path)
-        else:
-            print(f"Error: File '{args.file}' has an unsupported extension.")
-    else:
-        start = get_size(".")
-        jfiles = []
-        for pth in walk_files("."):
-            path = Path(pth)
-            if any(path.suffix == ext for ext in FILE_EXTENSIONS):
-                if ".min." in path.name:
-                    continue
-                jfiles.append(path)
-        if not jfiles:
-            print("No files found.")
-            return
-        print(f"Formatting {len(jfiles)} files using mp...")
-        with Pool(8) as p:
-            pending = deque()
-            for f in jfiles:
-                pending.append(p.apply_async(format_file, (f,)))
-                if len(pending) >= MAX_IN_FLIGHT:
-                    pending.popleft().get()
-            while pending:
+    root_dir = Path.cwd()
+    args = sys.argv[1:]
+    files = (
+        [Path(arg) for arg in args]
+        if args
+        else get_files(
+            root_dir,
+            extensions=[
+                ".js",
+                ".css",
+                ".ts",
+                ".tsx",
+                ".jsx",
+                ".json",
+                ".html",
+                ".cjs",
+                ".mjs",
+            ],
+        )
+    )
+    if len(files) == 1:
+        process_file(files[0])
+        return
+
+    before = get_size(root_dir)
+    with Pool(8) as p:
+        pending = deque()
+        for f in files:
+            pending.append(p.apply_async(format_file, (f,)))
+            if len(pending) >= MAX_IN_FLIGHT:
                 pending.popleft().get()
-        end = get_size(".")
-        print(f"{format_size(start - end)}")
+        while pending:
+            pending.popleft().get()
+    diffsize = before - get_size(root_dir)
+    print(f"space change:{format_size(diffsize)}")
 
 
 if __name__ == "__main__":

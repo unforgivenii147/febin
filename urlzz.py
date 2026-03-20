@@ -1,16 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import tarfile
-import zipfile
 from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed,
 )
+import os
 from pathlib import Path
+import tarfile
+import zipfile
 
+from dh import BIN_EXT, TXT_EXT
 import py7zr
 import regex as re
-from dh import BIN_EXT, TXT_EXT
 
 url_pattern = re.compile(r'https?://[^\s"\']+')
 EXT = BIN_EXT

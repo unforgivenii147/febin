@@ -4,19 +4,15 @@ from pathlib import Path
 
 from dh import format_size, get_size
 
-
 if __name__ == "__main__":
     root_dir = Path.cwd()
-    dirz=[]
-    otherz=[]
+    dirz = []
+    otherz = []
 
     for path in sorted(
         root_dir.glob("*"),
-        key=lambda e: e.stat().st_mtime,
+        key=lambda e: e.stat().st_size,
     ):
-
-
-
         if path.is_dir():
             dirz.append(path)
 
@@ -48,4 +44,3 @@ if __name__ == "__main__":
         print(f"\033[05;94m{dr.name[:24]:25}\033[0m", end=" ")
         print(f"\033[05;96m{sz}\033[0m", end=" ")
         print(f"\033[05;93m{mtime}\033[0m")
-

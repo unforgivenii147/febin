@@ -7,8 +7,8 @@ Removes references to .pyc files and direct_url.json, and logs missing files.
 import base64
 import hashlib
 import logging
-import sys
 from pathlib import Path
+import sys
 
 # Set up logging
 logging.basicConfig(

@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
-import os
-import subprocess
 from multiprocessing import Pool, cpu_count
+import os
 from pathlib import Path
+import subprocess
 
 EXCLUDE_DIRS = {".git", "__pycache__"}
 

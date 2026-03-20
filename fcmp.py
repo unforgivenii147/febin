@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 from filecmp import dircmp
 from pathlib import Path
 from pprint import pprint
+import sys
 
 if __name__ == "__main__":
     dir1 = Path.cwd()

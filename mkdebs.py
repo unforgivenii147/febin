@@ -1,16 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-import contextlib
-import multiprocessing
-import os
-import shutil
-import subprocess
-import tarfile
 from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed,
 )
+import contextlib
+import multiprocessing
+import os
 from pathlib import Path
+import shutil
+import subprocess
+import tarfile
 
 BASE_DIR = Path.home() / "tmp" / "debs"
 BASE_DIR.mkdir(parents=True, exist_ok=True)

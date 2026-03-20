@@ -5,8 +5,8 @@ File Diff Viewer - A Textual-based application to show differences between two f
 
 import argparse
 import difflib
-import sys
 from pathlib import Path
+import sys
 
 from textual.app import App, ComposeResult
 from textual.color import Color

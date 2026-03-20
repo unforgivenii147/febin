@@ -1,9 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
-import tree_sitter_python
 from dh import (
     cleanup_blank_lines,
     format_size,
@@ -11,6 +10,7 @@ from dh import (
     get_size,
 )
 from tree_sitter import Language, Parser
+import tree_sitter_python
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 

@@ -6,8 +6,8 @@ import pathlib
 import shutil
 import sys
 
-import ssdeep
 from ppdeep import compare, hash_from_file
+import ssdeep
 
 try:
     from tabulate import tabulate

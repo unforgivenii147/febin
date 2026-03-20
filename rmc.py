@@ -1,25 +1,23 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
-import regex as re
-import tree_sitter_python as tspython
 from dh import (
-    DOC_TH1,
-    DOC_TH2,
-    cprint,
     format_size,
     get_files,
     get_size,
-    rm_doc,
 )
+import regex as re
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_python as tspython
 
 MAX_QUEUE = 16
+DOC_TH1 = '"""'
+DOC_TH2 = "'''"
 
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
@@ -27,8 +25,51 @@ PRESERVED: dict = {
     "#!",
     "# type",
     "# fmt",
-    "# pylint",
 }
+
+
+def rm_doc(content: str) -> tuple[str, int]:
+    removed_count = 0
+    lines = content.split("\n")
+    result_lines = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if DOC_TH1 in line or DOC_TH2 in line:
+            delimiter = DOC_TH1 if DOC_TH1 in line else DOC_TH2
+            count = line.count(delimiter)
+            if count >= 2:
+                first = line.find(delimiter)
+                second = line.find(delimiter, first + 3)
+                before = line[:first].rstrip()
+                if before.endswith(":") or before.strip() == "":
+                    result_lines.append(line[:first] + line[second + 3 :])
+                    removed_count += 1
+                    i += 1
+                    continue
+            before = line[: line.find(delimiter)].rstrip()
+            if before.endswith(":") or before.strip() == "" or "=" not in before:
+                removed_count += 1
+                if before:
+                    result_lines.append(before)
+                j = i + 1
+                while j < len(lines):
+                    if delimiter in lines[j]:
+                        after = lines[j][lines[j].find(delimiter) + 3 :].strip()
+                        if after:
+                            result_lines.append(after)
+                        i = j + 1
+                        break
+                    j += 1
+                else:
+                    i = j
+            else:
+                result_lines.append(line)
+                i += 1
+        else:
+            result_lines.append(line)
+            i += 1
+    return "\n".join(result_lines), removed_count
 
 
 def preprocess(orig):
@@ -214,6 +255,9 @@ def main():
     before = get_size(root_dir)
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".py"])
+    if len(files) == 1:
+        process_file(files[0])
+        sys.exit(0)
     with Pool(8) as pool:
         pending = deque()
         for f in files:

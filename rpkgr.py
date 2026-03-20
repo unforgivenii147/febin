@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-import os
-import shutil
-import sysconfig
 from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed,
 )
+import os
 from pathlib import Path
+import shutil
+import sysconfig
 
 import regex as re
 from wheel.wheelfile import WheelFile

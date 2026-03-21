@@ -6,7 +6,7 @@ def main():
     fn = argv[1]
     template = """#!/data/data/com.termux/files/usr/bin/env python
 from pathlib import Path
-from multiprocessing import Pool
+from multiprocessing import get_context
 from collections import deque
 from sys import exit,argv
 from dh import format_size,get_size,get_files
@@ -34,7 +34,7 @@ def main():
         files = [Path(f) for f in args]
     else:
         files = get_files(root_dir,recursive=True)
-    with Pool(8) as pool:
+    with get_context('spawn').Pool(8) as pool:
         pending=deque()
         for f in files:
             pending.append(pool.apply_async(process_file, (f,)))

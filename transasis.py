@@ -16,13 +16,12 @@ non_english_pattern = re.compile(r"[^\x00-\x7F]")
 def chunk_text(text, chunk_size=CHUNK_SIZE):
     words = text.split()
     for i in range(0, len(words), chunk_size):
-        yield " ".join(words[i:i + chunk_size])
+        yield " ".join(words[i : i + chunk_size])
 
 
 def translate_text(text):
     try:
-        return GoogleTranslator(source="auto",
-                                target=TARGET_LANGUAGE).translate(text)
+        return GoogleTranslator(source="auto", target=TARGET_LANGUAGE).translate(text)
     except Exception as e:
         print(f"Error translating text chunk: {e}")
         return text

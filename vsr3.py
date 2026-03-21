@@ -15,14 +15,18 @@ except ImportError:
     sys.exit(1)
 
 
-def find_dist_info_dirs(site_packages: Path, ) -> list[Path]:
+def find_dist_info_dirs(
+    site_packages: Path,
+) -> list[Path]:
     dist_dirs = []
     dist_dirs.extend(site_packages.glob("*.dist-info"))
     dist_dirs.extend(site_packages.glob("*.egg-info"))
     return sorted(dist_dirs)
 
 
-def get_package_name_version(dist_dir: Path, ) -> tuple:
+def get_package_name_version(
+    dist_dir: Path,
+) -> tuple:
     name = dist_dir.name
     if name.endswith(".dist-info"):
         name = name[:-10]
@@ -34,25 +38,23 @@ def get_package_name_version(dist_dir: Path, ) -> tuple:
     return parts[0], "0.0.0"
 
 
-def read_record_file(dist_dir: Path,
-                     site_packages: Path) -> tuple[list[Path], set[Path]]:
+def read_record_file(dist_dir: Path, site_packages: Path) -> tuple[list[Path], set[Path]]:
     record_file = dist_dir / "RECORD"
     if not record_file.exists():
         return [], set()
     existing_files = []
     missing_files = set()
     with open(
-            record_file,
-            newline="",
-            encoding="utf-8",
+        record_file,
+        newline="",
+        encoding="utf-8",
     ) as f:
         reader = csv.reader(f)
         for row in reader:
             if not row or not row[0]:
                 continue
             file_path = row[0]
-            full_path = Path(file_path) if os.path.isabs(
-                file_path) else site_packages / file_path
+            full_path = Path(file_path) if os.path.isabs(file_path) else site_packages / file_path
             if full_path.suffix == ".pyc":
                 continue
             if full_path.exists():
@@ -62,7 +64,9 @@ def read_record_file(dist_dir: Path,
     return existing_files, missing_files
 
 
-def get_wheel_tag(dist_dir: Path, ) -> str | None:
+def get_wheel_tag(
+    dist_dir: Path,
+) -> str | None:
     wheel_file = dist_dir / "WHEEL"
     if not wheel_file.exists():
         return None
@@ -130,9 +134,9 @@ def create_wheel(
             import zipfile
 
             with zipfile.ZipFile(
-                    wheel_file,
-                    "w",
-                    zipfile.ZIP_DEFLATED,
+                wheel_file,
+                "w",
+                zipfile.ZIP_DEFLATED,
             ) as whl:
                 for root, _dirs, files in os.walk(temp_dir):
                     for file in files:
@@ -155,8 +159,7 @@ def repack_package(
     existing_files, missing_files = read_record_file(dist_dir, site_packages)
     if not existing_files:
         return False
-    has_missing_critical = any(f.suffix in [".py", ""] or f.is_dir()
-                               for f in missing_files)
+    has_missing_critical = any(f.suffix in [".py", ""] or f.is_dir() for f in missing_files)
     if has_missing_critical:
         pkg_not_repacked = not_repacked_dir / pkg_name
         pkg_not_repacked.mkdir(parents=True, exist_ok=True)
@@ -188,8 +191,7 @@ def repack_package(
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Repack installed Python packages as wheels")
+    parser = argparse.ArgumentParser(description="Repack installed Python packages as wheels")
     parser.add_argument(
         "packages",
         nargs="*",
@@ -223,24 +225,21 @@ def main():
     all_dist_dirs = find_dist_info_dirs(site_packages)
     if not args.all:
         pkg_set = set(args.packages)
-        all_dist_dirs = [
-            d for d in all_dist_dirs
-            if get_package_name_version(d)[0] in pkg_set
-        ]
+        all_dist_dirs = [d for d in all_dist_dirs if get_package_name_version(d)[0] in pkg_set]
     success_count = 0
     failed_count = 0
     with tqdm(
-            total=len(all_dist_dirs),
-            desc="Repacking packages",
+        total=len(all_dist_dirs),
+        desc="Repacking packages",
     ) as pbar:
         for dist_dir in all_dist_dirs:
             pkg_name, _ = get_package_name_version(dist_dir)
             pbar.set_description(f"Repacking {pkg_name}")
             if repack_package(
-                    dist_dir,
-                    site_packages,
-                    output_dir,
-                    not_repacked_dir,
+                dist_dir,
+                site_packages,
+                output_dir,
+                not_repacked_dir,
             ):
                 success_count += 1
             else:

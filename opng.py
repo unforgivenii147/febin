@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import subprocess
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
 
 from fastwalk import walk_files
@@ -34,7 +34,7 @@ def main():
         print("No PNG files found in the current directory.")
         return
     print(f"Found {len(png_files)} PNG files to optimize.")
-    with Pool(8) as pool:
+    with get_context("spawn").Pool(8) as pool:
         for _ in pool.imap_unordered(optimize_png, png_files):
             pass
 

@@ -3,7 +3,7 @@ import os
 import subprocess
 import tarfile
 import zipfile
-from multiprocessing import Pool, cpu_count
+from multiprocessing import get_context, cpu_count
 
 import regex as re
 

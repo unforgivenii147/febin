@@ -35,8 +35,7 @@ def extract_tar_zst(archive_path, extract_path):
     """Extract tar.zst archive using zstandard library."""
     with open(archive_path, "rb") as compressed_file:
         dctx = zstd.ZstdDecompressor()
-        with tempfile.NamedTemporaryFile(suffix=".tar",
-                                         delete=False) as temp_tar:
+        with tempfile.NamedTemporaryFile(suffix=".tar", delete=False) as temp_tar:
             dctx.copy_stream(compressed_file, temp_tar)
             temp_tar_path = temp_tar.name
     try:
@@ -89,17 +88,14 @@ def process_archive(archive_path, dry_run=False, quiet=False):
             extract_tar_xz(archive_path, extract_path)
             extracted_files = ["multiple files (tar contents)"]
         extracted_size = 0
-        if extracted_files and extracted_files[
-                0] != "multiple files (tar contents)":
+        if extracted_files and extracted_files[0] != "multiple files (tar contents)":
             for file_path in extracted_files:
                 if file_path.exists():
                     extracted_size += file_path.stat().st_size
         else:
             current_time = time.time()
             for item in extract_path.rglob("*"):
-                if item.is_file(
-                ) and item != archive_path and current_time - item.stat(
-                ).st_ctime < 60:
+                if item.is_file() and item != archive_path and current_time - item.stat().st_ctime < 60:
                     extracted_size += item.stat().st_size
         archive_path.unlink()
         if not quiet:
@@ -135,8 +131,7 @@ def main():
         "target",
         nargs="?",
         default=None,
-        help=
-        "File to extract or directory to search (default: current directory)",
+        help="File to extract or directory to search (default: current directory)",
     )
     parser.add_argument(
         "--dry-run",

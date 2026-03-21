@@ -37,10 +37,10 @@ def detect_shebang(content: str) -> str | None:
     stripped = content.lstrip()
     if stripped.startswith("#!") and "python" in stripped:
         return TERMUX_PYTHON
-    if "import " in content or "def " in content or "class " in content or stripped.startswith(
-            "!python"):
+    if "import " in content or "def " in content or "class " in content or stripped.startswith("!python"):
         return TERMUX_PYTHON
-    if stripped.startswith((
+    if stripped.startswith(
+        (
             "echo ",
             "cd ",
             "export ",
@@ -48,7 +48,8 @@ def detect_shebang(content: str) -> str | None:
             "if ",
             "for ",
             "#!/bin/sh",
-    )):
+        )
+    ):
         return TERMUX_BASH
     return None
 

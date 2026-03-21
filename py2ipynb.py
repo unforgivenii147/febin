@@ -36,15 +36,25 @@ def py_to_ipynb(input_file, output_file=None):
         line = lines[i]
         # Check for potential cell breaks
         if i > 0 and (
-                # Function or class definition
-                line.startswith("def ") or line.startswith("class ") or
-                # Import statements (group them)
-            ((line.startswith("import ") or line.startswith("from "))
-             and not current_cell[-1].startswith(("import ", "from "))) or
-                # Empty line after some code
-            (line.strip() == "" and current_cell and i + 1 < len(lines)
-             and lines[i + 1].strip() and not lines[i + 1].startswith(
-                 (" ", "\t")))):
+            # Function or class definition
+            line.startswith("def ")
+            or line.startswith("class ")
+            or
+            # Import statements (group them)
+            (
+                (line.startswith("import ") or line.startswith("from "))
+                and not current_cell[-1].startswith(("import ", "from "))
+            )
+            or
+            # Empty line after some code
+            (
+                line.strip() == ""
+                and current_cell
+                and i + 1 < len(lines)
+                and lines[i + 1].strip()
+                and not lines[i + 1].startswith((" ", "\t"))
+            )
+        ):
             # Create a cell from accumulated lines
             if current_cell:
                 cell_code = "\n".join(current_cell).strip()
@@ -72,8 +82,7 @@ def py_to_ipynb(input_file, output_file=None):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Convert a Python script to a Jupyter notebook")
+    parser = argparse.ArgumentParser(description="Convert a Python script to a Jupyter notebook")
     parser.add_argument("input", help="Input Python file (.py)")
     parser.add_argument(
         "output",
@@ -101,9 +110,7 @@ def main():
                 indent=1,
                 ensure_ascii=False,
             )
-        print(
-            f"Successfully converted '{args.input}' to '{output_file}' (single cell)"
-        )
+        print(f"Successfully converted '{args.input}' to '{output_file}' (single cell)")
     else:
         # Use the smart splitting conversion
         py_to_ipynb(args.input, args.output)

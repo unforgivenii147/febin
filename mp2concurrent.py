@@ -7,7 +7,7 @@ import regex as re
 def replace_multiprocessing_patterns(content):
     replacements = [
         (
-            r"from multiprocessing import Pool\b",
+            r"from multiprocessing import get_context\b",
             "from concurrent.futures import ProcessPoolExecutor",
         ),
         (
@@ -75,9 +75,7 @@ def find_and_replace_in_directory(directory="."):
         if process_python_file(py_file):
             modified_count += 1
     print(f"\n{'=' * 50}")
-    print(
-        f"Summary: Modified {modified_count} out of {len(python_files)} file(s)"
-    )
+    print(f"Summary: Modified {modified_count} out of {len(python_files)} file(s)")
 
 
 if __name__ == "__main__":

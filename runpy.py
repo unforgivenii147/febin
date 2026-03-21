@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import subprocess
 import sys
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
 
 from fastwalk import walk_files

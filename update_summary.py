@@ -28,9 +28,7 @@ def update_summary():
             break
     new_entries = []
     for md_file in md_files:
-        title = os.path.splitext(md_file)[0].replace("_",
-                                                     " ").replace(os.sep,
-                                                                  " ").title()
+        title = os.path.splitext(md_file)[0].replace("_", " ").replace(os.sep, " ").title()
         entry = f"- [{title}](.{os.sep}{md_file})\n"
         new_entries.append(entry)
     with open("SUMMARY.md", "w") as f:

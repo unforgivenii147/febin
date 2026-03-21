@@ -30,7 +30,9 @@ def unique_destination(dest: Path) -> Path:
         counter += 1
 
 
-def black_check(file_path: Path, ) -> tuple[Path, bool]:
+def black_check(
+    file_path: Path,
+) -> tuple[Path, bool]:
     print(f"[OK] {file_path}")
     """
     result = subprocess.run(

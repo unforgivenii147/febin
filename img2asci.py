@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
-from multiprocessing import Pool
+from multiprocessing import get_context
 import sys
 from ascii_magic import AsciiArt
 from dh import get_files
@@ -19,8 +19,7 @@ def process_file(image_path):
 def main():
     root_dir = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(
-        root_dir, extensions=[".jpg", ".png", ".bmp", ".webp"])
+    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".jpg", ".png", ".bmp", ".webp"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

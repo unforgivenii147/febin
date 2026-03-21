@@ -18,8 +18,7 @@ def process_file(path, text):
 
 
 if __name__ == "__main__":
-    root_dir = Path(
-        "/data/data/com.termux/files/usr/lib/python3.12/site-packages")
+    root_dir = Path("/data/data/com.termux/files/usr/lib/python3.12/site-packages")
     target = sys.argv[1]
     for path in root_dir.rglob("METADATA"):
         process_file(path, target)

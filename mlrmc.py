@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import Pool, cpu_count
+from multiprocessing import get_context, cpu_count
 from pathlib import Path
 
 import tree_sitter_cpp
@@ -56,14 +56,16 @@ def _collect_python_docstrings(node, deletions):
         if first and first.type == "expression_statement":
             expr = first.child_by_field_name("expression")
             if expr and expr.type == "string":
-                deletions.append((
-                    first.start_byte,
-                    first.end_byte,
-                ))
+                deletions.append(
+                    (
+                        first.start_byte,
+                        first.end_byte,
+                    )
+                )
     if node.type in (
-            "class_definition",
-            "function_definition",
-            "async_function_definition",
+        "class_definition",
+        "function_definition",
+        "async_function_definition",
     ):
         body = node.child_by_field_name("body")
         if body:
@@ -71,10 +73,12 @@ def _collect_python_docstrings(node, deletions):
             if first and first.type == "expression_statement":
                 expr = first.child_by_field_name("expression")
                 if expr and expr.type == "string":
-                    deletions.append((
-                        first.start_byte,
-                        first.end_byte,
-                    ))
+                    deletions.append(
+                        (
+                            first.start_byte,
+                            first.end_byte,
+                        )
+                    )
     for child in node.children:
         _collect_python_docstrings(child, deletions)
 
@@ -92,13 +96,15 @@ def process_file(path: Path) -> None:
 
         def walk(node):
             if node.type == "comment":
-                text = source[node.start_byte:node.end_byte]
+                text = source[node.start_byte : node.end_byte]
                 if ext == ".py" and text.lstrip().startswith(EXCLUDE_PREFIXES):
                     return
-                deletions.append((
-                    node.start_byte,
-                    node.end_byte,
-                ))
+                deletions.append(
+                    (
+                        node.start_byte,
+                        node.end_byte,
+                    )
+                )
             for child in node.children:
                 walk(child)
 
@@ -120,13 +126,12 @@ def process_file(path: Path) -> None:
         print(f"[FAIL] {path} -> {e}")
 
 
-def collect_supported_files(root: Path, ) -> list[Path]:
+def collect_supported_files(
+    root: Path,
+) -> list[Path]:
     if root.is_file():
         return [root] if root.suffix.lower() in LANGUAGES else []
-    return [
-        p for p in root.rglob("*")
-        if p.is_file() and p.suffix.lower() in LANGUAGES
-    ]
+    return [p for p in root.rglob("*") if p.is_file() and p.suffix.lower() in LANGUAGES]
 
 
 def main() -> None:

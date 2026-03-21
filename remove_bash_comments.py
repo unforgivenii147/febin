@@ -14,14 +14,11 @@ from pathlib import Path
 try:
     from tree_sitter import Language, Parser
 except ImportError:
-    print(
-        "Error: tree-sitter not installed. Install with: pip install tree-sitter"
-    )
+    print("Error: tree-sitter not installed. Install with: pip install tree-sitter")
     sys.exit(1)
 
 
 class BashCommentRemover:
-
     def __init__(self):
         # Try to find or build the bash grammar
         self.parser = self._setup_parser()
@@ -35,14 +32,13 @@ class BashCommentRemover:
             # Try to import bash language directly (if installed)
             try:
                 from tree_sitter_bash import (
-                    language, )
+                    language,
+                )
 
                 bash_language = Language(language())
             except ImportError:
                 # If not installed, try to build it from npm
-                print(
-                    "Tree-sitter bash grammar not found. Attempting to install..."
-                )
+                print("Tree-sitter bash grammar not found. Attempting to install...")
                 import subprocess
                 import tempfile
 
@@ -72,9 +68,7 @@ class BashCommentRemover:
                         text=True,
                     )
                     if build_result.returncode != 0:
-                        print(
-                            f"Failed to build bash grammar: {build_result.stderr}"
-                        )
+                        print(f"Failed to build bash grammar: {build_result.stderr}")
                         return None
                     # Load the built grammar
                     so_file = Path(tmpdir) / "tree-sitter-bash.so"
@@ -124,19 +118,16 @@ class BashCommentRemover:
                 if start_line == end_line:
                     # Single line comment
                     line = modified_lines[start_line]
-                    modified_lines[
-                        start_line] = line[:start_col] + line[end_col:]
+                    modified_lines[start_line] = line[:start_col] + line[end_col:]
                 else:
                     # Multi-line comment (unlikely in bash, but handle anyway)
                     # Remove from start line
-                    modified_lines[start_line] = modified_lines[
-                        start_line][:start_col]
+                    modified_lines[start_line] = modified_lines[start_line][:start_col]
                     # Remove middle lines
                     for line_num in range(start_line + 1, end_line):
                         modified_lines[line_num] = ""
                     # Remove from end line
-                    modified_lines[end_line] = modified_lines[end_line][
-                        end_col:]
+                    modified_lines[end_line] = modified_lines[end_line][end_col:]
             # Clean up empty lines (optional - you might want to keep them)
             modified_content = "".join(modified_lines)
             # Remove multiple consecutive empty lines
@@ -205,13 +196,13 @@ class BashCommentRemover:
             original_size = len(original_content.encode("utf-8"))
             # Check if it looks like a bash script (even without extension)
             if filepath.suffix not in [
-                    ".sh",
-                    ".bash",
+                ".sh",
+                ".bash",
             ]:
                 # Check shebang
-                if not original_content.startswith(
-                        "#!/bin/bash") and not original_content.startswith(
-                            "#!/usr/bin/env bash"):
+                if not original_content.startswith("#!/bin/bash") and not original_content.startswith(
+                    "#!/usr/bin/env bash"
+                ):
                     # Skip non-bash files
                     return (
                         True,
@@ -219,8 +210,7 @@ class BashCommentRemover:
                         original_size,
                     )
             # Remove comments
-            modified_content, was_modified = self.remove_comments(
-                original_content)
+            modified_content, was_modified = self.remove_comments(original_content)
             if not was_modified:
                 return (
                     True,
@@ -239,18 +229,14 @@ class BashCommentRemover:
             if not dry_run:
                 # Write modified content
                 with open(
-                        filepath,
-                        "w",
-                        encoding="utf-8",
+                    filepath,
+                    "w",
+                    encoding="utf-8",
                 ) as f:
                     f.write(modified_content)
-                print(
-                    f"  ✓ Processed: {filepath} ({original_size} -> {new_size} bytes)"
-                )
+                print(f"  ✓ Processed: {filepath} ({original_size} -> {new_size} bytes)")
             else:
-                print(
-                    f"  ✓ Would process: {filepath} ({original_size} -> {new_size} bytes)"
-                )
+                print(f"  ✓ Would process: {filepath} ({original_size} -> {new_size} bytes)")
             return True, original_size, new_size
         except Exception as e:
             print(f"  ✗ Error processing {filepath}: {e}")
@@ -283,22 +269,19 @@ class BashCommentRemover:
                     filepath = Path(root) / file
                     # Check if it's a bash script
                     if filepath.suffix in [
-                            ".sh",
-                            ".bash",
+                        ".sh",
+                        ".bash",
                     ]:
                         bash_files.append(filepath)
                     else:
                         # Check for shebang
                         try:
                             with open(
-                                    filepath,
-                                    encoding="utf-8",
+                                filepath,
+                                encoding="utf-8",
                             ) as f:
                                 first_line = f.readline()
-                                if first_line.startswith(
-                                        "#!/bin/bash"
-                                ) or first_line.startswith(
-                                        "#!/usr/bin/env bash"):
+                                if first_line.startswith("#!/bin/bash") or first_line.startswith("#!/usr/bin/env bash"):
                                     bash_files.append(filepath)
                         except:
                             continue
@@ -309,9 +292,7 @@ class BashCommentRemover:
                     total_original += orig
                     total_new += new
         elif path.is_dir() and not recursive:
-            print(
-                f"Error: {path} is a directory. Use --recursive to process directories."
-            )
+            print(f"Error: {path} is a directory. Use --recursive to process directories.")
         return (
             success_count,
             total_original,
@@ -320,13 +301,11 @@ class BashCommentRemover:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Remove comments from bash files using tree-sitter")
+    parser = argparse.ArgumentParser(description="Remove comments from bash files using tree-sitter")
     parser.add_argument(
         "files",
         nargs="*",
-        help=
-        "Files to process. If none given, process current directory recursively",
+        help="Files to process. If none given, process current directory recursively",
     )
     parser.add_argument(
         "-r",
@@ -379,17 +358,10 @@ def main():
         print(f"\n{'=' * 50}")
         print("Summary:")
         print(f"  Files processed successfully: {total_success}")
-        print(
-            f"  Original total size: {total_original} bytes ({total_original / 1024:.2f} KB)"
-        )
-        print(
-            f"  New total size: {total_new} bytes ({total_new / 1024:.2f} KB)")
-        print(
-            f"  Size reduction: {total_original - total_new} bytes ({(total_original - total_new) / 1024:.2f} KB)"
-        )
-        print(
-            f"  Reduction percentage: {((total_original - total_new) / total_original * 100):.1f}%"
-        )
+        print(f"  Original total size: {total_original} bytes ({total_original / 1024:.2f} KB)")
+        print(f"  New total size: {total_new} bytes ({total_new / 1024:.2f} KB)")
+        print(f"  Size reduction: {total_original - total_new} bytes ({(total_original - total_new) / 1024:.2f} KB)")
+        print(f"  Reduction percentage: {((total_original - total_new) / total_original * 100):.1f}%")
     else:
         print("\nNo files were processed successfully.")
 

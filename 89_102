@@ -1,0 +1,14 @@
+    files_by_size = {}
+    for path in paths_to_process:
+        try:
+            size = path.stat().st_size
+            files_by_size.setdefault(size, []).append(path)
+        except OSError as e:
+            print(f"Error getting size for {path}: {e}")
+            continue
+
+    # Now, only hash files where len(paths) > 1 in files_by_size
+    paths_to_hash = []
+    for size, paths in files_by_size.items():
+        if len(paths) > 1:
+            paths_to_hash.extend(paths)

@@ -6,7 +6,6 @@ from dh import SoFileStripper
 
 
 class BatchStripper:
-
     @staticmethod
     def strip_by_size_threshold(
         directory: str,
@@ -57,8 +56,7 @@ class BatchStripper:
             ]
         print(f"\nStripping .so files (excluding: {exclude_patterns})...")
         so_files = [
-            f for f in Path(directory).rglob("*.so*")
-            if not any(pattern in f.name for pattern in exclude_patterns)
+            f for f in Path(directory).rglob("*.so*") if not any(pattern in f.name for pattern in exclude_patterns)
         ]
         stripper = SoFileStripper(verbose=verbose, verify_ctypes=verify)
         for so_file in so_files:
@@ -90,8 +88,7 @@ class BatchStripper:
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Batch .so file stripping with ctypes verification")
+    parser = argparse.ArgumentParser(description="Batch .so file stripping with ctypes verification")
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
     size_parser = subparsers.add_parser("size", help="Strip by size threshold")
     size_parser.add_argument("directory", nargs="?", default=".")
@@ -120,8 +117,7 @@ def main():
         action="store_true",
         help="Skip ctypes verification",
     )
-    excl_parser = subparsers.add_parser("exclude",
-                                        help="Strip excluding patterns")
+    excl_parser = subparsers.add_parser("exclude", help="Strip excluding patterns")
     excl_parser.add_argument("directory", nargs="?", default=".")
     excl_parser.add_argument(
         "--patterns",

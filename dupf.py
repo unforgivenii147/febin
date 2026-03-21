@@ -1,25 +1,63 @@
 #!/data/data/com.termux/files/usr/bin/python
 from collections import defaultdict
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor,as_completed
 
 from file_hash import hash_file
 from termcolor import cprint
+
+def should_skip(path):
+    path=Path(path)
+    if path.is_symlink() or not path.stat().st_size or any(pat in path.parts for pat in {".git","__pycache__",".mypy_cache",".ruff_cache"}):
+        return True
+    return False
+
+
+def get_hash_file(path):
+    return hash_file(path),path
 
 
 def find_duplicates():
     root_dir = Path.cwd()
     files_by_hash = defaultdict(list)
     duplicate_count = 0
+    ptp=[]
     for path in root_dir.rglob("*"):
-        if ".git" in path.parts or "__pycache__" in path.parts:
+        if path.is_file() and not should_skip(path):
+            ptp.append(path)
+    files_by_size = {}
+    for p in ptp:
+        try:
+            size = p.stat().st_size
+            files_by_size.setdefault(size, []).append(p)
+        except OSError as e:
+            print(f"Error getting size for {p}: {e}")
             continue
-        if path.is_symlink():
-            continue
-        if path.is_file():
-            files_by_hash[hash_file(path)].append(path)
+
+    paths_to_hash = []
+    for size, paths in files_by_size.items():
+        if len(paths) > 1:
+            paths_to_hash.extend(paths)
+
+
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        # Submit all file hashing tasks
+        future_to_path = {
+            executor.submit(get_hash_file, path): path
+            for path in paths_to_hash
+        }
+
+        for future in as_completed(future_to_path):
+            hash_result, path = future.result()
+            if hash_result is not None:  # Only process if hashing was successful
+                files_by_hash.setdefault(hash_result, []).append(path)
+
+#    return {h: paths for h, paths in file_hashes.items() if len(paths) > 1}
+
     for (
-            hash,
-            paths,
+        hash,
+        paths,
     ) in files_by_hash.items():
         if len(paths) > 1:
             duplicate_count += len(paths) - 1

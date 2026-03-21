@@ -16,11 +16,11 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
     temp_path = None
     try:
         with tempfile.NamedTemporaryFile(
-                mode="wb",
-                dir=temp_dir,
-                prefix=".tmp_",
-                suffix=".xz",
-                delete=False,
+            mode="wb",
+            dir=temp_dir,
+            prefix=".tmp_",
+            suffix=".xz",
+            delete=False,
         ) as temp_file:
             temp_path = Path(temp_file.name)
             temp_file.write(data)
@@ -37,9 +37,7 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
         return False
 
 
-def safe_delete(file_path: Path,
-                max_retries: int = 3,
-                delay: float = 0.5) -> bool:
+def safe_delete(file_path: Path, max_retries: int = 3, delay: float = 0.5) -> bool:
     for attempt in range(max_retries):
         try:
             if file_path.exists():
@@ -52,13 +50,10 @@ def safe_delete(file_path: Path,
             if attempt < max_retries - 1:
                 time.sleep(delay * (attempt + 1))
                 continue
-            logger.error(
-                f"Cannot delete {file_path} after {max_retries} attempts due to PermissionError"
-            )
+            logger.error(f"Cannot delete {file_path} after {max_retries} attempts due to PermissionError")
             return False
         except FileNotFoundError:
-            logger.debug(
-                f"File not found during deletion attempt: {file_path}")
+            logger.debug(f"File not found during deletion attempt: {file_path}")
             return True
         except Exception as e:
             logger.error(f"Error deleting {file_path}: {e}")
@@ -83,9 +78,7 @@ def compress_file(file_path: Path, delete_delay: float = 0.5) -> bool:
         if safe_delete(file_path, delay=delete_delay):
             compressed_size = compressed_path.stat().st_size
             reduction = (1 - compressed_size / original_size) * 100
-            logger.info(
-                f"{file_path.name}|{original_size} → {compressed_size} bytes ({reduction:.1f}% reduction)"
-            )
+            logger.info(f"{file_path.name}|{original_size} → {compressed_size} bytes ({reduction:.1f}% reduction)")
             return True
     except Exception:
         return False
@@ -113,8 +106,7 @@ def scan_files(directory: Path) -> list[Path]:
     logger.info(f"Scanning directory: {directory}")
 
     for file_path in directory.rglob("*"):
-        if file_path.is_file(
-        ) and not file_path.is_symlink() and should_compress(file_path):
+        if file_path.is_file() and not file_path.is_symlink() and should_compress(file_path):
             files_to_compress.append(file_path)
     return files_to_compress
 
@@ -165,8 +157,7 @@ def main() -> None:
     if successful > 0:
         savings = total_original - total_compressed
         savings_percent = (savings / total_original) * 100
-        logger.info(
-            f"Space saved: {format_size(savings)} ({savings_percent:.1f}%)")
+        logger.info(f"Space saved: {format_size(savings)} ({savings_percent:.1f}%)")
 
 
 if __name__ == "__main__":

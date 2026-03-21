@@ -18,9 +18,9 @@ def process_file(fp):
             pkg_name = line.split('name = "')[1].split('"')[0]
             print(pkg_name)
             with open(
-                    "requirements.txt",
-                    "a",
-                    encoding="utf-8",
+                "requirements.txt",
+                "a",
+                encoding="utf-8",
             ) as f:
                 f.write(pkg_name + "\n")
 

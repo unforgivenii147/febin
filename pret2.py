@@ -26,7 +26,9 @@ def should_format(file_path: Path) -> bool:
     return all(not file_path.name.endswith(p) for p in EXCLUDE_PATTERNS)
 
 
-def get_files_to_format(root_dir: str = ".", ) -> list[Path]:
+def get_files_to_format(
+    root_dir: str = ".",
+) -> list[Path]:
     root = Path(root_dir).resolve()
     files: list[Path] = []
     for path in root.rglob("*"):
@@ -48,7 +50,9 @@ def move_to_error_folder(file_path: Path) -> None:
     print(f"  ❌ Moved to error folder: {dest}")
 
 
-def format_file(file_path: Path, ) -> tuple[Path, bool, str | None]:
+def format_file(
+    file_path: Path,
+) -> tuple[Path, bool, str | None]:
     try:
         result = subprocess.run(
             [

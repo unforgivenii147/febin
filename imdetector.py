@@ -8,9 +8,9 @@ OUTPUT_FILE = "found.txt"
 def is_probably_python(path: str) -> bool:
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             head = f.read(2048)
         return "import " in head or "def " in head or "class " in head
@@ -21,9 +21,9 @@ def is_probably_python(path: str) -> bool:
 def has_late_import(path: str) -> bool:
     try:
         with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
+            path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             code = f.read()
         tree = ast.parse(code)
@@ -33,8 +33,7 @@ def has_late_import(path: str) -> bool:
     for node in tree.body:
         if isinstance(node, ast.Expr) and isinstance(node.value, ast.Str):
             continue
-        if isinstance(node,
-                      (ast.Import, ast.ImportFrom)) and not seen_non_import:
+        if isinstance(node, (ast.Import, ast.ImportFrom)) and not seen_non_import:
             continue
         if isinstance(node, (ast.Import, ast.ImportFrom)) and seen_non_import:
             return True

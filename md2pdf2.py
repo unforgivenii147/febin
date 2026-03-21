@@ -34,8 +34,7 @@ def pygments_highlight(html: str) -> str:
     def repl(match):
         lang = match.group(1)
         code = match.group(2)
-        code = code.replace("&lt;", "<").replace("&gt;",
-                                                 ">").replace("&amp;", "&")
+        code = code.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
         try:
             lexer = get_lexer_by_name(lang)
         except Exception:

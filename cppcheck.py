@@ -21,14 +21,14 @@ if __name__ == "__main__":
     for pth in walk_files(root_dir):
         path = Path(pth)
         if path.is_file() and path.suffix in {
-                ".c",
-                ".cc",
-                ".cpp",
-                ".cxx",
-                ".h",
-                ".hh",
-                ".hpp",
-                ".hxx",
+            ".c",
+            ".cc",
+            ".cpp",
+            ".cxx",
+            ".h",
+            ".hh",
+            ".hpp",
+            ".hxx",
         }:
             if not validate_cpp(path):
                 print(f"[\u2716] : {path.name}")

@@ -32,25 +32,28 @@ def update_record_file(record_path):
             if not row:
                 continue
             file_path = row[0] if row else ""
-            if (file_path.endswith(".pyc") or file_path in {
+            if (
+                file_path.endswith(".pyc")
+                or file_path
+                in {
                     "direct_url.json",
                     "INSTALLER",
-            } or file_path.startswith("LICENSE")):
+                }
+                or file_path.startswith("LICENSE")
+            ):
                 continue
             filtered_lines.append(row)
         if len(filtered_lines) == original_count:
             return False
         with open(
-                record_path,
-                "w",
-                encoding="utf-8",
-                newline="",
+            record_path,
+            "w",
+            encoding="utf-8",
+            newline="",
         ) as f:
             writer = csv.writer(f)
             writer.writerows(filtered_lines)
-        print(
-            f"  Updated: {record_path} (removed {original_count - len(filtered_lines)} entries)"
-        )
+        print(f"  Updated: {record_path} (removed {original_count - len(filtered_lines)} entries)")
         return True
     except Exception as e:
         print(
@@ -77,15 +80,12 @@ def scan_and_update(site_packages_dirs, dry_run=False):
                 if dry_run:
                     try:
                         with open(
-                                record_path,
-                                encoding="utf-8",
+                            record_path,
+                            encoding="utf-8",
                         ) as f:
                             lines = list(csv.reader(f))
-                        pyc_count = sum(1 for row in lines
-                                        if row and row[0].endswith(".pyc"))
-                        direct_url_count = sum(
-                            1 for row in lines
-                            if row and row[0] == "direct_url.json")
+                        pyc_count = sum(1 for row in lines if row and row[0].endswith(".pyc"))
+                        direct_url_count = sum(1 for row in lines if row and row[0] == "direct_url.json")
                         if pyc_count > 0 or direct_url_count > 0:
                             total_updated += 1
                     except Exception as e:
@@ -100,8 +100,7 @@ def scan_and_update(site_packages_dirs, dry_run=False):
 
 def main():
     parser = argparse.ArgumentParser(
-        description=
-        "Remove .pyc and direct_url.json references from RECORD files in site-packages"
+        description="Remove .pyc and direct_url.json references from RECORD files in site-packages"
     )
     parser.add_argument(
         "--dry-run",
@@ -113,8 +112,7 @@ def main():
         "--site-dir",
         "-s",
         action="append",
-        help=
-        "Specific site-packages directory to scan (can be used multiple times)",
+        help="Specific site-packages directory to scan (can be used multiple times)",
     )
     parser.add_argument(
         "--verbose",
@@ -132,8 +130,7 @@ def main():
         sys.exit(1)
     print(f"Python version: {sys.version}")
     print(f"Site packages directories: {', '.join(site_dirs)}")
-    print(
-        f"Mode: {'DRY RUN (no changes)' if args.dry_run else 'ACTUAL UPDATE'}")
+    print(f"Mode: {'DRY RUN (no changes)' if args.dry_run else 'ACTUAL UPDATE'}")
     total_files, total_updated = scan_and_update(site_dirs, args.dry_run)
     print(f"\n{'=' * 50}")
     print("Summary:")

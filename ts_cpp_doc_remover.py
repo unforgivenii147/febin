@@ -7,7 +7,6 @@ from tree_sitter import Language, Parser
 
 
 class TSCppRemover:
-
     def __init__(self):
         self.parser = Parser()
         self.parser.language = Language(tscpp.language())
@@ -19,10 +18,12 @@ class TSCppRemover:
 
         def walk(node):
             if node.type == "comment":
-                to_delete.append((
-                    node.start_byte,
-                    node.end_byte,
-                ))
+                to_delete.append(
+                    (
+                        node.start_byte,
+                        node.end_byte,
+                    )
+                )
             for child in node.children:
                 walk(child)
 

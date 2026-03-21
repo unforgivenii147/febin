@@ -34,8 +34,7 @@ def convert_file(file_path: str) -> bool:
         return True
     output_path = path.with_suffix(".png")
     if output_path.exists():
-        response = input(f"'{output_path.name}' exists. Overwrite? (y/n): "
-                         ).strip().lower()
+        response = input(f"'{output_path.name}' exists. Overwrite? (y/n): ").strip().lower()
         if response != "y":
             return False
     try:
@@ -52,12 +51,9 @@ def convert_file(file_path: str) -> bool:
                     dtype=np.uint8,
                 )
                 alpha = a.astype(float) / 255.0
-                img_b = (b.astype(float) * alpha + white_bg.astype(float) *
-                         (1 - alpha)).astype(np.uint8)
-                img_g = (g.astype(float) * alpha + white_bg.astype(float) *
-                         (1 - alpha)).astype(np.uint8)
-                img_r = (r.astype(float) * alpha + white_bg.astype(float) *
-                         (1 - alpha)).astype(np.uint8)
+                img_b = (b.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
+                img_g = (g.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
+                img_r = (r.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
                 final_img = cv2.merge((img_b, img_g, img_r))
             else:
                 final_img = img
@@ -98,9 +94,9 @@ def convert_file(file_path: str) -> bool:
 def main() -> None:
     start_size = dh.get_size(".")
     files = [
-        f for f in Path().rglob("*")
-        if f.is_file() and not any(part in IGNORED_DIRS
-                                   for part in f.parts) and dh.is_image(f)
+        f
+        for f in Path().rglob("*")
+        if f.is_file() and not any(part in IGNORED_DIRS for part in f.parts) and dh.is_image(f)
     ]
     if not files:
         print("No image files detected.")

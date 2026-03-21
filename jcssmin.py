@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
 from time import perf_counter
 
@@ -44,7 +44,7 @@ def main() -> None:
         print("No CSS files found.")
         return
     print(f"Found {len(files)} files. Starting multiprocessing...")
-    with Pool(8) as pool:
+    with get_context("spawn").Pool(8) as pool:
         for result in pool.imap_unordered(process_file, files):
             print(result)
     took = perf_counter() - s

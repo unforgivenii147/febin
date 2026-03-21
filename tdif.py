@@ -101,9 +101,9 @@ class DiffPanel(ScrollableContainer):
             classes="panel-title",
         )
         for (
-                text,
-                line_type,
-                line_num,
+            text,
+            line_type,
+            line_num,
         ) in self.lines:
             yield DiffLine(text, line_type, line_num)
 
@@ -212,32 +212,40 @@ class DiffViewerApp(App):
             if line_type == " ":
                 left_line_num += 1
                 right_line_num += 1
-                self.left_lines.append((
-                    content,
-                    line_type,
-                    left_line_num,
-                ))
-                self.right_lines.append((
-                    content,
-                    line_type,
-                    right_line_num,
-                ))
+                self.left_lines.append(
+                    (
+                        content,
+                        line_type,
+                        left_line_num,
+                    )
+                )
+                self.right_lines.append(
+                    (
+                        content,
+                        line_type,
+                        right_line_num,
+                    )
+                )
             elif line_type == "-":
                 left_line_num += 1
-                self.left_lines.append((
-                    content,
-                    line_type,
-                    left_line_num,
-                ))
+                self.left_lines.append(
+                    (
+                        content,
+                        line_type,
+                        left_line_num,
+                    )
+                )
                 self.right_lines.append(("", " ", None))
             elif line_type == "+":
                 right_line_num += 1
                 self.left_lines.append(("", " ", None))
-                self.right_lines.append((
-                    content,
-                    line_type,
-                    right_line_num,
-                ))
+                self.right_lines.append(
+                    (
+                        content,
+                        line_type,
+                        right_line_num,
+                    )
+                )
             elif line_type == "?":
                 self.left_lines.append((content, line_type, None))
                 self.right_lines.append((content, line_type, None))

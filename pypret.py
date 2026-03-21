@@ -19,8 +19,7 @@ def beautify_json_file(file_path) -> bool | None:
         return False
 
 
-def beautify_code_file(file_path, beautify_function,
-                       asset_type) -> bool | None:
+def beautify_code_file(file_path, beautify_function, asset_type) -> bool | None:
     try:
         with pathlib.Path(file_path).open(encoding="utf-8") as f:
             original_content = f.read()
@@ -34,7 +33,9 @@ def beautify_code_file(file_path, beautify_function,
         return False
 
 
-def beautify_files_in_directory(root_dir=".", ) -> None:
+def beautify_files_in_directory(
+    root_dir=".",
+) -> None:
     processed_count = 0
     errors_count = 0
     beautifier_map = {
@@ -43,9 +44,9 @@ def beautify_files_in_directory(root_dir=".", ) -> None:
         ".css": (jsbeautifier.beautify, "CSS"),
     }
     for (
-            foldername,
-            _subfolders,
-            filenames,
+        foldername,
+        _subfolders,
+        filenames,
     ) in os.walk(root_dir):
         for filename in filenames:
             file_path = os.path.join(foldername, filename)
@@ -56,8 +57,8 @@ def beautify_files_in_directory(root_dir=".", ) -> None:
                 else:
                     errors_count += 1
             for ext, (
-                    func,
-                    asset_type,
+                func,
+                asset_type,
             ) in beautifier_map.items():
                 if filename.endswith(ext):
                     success = beautify_code_file(

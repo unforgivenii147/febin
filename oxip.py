@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import subprocess
-from multiprocessing import Pool, cpu_count
+from multiprocessing import get_context, cpu_count
 
 from rich.progress import Progress
 
@@ -54,11 +54,8 @@ def main():
         with Pool(num_processes) as pool:
             for _ in pool.imap_unordered(optimize_png, png_files):
                 progress.update(task, advance=1)
-    total_space_freed = sum(optimize_png(fp)
-                            for fp in png_files) / (1024 * 1024)
-    print(
-        f"\n[bold green]Total space freed: {total_space_freed:.2f} MB[/bold green]"
-    )
+    total_space_freed = sum(optimize_png(fp) for fp in png_files) / (1024 * 1024)
+    print(f"\n[bold green]Total space freed: {total_space_freed:.2f} MB[/bold green]")
 
 
 if __name__ == "__main__":

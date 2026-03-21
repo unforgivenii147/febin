@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import mmap
-from multiprocessing import Pool, cpu_count
+from multiprocessing import get_context, cpu_count
 from pathlib import Path
 
 import regex as re
@@ -35,9 +35,9 @@ def clean_line(line: str) -> str:
 def clean_file_small(file_path: Path) -> tuple:
     try:
         with open(
-                file_path,
-                encoding="utf-8",
-                errors="ignore",
+            file_path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             lines = f.readlines()
         cleaned_lines = [clean_line(line) for line in lines]
@@ -94,9 +94,7 @@ def main():
         return
     print(f"Found {len(log_files)} log file(s).")
     print(f"Using {NUM_WORKERS} worker(s).")
-    print(
-        f"Files larger than {MMAP_THRESHOLD / (1024 * 1024):.1f} MB will use mmap.\n"
-    )
+    print(f"Files larger than {MMAP_THRESHOLD / (1024 * 1024):.1f} MB will use mmap.\n")
     print("Cleaning...\n")
     with Pool(processes=NUM_WORKERS) as pool:
         results = pool.map(clean_file_worker, log_files)
@@ -109,9 +107,7 @@ def main():
         else:
             print(f"✗ Error: {file_path} - {message}")
             error_count += 1
-    print(
-        f"\nDone. Successfully processed {success_count}/{len(log_files)} file(s)."
-    )
+    print(f"\nDone. Successfully processed {success_count}/{len(log_files)} file(s).")
     if error_count > 0:
         print(f"Failed: {error_count} file(s).")
 

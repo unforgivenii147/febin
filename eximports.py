@@ -27,7 +27,7 @@ def extract_file(src: bytes, tree):
     chunks = []
     for node in root.children:
         if node.type in VALID:
-            chunks.append(src[node.start_byte:node.end_byte].decode())
+            chunks.append(src[node.start_byte : node.end_byte].decode())
     return chunks
 
 

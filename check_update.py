@@ -16,8 +16,7 @@ from packaging.version import (
 )
 
 
-def check_package_on_pypi(package_name: str,
-                          current_version: str) -> str | None:
+def check_package_on_pypi(package_name: str, current_version: str) -> str | None:
     """Check the latest version of a package on PyPI."""
     try:
         # Add delay to be nice to PyPI
@@ -64,8 +63,7 @@ def compare_versions(current: str, latest: str) -> str:
 
 def is_venv() -> bool:
     """Check if running in a virtual environment."""
-    return hasattr(sys, "real_prefix") or (hasattr(sys, "base_prefix")
-                                           and sys.base_prefix != sys.prefix)
+    return hasattr(sys, "real_prefix") or (hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix)
 
 
 def main():
@@ -89,8 +87,8 @@ def main():
     up_to_date = 0
     # Check each package
     for i, (
-            package,
-            current_version,
+        package,
+        current_version,
     ) in enumerate(sorted(installed.items()), 1):
         # Show progress
         progress = f"[{i:3d}/{total_packages:3d}]"
@@ -103,23 +101,21 @@ def main():
         # Compare versions
         status = compare_versions(current_version, latest_version)
         if status == "update":
-            print(
-                f"{progress} {package:<30} : 📦 update available from {current_version} to {latest_version}"
+            print(f"{progress} {package:<30} : 📦 update available from {current_version} to {latest_version}")
+            updates_found.append(
+                (
+                    package,
+                    current_version,
+                    latest_version,
+                )
             )
-            updates_found.append((
-                package,
-                current_version,
-                latest_version,
-            ))
         elif status == "newer":
             print(
                 f"{progress} {package:<30} : ⚠️  current version ({current_version}) is newer than PyPI ({latest_version})"
             )
             errors.append(package)
         else:
-            print(
-                f"{progress} {package:<30} : ✅ already latest version ({current_version})"
-            )
+            print(f"{progress} {package:<30} : ✅ already latest version ({current_version})")
             up_to_date += 1
     # Print summary
     print("\n" + "=" * 60)
@@ -134,17 +130,15 @@ def main():
         print("PACKAGES TO UPDATE")
         print("=" * 60)
         for (
-                package,
-                current,
-                latest,
+            package,
+            current,
+            latest,
         ) in updates_found:
             print(f"  {package:<30} {current} -> {latest}")
         # Show upgrade command
         print("\n💡 To upgrade all packages, run:")
         packages_to_upgrade = [p[0] for p in updates_found]
-        print(
-            f"   python -m pip install --upgrade {' '.join(packages_to_upgrade)}"
-        )
+        print(f"   python -m pip install --upgrade {' '.join(packages_to_upgrade)}")
         print("\n💡 To upgrade a specific package, run:")
         print("   python -m pip install --upgrade <package-name>")
 

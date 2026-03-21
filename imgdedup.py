@@ -46,8 +46,7 @@ def compute_hashes(dataset_path, hashSize=8):
 def main():
     ap = argparse.ArgumentParser(
         prog="imgdedup",
-        description=
-        "Find and remove visually duplicate images using perceptual hashing.",
+        description="Find and remove visually duplicate images using perceptual hashing.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -56,21 +55,16 @@ Examples:
         """,
     )
     ap.add_argument("path", help="path to image directory to scan")
-    ap.add_argument("--dry-run",
-                    action="store_true",
-                    default=True,
-                    help="preview duplicates without deleting (default: True)")
-    ap.add_argument("--remove",
-                    action="store_true",
-                    help="actually delete duplicate images")
+    ap.add_argument(
+        "--dry-run", action="store_true", default=True, help="preview duplicates without deleting (default: True)"
+    )
+    ap.add_argument("--remove", action="store_true", help="actually delete duplicate images")
     args = vars(ap.parse_args())
 
     # basic validation
     dataset_path = args["path"]
     if not os.path.isdir(dataset_path):
-        raise SystemExit(
-            f"[ERROR] dataset path does not exist or is not a directory: {dataset_path}"
-        )
+        raise SystemExit(f"[ERROR] dataset path does not exist or is not a directory: {dataset_path}")
 
     # conflict check: if both --dry-run and --remove, prefer --remove
     is_remove_mode = args["remove"]
@@ -113,18 +107,14 @@ Examples:
                         montage = np.hstack([montage, image])
 
                 # show the montage for the hash
-                print(
-                    f"[INFO] found {len(hashedPaths) - 1} duplicates with hash: {h}"
-                )
+                print(f"[INFO] found {len(hashedPaths) - 1} duplicates with hash: {h}")
                 # cv2.imshow("Montage", montage)
                 # cv2.waitKey(0)
             else:
                 # remove all image paths with the same hash except
                 # for the first image in the list (since we want to keep
                 # one, and only one, of the duplicate images)
-                print(
-                    f"[INFO] removing {len(hashedPaths) - 1} duplicates with hash: {h}"
-                )
+                print(f"[INFO] removing {len(hashedPaths) - 1} duplicates with hash: {h}")
                 for p in hashedPaths[1:]:
                     os.remove(p)
 

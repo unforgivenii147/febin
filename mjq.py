@@ -2,7 +2,7 @@
 import contextlib
 import os
 import subprocess
-from multiprocessing import Pool, cpu_count
+from multiprocessing import get_context, cpu_count
 from pathlib import Path
 
 EXCLUDE_DIRS = {".git", "__pycache__"}
@@ -84,11 +84,11 @@ def main():
     total_after = 0
     with Pool(processes=workers) as pool:
         for (
-                filepath,
-                changed,
-                before,
-                after,
-                err,
+            filepath,
+            changed,
+            before,
+            after,
+            err,
         ) in pool.imap_unordered(minify_with_jq, files):
             if err:
                 print(f"[ERROR] {filepath} -> {err}")

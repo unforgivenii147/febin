@@ -48,9 +48,7 @@ def enhanced_shuffle(
     output_path = output_file if output_file else input_file
     with open(output_path, "w", encoding="utf-8") as f:
         f.writelines(shuffled_lines)
-    print(
-        f"Shuffled {original_count} lines using method '{method}' with {repeats} passes"
-    )
+    print(f"Shuffled {original_count} lines using method '{method}' with {repeats} passes")
     print(f"Output written to: {output_path}")
 
 
@@ -99,14 +97,16 @@ def test_randomness(input_file):
     original_order = lines.copy()
     for i in range(5):
         crypto_shuffle(lines)
-        changes = sum(1 for a, b in zip(
-            original_order,
-            lines,
-            strict=False,
-        ) if a != b)
-        print(
-            f"Shuffle {i + 1}: {changes} out of {len(lines)} positions changed"
+        changes = sum(
+            1
+            for a, b in zip(
+                original_order,
+                lines,
+                strict=False,
+            )
+            if a != b
         )
+        print(f"Shuffle {i + 1}: {changes} out of {len(lines)} positions changed")
 
 
 def main():

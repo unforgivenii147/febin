@@ -26,6 +26,5 @@ def to_lowercase(path):
 
 if __name__ == "__main__":
     current_dir = Path.cwd()
-    print(
-        f"Converting file and directory names to lowercase in: {current_dir}")
+    print(f"Converting file and directory names to lowercase in: {current_dir}")
     to_lowercase(current_dir)

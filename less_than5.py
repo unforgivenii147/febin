@@ -55,8 +55,8 @@ def move_recent_files(start_dir="."):
                     print(f"Moved: {filepath} -> {dest_path}")
                     moved_count += 1
             except (
-                    OSError,
-                    PermissionError,
+                OSError,
+                PermissionError,
             ) as e:
                 print(f"Error processing {filepath}: {e}")
     print(f"\nTotal files moved: {moved_count}")
@@ -67,9 +67,7 @@ def main():
     try:
         start_dir = os.getcwd()
         print(f"Starting from directory: {start_dir}")
-        print(
-            f"Moving files created in last 5 minutes to '{os.path.join(start_dir, '5min')}'"
-        )
+        print(f"Moving files created in last 5 minutes to '{os.path.join(start_dir, '5min')}'")
         print("-" * 60)
         move_recent_files(start_dir)
     except KeyboardInterrupt:

@@ -68,8 +68,7 @@ def format_single_file(file_path: Path, args) -> bool:
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(
-        description="Fast Python API-based formatter (Lazy Loading)")
+    p = argparse.ArgumentParser(description="Fast Python API-based formatter (Lazy Loading)")
     p.add_argument(
         "-b",
         "--black",
@@ -114,7 +113,8 @@ def main() -> None:
                         (name),
                         (args),
                     ),
-                ))
+                )
+            )
             if len(pending) >= MAX_IN_FLIGHT:
                 pending.popleft().get()
         while pending:

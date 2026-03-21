@@ -10,7 +10,6 @@ import markdown
 
 
 class GUIFramework:
-
     def __init__(self):
         self.session_id = None
         self.dialogs = {}
@@ -56,8 +55,7 @@ class GUIFramework:
     def show_file_picker(self, initial_path: str | None = None) -> str | None:
         if initial_path is None:
             initial_path = str(Path.home())
-        return input(f"Enter file path (starting from {initial_path}): "
-                     ).strip() or None
+        return input(f"Enter file path (starting from {initial_path}): ").strip() or None
 
     def show_toast(self, message: str):
         print(f"[Toast] {message}")
@@ -81,9 +79,10 @@ class GUIFramework:
 
 
 class DocumentFormat(ABC):
-
     @abstractmethod
-    def get_syntax_highlight_rules(self, ) -> dict[str, str]:
+    def get_syntax_highlight_rules(
+        self,
+    ) -> dict[str, str]:
         pass
 
     @abstractmethod
@@ -96,8 +95,9 @@ class DocumentFormat(ABC):
 
 
 class MarkdownFormat(DocumentFormat):
-
-    def get_syntax_highlight_rules(self, ) -> dict[str, str]:
+    def get_syntax_highlight_rules(
+        self,
+    ) -> dict[str, str]:
         return {
             "heading1": r"^# .*$",
             "heading2": r"^## .*$",
@@ -134,7 +134,9 @@ class MarkdownFormat(DocumentFormat):
 class TodoFormat(DocumentFormat):
     """todo.txt format support."""
 
-    def get_syntax_highlight_rules(self, ) -> dict[str, str]:
+    def get_syntax_highlight_rules(
+        self,
+    ) -> dict[str, str]:
         """Get todo.txt syntax highlighting rules."""
         return {
             "completed": r"^\(x\) .*$",
@@ -178,7 +180,6 @@ class TodoFormat(DocumentFormat):
 
 
 class Document:
-
     def __init__(
         self,
         file_path: str,
@@ -197,7 +198,9 @@ class Document:
         self.format_handler = self._get_format_handler()
         self._load()
 
-    def _get_format_handler(self, ) -> DocumentFormat:
+    def _get_format_handler(
+        self,
+    ) -> DocumentFormat:
         if self.format_type == "markdown":
             return MarkdownFormat()
         elif self.format_type == "todo":
@@ -208,8 +211,7 @@ class Document:
     def _load(self):
         if self.file_path.exists():
             self.content = self.file_path.read_text(encoding="utf-8")
-            self.last_modified = datetime.fromtimestamp(
-                self.file_path.stat().st_mtime)
+            self.last_modified = datetime.fromtimestamp(self.file_path.stat().st_mtime)
 
     def save(self) -> bool:
         try:
@@ -255,27 +257,18 @@ class Document:
 
     def get_info(self) -> dict[str, Any]:
         return {
-            "name":
-            self.file_path.name,
-            "path":
-            str(self.file_path),
-            "size_bytes":
-            (self.file_path.stat().st_size if self.file_path.exists() else 0),
-            "format":
-            self.format_type,
-            "words":
-            self.get_word_count(),
-            "characters":
-            self.get_char_count(),
-            "lines":
-            self.get_line_count(),
-            "last_modified":
-            (self.last_modified.isoformat() if self.last_modified else None),
+            "name": self.file_path.name,
+            "path": str(self.file_path),
+            "size_bytes": (self.file_path.stat().st_size if self.file_path.exists() else 0),
+            "format": self.format_type,
+            "words": self.get_word_count(),
+            "characters": self.get_char_count(),
+            "lines": self.get_line_count(),
+            "last_modified": (self.last_modified.isoformat() if self.last_modified else None),
         }
 
 
 class FileManager:
-
     def __init__(self, root_path: str | None = None):
         if root_path is None:
             root_path = str(Path.home() / "Documents" / "Markor")
@@ -332,20 +325,15 @@ class FileManager:
         documents = []
         pattern = "**/*" if recursive else "*"
         for file_path in search_path.glob(pattern):
-            if file_path.is_file() and file_path.suffix in [
-                    ".md", ".txt", ".json"
-            ]:
-                documents.append({
-                    "name":
-                    file_path.name,
-                    "path":
-                    str(file_path.relative_to(self.root_path)),
-                    "size":
-                    file_path.stat().st_size,
-                    "modified":
-                    datetime.fromtimestamp(
-                        file_path.stat().st_mtime).isoformat(),
-                })
+            if file_path.is_file() and file_path.suffix in [".md", ".txt", ".json"]:
+                documents.append(
+                    {
+                        "name": file_path.name,
+                        "path": str(file_path.relative_to(self.root_path)),
+                        "size": file_path.stat().st_size,
+                        "modified": datetime.fromtimestamp(file_path.stat().st_mtime).isoformat(),
+                    }
+                )
         return sorted(documents, key=lambda x: x["name"])
 
     def create_folder(
@@ -389,7 +377,6 @@ class FileManager:
 
 
 class TextEditor:
-
     def __init__(self):
         self.gui = GUIFramework()
         self.file_manager = FileManager()
@@ -450,10 +437,8 @@ class TextEditor:
             "text",
             "json",
         ]
-        format_type = formats[format_choice] if 0 <= format_choice < len(
-            formats) else "markdown"
-        self.current_document = self.file_manager.create_document(
-            name, format_type=format_type)
+        format_type = formats[format_choice] if 0 <= format_choice < len(formats) else "markdown"
+        self.current_document = self.file_manager.create_document(name, format_type=format_type)
         self.gui.show_toast(f"Created: {name}")
 
     def open_document(self):
@@ -467,8 +452,7 @@ class TextEditor:
         doc_names = [doc["name"] for doc in docs]
         choice = self.gui.show_menu("Open Document", doc_names)
         if 0 <= choice < len(docs):
-            self.current_document = self.file_manager.open_document(
-                docs[choice]["path"])
+            self.current_document = self.file_manager.open_document(docs[choice]["path"])
             if self.current_document:
                 self.gui.show_toast(f"Opened: {docs[choice]['name']}")
 
@@ -483,8 +467,7 @@ class TextEditor:
         doc_names = [doc["name"] for doc in recent]
         choice = self.gui.show_menu("Recent Documents", doc_names)
         if 0 <= choice < len(recent):
-            self.current_document = self.file_manager.open_document(
-                recent[choice]["path"])
+            self.current_document = self.file_manager.open_document(recent[choice]["path"])
             if self.current_document:
                 self.gui.show_toast(f"Opened: {recent[choice]['name']}")
 
@@ -492,11 +475,14 @@ class TextEditor:
         query = self.gui.show_text_input("Search", "Enter search query")
         if not query:
             return
-        search_content = (self.gui.show_dialog(
-            "Search Scope",
-            "Search in filenames only or file content?",
-            ["Filenames Only", "Content Too"],
-        ) == 1)
+        search_content = (
+            self.gui.show_dialog(
+                "Search Scope",
+                "Search in filenames only or file content?",
+                ["Filenames Only", "Content Too"],
+            )
+            == 1
+        )
         results = self.file_manager.search_documents(
             query,
             search_content=search_content,
@@ -510,8 +496,7 @@ class TextEditor:
         result_names = [r["name"] for r in results]
         choice = self.gui.show_menu("Search Results", result_names)
         if 0 <= choice < len(results):
-            self.current_document = self.file_manager.open_document(
-                results[choice]["path"])
+            self.current_document = self.file_manager.open_document(results[choice]["path"])
 
     def manage_folders(self):
         menu_items = [
@@ -572,12 +557,9 @@ class TextEditor:
     def edit_document(self):
         print(f"\n{'=' * 50}")
         print(f"Editing: {self.current_document.file_path.name}")
-        print(
-            f"Current content ({self.current_document.get_line_count()} lines):"
-        )
+        print(f"Current content ({self.current_document.get_line_count()} lines):")
         print(f"{'=' * 50}")
-        print(self.current_document.content[:500] +
-              ("..." if len(self.current_document.content) > 500 else ""))
+        print(self.current_document.content[:500] + ("..." if len(self.current_document.content) > 500 else ""))
         print(f"{'=' * 50}")
         edit_choice = self.gui.show_menu(
             "Edit Options",
@@ -678,8 +660,7 @@ class TextEditor:
         if replace_choice == 0:
             replace_text = self.gui.show_text_input("Replace With", "")
             if replace_text is not None:
-                replaced = self.current_document.replace_text(
-                    find_text, replace_text)
+                replaced = self.current_document.replace_text(find_text, replace_text)
                 self.is_modified = True
                 self.gui.show_snackbar(f"Replaced {replaced} occurrence(s)")
 

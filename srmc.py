@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
 from typing import Int, Str
 
@@ -12,22 +12,25 @@ def _get_comments_symbol(text: Str, symbol: Str) -> list[Str]:
     i: Int = 0
     indexes: list = []
     for i in range(len(text)):
-        if text[i] == symbol and len(
-                text) > i + 2 and text[i] == text[i + 1] == text[i + 2]:
+        if text[i] == symbol and len(text) > i + 2 and text[i] == text[i + 1] == text[i + 2]:
             if len(indexes) == 0:
                 indexes.append(i)
             elif len(indexes) == 1:
                 indexes.append(i + 2)
-                comments.append(text[indexes[0]:indexes[1] + 1])
+                comments.append(text[indexes[0] : indexes[1] + 1])
                 indexes = []
     return comments
 
 
-def _get_comments_simplequot(text: Str, ) -> list[str]:
+def _get_comments_simplequot(
+    text: Str,
+) -> list[str]:
     return _get_comments_symbol(text=text, symbol="'")
 
 
-def _get_comments_doublequot(text: str, ) -> list[str]:
+def _get_comments_doublequot(
+    text: str,
+) -> list[str]:
     return _get_comments_symbol(text=text, symbol='"')
 
 
@@ -53,12 +56,11 @@ def main():
     root_dir = Path.cwd()
     before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(root_dir,
-                                                           extensions=[".py"])
-    with Pool(8) as pool:
+    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".py"])
+    with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f, )))
+            pending.append(pool.apply_async(process_file, (f,)))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:

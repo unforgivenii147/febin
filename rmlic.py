@@ -13,9 +13,9 @@ NUM_WORKERS = 8
 def load_patterns(lic_path: Path) -> list[str]:
     try:
         with open(
-                lic_path,
-                encoding="utf-8",
-                errors="ignore",
+            lic_path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             content = f.read()
         pattern_separator = r"\n(?:\s*\n){" + str(MIN_BLANK_LINES) + r",}"
@@ -38,10 +38,7 @@ def remove_patterns_from_content(content: str, patterns: list[str]) -> str:
     cleaned = content
     for pattern in patterns:
         regex_pattern = escape_for_regex(pattern)
-        cleaned = re.sub(regex_pattern,
-                         "",
-                         cleaned,
-                         flags=re.IGNORECASE | re.MULTILINE)
+        cleaned = re.sub(regex_pattern, "", cleaned, flags=re.IGNORECASE | re.MULTILINE)
 
     return cleaned
 

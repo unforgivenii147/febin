@@ -30,12 +30,14 @@ def get_image_features_cv2(image_path, size=(64, 64)):
             print(f"Histogram calculation error for {image_path}: {e}")
             return None
         img_flat = img_resized.flatten()
-        features = np.concatenate([
-            hist_h.flatten(),
-            hist_s.flatten(),
-            hist_v.flatten(),
-            img_flat,
-        ])
+        features = np.concatenate(
+            [
+                hist_h.flatten(),
+                hist_s.flatten(),
+                hist_v.flatten(),
+                img_flat,
+            ]
+        )
         norm = np.linalg.norm(features)
         if norm > 0:
             features = features / norm
@@ -140,9 +142,7 @@ def organize_photos(
         if feat is not None:
             features.append(feat)
             valid_paths.append(path)
-    print(
-        f"\nSuccessfully processed {len(features)} out of {len(image_paths)} images"
-    )
+    print(f"\nSuccessfully processed {len(features)} out of {len(image_paths)} images")
     if len(features) == 0:
         print("No valid images to process!")
         return
@@ -187,8 +187,7 @@ def organize_photos(
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Organize photos by similarity")
+    parser = argparse.ArgumentParser(description="Organize photos by similarity")
     parser.add_argument(
         "-d",
         "--directory",

@@ -11,7 +11,9 @@ from pathlib import Path
 EXT_SUFFIXES = (".so", ".pyd", ".dll")
 
 
-def read_entry_points(root: Path, ) -> dict[str, list[str]]:
+def read_entry_points(
+    root: Path,
+) -> dict[str, list[str]]:
     dist_info = next(root.glob("*.dist-info"), None)
     if not dist_info:
         return {}
@@ -45,8 +47,7 @@ def load_root(input_path: Path) -> Path:
         tmp = Path(tempfile.mkdtemp())
         extract_wheel(input_path, tmp)
         return tmp
-    raise SystemExit(
-        "Input must be a .whl file or an unzipped wheel directory")
+    raise SystemExit("Input must be a .whl file or an unzipped wheel directory")
 
 
 def read_metadata(root: Path) -> dict:
@@ -78,16 +79,18 @@ def generate_setup_py(
 ) -> str:
     ext_block = (
         "from setuptools import Extension\n\n"
-        "ext_modules = [\n" +
-        "\n".join(f'    Extension("{m}", sources=["{m.replace(".", "/")}.*"]),'
-                  for m in extensions) +
-        "\n]\n" if extensions else "ext_modules = []\n")
+        "ext_modules = [\n"
+        + "\n".join(f'    Extension("{m}", sources=["{m.replace(".", "/")}.*"]),' for m in extensions)
+        + "\n]\n"
+        if extensions
+        else "ext_modules = []\n"
+    )
     ep_block = ""
     if entry_points:
         formatted = "{\n"
         for (
-                section,
-                values,
+            section,
+            values,
         ) in entry_points.items():
             formatted += f'        "{section}": [\n'
             for v in values:
@@ -119,8 +122,7 @@ build-backend = "setuptools.build_meta"
 
 def main() -> None:
     if len(sys.argv) != 2:
-        raise SystemExit(
-            "Usage: python mk_setuppy.py <wheel.whl | unzipped-dir>")
+        raise SystemExit("Usage: python mk_setuppy.py <wheel.whl | unzipped-dir>")
     input_path = Path(sys.argv[1]).resolve()
     root = load_root(input_path)
     meta = read_metadata(root)
@@ -129,12 +131,10 @@ def main() -> None:
     out_dir = Path("output") / meta["name"]
     out_dir.mkdir(parents=True, exist_ok=True)
     shutil.copytree(root, out_dir, dirs_exist_ok=True)
-    (out_dir / "setup.py").write_text(
-        generate_setup_py(meta, extensions, entry_points))
+    (out_dir / "setup.py").write_text(generate_setup_py(meta, extensions, entry_points))
     (out_dir / "pyproject.toml").write_text(generate_pyproject_toml())
     print(f"✔ setup.py generated for {meta['name']}")
-    print("✔ binary extensions detected"
-          if extensions else "✔ pure Python package")
+    print("✔ binary extensions detected" if extensions else "✔ pure Python package")
 
 
 if __name__ == "__main__":

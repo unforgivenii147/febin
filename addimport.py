@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
 from sys import exit
 from time import perf_counter
@@ -40,7 +40,7 @@ def main():
         path = Path(pth)
         if path.is_file() and path.suffix == ".py":
             files.append(path)
-    with Pool(8) as pool:
+    with get_context("spawn").Pool(8) as pool:
         pool.imap_unordered(process_file, files)
     print(f"{perf_counter() - start} sec")
 

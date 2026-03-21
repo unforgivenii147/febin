@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
 from sys import exit
 
@@ -27,8 +27,8 @@ def main():
     for pth in walk_files(root_dir):
         path = Path(pth)
         if path.is_file() and path.suffix in {
-                ".c",
-                ".cpp",
+            ".c",
+            ".cpp",
         }:
             files.append(path)
     pool = Pool(8)

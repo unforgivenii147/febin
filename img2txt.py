@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
 
 from dh import get_files
@@ -31,8 +31,7 @@ def process_file(path):
 def main() -> None:
     root_dir = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(
-        root_dir, extensions=[".jpg", ".png"])
+    files = [Path(p) for p in args] if args else get_files(root_dir, extensions=[".jpg", ".png"])
 
     if len(files) == 1:
         process_file(files[0])

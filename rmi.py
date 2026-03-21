@@ -32,9 +32,9 @@ def clean_text(text: str) -> str:
 
 def main():
     with open(
-            sys.argv[1],
-            encoding="utf-8",
-            errors="ignore",
+        sys.argv[1],
+        encoding="utf-8",
+        errors="ignore",
     ) as f:
         text = f.read()
     cleaned = clean_text(text)

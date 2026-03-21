@@ -23,15 +23,17 @@ def iter_files(root: Path) -> list[Path]:
     return files
 
 
-def ctime_if_recent(path: Path, ) -> tuple[float, Path] | None:
+def ctime_if_recent(
+    path: Path,
+) -> tuple[float, Path] | None:
     try:
         ctime = path.stat().st_ctime
         if NOW - ctime <= SECONDS_24H:
             return ctime, path
     except (
-            FileNotFoundError,
-            PermissionError,
-            OSError,
+        FileNotFoundError,
+        PermissionError,
+        OSError,
     ):
         pass
     return None
@@ -46,10 +48,10 @@ def main() -> None:
     with ThreadPoolExecutor() as executor:
         futures = [executor.submit(ctime_if_recent, p) for p in files]
         for fut in tqdm(
-                as_completed(futures),
-                total=len(futures),
-                desc="Scanning",
-                unit="file",
+            as_completed(futures),
+            total=len(futures),
+            desc="Scanning",
+            unit="file",
         ):
             result = fut.result()
             if result is not None:

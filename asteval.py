@@ -31,14 +31,13 @@ def process_file(fp) -> None:
 
 def main():
     args = sys.argv[1:]
-    files = [Path(f) for f in args
-             ] if args else [Path(p) for p in root_dir.glob("*.py")]
+    files = [Path(f) for f in args] if args else [Path(p) for p in root_dir.glob("*.py")]
     for f in files:
         process_file(f)
 
 
 """
-    with Pool(8) as pool:
+    with get_context('spawn').Pool(8) as pool:
         pending = deque()
         for f in files:
             pending.append(pool.apply_async(process_file, (f,)))

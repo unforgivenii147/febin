@@ -5,7 +5,7 @@ import inspect
 import os
 import sys
 from collections import deque
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
 from textwrap import dedent
 
@@ -15,8 +15,7 @@ from loguru import logger
 BASE_DIR = Path("doc")
 
 
-def format_markdown(module_name: str, module_doc: str, functions,
-                    classes) -> str:
+def format_markdown(module_name: str, module_doc: str, functions, classes) -> str:
     parts = [f"# Module `{module_name}`\n"]
 
     if module_doc:
@@ -155,14 +154,13 @@ def main():
         BASE_DIR.mkdir(exist_ok=True)
     root_dir = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(
-        root_dir, extensions=[".py", ".pyi", ".pyx", ".pxd"])
+    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".py", ".pyi", ".pyx", ".pxd"])
 
     logger.info(f"processing {len(files)} files")
-    with Pool(8) as pool:
+    with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file_task, (f, )))
+            pending.append(pool.apply_async(process_file_task, (f,)))
             if len(pending) > 16:
                 pending.popleft().get()
         while pending:
@@ -172,7 +170,7 @@ def main():
 """
 
     logger.info(f"processing {len(importable)} importable")
-    with Pool(8) as pool:
+    with get_context('spawn').Pool(8) as pool:
         pending=deque()
         for x in importables:
             pending.append(pool.apply_async(process_importable_task, (x,)))

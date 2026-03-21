@@ -40,8 +40,7 @@ def main():
     found_files = []
     for file in os.listdir(directory):
         filepath = os.path.join(directory, file)
-        if not os.path.isfile(filepath) or os.path.samefile(
-                filepath, filename):
+        if not os.path.isfile(filepath) or os.path.samefile(filepath, filename):
             continue
         file_time = get_file_creation_time(filepath)
         if file_time and file_time.date() == target_date:
@@ -50,8 +49,7 @@ def main():
     if not found_files:
         print("No other files found created on the same day.")
     else:
-        print(
-            f"Found {len(found_files)} other file(s) created on the same day:")
+        print(f"Found {len(found_files)} other file(s) created on the same day:")
         for file_time, file in found_files:
             print(f"{file_time.strftime('%H:%M:%S')} - {file}")
 

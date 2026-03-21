@@ -8,18 +8,17 @@ classes_file = output_dir / "classes.py"
 const_file = output_dir / "const.py"
 init_file = output_dir / "__init__.py"
 for file in [
-        func_file,
-        classes_file,
-        const_file,
-        init_file,
+    func_file,
+    classes_file,
+    const_file,
+    init_file,
 ]:
     if file.exists():
         file.unlink()
 
 
 def is_constant(node):
-    return isinstance(node, ast.Assign) and all(
-        isinstance(t, ast.Name) for t in node.targets)
+    return isinstance(node, ast.Assign) and all(isinstance(t, ast.Name) for t in node.targets)
 
 
 def write_to_file(file_path, content) -> None:

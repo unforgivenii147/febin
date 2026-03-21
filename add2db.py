@@ -9,8 +9,7 @@ def get_current_folder_name():
 
 def get_user_folder_name(default_name):
     while True:
-        user_input = input(
-            f"Enter folder name (default: {default_name}): ").strip()
+        user_input = input(f"Enter folder name (default: {default_name}): ").strip()
         if not user_input:
             return default_name
         return user_input
@@ -19,7 +18,7 @@ def get_user_folder_name(default_name):
 def folder_exists_in_db(cursor, folder_name):
     cursor.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-        (folder_name, ),
+        (folder_name,),
     )
     return cursor.fetchone() is not None
 
@@ -47,8 +46,8 @@ def read_file_contents(filepath):
                 with open(filepath, encoding=encoding) as f:
                     return f.read(1024 * 1024)
             except (
-                    UnicodeDecodeError,
-                    UnicodeError,
+                UnicodeDecodeError,
+                UnicodeError,
             ):
                 continue
         return "[Binary file content not stored]"
@@ -67,10 +66,12 @@ def get_files_in_current_dir():
             if os.path.isfile(item_path):
                 print(f"  Reading: {item}")
                 contents = read_file_contents(item_path)
-                files.append({
-                    "filename": item,
-                    "contents": contents,
-                })
+                files.append(
+                    {
+                        "filename": item,
+                        "contents": contents,
+                    }
+                )
     except PermissionError:
         print("Warning: Permission denied accessing some files")
     return files
@@ -111,9 +112,7 @@ def main():
         print(f"\nFound {len(files)} files:")
         insert_files(cursor, folder_name, files)
         conn.commit()
-        print(
-            f"\n✅ Successfully added {len(files)} files to table '{folder_name}'"
-        )
+        print(f"\n✅ Successfully added {len(files)} files to table '{folder_name}'")
 
 
 if __name__ == "__main__":

@@ -50,7 +50,9 @@ def update_setup_py(file_path: Path) -> bool:
         return False
 
 
-def update_pyproject_toml(file_path: Path, ) -> bool:
+def update_pyproject_toml(
+    file_path: Path,
+) -> bool:
     """Update pyproject.toml file with new author info and GitHub URL."""
     try:
         content = file_path.read_text(encoding="utf-8")

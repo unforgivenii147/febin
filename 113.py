@@ -18,11 +18,11 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
     try:
         # Use delete=False so we can manually move it
         with tempfile.NamedTemporaryFile(
-            mode="wb",
-            dir=temp_dir,
-            prefix=".tmp_",
-            suffix=".xz",
-            delete=False,
+                mode="wb",
+                dir=temp_dir,
+                prefix=".tmp_",
+                suffix=".xz",
+                delete=False,
         ) as temp_file:
             temp_path = Path(temp_file.name)
             temp_file.write(data)
@@ -41,11 +41,14 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
         logger.error(f"Atomic write failed for {final_path}: {e}")
         if temp_path and temp_path.exists():
             with contextlib.suppress(BaseException):
-                temp_path.unlink()  # Use unlink() to remove a file with pathlib
+                temp_path.unlink(
+                )  # Use unlink() to remove a file with pathlib
         return False
 
 
-def safe_delete(file_path: Path, max_retries: int = 3, delay: float = 0.5) -> bool:
+def safe_delete(file_path: Path,
+                max_retries: int = 3,
+                delay: float = 0.5) -> bool:
     """
     Safely deletes a file with retries.
     """
@@ -53,7 +56,8 @@ def safe_delete(file_path: Path, max_retries: int = 3, delay: float = 0.5) -> bo
         try:
             if file_path.exists():
                 time.sleep(delay)
-                file_path.unlink()  # Use unlink() to remove a file with pathlib
+                file_path.unlink(
+                )  # Use unlink() to remove a file with pathlib
                 logger.debug(f"Deleted: {file_path}")
                 return True
             return True  # File doesn't exist, so deletion is "successful"
@@ -61,10 +65,13 @@ def safe_delete(file_path: Path, max_retries: int = 3, delay: float = 0.5) -> bo
             if attempt < max_retries - 1:
                 time.sleep(delay * (attempt + 1))
                 continue
-            logger.error(f"Cannot delete {file_path} after {max_retries} attempts due to PermissionError")
+            logger.error(
+                f"Cannot delete {file_path} after {max_retries} attempts due to PermissionError"
+            )
             return False
         except FileNotFoundError:
-            logger.debug(f"File not found during deletion attempt: {file_path}")
+            logger.debug(
+                f"File not found during deletion attempt: {file_path}")
             return True  # Already deleted or never existed
         except Exception as e:
             logger.error(f"Error deleting {file_path}: {e}")
@@ -95,7 +102,8 @@ def compress_file(file_path: Path, delete_delay: float = 0.5) -> bool:
             # preset=9 is the highest compression, might consume more memory
             compressed_data = lzma.compress(data, preset=9)
         except MemoryError:
-            logger.warning(f"Memory error with preset 9, trying preset 6 for {file_path}")
+            logger.warning(
+                f"Memory error with preset 9, trying preset 6 for {file_path}")
             compressed_data = lzma.compress(data, preset=6)
 
         if not atomic_write(compressed_data, compressed_path):
@@ -115,10 +123,13 @@ def compress_file(file_path: Path, delete_delay: float = 0.5) -> bool:
         if safe_delete(file_path, delay=delete_delay):
             reduction = (1 - compressed_size / original_size) * 100
             logger.info(f"✓ Compressed: {file_path.name}")
-            logger.info(f"  {original_size} → {compressed_size} bytes ({reduction:.1f}% reduction)")
+            logger.info(
+                f"  {original_size} → {compressed_size} bytes ({reduction:.1f}% reduction)"
+            )
             return True
         else:
-            logger.warning(f"Compressed but couldn't delete original: {file_path}")
+            logger.warning(
+                f"Compressed but couldn't delete original: {file_path}")
             # Return True because compression was successful, even if deletion failed.
             # The user might want to handle the leftover original file.
             return True
@@ -173,7 +184,9 @@ def scan_files(directory: Path) -> list[Path]:
             # Exclude hidden files/directories (those starting with '.')
             if any(part.startswith(".") for part in file_path.parts):
                 continue
-            if should_compress(file_path):  # Assuming should_compress exists and takes a Path object
+            if should_compress(
+                    file_path
+            ):  # Assuming should_compress exists and takes a Path object
                 files_to_compress.append(file_path)
     return files_to_compress
 

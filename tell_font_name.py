@@ -73,7 +73,8 @@ def process_file(fn):
 def main() -> None:
     root_dir = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".ttf", ".woff", ".woff2"])
+    files = [Path(arg) for arg in args] if args else get_files(
+        root_dir, extensions=[".ttf", ".woff", ".woff2"])
     if not files:
         print("no files found")
         return

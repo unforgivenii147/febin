@@ -6,6 +6,7 @@ import regex as re
 
 
 class RegexCommentRemover:
+
     def __init__(self):
         self.pattern = re.compile(
             r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
@@ -31,9 +32,9 @@ class RegexCommentRemover:
 def process_file(file_path, remover):
     try:
         with open(
-            file_path,
-            encoding="utf-8",
-            errors="ignore",
+                file_path,
+                encoding="utf-8",
+                errors="ignore",
         ) as f:
             code = f.read()
     except Exception as e:
@@ -51,7 +52,8 @@ def process_file(file_path, remover):
         try:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(result)
-            print(f"[OK] {file_path.name}: ~{comments} comment markers removed")
+            print(
+                f"[OK] {file_path.name}: ~{comments} comment markers removed")
             return (
                 "changed",
                 file_path,
@@ -68,10 +70,7 @@ def process_file(file_path, remover):
 if __name__ == "__main__":
     dir_path = Path.cwd()
     files = [
-        p
-        for p in dir_path.rglob("*")
-        if p.suffix
-        in [
+        p for p in dir_path.rglob("*") if p.suffix in [
             ".c",
             ".cpp",
             ".cc",
@@ -81,8 +80,7 @@ if __name__ == "__main__":
             ".hxx",
             ".C",
             ".H",
-        ]
-        and p.is_file()
+        ] and p.is_file()
     ]
     if not files:
         print("No C/C++ files found")
@@ -109,7 +107,9 @@ if __name__ == "__main__":
         return f"{size:.2f} TB"
 
     print(f"\n{'=' * 60}")
-    print(f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}")
+    print(
+        f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}"
+    )
     print(f"Total comment markers removed: ~{total_comments}")
     if errors:
         print("\nErrors in:")

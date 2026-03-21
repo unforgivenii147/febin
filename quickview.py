@@ -16,9 +16,9 @@ def head_lines(path, n):
     lines = []
     try:
         with open(
-            path,
-            encoding="utf-8",
-            errors="replace",
+                path,
+                encoding="utf-8",
+                errors="replace",
         ) as f:
             for _ in range(n):
                 line = f.readline()

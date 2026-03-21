@@ -25,14 +25,16 @@ def main():
     if args:
         files = [Path(arg) for arg in args]
     else:
-        files = get_files(root_dir, recursive=True, extensions=[".png", ".jpg"])
+        files = get_files(root_dir,
+                          recursive=True,
+                          extensions=[".png", ".jpg"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
     with Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f,)))
+            pending.append(pool.apply_async(process_file, (f, )))
             if len(pending) > 16:
                 pending.popleft().get()
         while pending:

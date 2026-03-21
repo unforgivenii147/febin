@@ -20,9 +20,9 @@ def extract_text(image_path):
 def process_file(path):
     print(f"Processing {path.name}")
     text = extract_text(path)
-    if text and len(text)>1:
+    if text and len(text) > 1:
         txtfile = path.with_suffix(".txt")
-        txtfile.write_text(text,encoding="utf-8")
+        txtfile.write_text(text, encoding="utf-8")
         print(f"{txtfile} created.")
     else:
         print("No text found.")
@@ -31,7 +31,8 @@ def process_file(path):
 def main() -> None:
     root_dir = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(root_dir, extensions=[".jpg", ".png"])
+    files = [Path(p) for p in args] if args else get_files(
+        root_dir, extensions=[".jpg", ".png"])
 
     if len(files) == 1:
         process_file(files[0])

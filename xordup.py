@@ -10,6 +10,7 @@ CHUNK_SIZE = 524288
 
 
 class QuickXorHash:
+
     def __init__(self):
         self._hash = [0] * 20
         self._length = 0
@@ -101,7 +102,10 @@ def find_dups_optimized(root: Path, max_workers: int = None):
     # Use ThreadPoolExecutor for I/O-bound operations (reading files)
     with ThreadPoolExecutor(max_workers=8) as executor:
         # Submit all file hashing tasks
-        future_to_path = {executor.submit(calculate_xorhash, path): path for path in paths_to_hash}
+        future_to_path = {
+            executor.submit(calculate_xorhash, path): path
+            for path in paths_to_hash
+        }
 
         for future in as_completed(future_to_path):
             hash_result, path = future.result()

@@ -31,7 +31,8 @@ def main():
         path = Path(pth)
         if path.is_dir():
             continue
-        if any(path.name.lower() == junk for junk in junk_files) and path.exists():
+        if any(path.name.lower() == junk
+               for junk in junk_files) and path.exists():
             remove_it(path)
             print(path.name)
     after = get_size(root_dir)

@@ -15,15 +15,16 @@ STRTOFIND = [
 
 
 def clean_text(text: str) -> str:
-    return "\n".join(line for line in text.splitlines() if not any(s in line for s in STRTOFIND))
+    return "\n".join(line for line in text.splitlines()
+                     if not any(s in line for s in STRTOFIND))
 
 
 def clean_file(path: str) -> None:
     try:
         with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
+                path,
+                encoding="utf-8",
+                errors="ignore",
         ) as f:
             original = f.read()
     except Exception:
@@ -44,7 +45,7 @@ def main() -> None:
         sys.exit(0)
     pool = Pool(8)
     for f in files:
-        p.apply_async(clean_file, (f,))
+        p.apply_async(clean_file, (f, ))
     pool.close()
     pool.join()
 

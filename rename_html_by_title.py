@@ -8,6 +8,7 @@ import regex as re
 
 
 class TitleParser(HTMLParser):
+
     def __init__(self):
         super().__init__()
         self.in_title = False

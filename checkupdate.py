@@ -63,7 +63,8 @@ def extract_pkgver(text,pkgname,pkgver):
 """
 
 
-def check_package_on_pypi(package_name: str, current_version: str) -> str | None:
+def check_package_on_pypi(package_name: str,
+                          current_version: str) -> str | None:
     try:
         time.sleep(0.001)
         #        url = f"https://pypi.org/pypi/{package_name}/json"
@@ -91,23 +92,25 @@ def save_requirements(
 ):
     try:
         with open(filename, "w") as f:
-            f.write(f"# Requirements generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(
+                f"# Requirements generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+            )
             f.write("# Packages that have updates available\n\n")
             for (
-                package,
-                current,
-                latest,
+                    package,
+                    current,
+                    latest,
             ) in sorted(updates):
                 f.write(f"{package}=={latest}  # was {current}\n")
         return True
     except Exception as e:
-        print(f"{Fore.RED}Error saving requirements file: {e}{Style.RESET_ALL}")
+        print(
+            f"{Fore.RED}Error saving requirements file: {e}{Style.RESET_ALL}")
         return False
 
 
 def load_existing_requirements(
-    filename: str = "requirements.txt",
-) -> dict[str, str]:
+    filename: str = "requirements.txt", ) -> dict[str, str]:
     requirements = {}
     if os.path.exists(filename):
         try:
@@ -119,20 +122,22 @@ def load_existing_requirements(
                             package, version = line.split("==", 1)
                             if " #" in version:
                                 version = version.split(" #", 1)[0]
-                            requirements[package.strip().lower()] = version.strip()
+                            requirements[
+                                package.strip().lower()] = version.strip()
                         elif ">=" in line:
                             package, version = line.split(">=", 1)
                             if " #" in version:
                                 version = version.split(" #", 1)[0]
-                            requirements[package.strip().lower()] = version.strip()
+                            requirements[
+                                package.strip().lower()] = version.strip()
         except Exception as e:
-            print(f"{Fore.YELLOW}Warning: Could not read existing {filename}: {e}{Style.RESET_ALL}")
+            print(
+                f"{Fore.YELLOW}Warning: Could not read existing {filename}: {e}{Style.RESET_ALL}"
+            )
     return requirements
 
 
-def interactive_save_menu(
-    updates: list[tuple[str, str, str]],
-):
+def interactive_save_menu(updates: list[tuple[str, str, str]], ):
     if not updates:
         return
     print(f"\n{Fore.CYAN}{'=' * 60}{Style.RESET_ALL}")
@@ -140,25 +145,42 @@ def interactive_save_menu(
     print(f"{Fore.CYAN}{'=' * 60}{Style.RESET_ALL}")
     existing_req = load_existing_requirements()
     print("\nWhat would you like to do?")
-    print(f"  {Fore.GREEN}[1]{Style.RESET_ALL} Save all updatable packages to requirements.txt (overwrite)")
+    print(
+        f"  {Fore.GREEN}[1]{Style.RESET_ALL} Save all updatable packages to requirements.txt (overwrite)"
+    )
     print(f"  {Fore.GREEN}[2]{Style.RESET_ALL} Save to a different filename")
-    print(f"  {Fore.GREEN}[3]{Style.RESET_ALL} Show packages that would be saved (preview)")
+    print(
+        f"  {Fore.GREEN}[3]{Style.RESET_ALL} Show packages that would be saved (preview)"
+    )
     print(f"  {Fore.GREEN}[4]{Style.RESET_ALL} Skip saving")
     if existing_req:
-        print(f"  {Fore.GREEN}[5]{Style.RESET_ALL} Update existing requirements.txt (keep non-updatable packages)")
-        print(f"  {Fore.GREEN}[6]{Style.RESET_ALL} Show differences with existing requirements.txt")
-    choice = input(f"\n{Fore.CYAN}Enter your choice (1-{6 if existing_req else 4}): {Style.RESET_ALL}").strip()
+        print(
+            f"  {Fore.GREEN}[5]{Style.RESET_ALL} Update existing requirements.txt (keep non-updatable packages)"
+        )
+        print(
+            f"  {Fore.GREEN}[6]{Style.RESET_ALL} Show differences with existing requirements.txt"
+        )
+    choice = input(
+        f"\n{Fore.CYAN}Enter your choice (1-{6 if existing_req else 4}): {Style.RESET_ALL}"
+    ).strip()
     if choice == "1":
         if save_requirements(updates):
-            print(f"{Fore.GREEN}✅ Saved {len(updates)} packages to requirements.txt{Style.RESET_ALL}")
+            print(
+                f"{Fore.GREEN}✅ Saved {len(updates)} packages to requirements.txt{Style.RESET_ALL}"
+            )
         else:
-            print(f"{Fore.RED}❌ Failed to save requirements.txt{Style.RESET_ALL}")
+            print(
+                f"{Fore.RED}❌ Failed to save requirements.txt{Style.RESET_ALL}"
+            )
     elif choice == "2":
-        filename = input("Enter filename (e.g., updates-20240226.txt): ").strip()
+        filename = input(
+            "Enter filename (e.g., updates-20240226.txt): ").strip()
         if not filename:
             filename = f"updates-{datetime.now().strftime('%Y%m%d')}.txt"
         if save_requirements(updates, filename):
-            print(f"{Fore.GREEN}✅ Saved {len(updates)} packages to {filename}{Style.RESET_ALL}")
+            print(
+                f"{Fore.GREEN}✅ Saved {len(updates)} packages to {filename}{Style.RESET_ALL}"
+            )
         else:
             print(f"{Fore.RED}❌ Failed to save {filename}{Style.RESET_ALL}")
     elif choice == "3":
@@ -181,13 +203,21 @@ def interactive_save_menu(
                 line_stripped = line.strip()
                 if line_stripped and not line_stripped.startswith("#"):
                     for pkg in update_map:
-                        if pkg in line_stripped.lower() and ("==" in line_stripped or ">=" in line_stripped):
+                        if pkg in line_stripped.lower() and (
+                                "==" in line_stripped
+                                or ">=" in line_stripped):
                             if "==" in line_stripped:
-                                package_name = line_stripped.split("==")[0].strip()
-                                new_lines.append(f"{package_name}=={update_map[pkg]}  # updated from {line_stripped}\n")
+                                package_name = line_stripped.split(
+                                    "==")[0].strip()
+                                new_lines.append(
+                                    f"{package_name}=={update_map[pkg]}  # updated from {line_stripped}\n"
+                                )
                             elif ">=" in line_stripped:
-                                package_name = line_stripped.split(">=")[0].strip()
-                                new_lines.append(f"{package_name}>={update_map[pkg]}  # updated from {line_stripped}\n")
+                                package_name = line_stripped.split(
+                                    ">=")[0].strip()
+                                new_lines.append(
+                                    f"{package_name}>={update_map[pkg]}  # updated from {line_stripped}\n"
+                                )
                             updated_count += 1
                             break
                     else:
@@ -196,21 +226,30 @@ def interactive_save_menu(
                     new_lines.append(line)
             with open("requirements.txt", "w") as f:
                 f.writelines(new_lines)
-            print(f"{Fore.GREEN}✅ Updated {updated_count} packages in requirements.txt{Style.RESET_ALL}")
+            print(
+                f"{Fore.GREEN}✅ Updated {updated_count} packages in requirements.txt{Style.RESET_ALL}"
+            )
         except Exception as e:
-            print(f"{Fore.RED}Error updating requirements.txt: {e}{Style.RESET_ALL}")
+            print(
+                f"{Fore.RED}Error updating requirements.txt: {e}{Style.RESET_ALL}"
+            )
     elif choice == "6" and existing_req:
-        print(f"\n{Fore.CYAN}Differences with existing requirements.txt:{Style.RESET_ALL}")
+        print(
+            f"\n{Fore.CYAN}Differences with existing requirements.txt:{Style.RESET_ALL}"
+        )
         updates_map = {pkg: (curr, latest) for pkg, curr, latest in updates}
         for pkg, (
-            current,
-            latest,
+                current,
+                latest,
         ) in updates_map.items():
             if pkg in existing_req:
                 if existing_req[pkg] != latest:
-                    print(f"  {pkg:<30} {existing_req[pkg]} -> {latest} (update available)")
+                    print(
+                        f"  {pkg:<30} {existing_req[pkg]} -> {latest} (update available)"
+                    )
                 else:
-                    print(f"  {pkg:<30} {existing_req[pkg]} (already at latest)")
+                    print(
+                        f"  {pkg:<30} {existing_req[pkg]} (already at latest)")
             else:
                 print(f"  {pkg:<30} (new package) {current} -> {latest}")
         input(f"\n{Fore.CYAN}Press Enter to continue...{Style.RESET_ALL}")
@@ -220,7 +259,9 @@ def interactive_save_menu(
 
 
 def main():
-    print(f"{Fore.CYAN}📦 Checking for package updates on PyPI...{Style.RESET_ALL}")
+    print(
+        f"{Fore.CYAN}📦 Checking for package updates on PyPI...{Style.RESET_ALL}"
+    )
     print("(Results will appear as each package is checked)\n")
     installed = get_installed_packages()
     total_packages = len(installed)
@@ -228,39 +269,45 @@ def main():
     updates_found = []
     not_found = []
     for i, (
-        package,
-        current_version,
+            package,
+            current_version,
     ) in enumerate(sorted(installed.items()), 1):
         progress = f"[{i:3d}/{total_packages:3d}]"
         latest_version = check_package_on_pypi(package, current_version)
         if latest_version is None:
-            print(f"{progress} {package:<30} : {Fore.YELLOW}⚠️  not found on PyPI{Style.RESET_ALL}")
+            print(
+                f"{progress} {package:<30} : {Fore.YELLOW}⚠️  not found on PyPI{Style.RESET_ALL}"
+            )
             not_found.append(package)
             continue
         try:
             if Version(current_version) < Version(latest_version):
-                print(f"{progress} {package:<30} : {Fore.RED}📦 {current_version} -> {latest_version}{Style.RESET_ALL}")
-                updates_found.append(
-                    (
-                        package,
-                        current_version,
-                        latest_version,
-                    )
+                print(
+                    f"{progress} {package:<30} : {Fore.RED}📦 {current_version} -> {latest_version}{Style.RESET_ALL}"
                 )
+                updates_found.append((
+                    package,
+                    current_version,
+                    latest_version,
+                ))
             else:
-                print(f"{progress} {package:<30} : {Fore.GREEN}✅ {current_version}{Style.RESET_ALL}")
+                print(
+                    f"{progress} {package:<30} : {Fore.GREEN}✅ {current_version}{Style.RESET_ALL}"
+                )
         except InvalidVersion:
             if current_version < latest_version:
-                print(f"{progress} {package:<30} : {Fore.RED}📦 {current_version} -> {latest_version}{Style.RESET_ALL}")
-                updates_found.append(
-                    (
-                        package,
-                        current_version,
-                        latest_version,
-                    )
+                print(
+                    f"{progress} {package:<30} : {Fore.RED}📦 {current_version} -> {latest_version}{Style.RESET_ALL}"
                 )
+                updates_found.append((
+                    package,
+                    current_version,
+                    latest_version,
+                ))
             else:
-                print(f"{progress} {package:<30} : {Fore.GREEN}✅ {current_version}{Style.RESET_ALL}")
+                print(
+                    f"{progress} {package:<30} : {Fore.GREEN}✅ {current_version}{Style.RESET_ALL}"
+                )
     print("\n" + "=" * 60)
     print("SUMMARY")
     print("=" * 60)
@@ -269,19 +316,24 @@ def main():
     print(f"Total packages checked: {total_packages}")
     print(f"{Fore.GREEN}✅ Up to date: {total_up_to_date}{Style.RESET_ALL}")
     print(f"{Fore.RED}📦 Updates available: {total_updates}{Style.RESET_ALL}")
-    print(f"{Fore.YELLOW}⚠️  Not found on PyPI: {len(not_found)}{Style.RESET_ALL}")
+    print(
+        f"{Fore.YELLOW}⚠️  Not found on PyPI: {len(not_found)}{Style.RESET_ALL}"
+    )
     if updates_found:
         print(f"\n{Fore.RED}Packages to upgrade:{Style.RESET_ALL}")
         for package, current, latest in sorted(updates_found):
             print(f"  {package:<30} {current} -> {latest}")
         print(f"\n{Fore.CYAN}💡 To upgrade all packages:{Style.RESET_ALL}")
         packages_to_upgrade = [p[0] for p in updates_found]
-        print(f"   python -m pip install --upgrade {' '.join(packages_to_upgrade)}")
+        print(
+            f"   python -m pip install --upgrade {' '.join(packages_to_upgrade)}"
+        )
         interactive_save_menu(updates_found)
     else:
         print(f"\n{Fore.GREEN}✅ All packages are up to date!{Style.RESET_ALL}")
     if not_found:
-        print(f"\n{Fore.YELLOW}⚠️  Packages not found on PyPI:{Style.RESET_ALL}")
+        print(
+            f"\n{Fore.YELLOW}⚠️  Packages not found on PyPI:{Style.RESET_ALL}")
         for package in sorted(not_found):
             print(f"  {package}")
 

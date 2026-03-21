@@ -7,7 +7,6 @@ from ascii_magic import AsciiArt
 from dh import get_files
 
 
-
 def process_file(image_path):
     art = AsciiArt.from_image(image_path)
     art.to_terminal(
@@ -20,12 +19,13 @@ def process_file(image_path):
 def main():
     root_dir = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir,extensions=[".jpg",".png",".bmp",".webp"])
+    files = [Path(arg) for arg in args] if args else get_files(
+        root_dir, extensions=[".jpg", ".png", ".bmp", ".webp"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-    pool=Pool(8)
-    for _ in pool.imap_unordered(process_file,files):
+    pool = Pool(8)
+    for _ in pool.imap_unordered(process_file, files):
         pass
     pool.close()
     pool.join()

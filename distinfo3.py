@@ -12,8 +12,8 @@ def process_dir(dr):
     if "dist-info" in str(dr.name):
         for k in os.listdir(dr):
             if k in {
-                "top_level.txt",
-                "entry_points.txt",
+                    "top_level.txt",
+                    "entry_points.txt",
             }:
                 cprint(f"{dr} removed", "cyan")
                 shutil.rmtree(dr)

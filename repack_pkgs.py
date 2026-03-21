@@ -52,7 +52,8 @@ class PackageDetector:
         if self.verbose:
             print(f"[DETECT] {message}")
 
-    def detect_package_type(self, package_dir: Path) -> tuple[bool, bool, bool]:
+    def detect_package_type(self,
+                            package_dir: Path) -> tuple[bool, bool, bool]:
         """
         Detect if package is pure Python, has C extensions, or has binaries.
 
@@ -74,7 +75,9 @@ class PackageDetector:
         if so_files or pyd_files or dll_files:
             has_c_extension = True
             is_pure_python = False
-            self.log(f"Found C extensions: {len(so_files)} .so, {len(pyd_files)} .pyd, {len(dll_files)} .dll")
+            self.log(
+                f"Found C extensions: {len(so_files)} .so, {len(pyd_files)} .pyd, {len(dll_files)} .dll"
+            )
 
         # Check for binary files
         binary_extensions = {
@@ -108,7 +111,8 @@ class PackageDetector:
         flags = sys.abiflags if hasattr(sys, "abiflags") else ""
 
         # CPython ABI tag
-        if hasattr(sys, "implementation") and sys.implementation.name == "cpython":
+        if hasattr(sys,
+                   "implementation") and sys.implementation.name == "cpython":
             return f"cp{major}{minor}{flags}"
 
         return f"cp{major}{minor}"
@@ -150,8 +154,8 @@ class PackageDetector:
         if metadata_file.exists():
             try:
                 with open(
-                    metadata_file,
-                    encoding="utf-8",
+                        metadata_file,
+                        encoding="utf-8",
                 ) as f:
                     for line in f:
                         if ":" in line:
@@ -185,10 +189,12 @@ class PackageDetector:
 
         try:
             # Detect package type
-            is_pure, has_c_ext, has_binary = self.detect_package_type(package_dir)
+            is_pure, has_c_ext, has_binary = self.detect_package_type(
+                package_dir)
 
             # Find dist-info directory
-            dist_info_dirs = list(site_packages.glob(f"{package_name}*.dist-info"))
+            dist_info_dirs = list(
+                site_packages.glob(f"{package_name}*.dist-info"))
 
             if not dist_info_dirs:
                 self.log(f"No dist-info found for {package_name}")
@@ -205,7 +211,8 @@ class PackageDetector:
             platform_tag = "any" if is_pure else self.get_platform_tag()
 
             # Create wheel filename
-            normalized_name = package_name.lower().replace("-", "_").replace(".", "_")
+            normalized_name = package_name.lower().replace("-", "_").replace(
+                ".", "_")
             wheel_filename = f"{normalized_name}-{version}-{py_version}-{abi_tag}-{platform_tag}.whl"
 
             return PackageInfo(
@@ -296,10 +303,12 @@ class WheelBuilder:
                 hasher = hashlib.sha256()
                 hasher.update(content)
                 digest = hasher.digest()
-                hash_str = base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
+                hash_str = base64.urlsafe_b64encode(digest).decode(
+                    "ascii").rstrip("=")
 
                 # Add record
-                records.append(f"{info.filename},sha256={hash_str},{len(content)}")
+                records.append(
+                    f"{info.filename},sha256={hash_str},{len(content)}")
 
         # Add RECORD itself (with empty hash)
         records.append(f"{dist_info_dir}/RECORD,,")
@@ -346,7 +355,8 @@ class WheelBuilder:
                     )
 
                 # Create dist-info directory
-                normalized_name = package_info.name.lower().replace("-", "_").replace(".", "_")
+                normalized_name = package_info.name.lower().replace(
+                    "-", "_").replace(".", "_")
                 dist_info_name = f"{normalized_name}-{package_info.version}.dist-info"
                 dist_info_dir = temp_path / dist_info_name
                 dist_info_dir.mkdir(parents=True, exist_ok=True)
@@ -380,14 +390,14 @@ Platform: UNKNOWN
 
                 # Create wheel file
                 with zipfile.ZipFile(
-                    wheel_path,
-                    "w",
-                    zipfile.ZIP_DEFLATED,
+                        wheel_path,
+                        "w",
+                        zipfile.ZIP_DEFLATED,
                 ) as zf:
                     for (
-                        root,
-                        _dirs,
-                        files,
+                            root,
+                            _dirs,
+                            files,
                     ) in os.walk(temp_path):
                         for file in files:
                             file_path = Path(root) / file
@@ -402,12 +412,12 @@ Platform: UNKNOWN
                 shutil.move(wheel_path, temp_wheel)
 
                 with (
-                    zipfile.ZipFile(temp_wheel, "r") as zf_read,
-                    zipfile.ZipFile(
-                        wheel_path,
-                        "w",
-                        zipfile.ZIP_DEFLATED,
-                    ) as zf_write,
+                        zipfile.ZipFile(temp_wheel, "r") as zf_read,
+                        zipfile.ZipFile(
+                            wheel_path,
+                            "w",
+                            zipfile.ZIP_DEFLATED,
+                        ) as zf_write,
                 ):
                     for item in zf_read.infolist():
                         zf_write.writestr(
@@ -425,7 +435,8 @@ Platform: UNKNOWN
                 temp_wheel.unlink()
 
             size_mb = wheel_path.stat().st_size / (1024 * 1024)
-            self.log(f"Wheel created successfully: {wheel_path} ({size_mb:.2f} MB)")
+            self.log(
+                f"Wheel created successfully: {wheel_path} ({size_mb:.2f} MB)")
 
             return (
                 True,
@@ -468,7 +479,8 @@ class VenvRepacker:
         self.site_packages = Path(site_packages_dir).resolve()
 
         if not self.site_packages.exists():
-            raise ValueError(f"Site-packages directory not found: {site_packages_dir}")
+            raise ValueError(
+                f"Site-packages directory not found: {site_packages_dir}")
 
         # Setup output directory
         if output_dir is None:
@@ -494,8 +506,8 @@ class VenvRepacker:
     def log(self, message: str, level: str = "INFO"):
         """Log message."""
         if self.verbose or level in [
-            "ERROR",
-            "WARNING",
+                "ERROR",
+                "WARNING",
         ]:
             timestamp = datetime.now().strftime("%H:%M:%S")
             print(f"[{timestamp}] [{level}] {message}")
@@ -513,21 +525,20 @@ class VenvRepacker:
         for item in self.site_packages.iterdir():
             if item.is_dir() and not item.name.startswith("."):
                 # Skip dist-info, egg-info, etc.
-                if not item.name.endswith(
-                    (
+                if not item.name.endswith((
                         ".dist-info",
                         ".egg-info",
                         ".egg",
                         "__pycache__",
-                    )
-                ):
+                )):
                     packages.add(item.name)
 
         self.log(f"Found {len(packages)} packages")
 
         return sorted(packages)
 
-    def repack_package(self, package_name: str) -> tuple[bool, str, PackageInfo | None]:
+    def repack_package(
+            self, package_name: str) -> tuple[bool, str, PackageInfo | None]:
         """
         Repack a single package.
 
@@ -552,7 +563,9 @@ class VenvRepacker:
                 )
 
             self.log(f"Repacking: {package_name} v{package_info.version}")
-            self.log(f"  Type: {'Pure Python' if package_info.is_pure_python else 'With C extensions'}")
+            self.log(
+                f"  Type: {'Pure Python' if package_info.is_pure_python else 'With C extensions'}"
+            )
             self.log(f"  Wheel: {package_info.wheel_filename}")
 
             if self.dry_run:
@@ -583,9 +596,11 @@ class VenvRepacker:
         Returns:
             Dictionary with statistics
         """
-        print("\n╔════════════════════════════════════════════════════════════╗")
+        print(
+            "\n╔════════════════════════════════════════════════════════════╗")
         print("║         Virtual Environment Package Repacker               ║")
-        print("╚════════════════════════════════════════════════════════════╝\n")
+        print(
+            "╚════════════════════════════════════════════════════════════╝\n")
 
         print(f"Site-packages: {self.site_packages}")
         print(f"Output directory: {self.output_dir}")
@@ -625,28 +640,24 @@ class VenvRepacker:
 
                 print(f"✓ {message}")
 
-                self.results.append(
-                    {
-                        "package": package_name,
-                        "version": package_info.version,
-                        "is_pure_python": package_info.is_pure_python,
-                        "wheel_filename": package_info.wheel_filename,
-                        "success": True,
-                    }
-                )
+                self.results.append({
+                    "package": package_name,
+                    "version": package_info.version,
+                    "is_pure_python": package_info.is_pure_python,
+                    "wheel_filename": package_info.wheel_filename,
+                    "success": True,
+                })
 
             else:
                 self.stats["failed_packages"] += 1
                 self.stats["total_packages"] += 1
                 print(f"✗ {message}")
 
-                self.results.append(
-                    {
-                        "package": package_name,
-                        "success": False,
-                        "error": message,
-                    }
-                )
+                self.results.append({
+                    "package": package_name,
+                    "success": False,
+                    "error": message,
+                })
 
         return self.stats
 
@@ -660,7 +671,9 @@ class VenvRepacker:
         print(f"Failed: {self.stats['failed_packages']}")
         print()
         print(f"Pure Python packages: {self.stats['pure_python_packages']}")
-        print(f"Packages with C extensions: {self.stats['packages_with_c_extensions']}")
+        print(
+            f"Packages with C extensions: {self.stats['packages_with_c_extensions']}"
+        )
         print("=" * 60)
 
     def save_report(

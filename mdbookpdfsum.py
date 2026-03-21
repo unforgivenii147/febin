@@ -9,6 +9,7 @@ import pypdf
 
 
 class Section:
+
     def __init__(
         self,
         title: str,

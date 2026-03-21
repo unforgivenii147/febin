@@ -30,7 +30,8 @@ def main():
     root_dir = Path.cwd()
     for pth in walk_files(root_dir):
         path = Path(pth)
-        if path.is_file() and (path.name == "METADATA" or path.suffix in {".metadata", ".md"}):
+        if path.is_file() and (path.name == "METADATA"
+                               or path.suffix in {".metadata", ".md"}):
             process_file(path)
 
 

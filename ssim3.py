@@ -21,6 +21,7 @@ EXCLUDE_DIRS = {
 
 
 class FileSimilarityDetector:
+
     def __init__(self, root_dir="."):
         self.root_dir = Path(root_dir)
         self.file_hashes = {}
@@ -50,9 +51,9 @@ class FileSimilarityDetector:
         with ThreadPoolExecutor() as pool:
             futures = [pool.submit(self.hash_file, f) for f in files]
             for fut in tqdm(
-                as_completed(futures),
-                total=len(futures),
-                desc="Hashing",
+                    as_completed(futures),
+                    total=len(futures),
+                    desc="Hashing",
             ):
                 path, xh, sh = fut.result()
                 if not xh or not sh:
@@ -62,34 +63,32 @@ class FileSimilarityDetector:
                     "ssdeep": sh,
                 }
                 self.duplicates[xh].append(path)
-        self.duplicates = {h: paths for h, paths in self.duplicates.items() if len(paths) > 1}
+        self.duplicates = {
+            h: paths
+            for h, paths in self.duplicates.items() if len(paths) > 1
+        }
 
     def find_similarity_groups(self, threshold: int):
         excluded = {p for group in self.duplicates.values() for p in group}
         candidates = [p for p in self.file_hashes if p not in excluded]
         visited = set()
         groups = []
-        for i, p1 in enumerate(
-            tqdm(
+        for i, p1 in enumerate(tqdm(
                 candidates,
                 desc="Finding Similarities",
-            )
-        ):
+        )):
             if p1 in visited:
                 continue
             group = [p1]
             visited.add(p1)
             h1 = self.file_hashes[p1]["ssdeep"]
-            for p2 in candidates[i + 1 :]:
+            for p2 in candidates[i + 1:]:
                 if p2 in visited:
                     continue
-                if (
-                    ssdeep.compare(
+                if (ssdeep.compare(
                         h1,
                         self.file_hashes[p2]["ssdeep"],
-                    )
-                    >= threshold
-                ):
+                ) >= threshold):
                     group.append(p2)
                     visited.add(p2)
             if len(group) > 1:
@@ -138,7 +137,8 @@ class FileSimilarityDetector:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Detect duplicate and similar files")
+    parser = argparse.ArgumentParser(
+        description="Detect duplicate and similar files")
     parser.add_argument(
         "threshold",
         type=int,

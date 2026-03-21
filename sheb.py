@@ -20,7 +20,8 @@ def is_python_file(filepath):
             for line in f:
                 line = line.strip()
                 if line and not line.startswith("#"):
-                    return line.startswith(("import ", "from ", "class ", "def "))
+                    return line.startswith(
+                        ("import ", "from ", "class ", "def "))
             return False
     except (OSError, UnicodeDecodeError):
         return False
@@ -36,17 +37,12 @@ def process_file(filepath):
             if len(lines) > 1 and lines[1].strip() != "":
                 lines.insert(1, "\n")
         else:
-            has_python_code = any(
-                line.strip().startswith(
-                    (
-                        "import ",
-                        "from ",
-                        "def ",
-                        "class ",
-                    )
-                )
-                for line in lines
-            )
+            has_python_code = any(line.strip().startswith((
+                "import ",
+                "from ",
+                "def ",
+                "class ",
+            )) for line in lines)
             if has_python_code:
                 lines.insert(0, TARGET_SHEBANG + "\n")
                 lines.insert(1, "\n")

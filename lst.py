@@ -9,10 +9,11 @@ if __name__ == "__main__":
     root_dir = Path.cwd()
 
     for path in sorted(
-        root_dir.glob("*"),
-        key=lambda e: e.stat().st_mtime,
+            root_dir.glob("*"),
+            key=lambda e: e.stat().st_mtime,
     ):
-        mtime = datetime.datetime.fromtimestamp(path.stat().st_mtime).strftime("%H:%M")
+        mtime = datetime.datetime.fromtimestamp(
+            path.stat().st_mtime).strftime("%H:%M")
         if path.is_file() or path.is_dir():
             sz = str(format_size(get_size(path)))
             if len(sz) == 7:

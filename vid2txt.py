@@ -54,7 +54,10 @@ def main():
     cap = cv2.VideoCapture(video)
     q_in = Queue(maxsize=cpu_count())
     q_out = Queue()
-    workers = [Process(target=ocr_worker, args=(q_in, q_out)) for _ in range(cpu_count())]
+    workers = [
+        Process(target=ocr_worker, args=(q_in, q_out))
+        for _ in range(cpu_count())
+    ]
     for w in workers:
         w.start()
     frame_id = 0

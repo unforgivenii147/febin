@@ -24,7 +24,8 @@ def process_file(file_path: Path) -> None:
 
         for tag in soup.find_all(style=True):
             style = tag["style"]
-            new_style = "; ".join(s for s in style.split(";") if "background-image" not in s).strip()
+            new_style = "; ".join(s for s in style.split(";")
+                                  if "background-image" not in s).strip()
             if new_style:
                 tag["style"] = new_style
             else:
@@ -65,7 +66,7 @@ def main():
         )
     p = Pool(8)
     for f in files:
-        p.apply_async(process_file, (f,))
+        p.apply_async(process_file, (f, ))
     p.close()
     p.join()
     diff_size = before - get_size(root_dir)

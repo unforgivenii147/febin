@@ -72,7 +72,7 @@ def process_file(path: Path):
     modified = original
     if path.suffix.lower() in (".html", ".htm"):
         modified = remove_remote_html_images(original)
-    elif path.suffix.lower() in (".md",):
+    elif path.suffix.lower() in (".md", ):
         modified = remove_remote_md_images(original)
     elif path.suffix.lower() in (".rst", ".txt"):
         modified = remove_remote_rst_images(original)

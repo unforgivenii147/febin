@@ -45,7 +45,8 @@ def main() -> None:
     root_dir = Path.cwd()
     before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".svg"])
+    files = [Path(arg) for arg in args] if args else get_files(
+        root_dir, extensions=[".svg"])
     if not files:
         print("no files found")
         return

@@ -23,7 +23,8 @@ def process_file(
         if pattern.search(content):
             if dry_run:
                 matches = list(pattern.finditer(content))
-                print(f"[DRY RUN] Found {len(matches)} match(es) in {file_path}")
+                print(
+                    f"[DRY RUN] Found {len(matches)} match(es) in {file_path}")
                 for i, match in enumerate(matches[:3]):
                     start = max(0, match.start() - 20)
                     end = min(
@@ -38,18 +39,18 @@ def process_file(
             else:
                 new_content = pattern.sub(replacement, content)
                 with open(
-                    file_path,
-                    "w",
-                    encoding="utf-8",
+                        file_path,
+                        "w",
+                        encoding="utf-8",
                 ) as f:
                     f.write(new_content)
                 print(f"Updated: {file_path}")
             return True
         return False
     except (
-        UnicodeDecodeError,
-        PermissionError,
-        IsADirectoryError,
+            UnicodeDecodeError,
+            PermissionError,
+            IsADirectoryError,
     ):
         return False
     except Exception as e:
@@ -80,10 +81,10 @@ def replace_in_files(
         if os.path.isfile(target_file) and not os.path.islink(target_file):
             print(f"Processing file: {target_file}")
             if process_file(
-                target_file,
-                search_text,
-                replace_text,
-                dry_run,
+                    target_file,
+                    search_text,
+                    replace_text,
+                    dry_run,
             ):
                 files_changed += 1
             files_processed += 1
@@ -101,10 +102,10 @@ def replace_in_files(
                 continue
             files_processed += 1
             if process_file(
-                file_path,
-                search_text,
-                replace_text,
-                dry_run,
+                    file_path,
+                    search_text,
+                    replace_text,
+                    dry_run,
             ):
                 files_changed += 1
             if files_processed % 100 == 0:
@@ -116,11 +117,13 @@ def replace_in_files(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Recursively replace or remove text in files.")
+    parser = argparse.ArgumentParser(
+        description="Recursively replace or remove text in files.")
     parser.add_argument(
         "strings",
         nargs="+",
-        help="Search text and optional replacement text. If only one string is provided, it will be removed.",
+        help=
+        "Search text and optional replacement text. If only one string is provided, it will be removed.",
     )
     parser.add_argument(
         "--dry-run",
@@ -130,7 +133,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "-f",
         "--file",
-        help="Process only the specified file instead of recursive directory search",
+        help=
+        "Process only the specified file instead of recursive directory search",
     )
     args = parser.parse_args()
     if len(args.strings) == 2:
@@ -141,7 +145,9 @@ if __name__ == "__main__":
         replace_text = None
         action = f"REMOVING '{search_text}'"
     else:
-        parser.error("Please provide either one string (to remove) or two strings (search and replace)")
+        parser.error(
+            "Please provide either one string (to remove) or two strings (search and replace)"
+        )
     if search_text.startswith(("'", '"')) and search_text.endswith(("'", '"')):
         search_text = search_text[1:-1]
     if args.dry_run:
@@ -153,4 +159,6 @@ if __name__ == "__main__":
         target_file=args.file,
         dry_run=args.dry_run,
     )
-    print(f"\n--- Complete: Processed {files_processed} files, modified {files_changed} files ---")
+    print(
+        f"\n--- Complete: Processed {files_processed} files, modified {files_changed} files ---"
+    )

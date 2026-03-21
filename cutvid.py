@@ -11,7 +11,8 @@ TIME_PATTERN = re.compile(r"^\d{2}:\d{2}:\d{2}$")
 
 def validate_time(value: str) -> str:
     if not TIME_PATTERN.match(value):
-        raise argparse.ArgumentTypeError("Time must be in HH:MM:SS format (e.g. 00:10:00)")
+        raise argparse.ArgumentTypeError(
+            "Time must be in HH:MM:SS format (e.g. 00:10:00)")
     return value
 
 
@@ -21,7 +22,8 @@ def hhmmss_to_seconds(t: str) -> int:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Trim a video using ffmpeg-python (stream copy)")
+    parser = argparse.ArgumentParser(
+        description="Trim a video using ffmpeg-python (stream copy)")
     parser.add_argument("file", help="Input video file")
     parser.add_argument(
         "start",
@@ -44,21 +46,18 @@ def main():
         print("Error: end time must be greater than start time.")
         sys.exit(1)
     duration = end_sec - start_sec
-    output_path = input_path.with_name(f"{input_path.stem}_trimmed{input_path.suffix}")
+    output_path = input_path.with_name(
+        f"{input_path.stem}_trimmed{input_path.suffix}")
     try:
-        (
-            ffmpeg.input(
-                str(input_path),
-                ss=args.start,
-                t=duration,
-            )
-            .output(
-                str(output_path),
-                c="copy",
-                avoid_negative_ts="make_zero",
-            )
-            .run(overwrite_output=True)
-        )
+        (ffmpeg.input(
+            str(input_path),
+            ss=args.start,
+            t=duration,
+        ).output(
+            str(output_path),
+            c="copy",
+            avoid_negative_ts="make_zero",
+        ).run(overwrite_output=True))
         print(f"Saved: {output_path}")
     except:
         print("FFmpeg error:")

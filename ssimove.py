@@ -74,7 +74,8 @@ def find_similar_files(
             continue
 
         current_hash = file_hashes[current_file]
-        current_group = [current_file]  # Start a new group with the current file
+        current_group = [current_file
+                         ]  # Start a new group with the current file
 
         for j in range(i + 1, num_files):
             other_file = file_paths[j]
@@ -88,12 +89,18 @@ def find_similar_files(
             try:
                 similarity = ssdeep.compare(current_hash, other_hash)
                 if similarity >= similarity_threshold:
-                    print(f"  - Found similarity ({similarity}/{current_hash} vs {other_hash} -> {other_file})")
+                    print(
+                        f"  - Found similarity ({similarity}/{current_hash} vs {other_hash} -> {other_file})"
+                    )
                     current_group.append(other_file)
             except ssdeep.Error as e:
-                print(f"Error comparing hashes for {current_file} and {other_file}: {e}")
+                print(
+                    f"Error comparing hashes for {current_file} and {other_file}: {e}"
+                )
             except Exception as e:
-                print(f"Unexpected error comparing hashes for {current_file} and {other_file}: {e}")
+                print(
+                    f"Unexpected error comparing hashes for {current_file} and {other_file}: {e}"
+                )
 
         # If the current group has enough files to meet the minimum size requirement
         if len(current_group) >= min_group_size:
@@ -120,7 +127,9 @@ def find_similar_files(
             # We'll use the first file as a "representative" for this iteration's finding.
             representative_file = current_group[0]
             similar_groups[representative_file] = current_group
-            print(f"  -> Added group (starting with {representative_file.name}) with {len(current_group)} files.")
+            print(
+                f"  -> Added group (starting with {representative_file.name}) with {len(current_group)} files."
+            )
 
     # --- Move files into groups ---
     print("\n--- Moving Similar Files ---")
@@ -135,11 +144,14 @@ def find_similar_files(
 
     for rep_file, group in similar_groups.items():
         # Only consider files that haven't been part of another processed group
-        valid_group = [f for f in group if f not in processed_files or f == rep_file]
+        valid_group = [
+            f for f in group if f not in processed_files or f == rep_file
+        ]
         if len(valid_group) >= min_group_size:
             final_groups_to_move.append(valid_group)
             for f in valid_group:
-                files_to_move.add(f)  # Add to a set of all files that will be moved
+                files_to_move.add(
+                    f)  # Add to a set of all files that will be moved
 
     # Update processed_files with all files that are confirmed to be moved
     processed_files.update(files_to_move)
@@ -159,11 +171,15 @@ def find_similar_files(
                 # Ensure we don't overwrite if a file with the same name already exists
                 # (though unlikely if original files are unique)
                 if dest_path.exists():
-                    print(f"  - Warning: Destination file already exists, skipping: {dest_path}")
+                    print(
+                        f"  - Warning: Destination file already exists, skipping: {dest_path}"
+                    )
                     continue
 
                 shutil.move(str(file_to_move), str(dest_path))
-                print(f"  - Moved: {file_to_move.name} to {group_output_subdir.name}/")
+                print(
+                    f"  - Moved: {file_to_move.name} to {group_output_subdir.name}/"
+                )
                 moved_files_count += 1
             except FileNotFoundError:
                 print(
@@ -189,7 +205,9 @@ if __name__ == "__main__":
 
     # Add a small check to prevent accidental deletion if output dir is same as search dir
     if SEARCH_DIR.resolve() == OUTPUT_DIR.resolve():
-        print("ERROR: SEARCH_DIR and OUTPUT_DIR cannot be the same. Please configure them differently.")
+        print(
+            "ERROR: SEARCH_DIR and OUTPUT_DIR cannot be the same. Please configure them differently."
+        )
     else:
         find_similar_files(
             search_dir=SEARCH_DIR,

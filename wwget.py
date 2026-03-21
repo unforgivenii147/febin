@@ -59,9 +59,7 @@ def save_meta(meta_path: str, meta: dict):
     os.replace(tmp, meta_path)
 
 
-def build_chunks(
-    size: int,
-) -> list[tuple[int, int]]:
+def build_chunks(size: int, ) -> list[tuple[int, int]]:
     chunks = []
     for i in range(0, size, CHUNK_SIZE):
         end = min(i + CHUNK_SIZE - 1, size - 1)
@@ -84,10 +82,10 @@ def download_chunk(
     for attempt in range(MAX_RETRIES):
         try:
             with requests.get(
-                url,
-                headers=headers,
-                stream=True,
-                timeout=15,
+                    url,
+                    headers=headers,
+                    stream=True,
+                    timeout=15,
             ) as r:
                 r.raise_for_status()
                 with open(path, "r+b") as f:
@@ -126,8 +124,7 @@ def download(url: str, output: str, workers: int = 4):
                         end,
                         meta,
                         meta_lock,
-                    )
-                )
+                    ))
             for f in as_completed(futures):
                 f.result()
     except GracefulExit:

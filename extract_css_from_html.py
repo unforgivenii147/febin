@@ -49,15 +49,11 @@ def process_file(fp):
 def main():
     root_dir = Path.cwd()
     args = sys.argv[1:]
-    files = (
-        [Path(arg) for arg in args]
-        if args
-        else get_files(
-            root_dir,
-            recursive=True,
-            extensions=[".html", ".htm"],
-        )
-    )
+    files = ([Path(arg) for arg in args] if args else get_files(
+        root_dir,
+        recursive=True,
+        extensions=[".html", ".htm"],
+    ))
     before = get_size(root_dir)
     pool = Pool(8)
     for _ in pool.imap_unordered(process_file, files):

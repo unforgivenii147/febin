@@ -48,24 +48,20 @@ def format_file(file_path):
 def main() -> None:
     root_dir = Path.cwd()
     args = sys.argv[1:]
-    files = (
-        [Path(arg) for arg in args]
-        if args
-        else get_files(
-            root_dir,
-            extensions=[
-                ".js",
-                ".css",
-                ".ts",
-                ".tsx",
-                ".jsx",
-                ".json",
-                ".html",
-                ".cjs",
-                ".mjs",
-            ],
-        )
-    )
+    files = ([Path(arg) for arg in args] if args else get_files(
+        root_dir,
+        extensions=[
+            ".js",
+            ".css",
+            ".ts",
+            ".tsx",
+            ".jsx",
+            ".json",
+            ".html",
+            ".cjs",
+            ".mjs",
+        ],
+    ))
     if len(files) == 1:
         process_file(files[0])
         return
@@ -74,7 +70,7 @@ def main() -> None:
     with Pool(8) as p:
         pending = deque()
         for f in files:
-            pending.append(p.apply_async(format_file, (f,)))
+            pending.append(p.apply_async(format_file, (f, )))
             if len(pending) >= MAX_IN_FLIGHT:
                 pending.popleft().get()
         while pending:

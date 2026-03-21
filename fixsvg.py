@@ -24,7 +24,8 @@ def process_file(fp: Path):
         for tag in tags:
             idx = line.rfind(tag)
             if idx != -1:
-                last_tag_pos = sum(len(content[j]) for j in range(i)) + idx + len(tag)
+                last_tag_pos = sum(len(content[j])
+                                   for j in range(i)) + idx + len(tag)
                 break
         if last_tag_pos != -1:
             break
@@ -40,9 +41,9 @@ if __name__ == "__main__":
     for pth in walk_files(root_dir):
         path = Path(pth)
         if path.suffix in {
-            ".html",
-            ".htm",
-            ".svg",
-            ".xml",
+                ".html",
+                ".htm",
+                ".svg",
+                ".xml",
         }:
             process_file(path)

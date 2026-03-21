@@ -2,9 +2,7 @@
 import sys
 
 
-def hex_to_rgb(
-    value: str,
-) -> tuple[int, int, int]:
+def hex_to_rgb(value: str, ) -> tuple[int, int, int]:
     hex_color = value.lstrip("#")
     r = int(hex_color[0:2], 16)
     g = int(hex_color[2:4], 16)
@@ -12,9 +10,7 @@ def hex_to_rgb(
     return (r, g, b)
 
 
-def hex_to_rgb_shorthand(
-    value: str,
-) -> tuple[int, int, int]:
+def hex_to_rgb_shorthand(value: str, ) -> tuple[int, int, int]:
     hex_color = value.lstrip("#")
     if len(hex_color) == 3:
         r = int(hex_color[0] * 2, 16)
@@ -29,7 +25,7 @@ def hex_to_rgb_shorthand(
 
 def hex_to_rgb_dict(value: str) -> dict:
     hex_color = value.lstrip("#")
-    r, g, b = (int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
+    r, g, b = (int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
     return {"r": r, "g": g, "b": b}
 
 

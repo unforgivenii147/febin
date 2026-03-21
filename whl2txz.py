@@ -13,8 +13,8 @@ def whl_to_tar_xz(whl_path: Path):
         target = unique_path(target)
     try:
         with (
-            zipfile.ZipFile(whl_path, "r") as zf,
-            tarfile.open(target, "w:xz") as tf,
+                zipfile.ZipFile(whl_path, "r") as zf,
+                tarfile.open(target, "w:xz") as tf,
         ):
             for member in zf.infolist():
                 if member.is_dir():
@@ -31,15 +31,11 @@ def whl_to_tar_xz(whl_path: Path):
 def main():
     args = sys.argv[1:]
     root_dir = Path().cwd()
-    files = (
-        [Path(arg) for arg in args]
-        if args
-        else get_files(
-            root_dir,
-            recursive=False,
-            extensions=[".whl"],
-        )
-    )
+    files = ([Path(arg) for arg in args] if args else get_files(
+        root_dir,
+        recursive=False,
+        extensions=[".whl"],
+    ))
     if len(files) == 1:
         whl_to_tar_xz(files[0])
         sys.exit(0)

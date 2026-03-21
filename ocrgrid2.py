@@ -55,7 +55,8 @@ def main():
         print(f"Processing: {img_path}")
         processed = prepare_image_for_ocr(img_path)
         for oem, psm in itertools.product(OEM_OPTIONS, PSM_OPTIONS):
-            text, config, duration, error = run_tesseract_on_image(processed, oem, psm)
+            text, config, duration, error = run_tesseract_on_image(
+                processed, oem, psm)
             result = {
                 "image": img_path.name,
                 "config": config,

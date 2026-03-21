@@ -1,15 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
-
+import sys
 import argparse
 import contextlib
 from collections import deque
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
 
-from dh import format_size, get_size,get_pyfiles
+from dh import format_size, get_size, get_pyfiles
 from termcolor import cprint
 
 MAX_IN_FLIGHT = 16
+
 
 def format_single_file(file_path: Path, args) -> bool:
     before: int = get_size(file_path)
@@ -67,7 +68,8 @@ def format_single_file(file_path: Path, args) -> bool:
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="Fast Python API-based formatter (Lazy Loading)")
+    p = argparse.ArgumentParser(
+        description="Fast Python API-based formatter (Lazy Loading)")
     p.add_argument(
         "-b",
         "--black",
@@ -95,14 +97,14 @@ def main() -> None:
     args = p.parse_args()
     root_dir = Path.cwd()
     before = get_size(root_dir)
-    files=get_pyfiles(root_dir)
+    files = get_pyfiles(root_dir)
     if not files:
         print("No Python files detected.")
         return
-    if len(files)==1:
-        format_single_file(files[0],args)
+    if len(files) == 1:
+        format_single_file(files[0], args)
         sys.exit(0)
-    with Pool(8) as p:
+    with get_context("spawn").Pool(8) as p:
         pending = deque()
         for name in files:
             pending.append(
@@ -112,8 +114,7 @@ def main() -> None:
                         (name),
                         (args),
                     ),
-                )
-            )
+                ))
             if len(pending) >= MAX_IN_FLIGHT:
                 pending.popleft().get()
         while pending:

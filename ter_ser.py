@@ -47,19 +47,15 @@ def main():
     args = sys.argv[1:]
     root_dir = Path.cwd()
     before = get_size(root_dir)
-    files = (
-        list(args)
-        if args
-        else get_files(
-            root_dir,
-            recursive=True,
-            extensions=[".js", ".ts", ".mjs", ".jsx", ".tsx"],
-        )
-    )
+    files = (list(args) if args else get_files(
+        root_dir,
+        recursive=True,
+        extensions=[".js", ".ts", ".mjs", ".jsx", ".tsx"],
+    ))
     with Pool(8) as p:
         pending = deque()
         for f in files:
-            pending.append(p.apply_async(process_file, ((f),)))
+            pending.append(p.apply_async(process_file, ((f), )))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:

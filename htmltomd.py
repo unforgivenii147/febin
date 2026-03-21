@@ -14,17 +14,16 @@ def clean_html(html_content: str) -> str:
         script.decompose()
     for style in soup.find_all("style"):
         style.decompose()
-    for comment in soup.find_all(string=lambda text: isinstance(text, str) and text.strip().startswith("<!--")):
+    for comment in soup.find_all(string=lambda text: isinstance(text, str) and
+                                 text.strip().startswith("<!--")):
         comment.extract()
-    for tag in soup.find_all(
-        [
+    for tag in soup.find_all([
             "nav",
             "footer",
             "aside",
             "iframe",
             "noscript",
-        ]
-    ):
+    ]):
         tag.decompose()
     for form in soup.find_all("form"):
         form.decompose()
@@ -36,10 +35,12 @@ def convert_html_to_md(
     options: Options | None = None,
 ) -> tuple[Path, bool]:
     if html_file.suffix.lower() not in [
-        ".html",
-        ".htm",
+            ".html",
+            ".htm",
     ]:
-        print(f"Warning: {html_file} doesn't have .html/.htm extension, skipping.")
+        print(
+            f"Warning: {html_file} doesn't have .html/.htm extension, skipping."
+        )
         return (html_file, False)
     try:
         html_content = html_file.read_text(encoding="utf-8")
@@ -53,7 +54,9 @@ def convert_html_to_md(
                 github_flavored=True,
             )
         markdown_content = convert(cleaned_html, options=options)
-        markdown_content = "\n".join(line for line in markdown_content.split("\n") if line.strip() or line == "")
+        markdown_content = "\n".join(line
+                                     for line in markdown_content.split("\n")
+                                     if line.strip() or line == "")
         import re
 
         markdown_content = re.sub(r"\n{3,}", "\n\n", markdown_content)
@@ -71,22 +74,23 @@ def convert_html_to_md(
 
 def find_html_files(directory: Path, recursive: bool = True) -> list[Path]:
     if recursive:
-        html_files = list(directory.rglob("*.html")) + list(directory.rglob("*.htm"))
+        html_files = list(directory.rglob("*.html")) + list(
+            directory.rglob("*.htm"))
     else:
-        html_files = list(directory.glob("*.html")) + list(directory.glob("*.htm"))
+        html_files = list(directory.glob("*.html")) + list(
+            directory.glob("*.htm"))
     return sorted(html_files)
 
 
-def process_file_wrapper(
-    args: tuple,
-) -> tuple[Path, bool]:
+def process_file_wrapper(args: tuple, ) -> tuple[Path, bool]:
     html_file, options = args
     return convert_html_to_md(html_file, options)
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Enhanced HTML to Markdown converter with better HTML5/JS/form handling",
+        description=
+        "Enhanced HTML to Markdown converter with better HTML5/JS/form handling",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -171,7 +175,9 @@ Examples:
             results = pool.map(process_file_wrapper, process_args)
         successful = sum(1 for _, success in results if success)
         print(f"\n{'=' * 50}")
-        print(f"Conversion complete: {successful}/{len(html_files)} files converted successfully")
+        print(
+            f"Conversion complete: {successful}/{len(html_files)} files converted successfully"
+        )
 
 
 if __name__ == "__main__":

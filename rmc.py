@@ -43,19 +43,20 @@ def rm_doc(content: str) -> tuple[str, int]:
                 second = line.find(delimiter, first + 3)
                 before = line[:first].rstrip()
                 if before.endswith(":") or before.strip() == "":
-                    result_lines.append(line[:first] + line[second + 3 :])
+                    result_lines.append(line[:first] + line[second + 3:])
                     removed_count += 1
                     i += 1
                     continue
-            before = line[: line.find(delimiter)].rstrip()
-            if before.endswith(":") or before.strip() == "" or "=" not in before:
+            before = line[:line.find(delimiter)].rstrip()
+            if before.endswith(
+                    ":") or before.strip() == "" or "=" not in before:
                 removed_count += 1
                 if before:
                     result_lines.append(before)
                 j = i + 1
                 while j < len(lines):
                     if delimiter in lines[j]:
-                        after = lines[j][lines[j].find(delimiter) + 3 :].strip()
+                        after = lines[j][lines[j].find(delimiter) + 3:].strip()
                         if after:
                             result_lines.append(after)
                         i = j + 1
@@ -76,9 +77,11 @@ def preprocess(orig):
     cleaned = []
     lines = orig.splitlines()
     for line in lines:
-        if line.startswith(DOC_TH1) and line.endswith(DOC_TH1) and line != DOC_TH1 * 2:
+        if line.startswith(DOC_TH1) and line.endswith(
+                DOC_TH1) and line != DOC_TH1 * 2:
             continue
-        if line.startswith(DOC_TH2) and line.endswith(DOC_TH2) and line != DOC_TH2 * 2:
+        if line.startswith(DOC_TH2) and line.endswith(
+                DOC_TH2) and line != DOC_TH2 * 2:
             continue
         if any(pat in line for pat in PRESERVED):
             cleaned.append(line)
@@ -113,33 +116,27 @@ def strip_code(source_code):
 
         def traverse(node):
             if node.type == "comment":
-                comment_text = source_code[node.start_byte : node.end_byte]
+                comment_text = source_code[node.start_byte:node.end_byte]
                 if not should_preserve_comment(comment_text):
-                    to_delete.append(
-                        (
-                            node.start_byte,
-                            node.end_byte,
-                        )
-                    )
+                    to_delete.append((
+                        node.start_byte,
+                        node.end_byte,
+                    ))
             elif node.type == "expression_statement":
                 child = node.named_children[0] if node.named_children else None
                 if child and child.type == "string":
                     parent = node.parent
                     if parent and parent.type == "block":
                         if parent.named_child_count == 1:
-                            to_replace_with_pass.append(
-                                (
-                                    node.start_byte,
-                                    node.end_byte,
-                                )
-                            )
+                            to_replace_with_pass.append((
+                                node.start_byte,
+                                node.end_byte,
+                            ))
                         else:
-                            to_delete.append(
-                                (
-                                    node.start_byte,
-                                    node.end_byte,
-                                )
-                            )
+                            to_delete.append((
+                                node.start_byte,
+                                node.end_byte,
+                            ))
             for child in node.children:
                 traverse(child)
 
@@ -149,11 +146,12 @@ def strip_code(source_code):
         modifications.sort(key=lambda x: x[0], reverse=True)
         working_code = source_code
         for (
-            start,
-            end,
-            replacement,
+                start,
+                end,
+                replacement,
         ) in modifications:
-            working_code = working_code[:start] + replacement + working_code[end:]
+            working_code = working_code[:start] + replacement + working_code[
+                end:]
         del tree
         return working_code
     except:
@@ -169,37 +167,30 @@ def rm_ast(content: str) -> tuple[str, int]:
     lines = content.split("\n")
     ranges = find_docstring_ranges(tree)
     for start, end in sorted(ranges, reverse=True):
-        del lines[start - 1 : end]
+        del lines[start - 1:end]
     return "\n".join(lines), len(ranges)
 
 
-def find_docstring_ranges(
-    node,
-) -> list[tuple[int, int]]:
+def find_docstring_ranges(node, ) -> list[tuple[int, int]]:
     ranges: list[tuple[int, int]] = []
     for child in ast.walk(node):
-        if (
-            isinstance(
+        if (isinstance(
                 child,
-                (
-                    ast.Module,
-                    ast.FunctionDef,
-                    ast.AsyncFunctionDef,
-                    ast.ClassDef,
-                ),
-            )
-            and child.body
-            and isinstance(child.body[0], ast.Expr)
-        ):
+            (
+                ast.Module,
+                ast.FunctionDef,
+                ast.AsyncFunctionDef,
+                ast.ClassDef,
+            ),
+        ) and child.body and isinstance(child.body[0], ast.Expr)):
             value = child.body[0].value
-            if isinstance(value, ast.Constant) and isinstance(value.value, str):
+            if isinstance(value, ast.Constant) and isinstance(
+                    value.value, str):
                 if child.body[0].lineno and child.body[0].end_lineno:
-                    ranges.append(
-                        (
-                            child.body[0].lineno,
-                            child.body[0].end_lineno,
-                        )
-                    )
+                    ranges.append((
+                        child.body[0].lineno,
+                        child.body[0].end_lineno,
+                    ))
     return ranges
 
 
@@ -254,14 +245,15 @@ def main():
     root_dir = Path.cwd()
     before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(root_dir,
+                                                           extensions=[".py"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
     with Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f,)))
+            pending.append(pool.apply_async(process_file, (f, )))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:

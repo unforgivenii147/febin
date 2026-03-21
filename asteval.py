@@ -31,7 +31,8 @@ def process_file(fp) -> None:
 
 def main():
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else [Path(p) for p in root_dir.glob("*.py")]
+    files = [Path(f) for f in args
+             ] if args else [Path(p) for p in root_dir.glob("*.py")]
     for f in files:
         process_file(f)
 

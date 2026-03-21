@@ -31,9 +31,7 @@ def read_text_file(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def preprocess_image(
-    img: Image.Image,
-) -> Image.Image:
+def preprocess_image(img: Image.Image, ) -> Image.Image:
     img = img.convert("L")
     img = ImageEnhance.Contrast(img).enhance(2.0)
     img = img.point(lambda x: 0 if x < 160 else 255)
@@ -51,7 +49,7 @@ def read_image_ocr(path: Path) -> str:
 
 
 def chunk_text(text: str, size: int = CHUNK_SIZE) -> list:
-    return [text[i : i + size] for i in range(0, len(text), size)]
+    return [text[i:i + size] for i in range(0, len(text), size)]
 
 
 def translate_chunks(chunks, src_lang: str) -> str:
@@ -60,9 +58,7 @@ def translate_chunks(chunks, src_lang: str) -> str:
     return "".join(output)
 
 
-def build_translated_output_path(
-    input_path: Path,
-) -> Path:
+def build_translated_output_path(input_path: Path, ) -> Path:
     if input_path.suffix.lower() in IMAGE_EXT:
         return input_path.with_name(f"{input_path.stem}_eng.txt")
     return input_path.with_name(f"{input_path.stem}_eng{input_path.suffix}")
@@ -73,7 +69,8 @@ def build_raw_ocr_path(input_path: Path) -> Path:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Translate text or image to English.")
+    parser = argparse.ArgumentParser(
+        description="Translate text or image to English.")
     parser.add_argument("input_path")
     parser.add_argument(
         "--lang",

@@ -9,10 +9,14 @@ from fastwalk import walk_files
 def process_file(fp) -> None:
     if not fp.exists():
         return
-    if fp.exists() and fp.stat().st_size < 50 and len(fp.read_text().splitlines()) < 3:
+    if fp.exists() and fp.stat().st_size < 50 and len(
+            fp.read_text().splitlines()) < 3:
         fp.unlink()
         print(f"{fp.name} removed")
-    if fp.exists() and len(fp.read_text().splitlines()) < 2 and fp.suffix not in {".js", ".min.js", ".css", ".min.css"}:
+    if fp.exists() and len(
+            fp.read_text().splitlines()) < 2 and fp.suffix not in {
+                ".js", ".min.js", ".css", ".min.css"
+            }:
         fp.unlink()
         print(f"{fp.name} removed")
 

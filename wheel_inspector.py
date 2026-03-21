@@ -49,25 +49,33 @@ class WheelInspector:
                 }
 
                 # Read METADATA
-                metadata_files = [f for f in zf.namelist() if f.endswith("/METADATA")]
+                metadata_files = [
+                    f for f in zf.namelist() if f.endswith("/METADATA")
+                ]
                 if metadata_files:
-                    metadata_content = zf.read(metadata_files[0]).decode("utf-8")
+                    metadata_content = zf.read(
+                        metadata_files[0]).decode("utf-8")
                     for line in metadata_content.split("\n"):
                         if ":" in line:
                             key, value = line.split(":", 1)
                             info["metadata"][key.strip()] = value.strip()
 
                 # Read WHEEL
-                wheel_files = [f for f in zf.namelist() if f.endswith("/WHEEL")]
+                wheel_files = [
+                    f for f in zf.namelist() if f.endswith("/WHEEL")
+                ]
                 if wheel_files:
                     wheel_content = zf.read(wheel_files[0]).decode("utf-8")
                     info["wheel_metadata"] = wheel_content
 
                 # Count file types
                 info["file_types"] = {
-                    ".py": len([f for f in zf.namelist() if f.endswith(".py")]),
-                    ".so": len([f for f in zf.namelist() if f.endswith(".so")]),
-                    ".pyd": len([f for f in zf.namelist() if f.endswith(".pyd")]),
+                    ".py":
+                    len([f for f in zf.namelist() if f.endswith(".py")]),
+                    ".so": len([f for f in zf.namelist()
+                                if f.endswith(".so")]),
+                    ".pyd":
+                    len([f for f in zf.namelist() if f.endswith(".pyd")]),
                     ".c": len([f for f in zf.namelist() if f.endswith(".c")]),
                 }
 
@@ -166,10 +174,10 @@ class WheelInspector:
             print("\nMetadata:")
             for key, value in info["metadata"].items():
                 if key in [
-                    "Name",
-                    "Version",
-                    "Summary",
-                    "Author",
+                        "Name",
+                        "Version",
+                        "Summary",
+                        "Author",
                 ]:
                     print(f"  {key}: {value}")
 
@@ -188,7 +196,8 @@ def main():
     """Main entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Inspect and validate .whl files")
+    parser = argparse.ArgumentParser(
+        description="Inspect and validate .whl files")
 
     parser.add_argument(
         "wheel",
@@ -232,7 +241,9 @@ def main():
             size = result.get("size_mb", 0)
             files = result.get("file_count", 0)
 
-            print(f"{status} {result['filename']:<50} {size:>8.2f} MB ({files} files)")
+            print(
+                f"{status} {result['filename']:<50} {size:>8.2f} MB ({files} files)"
+            )
 
         print(f"\nValid: {valid_count}/{len(results)}")
         print(f"Invalid: {invalid_count}/{len(results)}")

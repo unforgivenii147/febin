@@ -10,12 +10,13 @@ if __name__ == "__main__":
     root_dir = Path.cwd()
 
     for path in sorted(
-        root_dir.rglob("*"),
-        key=lambda e: e.stat().st_mtime,
+            root_dir.rglob("*"),
+            key=lambda e: e.stat().st_mtime,
     ):
         if any(pat in path.parts for pat in EXCLUDED):
             continue
-        mtime = datetime.datetime.fromtimestamp(path.stat().st_mtime).strftime("%H:%M")
+        mtime = datetime.datetime.fromtimestamp(
+            path.stat().st_mtime).strftime("%H:%M")
         if path.is_dir():
             continue
         elif path.is_symlink():

@@ -51,9 +51,7 @@ def save_meta(path: str, meta: dict):
     os.replace(tmp, path)
 
 
-def build_parts(
-    size: int,
-) -> list[tuple[int, int, int]]:
+def build_parts(size: int, ) -> list[tuple[int, int, int]]:
     parts = []
     count = math.ceil(size / PART_SIZE)
     for i in range(count):
@@ -77,10 +75,10 @@ def download_part(
     for attempt in range(MAX_RETRIES):
         try:
             with requests.get(
-                url,
-                headers=headers,
-                stream=True,
-                timeout=15,
+                    url,
+                    headers=headers,
+                    stream=True,
+                    timeout=15,
             ) as r:
                 r.raise_for_status()
                 mode = "ab" if os.path.exists(part_path) else "wb"
@@ -140,8 +138,7 @@ def download(url: str, output: str, workers: int):
                         start,
                         end,
                         meta,
-                    )
-                )
+                    ))
             for f in as_completed(futures):
                 f.result()
     except GracefulExit:

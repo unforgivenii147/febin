@@ -18,8 +18,8 @@ def find_duplicates():
         if path.is_file():
             files_by_hash[hash_file(path)].append(path)
     for (
-        hash,
-        paths,
+            hash,
+            paths,
     ) in files_by_hash.items():
         if len(paths) > 1:
             duplicate_count += len(paths) - 1

@@ -77,7 +77,9 @@ def main():
                 else:
                     wheel.unlink()
                     moved += 1
-                    print(f"[DIFF VERSION] {dist_name} (installed {installed_version}, wheel {version}) -> removed")
+                    print(
+                        f"[DIFF VERSION] {dist_name} (installed {installed_version}, wheel {version}) -> removed"
+                    )
         except Exception as e:
             print(f"[ERROR] {wheel.name}: {e}")
             shutil.move(str(wheel), DEST_DIR2 / wheel.name)

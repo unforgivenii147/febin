@@ -8,6 +8,7 @@ from tree_sitter import Language, Parser
 
 
 class TSCppRemover:
+
     def __init__(self):
         self.parser = Parser()
         self.language = Language(tscpp.language())
@@ -31,7 +32,8 @@ class TSCppRemover:
 
     def _collect_comments(self, node, to_delete, source_bytes):
         if node.type == "comment":
-            text = source_bytes[node.start_byte : node.end_byte].decode("utf-8").strip()
+            text = source_bytes[node.start_byte:node.end_byte].decode(
+                "utf-8").strip()
             if text.startswith("#"):
                 return
             to_delete.append((node.start_byte, node.end_byte))
@@ -59,9 +61,7 @@ def validate_with_treesitter(parser, code: str) -> bool:
     return not tree.root_node.has_error
 
 
-def validate_with_clang(
-    file_path: Path,
-) -> tuple[bool, str]:
+def validate_with_clang(file_path: Path, ) -> tuple[bool, str]:
     cmd = f"clang++ -std=c++20 -fsyntax-only {file_path!s}"
     ret, txt, err = run_command(cmd)
     if ret != 0:

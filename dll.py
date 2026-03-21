@@ -27,7 +27,7 @@ def delete_lines_from_file():
         fromline = toline
         toline = temp
         del temp
-    new_lines = lines[: fromline - 1] + lines[toline:]
+    new_lines = lines[:fromline - 1] + lines[toline:]
     try:
         with open(filename, "w") as file:
             file.writelines(new_lines)

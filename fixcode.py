@@ -30,31 +30,24 @@ def is_code_line(line: str) -> bool:
     s = line.strip()
     if not s:
         return True
-    return (
-        s.startswith(
-            (
-                "def ",
-                "class ",
-                "if ",
-                "elif ",
-                "else:",
-                "for ",
-                "while ",
-                "try:",
-                "except ",
-                "finally:",
-                "with ",
-                "return",
-                "import ",
-                "from ",
-                "@",
-                "#",
-            )
-        )
-        or "=" in s
-        or "(" in s
-        or s.endswith(":")
-    )
+    return (s.startswith((
+        "def ",
+        "class ",
+        "if ",
+        "elif ",
+        "else:",
+        "for ",
+        "while ",
+        "try:",
+        "except ",
+        "finally:",
+        "with ",
+        "return",
+        "import ",
+        "from ",
+        "@",
+        "#",
+    )) or "=" in s or "(" in s or s.endswith(":"))
 
 
 def clean_text(text: str) -> str:
@@ -81,15 +74,13 @@ def clean_text(text: str) -> str:
             indent_level = 1
             out.append('if __name__ == "__main__":')
             continue
-        if stripped.startswith(
-            (
+        if stripped.startswith((
                 "return",
                 "pass",
                 "break",
                 "continue",
                 "raise",
-            )
-        ):
+        )):
             out.append(INDENT * indent_level + stripped)
             indent_level = max(indent_level - 1, 0)
             continue
@@ -101,9 +92,7 @@ def clean_text(text: str) -> str:
     return "\n".join(out)
 
 
-def ast_validate(
-    code: str,
-) -> tuple[bool, str | None]:
+def ast_validate(code: str, ) -> tuple[bool, str | None]:
     try:
         ast.parse(code)
         return True, None

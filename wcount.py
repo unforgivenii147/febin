@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from collections import deque
 import json
+import sys
+from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
 from dh import get_nobinary
 from loguru import logger

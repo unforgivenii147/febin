@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from pathlib import Path
 import sys
+from pathlib import Path
 
+import regex as re
 from dh import (
     format_size,
     get_files,
     get_size,
 )
-import regex as re
 from termcolor import cprint
 
 

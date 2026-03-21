@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def sort_python_script(file_path: Path):

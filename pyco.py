@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import shutil
 import sysconfig
+from pathlib import Path
 
 from dh import format_size
 from fastwalk import walk_dirs, walk_files

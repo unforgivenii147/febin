@@ -4,10 +4,10 @@ Recursively find and report non-English files in current directory using pycld2
 """
 
 import argparse
-from collections import Counter
 import os
-from pathlib import Path
 import sys
+from collections import Counter
+from pathlib import Path
 
 import pycld2
 

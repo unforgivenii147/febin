@@ -4,8 +4,8 @@ Script to create a template Python project structure.
 Usage: python create_project.py <package_name>
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def create_python_project(pkg_name):

@@ -5,9 +5,9 @@ from concurrent.futures import (
 )
 from pathlib import Path
 
+import regex as re
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
-import regex as re
 
 DIRECTORY = "."
 CHUNK_SIZE = 2000

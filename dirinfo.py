@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from collections import defaultdict
 import os
+from collections import defaultdict
 
 
 def scan_directory(path="."):

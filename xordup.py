@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import importlib.metadata
 import typing
-from pathlib import Path
-from typing import Union
 from base64 import b64encode
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+from typing import Union
 
 CHUNK_SIZE = 524288
 

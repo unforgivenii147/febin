@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import os
-from pathlib import Path
 import signal
 import sys
 import threading
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from urllib.parse import unquote
 
 import requests

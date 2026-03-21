@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
+import fnmatch
+import tarfile
+import threading
+import zipfile
 from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed,
 )
-import fnmatch
 from pathlib import Path
 from queue import Queue
-import tarfile
-import threading
-import zipfile
 
 from fastwalk import walk_files
 

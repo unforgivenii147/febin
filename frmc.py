@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
+import sys
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
 from dh import (
     SOURCE_CODE_EXT,
@@ -82,17 +82,16 @@ def main() -> None:
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-    else:
-        p = Pool(8)
-        for _ in p.imap_unordered(process_file, files):
-            pass
-        p.close()
-        p.join()
-        after = get_size(root_dir)
-        cprint(
-            f"{format_size(before - after)}",
-            "cyan",
-        )
+    p = Pool(8)
+    for _ in p.imap_unordered(process_file, files):
+        pass
+    p.close()
+    p.join()
+    diffsize = before - get_size(root_dir)
+    cprint(
+        f"{format_size(diffsize)}",
+        "cyan",
+    )
 
 
 if __name__ == "__main__":

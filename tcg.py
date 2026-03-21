@@ -1,24 +1,23 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import subprocess
 import sys
+from pathlib import Path
 
 TERMUX_PYTHON = "#!/data/data/com.termux/files/usr/bin/python\n"
 TERMUX_BASH = "#!/data/data/com.termux/files/usr/bin/bash\n"
+cwd = Path.cwd()
+homebin = Path.home() / "bin"
+homebin2 = Path.home() / "bashbin"
 
 
 def dcheck(fname) -> None:
-    lines = []
-    with open(fname, encoding="utf-8") as fin:
-        lines = fin.readlines()
+    lines = fname.read_text(encoding="utf-8").splitlines()
     nl = []
     if lines[0].startswith("#!") and lines[1].startswith("#!"):
         nl.append(lines[0])
         nl.extend(lines[2:])
-        print(f"{fp} had 2 shebang")
-        with open(fp, "w", encoding="utf-8") as fout:
-            for k in nl:
-                fout.write(k)
+        print(f"{fname} had 2 shebang")
+        fname.write_text("\n".join(nl))
     else:
         return
 
@@ -56,33 +55,14 @@ def detect_shebang(content: str) -> str | None:
 
 
 def create_symlink(out_file):
-    base_name = os.path.basename(out_file)
-    name_without_ext, ext = os.path.splitext(base_name)
-    if ext and os.path.abspath(os.getcwd()) == os.path.abspath(os.path.expanduser("~/bin")):
-        symlink_path = os.path.join(
-            os.path.dirname(out_file),
-            name_without_ext,
-        )
+    ext = out_file.suffix
+    if ext and (cwd in (homebin, homebin2)):
+        symlink_path = out_file.parent / out_file.stem
         try:
-            os.symlink(out_file, symlink_path)
-            print(f"Symlink created: {symlink_path} -> {out_file}")
+            out_file.symlink_to(symlink_path)
+            print(f"{symlink_path.name} -> {out_file.name}")
         except FileExistsError:
-            print(f"Symlink already exists: {symlink_path}")
-        except Exception as e:
-            print(
-                f"Error creating symlink: {e}",
-                file=sys.stderr,
-            )
-    if ext and os.path.abspath(os.getcwd()) == os.path.abspath(os.path.expanduser("~/bashbin")):
-        symlink_path = os.path.join(
-            os.path.dirname(out_file),
-            name_without_ext,
-        )
-        try:
-            os.symlink(out_file, symlink_path)
-            print(f"Symlink created: {symlink_path} -> {out_file}")
-        except FileExistsError:
-            print(f"Symlink already exists: {symlink_path}")
+            print(f"{symlink_path.name} exists.")
         except Exception as e:
             print(
                 f"Error creating symlink: {e}",
@@ -97,25 +77,19 @@ def main():
             file=sys.stderr,
         )
         sys.exit(1)
-    out_file = sys.argv[1]
-    clipboard = get_clipboard()
-    cwd = os.path.abspath(os.getcwd())
-    bin_dir = os.path.abspath(os.path.expanduser("~/bin"))
-    bin_dir2 = os.path.abspath(os.path.expanduser("~/bashbin"))
-    final_content = clipboard
-    if cwd == bin_dir:
-        shebang = detect_shebang(clipboard)
+    out_file = Path(sys.argv[1])
+    content = get_clipboard()
+    if cwd in (homebin, homebin2):
+        shebang = detect_shebang(content)
         if shebang:
-            final_content = shebang + clipboard
-    with open(out_file, "w") as f:
-        f.write(final_content)
+            content = shebang + content
+
+    out_file.write_text(content, encoding="utf-8")
 
     dcheck(out_file)
-    if cwd == bin_dir:
-        os.chmod(out_file, 0o755)
-    if cwd == bin_dir2:
-        os.chmod(out_file, 0o755)
-    create_symlink(out_file)
+    if cwd in (homebin, homebin2):
+        out_file.chmod(0o755)
+        create_symlink(out_file)
 
 
 if __name__ == "__main__":

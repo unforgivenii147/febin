@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import base64
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def decode_base64_lines(input_path, output_folder="decoded_files"):

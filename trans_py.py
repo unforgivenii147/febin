@@ -1,16 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
+import os
+import shutil
+import threading
 from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed,
 )
-import os
 from pathlib import Path
-import shutil
-import threading
 
-from deep_translator import GoogleTranslator
 import regex as re
+from deep_translator import GoogleTranslator
 
 PYTHON_EXT = ".py"
 BACKUP_EXT = ".bak"

@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
 import json
 import math
 import os
 import signal
 import sys
 import time
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+)
 
 import requests
 

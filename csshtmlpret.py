@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import itertools
+import os
+import sys
 from argparse import ArgumentParser
 from datetime import datetime
-import itertools
 from multiprocessing import Pool, cpu_count
-import os
 from subprocess import getoutput
-import sys
 from time import sleep
 
 import regex as re
@@ -194,7 +194,8 @@ def remove_empty_rules(css: str) -> str:
 
 def condense_zero_units(css: str) -> str:
     return re.sub(
-        r"([\s:])(0)(px|em|%|in|q|ch|cm|mm|pc|pt|ex|rem|s|ms|" r"deg|grad|rad|turn|vw|vh|vmin|vmax|fr)",
+        r"([\s:])(0)(px|em|%|in|q|ch|cm|mm|pc|pt|ex|rem|s|ms|"
+        r"deg|grad|rad|turn|vw|vh|vmin|vmax|fr)",
         r"\1\2",
         css,
     )

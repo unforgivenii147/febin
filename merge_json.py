@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def load_json_object(path):

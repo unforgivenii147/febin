@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from collections import Counter
-from collections.abc import Generator
-from datetime import datetime
 import mmap
 import os
-from pathlib import Path
 import shutil
 import sys
 import tempfile
 import time
+from collections import Counter
+from collections.abc import Generator
+from datetime import datetime
+from pathlib import Path
 
 
 class LineProcessor:

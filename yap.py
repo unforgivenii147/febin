@@ -1,32 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 
 import argparse
-from collections import deque
 import contextlib
+from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
 
-from dh import format_size, get_size
-from fastwalk import walk_files
+from dh import format_size, get_size,get_pyfiles
 from termcolor import cprint
 
 MAX_IN_FLIGHT = 16
-IGNORED_DIRS = {
-    ".git",
-    "__pycache__",
-}
-
-
-def is_python_file(path: Path) -> bool:
-    if path.suffix in {".py", ".pyi"}:
-        return True
-    try:
-        with path.open("rb") as f:
-            line = f.readline(100)
-            return line.startswith(b"#!") and b"python" in line.lower()
-    except Exception:
-        return False
-
 
 def format_single_file(file_path: Path, args) -> bool:
     before: int = get_size(file_path)
@@ -110,22 +93,15 @@ def main() -> None:
         help="Autoflake cleanup",
     )
     args = p.parse_args()
-    root_dir = Path().cwd()
-    files = []
+    root_dir = Path.cwd()
     before = get_size(root_dir)
-    for pth in walk_files(root_dir):
-        path = Path(pth)
-        if (
-            path.is_file()
-            and not any(part in IGNORED_DIRS for part in path.parts)
-            and is_python_file(path)
-            and not path.is_symlink()
-        ):
-            files.append(path)
+    files=get_pyfiles(root_dir)
     if not files:
         print("No Python files detected.")
         return
-    print(f"Formatting {len(files)} files...")
+    if len(files)==1:
+        format_single_file(files[0],args)
+        sys.exit(0)
     with Pool(8) as p:
         pending = deque()
         for name in files:
@@ -143,8 +119,7 @@ def main() -> None:
         while pending:
             pending.popleft().get()
 
-    after = get_size(root_dir)
-    diffsize = before - after
+    diffsize = before - get_size(root_dir)
     cprint(f"{format_size(diffsize)}", "cyan")
 
 

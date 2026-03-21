@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed,
 )
 from pathlib import Path
-import sys
 
+import tree_sitter_python as tsp
 from dh import get_files
 from tree_sitter import Language, Parser
-import tree_sitter_python as tsp
 
 OUTPUT_DIR = Path("output")
 parser = Parser()

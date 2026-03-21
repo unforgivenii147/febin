@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
+import shutil
 from concurrent.futures import (
     ProcessPoolExecutor,
     as_completed,
 )
 from pathlib import Path
-import shutil
 
 ERROR_DIR = Path("error")
 OK_DIR = Path("ok")

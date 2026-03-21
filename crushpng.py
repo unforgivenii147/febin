@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+import os
+import subprocess
 from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed,
 )
-import os
-import subprocess
 
 from tqdm import tqdm
 

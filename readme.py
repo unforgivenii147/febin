@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import pydoc
 import sys
+from pathlib import Path
 
 README_CANDIDATES = [
     "README.md",

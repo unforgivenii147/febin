@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
+import sys
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-import sys
 
 from bs4 import BeautifulSoup
 from html_to_markdown import Options, convert

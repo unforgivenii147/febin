@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
 from dh import format_size, get_nobinary, get_size
 from termcolor import cprint
@@ -53,7 +53,7 @@ def process_file(filepath) -> int:
 def main():
     files = []
     root_dir = Path.cwd()
-    start_size = get_size(root_dir)
+    before = get_size(root_dir)
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_nobinary(root_dir)
     if len(files) == 1:
@@ -73,13 +73,13 @@ def main():
         if result:
             lines_removed += result
     cprint(
-        f"total empty lines removed : {lines_removed}",
+        f"total removed : {lines_removed}",
         "green",
     )
-    after = get_size(root_dir)
-    print("space freed: ", end=" ")
+    diffsize = before - get_size(root_dir)
+    print("space freed: ", end="")
     cprint(
-        f"{format_size(start_size - after)}",
+        f"{format_size(diffsize)}",
         "green",
     )
 

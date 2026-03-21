@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pprint import pprint
 from pathlib import Path
+from pprint import pprint
 
 
 def get_size(path: Path) -> int:

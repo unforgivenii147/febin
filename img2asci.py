@@ -1,21 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
-
+from multiprocessing import Pool
+import sys
 from ascii_magic import AsciiArt
-from dh import IMG_EXT
+from dh import get_files
 
 
-def getimg(dir="."):
-    img_files = []
-    for pth in walk_filrs(root_dir):
-        path = Path(pth)
-        if path.suffix in IMG_EXT:
-            img_files.append(path)
-    return img_files
 
-
-def render_ascii(image_path):
+def process_file(image_path):
     art = AsciiArt.from_image(image_path)
     art.to_terminal(
         columns=os.get_terminal_size().columns,
@@ -25,13 +18,17 @@ def render_ascii(image_path):
 
 
 def main():
-    imfiles = getimg(".")
-    if len(imfiles) == 0:
-        print("no image found")
-        return
-    for file in imfiles:
-        render_ascii(file)
-    print("done")
+    root_dir = Path.cwd()
+    args = sys.argv[1:]
+    files = [Path(arg) for arg in args] if args else get_files(root_dir,extensions=[".jpg",".png",".bmp",".webp"])
+    if len(files) == 1:
+        process_file(files[0])
+        sys.exit(0)
+    pool=Pool(8)
+    for _ in pool.imap_unordered(process_file,files):
+        pass
+    pool.close()
+    pool.join()
 
 
 if __name__ == "__main__":

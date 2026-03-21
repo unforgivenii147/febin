@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
 import lzma
-from pathlib import Path
 import sys
 import tempfile
 import time
+from pathlib import Path
 
 from dh import format_size
 from loguru import logger

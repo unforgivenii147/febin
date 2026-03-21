@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
-from collections import deque
 import compileall
+import sys
+from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
 from dh import format_size, get_files, get_size
 
 MAX_QUEUE = 16
-REMOVE_ORIG = FALSE
+REMOVE_ORIG = False
 
 
 def process_file(fp):

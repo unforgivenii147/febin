@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import ffmpeg
 import regex as re

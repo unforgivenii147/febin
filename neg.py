@@ -1,38 +1,43 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
+from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
 import cv2 as cv
 from dh import get_files
 
+root_dir = Path.cwd()
+
 
 def process_file(fp):
     img = cv.imread(str(fp))
-    if not img:
+
+    if img is None:
         return
     img = 255 - img
     cv.imwrite(str(fp), img)
-    print(f"{fp} updated.")
+    print(f"{fp.relative_to(root_dir)} updated.")
 
 
 def main():
-    root_dir = Path.cwd()
     args = sys.argv[1:]
-    files = (
-        [Path(arg) for arg in args]
-        if args
-        else get_files(
-            root_dir,
-            recursive=True,
-            extensions=[".png", ".jpg"],
-        )
-    )
+    if args:
+        files = [Path(arg) for arg in args]
+    else:
+        files = get_files(root_dir, recursive=True, extensions=[".png", ".jpg"])
+    if len(files) == 1:
+        process_file(files[0])
+        sys.exit(0)
+    with Pool(8) as pool:
+        pending = deque()
+        for f in files:
+            pending.append(pool.apply_async(process_file, (f,)))
+            if len(pending) > 16:
+                pending.popleft().get()
+        while pending:
+            pending.popleft().get()
 
-    pool = Pool(4)
-    pool.map(process_file, files)
-    pool.close()
-    pool.join()
     print("done.")
 
 

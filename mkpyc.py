@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from collections import deque
 import compileall
+import sys
+from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
 from dh import format_size, get_files, get_size
 

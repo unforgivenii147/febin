@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from multiprocessing import Pool
 import os
-from pathlib import Path
 import sys
+from multiprocessing import Pool
+from pathlib import Path
 
+import tree_sitter_python as tspython
 from dh import format_size, get_size
 from tree_sitter import (
     Language,
@@ -12,7 +13,6 @@ from tree_sitter import (
     Query,
     QueryCursor,
 )
-import tree_sitter_python as tspython
 
 QUERY_STRING = """
 (comment) @comment

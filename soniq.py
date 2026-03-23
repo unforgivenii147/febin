@@ -9,12 +9,12 @@ def sort_uniq(filename):
         import mmap
 
         with (
-                open(filename, "r+") as f,
-                mmap.mmap(
-                    f.fileno(),
-                    0,
-                    access=mmap.ACCESS_READ,
-                ) as mm,
+            open(filename, "r+") as f,
+            mmap.mmap(
+                f.fileno(),
+                0,
+                access=mmap.ACCESS_READ,
+            ) as mm,
         ):
             lines = mm.read().decode("utf-8").splitlines()
     else:

@@ -41,11 +41,15 @@ def main():
     before = get_size(root_dir)
     args = sys.argv[1:]
 
-    files = ([Path(f) for f in args] if args else get_files(
-        root_dir,
-        recursive=True,
-        extensions=[".metadata", ".md"],
-    ))
+    files = (
+        [Path(f) for f in args]
+        if args
+        else get_files(
+            root_dir,
+            recursive=True,
+            extensions=[".metadata", ".md"],
+        )
+    )
     metafiles = list(root_dir.rglob("METADATA"))
     if metafiles:
         files.extend(metafiles)
@@ -53,7 +57,7 @@ def main():
     with Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f, )))
+            pending.append(pool.apply_async(process_file, (f,)))
             if len(pending) > MAX_QUEUE:
                 pending.popleft().get()
         while pending:

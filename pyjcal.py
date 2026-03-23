@@ -80,24 +80,27 @@ class JalaliDate:
         gy = g_year - 1600
         gm = g_month - 1
         gd = g_day - 1
-        g_day_of_year = (sum([
-            31,
-            28,
-            31,
-            30,
-            31,
-            30,
-            31,
-            31,
-            30,
-            31,
-            30,
-            31,
-        ][:gm]) + gd + (1 if
-                        (gm > 1 and ((g_year % 4 == 0 and g_year % 100 != 0)
-                                     or g_year % 400 == 0)) else 0))
-        g_day_no = gy * 365 + ((gy + 3) // 4) - ((gy + 99) // 100) + (
-            (gy + 399) // 400) + g_day_of_year
+        g_day_of_year = (
+            sum(
+                [
+                    31,
+                    28,
+                    31,
+                    30,
+                    31,
+                    30,
+                    31,
+                    31,
+                    30,
+                    31,
+                    30,
+                    31,
+                ][:gm]
+            )
+            + gd
+            + (1 if (gm > 1 and ((g_year % 4 == 0 and g_year % 100 != 0) or g_year % 400 == 0)) else 0)
+        )
+        g_day_no = gy * 365 + ((gy + 3) // 4) - ((gy + 99) // 100) + ((gy + 399) // 400) + g_day_of_year
         j_day_no = g_day_no - 79
         j_np = j_day_no // 146097
         j_day_no %= 146097
@@ -122,7 +125,9 @@ class JalaliDate:
         j_d = j_day_no + 1
         return JalaliDate(j_y, j_m, int(j_d))
 
-    def to_gregorian(self, ) -> tuple[int, int, int]:
+    def to_gregorian(
+        self,
+    ) -> tuple[int, int, int]:
         jy = self.year
         jm = self.month
         jd = self.day
@@ -240,7 +245,6 @@ class JalaliDate:
 
 
 class JalaliCalendar:
-
     def __init__(
         self,
         year: int | None = None,
@@ -250,7 +254,9 @@ class JalaliCalendar:
         self.year = year if year is not None else today.year
         self.month = month if month is not None else today.month
 
-    def get_month_calendar(self, ) -> list[list[int]]:
+    def get_month_calendar(
+        self,
+    ) -> list[list[int]]:
         first_day = JalaliDate(self.year, self.month, 1)
         first_weekday = first_day.weekday()
         days_in_month = first_day.days_in_month()
@@ -336,7 +342,6 @@ class JalaliCalendar:
 
 
 class JalaliDateFormatter:
-
     @staticmethod
     def format(date: JalaliDate, time: datetime, fmt: str) -> str:
         output = fmt

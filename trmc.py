@@ -16,7 +16,6 @@ from tree_sitter import Language, Parser
 
 
 class TSRemover:
-
     def __init__(self):
         self.parser = Parser()
         self.parser.language = Language(tspython.language())
@@ -28,17 +27,21 @@ class TSRemover:
 
         def walk(node):
             if node.type == "comment":
-                to_delete.append((
-                    node.start_byte,
-                    node.end_byte,
-                ))
+                to_delete.append(
+                    (
+                        node.start_byte,
+                        node.end_byte,
+                    )
+                )
             if node.type == "expression_statement" and len(node.children) == 1:
                 child = node.children[0]
                 if child.type == "string":
-                    to_delete.append((
-                        node.start_byte,
-                        node.end_byte,
-                    ))
+                    to_delete.append(
+                        (
+                            node.start_byte,
+                            node.end_byte,
+                        )
+                    )
             for child in node.children:
                 walk(child)
 
@@ -85,8 +88,7 @@ if __name__ == "__main__":
     root_dir = Path.cwd()
     before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(root_dir,
-                                                           extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".py"])
     pool = Pool(8)
     for _ in pool.imap_unordered(process_file, files):
         pass

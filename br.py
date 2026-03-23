@@ -20,11 +20,11 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
     temp_path = None
     try:
         with tempfile.NamedTemporaryFile(
-                mode="wb",
-                dir=temp_dir,
-                prefix=".tmp_",
-                suffix=".xz",
-                delete=False,
+            mode="wb",
+            dir=temp_dir,
+            prefix=".tmp_",
+            suffix=".xz",
+            delete=False,
         ) as temp_file:
             temp_path = Path(temp_file.name)
             temp_file.write(data)
@@ -39,9 +39,7 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
         return False
 
 
-def safe_delete(file_path: Path,
-                max_retries: int = 3,
-                delay: float = 0.5) -> bool:
+def safe_delete(file_path: Path, max_retries: int = 3, delay: float = 0.5) -> bool:
     for attempt in range(max_retries):
         try:
             if file_path.exists():
@@ -107,9 +105,9 @@ def main():
     root_dir = Path.cwd()
     before = get_size(root_dir)
     args = sys.argv[1:]
-    files = ([Path(arg) for arg in args] if args else [
-        p for p in get_files(root_dir, recursive=True) if should_compress(p)
-    ])
+    files = (
+        [Path(arg) for arg in args] if args else [p for p in get_files(root_dir, recursive=True) if should_compress(p)]
+    )
     if len(files) == 1:
         process_file(files[0])
         return
@@ -117,7 +115,7 @@ def main():
     with Pool(8) as pool:
         pending = deque()
         for f in files:
-            pending.append(pool.apply_async(process_file, (f, )))
+            pending.append(pool.apply_async(process_file, (f,)))
             if len(pending) > MAX_QUEUE:
                 results.append(pending.popleft().get())
         while pending:

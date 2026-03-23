@@ -13,8 +13,8 @@ def get_all_dist_info_dirs():
     """Quickly find all dist-info directories"""
     dist_info_dirs = []
     for site_dir in [
-            *site.getsitepackages(),
-            site.getusersitepackages(),
+        *site.getsitepackages(),
+        site.getusersitepackages(),
     ]:
         if os.path.exists(site_dir):
             for item in os.listdir(site_dir):
@@ -25,8 +25,7 @@ def get_all_dist_info_dirs():
 
 def check_pure(dist_info_path):
     record_file = os.path.join(dist_info_path, "RECORD")
-    pkg_name = os.path.basename(dist_info_path).replace(
-        ".dist-info", "").split("-")[0].lower()
+    pkg_name = os.path.basename(dist_info_path).replace(".dist-info", "").split("-")[0].lower()
     sum = 0
     if os.path.exists(record_file):
         with open(record_file) as f:

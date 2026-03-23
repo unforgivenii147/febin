@@ -1,27 +1,32 @@
 #!/data/data/com.termux/files/usr/bin/python
 from collections import defaultdict
 from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor,as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from file_hash import hash_file
 from termcolor import cprint
 
+
 def should_skip(path):
-    path=Path(path)
-    if path.is_symlink() or not path.stat().st_size or any(pat in path.parts for pat in {".git","__pycache__",".mypy_cache",".ruff_cache"}):
+    path = Path(path)
+    if (
+        path.is_symlink()
+        or not path.stat().st_size
+        or any(pat in path.parts for pat in {".git", "__pycache__", ".mypy_cache", ".ruff_cache"})
+    ):
         return True
     return False
 
 
 def get_hash_file(path):
-    return hash_file(path),path
+    return hash_file(path), path
 
 
 def find_duplicates():
     root_dir = Path.cwd()
     files_by_hash = defaultdict(list)
     duplicate_count = 0
-    ptp=[]
+    ptp = []
     for path in root_dir.rglob("*"):
         if path.is_file() and not should_skip(path):
             ptp.append(path)
@@ -39,21 +44,16 @@ def find_duplicates():
         if len(paths) > 1:
             paths_to_hash.extend(paths)
 
-
-
     with ThreadPoolExecutor(max_workers=8) as executor:
         # Submit all file hashing tasks
-        future_to_path = {
-            executor.submit(get_hash_file, path): path
-            for path in paths_to_hash
-        }
+        future_to_path = {executor.submit(get_hash_file, path): path for path in paths_to_hash}
 
         for future in as_completed(future_to_path):
             hash_result, path = future.result()
             if hash_result is not None:  # Only process if hashing was successful
                 files_by_hash.setdefault(hash_result, []).append(path)
 
-#    return {h: paths for h, paths in file_hashes.items() if len(paths) > 1}
+    #    return {h: paths for h, paths in file_hashes.items() if len(paths) > 1}
 
     for (
         hash,

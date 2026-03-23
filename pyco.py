@@ -12,16 +12,18 @@ def get_skip_dirs():
     skip = set()
     site_packages = Path(sysconfig.get_paths()["purelib"])
     for d in (
-            "regex",
-            "pip",
-            "wheel",
-            "setuptools",
+        "regex",
+        "pip",
+        "wheel",
+        "setuptools",
     ):
         skip.add(str(site_packages / d))
     return skip
 
 
-def clean_pyc_and_pycache(start_dir: Path = Path.cwd(), ):
+def clean_pyc_and_pycache(
+    start_dir: Path = Path.cwd(),
+):
     total_size = 0
     dirs_removed = 0
     files_removed = 0
@@ -38,21 +40,13 @@ def clean_pyc_and_pycache(start_dir: Path = Path.cwd(), ):
                 else:
                     parent_dir = path.parent.parent
                     if ".cpython-312" in path.stem:
-                        twin_path = Path(
-                            str(parent_dir) + "/" +
-                            str(path.stem).replace(".cpython-312", "") + ".py")
+                        twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".cpython-312", "") + ".py")
                     if ".cpython-313" in path.stem:
-                        twin_path = Path(
-                            str(parent_dir) + "/" +
-                            str(path.stem).replace(".cpython-313", "") + ".py")
+                        twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".cpython-313", "") + ".py")
                     if ".opt-1" in path.stem:
-                        twin_path = Path(
-                            str(parent_dir) + "/" +
-                            str(path.stem).replace(".opt-1", "") + ".py")
+                        twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".opt-1", "") + ".py")
                     if ".opt-2" in path.stem:
-                        twin_path = Path(
-                            str(parent_dir) + "/" +
-                            str(path.stem).replace(".opt-2", "") + ".py")
+                        twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".opt-2", "") + ".py")
                 if twin_path.exists():
                     size = path.stat().st_size
                     path.unlink()

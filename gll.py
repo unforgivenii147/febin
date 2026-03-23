@@ -38,12 +38,12 @@ def main() -> int:
     #    outname = "all.xtx"
     try:
         with (
-                path.open(
-                    "r",
-                    encoding="utf-8",
-                    errors="replace",
-                ) as infile,
-                open(outname, "w", encoding="utf-8") as outfile,
+            path.open(
+                "r",
+                encoding="utf-8",
+                errors="replace",
+            ) as infile,
+            open(outname, "w", encoding="utf-8") as outfile,
         ):
             for lineno, line in enumerate(infile, start=1):
                 if lineno < start:

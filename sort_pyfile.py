@@ -58,17 +58,12 @@ def sort_python_script(file_path: Path):
 
         sorted_code = astunparse.unparse(new_tree)
     except ImportError:
-        print(
-            "Warning: 'astunparse' library not found. Trying built-in 'ast.unparse' (Python 3.9+)."
-        )
+        print("Warning: 'astunparse' library not found. Trying built-in 'ast.unparse' (Python 3.9+).")
         try:
             sorted_code = ast.unparse(new_tree)
         except AttributeError:
-            print(
-                "Error: Your Python version is too old to have 'ast.unparse'.")
-            print(
-                "Please install the 'astunparse' library: pip install astunparse"
-            )
+            print("Error: Your Python version is too old to have 'ast.unparse'.")
+            print("Please install the 'astunparse' library: pip install astunparse")
             return
     except Exception as e:
         print(f"Error converting AST back to code: {e}")

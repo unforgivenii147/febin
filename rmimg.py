@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+from collections import deque
 import sys
 from multiprocessing import get_context
 from pathlib import Path
 
 from bs4 import BeautifulSoup
 from dh import (
-    cprint,
     format_size,
     get_files,
     get_size,
@@ -63,11 +63,15 @@ def main():
                 ".txt",
             ],
         )
-    p = Pool(8)
-    for f in files:
-        p.apply_async(process_file, (f,))
-    p.close()
-    p.join()
+    with get_context("spawn").Pool(8) as p:
+        pending = deque()
+        for f in files:
+            pending.append(p.apply_async(process_file, (f,)))
+            if len(pending) > 16:
+                pending.popleft().get()
+        while pending:
+            pending.popleft().get()
+
     diff_size = before - get_size(root_dir)
     print(f"space saved : {format_size(diff_size)}")
 

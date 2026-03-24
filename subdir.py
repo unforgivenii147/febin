@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+from pathlib import Path
 import shutil
 import sys
 import tarfile
 import zipfile
-from pathlib import Path
 
 import py7zr
 
@@ -26,7 +26,7 @@ def unzip_file(archive: Path, target_dir: Path) -> bool:
     try:
         if archive_lower.endswith(".tar.gz") or archive_lower.endswith(".tgz"):
             with tarfile.open(archive, "r:gz") as tar:
-                tar.extractall(target_dir)
+                tar.extractall(target_dir,filter="data")
             return True
         elif archive_lower.endswith(".tar.bz2") or archive_lower.endswith(".tbz2"):
             with tarfile.open(archive, "r:bz2") as tar:

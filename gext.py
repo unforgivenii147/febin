@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
+from multiprocessing import get_context
 import os
+from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tarfile
-import zipfile
-from multiprocessing import get_context, cpu_count
-from pathlib import Path
 from typing import Any
+import zipfile
 
 import regex as re
 
@@ -296,9 +296,8 @@ def main():
         print("No Python files or archives found to process.")
         return
     print(f"Found {len(files_to_process)} relevant files/archives. Starting multiprocessing pool...")
-    num_cpus = cpu_count()
     all_entities = []
-    with Pool(processes=num_cpus) as pool:
+    with get_context("spawn").Pool(processes=8) as pool:
         results_list = pool.map(worker_process, files_to_process)
         for result in results_list:
             all_entities.extend(result)

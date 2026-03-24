@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+from collections import defaultdict
 import os
 import sys
-from collections import defaultdict
 
 from dh import get_files
 from ppdeep import hash_from_file

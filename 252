@@ -1,0 +1,23 @@
+
+def main():
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
+    args = sys.argv[1:]
+    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".py"])
+    if len(files) == 1:
+        process_file(files[0])
+        sys.exit(0)
+    with Pool(8) as pool:
+        pending = deque()
+        for f in files:
+            pending.append(pool.apply_async(process_file, (f,)))
+            if len(pending) > MAX_QUEUE:
+                pending.popleft().get()
+        while pending:
+            pending.popleft().get()
+    diff_size = before - get_size(root_dir)
+    print(f"space saved : {format_size(diff_size)}")
+
+
+if __name__ == "__main__":
+    main()

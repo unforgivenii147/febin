@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 from multiprocessing import get_context
 from pathlib import Path
+import sys
 
 from dh import get_files
 from PIL import Image
@@ -36,7 +36,7 @@ def main() -> None:
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-    p = Pool(4)
+    p = get_context("spawn").Pool(4)
     for _ in p.imap_unordered(process_file, files):
         pass
 

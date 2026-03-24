@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import argparse
-import contextlib
 from collections import deque
+import contextlib
 from multiprocessing import get_context
 from pathlib import Path
+import sys
 
-from dh import format_size, get_size, get_pyfiles
+from dh import format_size, get_pyfiles, get_size
 from termcolor import cprint
 
 MAX_IN_FLIGHT = 16

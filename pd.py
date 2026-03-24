@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 
-import requests
 from packaging import tags
+import requests
 
 
 def is_pure_python(requires_python):

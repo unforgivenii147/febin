@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 from collections import deque
-import sys
 from multiprocessing import get_context
 from pathlib import Path
+import sys
 
 from bs4 import BeautifulSoup
 from dh import (

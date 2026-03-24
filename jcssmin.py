@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 from multiprocessing import get_context
+import os
 from pathlib import Path
 from time import perf_counter
 

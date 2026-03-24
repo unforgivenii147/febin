@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-import sys
 from collections import deque
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
+import sys
 
 from brotlicffi import decompress
 from dh import format_size, get_files, get_size
@@ -25,7 +25,7 @@ def process_file(fp):
     after = get_size(outfile)
     ratio = round((before / after) * 100, 3)
     cprint(f"{outfile.name}", "green", end=" | ")
-    cprint(f"{ratio}", "cyan")
+    cprint(f"{ratio} | {format_size(before)} -> {format_size(after)}", "cyan")
     del data, udata, outfile, before, after, ratio
     return
 
@@ -34,8 +34,8 @@ def main():
     root_dir = Path.cwd()
     before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, recursive=True)
-    with Pool(8) as pool:
+    files = [Path(arg) for arg in args] if args else get_files(root_dir, recursive=True, extensions=[".br"])
+    with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:
             pending.append(pool.apply_async(process_file, (f,)))
@@ -45,7 +45,7 @@ def main():
             pending.popleft().get()
 
     diff_size = before - get_size(root_dir)
-    print(f"{format_size(diff_size)}")
+    cprint(f"space change: {format_size(diff_size)}", "cyan")
 
 
 if __name__ == "__main__":

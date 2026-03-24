@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-import sys
 from pathlib import Path
+import sys
 
-import pytesseract
 from deep_translator import GoogleTranslator
 from langdetect import DetectorFactory, detect
 from PIL import Image, ImageEnhance, ImageFilter
+import pytesseract
 
 DetectorFactory.seed = 0
 TEXT_EXT = {".txt", ".md", ".csv", ".json", ".py"}

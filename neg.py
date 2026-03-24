@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
 import cv2 as cv
 from dh import get_files
@@ -22,10 +22,7 @@ def process_file(fp):
 
 def main():
     args = sys.argv[1:]
-    if args:
-        files = [Path(arg) for arg in args]
-    else:
-        files = get_files(root_dir, recursive=True, extensions=[".png", ".jpg"])
+    files = [Path(arg) for arg in args] if args else get_files(root_dir, recursive=True, extensions=[".png", ".jpg"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

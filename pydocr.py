@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
+from collections import deque
 import importlib
 import inspect
-import os
-import sys
-from collections import deque
 from multiprocessing import get_context
+import os
 from pathlib import Path
+import sys
 from textwrap import dedent
 
 from dh import get_files, unique_path

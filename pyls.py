@@ -3,10 +3,10 @@ import argparse
 import datetime
 import grp
 import os
+from pathlib import Path
 import pwd
 import stat
 import sys
-from pathlib import Path
 
 COLORS = {
     "dir": "\033[34m",

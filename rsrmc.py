@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 from pathlib import Path
+import sys
 
-import tree_sitter_rust
 from dh import format_size, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_rust
 
 EXCLUDE_PREFIXES = (b"#!/",)
 parser = Parser()

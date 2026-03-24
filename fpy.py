@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+from io import StringIO
 import sys
 import tokenize
-from io import StringIO
 
 import regex as re
 

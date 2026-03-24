@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 from multiprocessing import get_context
 from pathlib import Path
+import sys
 
-import regex as re
 from dh import get_files, unique_path
 from fontTools.ttLib import TTFont
+import regex as re
 from termcolor import cprint
 
 MAX_QUEUE = 16
@@ -73,11 +73,15 @@ def process_file(fn):
 def main() -> None:
     root_dir = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".ttf", ".woff", ".woff2"])
+    files = (
+        [Path(arg) for arg in args]
+        if args
+        else get_files(root_dir, extensions=[".ttf", ".woff", ".woff2", ".bin", ".otf"])
+    )
     if not files:
         print("no files found")
         return
-    p = Pool(8)
+    p = get_context("spawn").Pool(8)
     for _ in p.imap_unordered(process_file, files):
         pass
     p.close()

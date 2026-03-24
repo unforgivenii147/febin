@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
-from multiprocessing import get_context, cpu_count
+from multiprocessing import cpu_count
 from pathlib import Path
+import sys
 
-import tree_sitter_cpp
 from dh import format_size, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import tree_sitter_cpp
 
 EXCLUDE_PREFIXES = (b"#!/",)
 parser = Parser()

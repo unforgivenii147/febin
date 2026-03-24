@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+from multiprocessing import cpu_count
 import os
 import subprocess
-from multiprocessing import get_context, cpu_count
 
 from rich.progress import Progress
 

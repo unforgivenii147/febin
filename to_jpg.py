@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import argparse
-from multiprocessing import get_context
 from pathlib import Path
 
 from dh import (

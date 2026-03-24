@@ -1,83 +1,57 @@
 #!/data/data/com.termux/files/usr/bin/python
-import shutil
-import sysconfig
 from pathlib import Path
+import shutil
+import sys
 
 from dh import format_size
-from fastwalk import walk_dirs, walk_files
 from termcolor import cprint
 
 
-def get_skip_dirs():
-    skip = set()
-    site_packages = Path(sysconfig.get_paths()["purelib"])
-    for d in (
-        "regex",
-        "pip",
-        "wheel",
-        "setuptools",
-    ):
-        skip.add(str(site_packages / d))
-    return skip
-
-
-def clean_pyc_and_pycache(
-    start_dir: Path = Path.cwd(),
-):
+def clean_pyc_and_pycache():
+    cwd = Path.cwd()
     total_size = 0
     dirs_removed = 0
     files_removed = 0
     d2r = []
-    skip_dirs = get_skip_dirs()
-    for pth in walk_files(start_dir):
-        path = Path(pth)
-        if path.is_file() and any(pat in path.parts for pat in skip_dirs):
+    for path in cwd.rglob("*.pyc"):
+        pyfile_samedir = path.with_name(
+            path.name.replace(".cpython-312", "")
+            .replace(".opt-1", "")
+            .replace(".opt-2", "")
+            .replace("-pytest-9.0.2", "")
+        ).with_suffix(".py")
+        pyfile_parentdir = path.parent.parent / pyfile_samedir.name
+        if not pyfile_samedir.exists() and not pyfile_parentdir.exists():
+            cprint(f"{pyfile_samedir} {pyfile_parentdir} does not exists so {path.name} is lonely pyc", "cyan")
             continue
-        if path.is_file() and path.suffix == ".pyc":
-            try:
-                if path.parent.name != "__pycache__":
-                    twin_path = path.with_suffix(".py")
-                else:
-                    parent_dir = path.parent.parent
-                    if ".cpython-312" in path.stem:
-                        twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".cpython-312", "") + ".py")
-                    if ".cpython-313" in path.stem:
-                        twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".cpython-313", "") + ".py")
-                    if ".opt-1" in path.stem:
-                        twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".opt-1", "") + ".py")
-                    if ".opt-2" in path.stem:
-                        twin_path = Path(str(parent_dir) + "/" + str(path.stem).replace(".opt-2", "") + ".py")
-                if twin_path.exists():
-                    size = path.stat().st_size
-                    path.unlink()
-                    total_size += size
-                    files_removed += 1
-                else:
-                    cprint(twin_path, "green")
-                    cprint(f"{path} : lonely pyc", "cyan")
+        if pyfile_parentdir.exists() or pyfilr_samedir.exists():
+            sz = path.stat().st_size
+            path.unlink()
+            total_size += sz
+            files_removed += 1
 
-            except Exception as e:
-                print(f"⚠️ error deleting {path}: {e}")
-
-    for dirp in walk_dirs(start_dir):
-        path = Path(dirp)
-        if path.is_dir() and path.name == "__pycache__":
-            d2r.append(path)
-        if path.is_dir() and ".git" in path.parts:
-            continue
-        if path.is_dir() and any(str(path).startswith(sd) for sd in skip_dirs):
-            continue
+    for dirp in cwd.rglob("__pycache__"):
+        if dirp.is_dir():
+            d2r.append(dirp)
 
     for d in d2r:
         if d.exists():
             try:
-                shutil.rmtree(d)
+                d.rmdir()
                 dirs_removed += 1
-            except Exception as e:
-                print(f"⚠️ Could not delete {path}: {e}")
-    print(f"   • .pyc files removed: {files_removed}")
-    print(f"   • Total size freed: {format_size(total_size)}")
-    print(f"   • __pycache__ directories removed: {dirs_removed}")
+            except Exception:
+                try:
+                    shutil.rmtree(str(d))
+                    dits_temoved += 1
+                except:
+                    print(f"ertor removing {d}")
+
+    if not files_removed and not dirs_removed:
+        print("nothing found")
+        sys.exit(0)
+    print(f"files removed: {files_removed}")
+    print(f"dirs  removed: {dirs_removed}")
+    print(f"Total size: {format_size(total_size)}")
 
 
 if __name__ == "__main__":

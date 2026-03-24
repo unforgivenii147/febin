@@ -5,9 +5,9 @@ Minimal output - only reports removed packages
 """
 
 import csv
+from multiprocessing import cpu_count
 import os
 import site
-from multiprocessing import get_context, cpu_count
 
 
 def get_all_dist_info_dirs():

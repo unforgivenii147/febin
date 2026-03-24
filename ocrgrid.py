@@ -7,8 +7,8 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-import pytesseract
 from PIL import Image
+import pytesseract
 
 
 def pil_to_cv(img: Image.Image) -> np.ndarray:

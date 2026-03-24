@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+from collections import deque
+from multiprocessing import Pool
 import os
+from pathlib import Path
 import random
 import string
 import sys
-from collections import deque
-from multiprocessing import Pool
-from pathlib import Path
 
 from bs4 import BeautifulSoup
 from dh import (

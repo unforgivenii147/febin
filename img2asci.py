@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
-from multiprocessing import get_context
 import sys
+
 from ascii_magic import AsciiArt
 from dh import get_files
 

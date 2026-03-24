@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import shutil
 from multiprocessing import Pool, cpu_count
+import os
 from pathlib import Path
+import shutil
 
 FILE_EXTENSIONS = [".pyc", ".log", ".bak"]
 DIR_NAMES = [

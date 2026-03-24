@@ -3,13 +3,13 @@ import ast
 import multiprocessing
 import os
 
-import tree_sitter_python as tspython
 from tree_sitter import (
     Language,
     Parser,
     Query,
     QueryCursor,
 )
+import tree_sitter_python as tspython
 
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)

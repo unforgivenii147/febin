@@ -1,15 +1,21 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
+from pathlib import Path
 import sys
+
+from dh import is_binary
+
+THRESHOLD = 10485760
 
 
 def sort_uniq(filename):
-    get_size = os.path.getsize(filename)
-    if get_size > 10 * 1024 * 1024:
+    sz = filename.stat().st_size
+    if not sz:
+        return None
+    if sz > THRESHOLD:
         import mmap
 
         with (
-            open(filename, "r+") as f,
+            open(filename, "r+", encoding="utf-8", errors="ignore") as f,
             mmap.mmap(
                 f.fileno(),
                 0,
@@ -18,15 +24,12 @@ def sort_uniq(filename):
         ):
             lines = mm.read().decode("utf-8").splitlines()
     else:
-        with open(filename) as f:
-            lines = f.read().splitlines()
-    unique_lines = sorted(set(lines))
+        lines = filename.read_text(encoding="utf-8", errors="ignore").splitlines()
+    unique_lines = sorted({p.strip() for p in lines if p.strip()})
     original_count = len(lines)
     new_count = len(unique_lines)
     lines_removed = original_count - new_count
-    with open(filename, "w") as f:
-        for line in unique_lines:
-            f.write(line + "\n")
+    filename.write_text("\n".join(unique_lines), encoding="utf-8")
     return lines_removed
 
 
@@ -34,8 +37,11 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python sort_uniq.py <filename>")
         sys.exit(1)
-    filename = sys.argv[1]
-    lines_removed = sort_uniq(filename)
+    path = Path(sys.argv[1])
+    if is_binary(path):
+        print(f"{path.name} is binary")
+        sys.exit(0)
+    lines_removed = sort_uniq(path)
     if lines_removed > 0:
         print(f"Removed {lines_removed} duplicate lines.")
     else:

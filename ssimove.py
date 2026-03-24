@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import shutil
 from pathlib import Path
-from typing import Dict, List, Tuple
+import shutil
 
 import ssdeep
 
@@ -47,7 +45,7 @@ def find_similar_files(
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    file_hashes: Dict[Path, str] = {}
+    file_hashes: dict[Path, str] = {}
     # Collect all files and their hashes first
     for filepath in search_dir.rglob("*"):
         if filepath.is_file() and not filepath.is_symlink():
@@ -61,7 +59,7 @@ def find_similar_files(
 
     # Store potential groups of similar files.
     # Key: A representative file from a group, Value: List of similar files in that group
-    similar_groups: Dict[Path, List[Path]] = {}
+    similar_groups: dict[Path, list[Path]] = {}
     processed_files = set()  # Keep track of files already assigned to a group
 
     # Compare each file's hash with every other file's hash
@@ -172,7 +170,7 @@ def find_similar_files(
             except Exception as e:
                 print(f"  - Error moving {file_to_move.name}: {e}")
 
-    print(f"\n--- Summary ---")
+    print("\n--- Summary ---")
     if group_counter == 0:
         print("No groups of similar files found that met the criteria.")
     else:
@@ -182,7 +180,7 @@ def find_similar_files(
 
 if __name__ == "__main__":
     # Ensure the script is run from the directory you want to process or modify SEARCH_DIR
-    if SEARCH_DIR == Path.cwd():
+    if Path.cwd() == SEARCH_DIR:
         print("INFO: Processing files in the current directory.")
     else:
         print(f"INFO: Processing files in: {SEARCH_DIR}")

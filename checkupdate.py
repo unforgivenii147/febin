@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
+from datetime import datetime
 import os
 import sys
 import time
-from datetime import datetime
 
-import requests
 from dh import get_installed_packages
 from packaging.version import (
     InvalidVersion,
     Version,
 )
+import requests
 
 try:
     from colorama import Fore, Style, init

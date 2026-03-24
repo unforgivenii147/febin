@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import stat
 from pathlib import Path
+import stat
 
 
 def has_shebang(path: Path) -> bool:

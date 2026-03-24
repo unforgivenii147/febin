@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
-import regex as re
 from dh import format_size, get_nobinary, get_size
+import regex as re
 from termcolor import cprint
 
 LIC_FILE = Path("/sdcard/lic")

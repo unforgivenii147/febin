@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+from pathlib import Path
 import shutil
 import sys
 import time
-from pathlib import Path
 
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
@@ -12,6 +12,7 @@ DEST_DIR = Path("/data/data/com.termux/files/home/tmp/tgz")
 if not DEST_DIR.exists():
     DEST_DIR.mkdir(exist_ok=True)
 ALLOWED_EXTENSIONS = (
+    ".metadata",
     ".tar.gz",
     ".whl",
     ".tar.xz",

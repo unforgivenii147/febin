@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
-import sys
 from pathlib import Path
+import sys
 
 
 def minify_json_file(path: Path, dry_run: bool = False) -> bool:

@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import json
-import sys
 from collections import deque
+import json
 from multiprocessing import get_context
 from pathlib import Path
+import sys
 
-import xmltodict
 from termcolor import cprint
+import xmltodict
 
 MAX_QUEUE = 16
 

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+from collections import defaultdict
 import hashlib
 import json
 import os
-from collections import defaultdict
 from pathlib import Path
 
 from tqdm import tqdm

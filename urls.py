@@ -1,16 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
-import os
-import tarfile
-import threading
-import zipfile
 from collections.abc import Iterable
 from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed,
 )
+import os
+import tarfile
+import threading
 from urllib.parse import urlparse, urlunparse
+import zipfile
 
 import regex as re
 

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-import sys
 from multiprocessing import Pool
 from pathlib import Path
+import sys
 
 from dh import (
     SOURCE_CODE_EXT,

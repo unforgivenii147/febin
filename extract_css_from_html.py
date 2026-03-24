@@ -1,14 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import random
-import string
-import sys
 from multiprocessing import Pool
+import os
 from pathlib import Path
+import sys
 from sys import exit
 
 from bs4 import BeautifulSoup
-from dh import format_size, get_files, get_size
+from dh import format_size, get_files, get_random_name, get_size
 from termcolor import cprint
 
 
@@ -18,8 +16,7 @@ def save_style(str1):
     fn = "css/"
     if not os.path.exists("css"):
         os.mkdir("css")
-    for _i in range(0, 10):
-        fn += random.choice(string.ascii_lowercase)
+    fn = get_random_name(10)
     fn += ".css"
     if os.path.exists(fn):
         cprint(f"[{fn}] exists.", "red")

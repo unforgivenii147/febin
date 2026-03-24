@@ -3,8 +3,8 @@ import ast
 import importlib.metadata
 import importlib.util
 import numbers
-import sys
 from pathlib import Path
+import sys
 
 from dh import STDLIB, get_files, get_installed_pkgs
 

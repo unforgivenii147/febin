@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+from pathlib import Path
 import sys
 import warnings
-from pathlib import Path
 
 from pip._internal.cli.main import main as pip_main
 

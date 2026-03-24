@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+import sys
 
 from dh import format_size, get_nobinary, get_size
 from termcolor import cprint
@@ -61,7 +61,7 @@ def main():
         sys.exit(0)
     lines_removed = 0
     results = []
-    with Pool(8) as p:
+    with get_context("spawn").Pool(processes=8) as p:
         pending = deque()
         for f in files:
             pending.append(p.apply_async(process_file, (f,)))

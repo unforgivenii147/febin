@@ -1,7 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
-import sys
 from pathlib import Path
+import sys
+
+from dh import get_random_name
+
+
+def mergedict(da, db):
+    return {**da, **db}
 
 
 def load_json_object(path):
@@ -20,7 +26,8 @@ def merge_json_files(files):
             print(f"Warning: skipping missing file {path}")
             continue
         try:
-            merged.update(load_json_object(path))
+            merged = mergedict(merged, load_json_object(path))
+        #            merged.update(load_json_object(path))
         except Exception as e:
             print(f"Warning: {path}: {e}")
     return merged
@@ -30,23 +37,23 @@ def main():
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} file1.json file2.json [...]")
         sys.exit(1)
-    merged = merge_json_files(sys.argv[1:])
-    json.dump(
-        merged,
-        sys.stdout,
-        indent=4,
-        ensure_ascii=False,
-        sort_keys=True,
-    )
-    print()
-    out_file = "dic.json"
+    args = sys.argv[1:]
+    cwd = Path.cwd()
+    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".json"])
+    if len(files) == 1:
+        print("provide more than file.")
+        sys.exit(0)
+    merged = merge_json_files(files)
+    out_file = Path(f"{get_random_name(6)}.json")
+    if out_file.exists():
+        print(f"{out_file} exists")
+        sys.exit(0)
     with open(out_file, "w") as fj:
         json.dump(
             merged,
             fj,
-            indent=4,
-            ensure_ascii=True,
-            sort_keys=True,
+            indent=2,
+            ensure_ascii=False,
         )
     print(f"saved to {out_file}")
 

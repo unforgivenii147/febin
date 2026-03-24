@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
-import lzma
+import lzma_mt
+from pathlib import Path
 import sys
 import tempfile
 import time
-from pathlib import Path
 
 from dh import format_size
 from loguru import logger
@@ -70,7 +70,7 @@ def compress_file(file_path: Path, delete_delay: float = 0.5) -> bool:
         with file_path.open("rb") as f_in:
             data = f_in.read()
         compressed_data: bytes
-        compressed_data = lzma.compress(data, preset=9)
+        compressed_data = lzma_mt.compress(data, preset=9)
         if not atomic_write(compressed_data, compressed_path):
             return False
         if not compressed_path.exists() or compressed_path.stat().st_size == 0:

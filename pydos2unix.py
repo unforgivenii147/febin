@@ -16,7 +16,6 @@ import fnmatch
 import logging
 import mmap
 import os
-from multiprocessing import get_context
 from pathlib import Path
 
 from dh import is_binary

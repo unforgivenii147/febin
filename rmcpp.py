@@ -1,15 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
-from multiprocessing import get_context, cpu_count
+from multiprocessing import get_context
 from pathlib import Path
+import sys
 
-import tree_sitter_cpp as tscpp
+from dh import format_size, get_files, get_size
 from tree_sitter import (
     Language,
     Parser,
     Query,
     QueryCursor,
 )
+import tree_sitter_cpp as tscpp
 
 ts_remover = None
 
@@ -97,88 +98,46 @@ def ts_remover_initializer():
     ts_remover = TSCppRemover()
 
 
-def process_file(fp):
+def process_file(path):
     global ts_remover
-    file_path = Path(fp)
     try:
-        with open(file_path, encoding="utf-8") as f:
-            code = f.read()
-    except Exception as e:
-        print(f"[ERROR] {file_path.name} read: {e}")
-        return ("error", file_path, 0)
-    try:
+        code = path.read_text(encoding="utf-8")
         result, comments = ts_remover.remove_comments(code)
     except Exception as e:
-        print(f"[ERROR] {file_path.name} processing: {e}")
-        return ("error", file_path, 0)
+        print(f"[ERROR] {path.name} processing: {e}")
+        return ("error", path, 0)
     if comments:
-        try:
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(result)
-            print(f"[OK] {file_path.name}: {comments} comments removed")
-            return (
-                "changed",
-                file_path,
-                comments,
-            )
-        except Exception as e:
-            print(f"[ERROR] {file_path.name} write: {e}")
-            return ("error", file_path, comments)
+        path.write_text(result, encoding="utf-8")
+        print(f"[OK] {path.name}: {comments} comments removed")
+        return (
+            "changed",
+            path,
+            comments,
+        )
     else:
-        print(f"[NO CHANGE] {file_path.name}")
-        return ("nochange", file_path, 0)
+        print(f"[NO CHANGE] {path.name}")
+        return ("nochange", path, 0)
 
 
 if __name__ == "__main__":
-    try:
-        from dh import format_size, get_size
-        from fastwalk import walk_files
-    except ImportError:
+    cwd = Path.cwd()
+    args = sys.argv[1:]
+    files = (
+        [Path(p) for p in args]
+        if args
+        else get_files(cwd, extensions=[".js", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".hh"])
+    )
+    before = get_size(cwd)
 
-        def walk_files(path):
-            return [str(p) for p in Path(path).rglob("*")]
-
-        def get_size(path):
-            return sum(f.stat().st_size for f in Path(path).rglob("*") if f.is_file())
-
-        def format_size(size):
-            return f"{size / 1024:.2f} KB"
-
-    dir_path = Path.cwd()
-    files = [
-        p
-        for p in walk_files(dir_path)
-        if Path(p).suffix
-        in [
-            ".js",
-            ".cpp",
-            ".cc",
-            ".cxx",
-            ".h",
-            ".hpp",
-            ".hxx",
-            ".hh",
-        ]
-    ]
-    if not files:
-        print("No C/C++ files found")
-        sys.exit(0)
-    before = get_size(dir_path)
-    nproc = min(cpu_count() or 1, 8)
-    with Pool(
-        processes=nproc,
-        initializer=ts_remover_initializer,
-    ) as pool:
+    with get_context("spawn").Pool(processes=8, initializer=ts_remover_initializer) as pool:
         results = pool.map(process_file, files)
-    after = get_size(dir_path)
+    diffsize = before - get_size(cwd)
     changed = sum(1 for r in results if r[0] == "changed")
     errors = [r for r in results if r[0] == "error"]
     nochg = sum(1 for r in results if r[0] == "nochange")
-    print(f"\n{'=' * 60}")
     print(f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}")
     if errors:
         print("\nErrors in:")
         for _, fn, *_ in errors:
             print(f"  - {fn}")
-    print(f"Size reduced: {format_size(before - after)}")
-    print(f"{'=' * 60}")
+    print(f"Size reduced: {format_size(diffsize)}")

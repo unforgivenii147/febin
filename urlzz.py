@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 from pathlib import Path
 import tarfile
@@ -82,7 +79,7 @@ def extract_urls_from_7z(filepath):
     try:
         with py7zr.SevenZipFile(filepath, mode="r") as archive:
             all_files = archive.readall()
-            for _name, bio in all_files.items():
+            for bio in all_files.values():
                 try:
                     content = bio.read().decode("utf-8", errors="ignore")
                     urls.update(extract_urls_from_text(content))
@@ -97,14 +94,14 @@ def extract_urls(filepath):
     path = Path(filepath)
     if path.suffix in EXT:
         return extract_urls_from_file(filepath)
-    elif path.suffix in [".zip", ".whl"]:
+    elif path.suffix in {".zip", ".whl"}:
         return extract_urls_from_zip(filepath)
-    elif path.suffix.startswith(".tar") or path.suffix in [
+    elif path.suffix.startswith(".tar") or path.suffix in {
         ".tar.gz",
         ".tar.xz",
         ".tar.zst",
         ".tar.7z",
-    ]:
+    }:
         return extract_urls_from_tar(filepath)
     elif path.suffix == ".7z":
         return extract_urls_from_7z(filepath)
@@ -115,14 +112,12 @@ if __name__ == "__main__":
     file_paths = []
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if not d.startswith(".")]
-        for file in files:
-            file_paths.append(os.path.join(root, file))
+        file_paths.extend(os.path.join(root, file) for file in files)
     all_urls = set()
     with ThreadPoolExecutor(8) as executor:
         futures = [executor.submit(extract_urls, fp) for fp in file_paths]
     for future in as_completed(futures):
         all_urls.update(future.result())
     with open("urls.txt", "w", encoding="utf-8") as f:
-        for url in sorted(all_urls):
-            f.write(url + "\n")
+        f.writelines(url + "\n" for url in sorted(all_urls))
     print(f"Extracted {len(all_urls)} unique URLs to urls.txt")

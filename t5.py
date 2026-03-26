@@ -5,12 +5,7 @@ from pathlib import Path
 import sys
 
 from dh import format_size, get_size
-from tree_sitter import (
-    Language,
-    Parser,
-    Query,
-    QueryCursor,
-)
+from tree_sitter import Language, Parser, Query, QueryCursor
 import tree_sitter_python as tspython
 
 QUERY_STRING = """
@@ -25,7 +20,7 @@ QUERY_STRING = """
 
 
 class TSRemover:
-    def __init__(self):
+    def __init__(self) -> None:
         self.language = Language(tspython.language())
         self.parser = Parser(self.language)
         self.query = Query(self.language, QUERY_STRING)
@@ -52,13 +47,7 @@ class TSRemover:
                     text = source_bytes[start:end].decode("utf-8")
                     if capture_name == "comment":
                         stripped = text.strip()
-                        if (
-                            stripped.startswith("# type:")
-                            or stripped.startswith("# TODO")
-                            or stripped.startswith("# noqa")
-                            or stripped.startswith("#!")
-                            or stripped.startswith("# fmt:")
-                        ):
+                        if stripped.startswith(("# type:", "# TODO", "# noqa", "#!", "# fmt:")):
                             continue
                         comment_count += 1
                     else:

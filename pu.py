@@ -21,17 +21,15 @@ def display_packages(
 
 
 def find_matching_packages(pattern: str, packages: dict[str, str]) -> dict[str, str]:
-    matches = {}
     pattern_lower = pattern.lower()
-    for package_name, version in packages.items():
-        if pattern_lower in package_name.lower():
-            matches[package_name] = version
-    return matches
+    return {
+        package_name: version for package_name, version in packages.items() if pattern_lower in package_name.lower()
+    }
 
 
 def get_pkgs():
     pkgfile = Path("/sdcard/pip.freeze")
-    pkgfile_content = pkgfile.read_text()
+    pkgfile_content = pkgfile.read_text(encoding="utf-8")
     packages = {}
     for line in pkgfile_content.splitlines():
         if "==" in line:

@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 import shutil
 import sys
 
@@ -57,7 +58,8 @@ def read_markdown_file(file_path):
 
 def convert_markdown(md_path: str) -> str:
     if not md_path:
-        raise ValueError("Markdown file path cannot be empty. Please provide a valid .md file path.")
+        msg = "Markdown file path cannot be empty. Please provide a valid .md file path."
+        raise ValueError(msg)
     markdown_text = read_markdown_file(md_path)
     markdown_text = convert_latex_format(markdown_text)
     base_name = os.path.basename(md_path).replace(".md", "")
@@ -98,8 +100,7 @@ def convert_markdown(md_path: str) -> str:
         </body>
     </html>
     """
-    with open(temp_html_path, "w", encoding="utf-8") as f:
-        f.write(html_template)
+    pathlib.Path(temp_html_path).write_text(html_template, encoding="utf-8")
     shutil.copy(temp_html_path, final_output_path)
     return final_output_path
 

@@ -8,11 +8,7 @@ import string
 import sys
 
 from bs4 import BeautifulSoup
-from dh import (
-    format_size,
-    get_files,
-    get_size,
-)
+from dh import format_size, get_files, get_size
 from termcolor import cprint
 
 MAX_QUEUE = 16
@@ -22,22 +18,20 @@ def save_script(str1):
     fn = "js/"
     if not os.path.exists("js"):
         os.mkdir("js")
-    for _i in range(0, 10):
+    for _i in range(10):
         fn += random.choice(string.ascii_lowercase)
     fn += ".js"
     if os.path.exists(fn):
         cprint(f"[{fn}] exists.", "red")
         return False
     if not os.path.exists(fn):
-        with open(fn, "w") as f:
-            f.write("\n".join(list(str1)))
+        Path(fn).write_text("\n".join(list(str1)), encoding="utf-8")
         cprint(f"{[fn]} created.", "cyan")
     return True
 
 
 def process_file(fp):
-    with open(fp, encoding="utf-8") as file:
-        html_content = file.read()
+    html_content = Path(fp).read_text(encoding="utf-8")
     soup = BeautifulSoup(html_content, "html.parser")
     scripts = soup.find_all("script")
     if scripts:

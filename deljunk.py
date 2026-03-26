@@ -7,19 +7,16 @@ from fastwalk import walk_parallel
 
 
 def empty_it(pth) -> None:
-    with open(pth, "w") as f:
-        f.write("")
+    Path(pth).write_text("", encoding="utf-8")
 
 
 def remove_it(fp) -> None:
     if not fp.is_symlink():
         fp.unlink()
-    else:
-        pass
 
 
 def load_junk():
-    with open("/sdcard/junk") as f:
+    with open("/sdcard/junk", encoding="utf-8") as f:
         return [line.strip().lower() for line in f if line.strip()]
 
 

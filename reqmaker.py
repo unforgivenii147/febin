@@ -34,7 +34,9 @@ def read_existing_requirements() -> set[str]:
     if not REQUIREMENTS_FILE.exists():
         return set()
     return {
-        line.strip() for line in REQUIREMENTS_FILE.read_text().splitlines() if line.strip() and not line.startswith("#")
+        line.strip()
+        for line in REQUIREMENTS_FILE.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.startswith("#")
     }
 
 
@@ -43,7 +45,7 @@ def save_to_requirements(
 ) -> None:
     existing = read_existing_requirements()
     merged = sorted(existing | set(packages))
-    REQUIREMENTS_FILE.write_text("\n".join(merged) + "\n")
+    REQUIREMENTS_FILE.write_text("\n".join(merged) + "\n", encoding="utf-8")
     print(f"✔️ Saved {len(packages)} new package(s). Total: {len(merged)} in requirements.txt")
 
 

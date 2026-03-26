@@ -2,14 +2,11 @@
 import ast
 from collections import deque
 from multiprocessing import Pool
+import operator
 from pathlib import Path
 import sys
 
-from dh import (
-    format_size,
-    get_files,
-    get_size,
-)
+from dh import format_size, get_files, get_size
 import regex as re
 from termcolor import cprint
 from tree_sitter import Language, Parser
@@ -146,7 +143,7 @@ def strip_code(source_code):
         traverse(root_node)
         modifications = [(s, e, "") for s, e in to_delete]
         modifications += [(s, e, "pass") for s, e in to_replace_with_pass]
-        modifications.sort(key=lambda x: x[0], reverse=True)
+        modifications.sort(key=operator.itemgetter(0), reverse=True)
         working_code = source_code
         for (
             start,

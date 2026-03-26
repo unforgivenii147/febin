@@ -14,8 +14,6 @@ import regex as re
 
 def install_js2py():
     try:
-        pass
-
         return True
     except ImportError:
         print("📦 Installing js2py library...")
@@ -185,8 +183,7 @@ def convert_file(
     api_key: str | None = None,
 ) -> bool:
     try:
-        with open(input_file, encoding="utf-8") as f:
-            js_code = f.read()
+        js_code = Path(input_file).read_text(encoding="utf-8")
     except Exception as e:
         print(f"❌ Error reading file: {e}")
         return False
@@ -211,8 +208,7 @@ def convert_file(
     if output_file is None:
         output_file = input_file.with_suffix(".py")
     try:
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(result)
+        Path(output_file).write_text(result, encoding="utf-8")
         print(f"✅ Converted successfully: {output_file}")
         return True
     except Exception as e:

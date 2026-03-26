@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
 import sys
 
@@ -18,36 +18,31 @@ def process_file(file_path: Path) -> None:
     if file_path.suffix == ".py":
         try:
             ast.parse(orig)
-            file_path.write_text(orig)
+            file_path.write_text(orig, encoding="utf-8")
             after = get_size(file_path)
             print(f"{file_path.name} ", end=" ")
             print(format_size(before - after))
         except:
             return
     else:
-        file_path.write_text(orig)
+        file_path.write_text(orig, encoding="utf-8")
         after = get_size(file_path)
         print(f"{file_path.name} ", end=" ")
         print(format_size(before - after))
 
 
 def main():
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
-    if args:
-        files = [Path(f) for f in args]
-        for f in files:
-            process_file(f)
-    else:
-        files = get_nobinary(root_dir)
-        p = Pool(8)
-        for f in files:
-            p.apply_async(process_file, (f,))
-        p.close()
-        p.join()
-    diff_size = before - get_size(root_dir)
-    print(f"{format_size(diff_size)}")
+    files = [Path(f) for f in args] if args else get_nobinary(cwd)
+    p = get_context("spawn").Pool(8)
+    for f in files:
+        p.apply_async(process_file, (f,))
+    p.close()
+    p.join()
+    diff_size = before - get_size(cwd)
+    print(f"space change: {format_size(diff_size)}")
 
 
 if __name__ == "__main__":

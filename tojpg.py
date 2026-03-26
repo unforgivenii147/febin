@@ -64,7 +64,7 @@ def convert_to_jpg(file_path: str) -> bool:
             )
         else:
             img = Image.open(path)
-            if img.mode in ("RGBA", "LA"):
+            if img.mode in {"RGBA", "LA"}:
                 background = Image.new(
                     "RGB",
                     img.size,

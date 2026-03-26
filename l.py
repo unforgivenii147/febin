@@ -22,10 +22,20 @@ if __name__ == "__main__":
             sz = " \033[05;95msymlink "
         else:
             sz = str(format_size(get_size(path)))
-            if len(sz) == 7:
-                sz = "  " + sz
-            if len(sz) == 8:
-                sz = " " + sz
+            match len(sz):
+                case 3:
+                    sz = "      " + sz
+                case 4:
+                    sz = "     " + sz
+                case 5:
+                    sz = "    " + sz
+                case 6:
+                    sz = "   " + sz
+                case 7:
+                    sz = "  " + sz
+                case 8:
+                    sz = " " + sz
+
         if path.is_symlink():
             print(f"\033[05;95m{path.name[:24]:25}\033[0m", end=" ")
         else:

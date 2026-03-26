@@ -18,7 +18,7 @@ def csv_to_json_map(csv_file):
         if not header or len(header) < 2:
             print("Error: CSV must have at least two columns")
             sys.exit(1)
-        for _row_num, row in enumerate(reader, start=2):
+        for row in reader:
             if len(row) < 2:
                 continue
             key = row[0].strip()

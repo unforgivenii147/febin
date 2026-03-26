@@ -8,7 +8,7 @@ import regex as re
 
 
 class TitleParser(HTMLParser):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.in_title = False
         self.title = None
@@ -29,7 +29,7 @@ class TitleParser(HTMLParser):
 def extract_title(html_path: Path) -> str | None:
     try:
         parser = TitleParser()
-        parser.feed(html_path.read_text(errors="ignore"))
+        parser.feed(html_path.read_text(encoding="utf-8", errors="ignore"))
         return parser.title
     except Exception:
         return None

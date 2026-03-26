@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import operator
 from pathlib import Path
 
 
@@ -52,7 +53,7 @@ def du_sort_python(target_dir="."):
             results.append((size, str(entry)))
     sorted_results = sorted(
         results,
-        key=lambda item: item[0],
+        key=operator.itemgetter(0),
         reverse=False,
     )
     print(f"{target_dir}:")

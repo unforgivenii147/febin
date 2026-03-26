@@ -2,6 +2,7 @@
 import ast
 import multiprocessing as mp
 import os
+import pathlib
 
 OUTPUT_DIR = "output"
 EXCLUDE_DIRS = {
@@ -59,12 +60,7 @@ def extract_from_file(
     dict[str, str],
 ]:
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
-            source = f.read()
+        source = pathlib.Path(path).read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(source)
     except Exception:
         return path, {}, {}, {}, {}, {}
@@ -116,8 +112,7 @@ def extract_from_file(
 
 def write_output(path: str, data: dict[str, str]) -> None:
     with open(path, "w", encoding="utf-8") as f:
-        for _name, src in sorted(data.items()):
-            f.write(src.rstrip() + "\n\n")
+        f.writelines(src.rstrip() + "\n\n" for _name, src in sorted(data.items()))
 
 
 def main():

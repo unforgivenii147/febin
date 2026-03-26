@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 """
 css_bundle.py — merge CSS, deduplicate rules, and bundle assets.
-Features
+Features.
 --------
 • Merge CSS files in given order
 • Remove Google Fonts imports
@@ -108,9 +108,7 @@ def deduplicate_rules(css_text):
         if key not in rules:
             order.append(key)
         rules[key] = body.strip()
-    merged = []
-    for sel in order:
-        merged.append(f"{sel} {{\n{rules[sel]}\n}}")
+    merged = [f"{sel} {{\n{rules[sel]}\n}}" for sel in order]
     return "\n\n".join(merged)
 
 
@@ -139,7 +137,7 @@ def main():
             chunks.append(process_css(p, assets_dir))
     merged = "\n\n".join(chunks)
     merged = deduplicate_rules(merged)
-    Path(args.output).write_text(merged)
+    Path(args.output).write_text(merged, encoding="utf-8")
     print("Bundle complete.")
     print("CSS:", args.output)
     print("Assets:", assets_dir)

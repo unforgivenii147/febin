@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 import subprocess
 import sys
 import tempfile
@@ -7,8 +8,7 @@ import tempfile
 
 def fold_content_pure(fname, width=45):
     content = ""
-    with open(fname, encoding="utf-8", errors="ignore") as f:
-        content = f.read()
+    content = pathlib.Path(fname).read_text(encoding="utf-8", errors="ignore")
     lines = content.splitlines()
     folded_lines = []
     for line in lines:
@@ -17,7 +17,7 @@ def fold_content_pure(fname, width=45):
             line = line[width:]
         if line:
             folded_lines.append(line)
-    with open(fname, "w") as fo:
+    with open(fname, "w", encoding="utf-8") as fo:
         for line in folded_lines:
             fo.write(line + "\n")
     print(f"{fname} updated.")
@@ -30,8 +30,7 @@ def fold_file_inplace(filename):
             file=sys.stderr,
         )
         sys.exit(1)
-    with open(filename, encoding="utf-8") as f:
-        original_content = f.read()
+    original_content = pathlib.Path(filename).read_text(encoding="utf-8")
     with tempfile.NamedTemporaryFile(
         mode="w+",
         suffix=".tmp",
@@ -61,8 +60,7 @@ def fold_file_inplace(filename):
             )
             os.unlink(temp_filename)
             sys.exit(1)
-        with open(filename, "w", encoding="utf-8") as original_f:
-            original_f.write(result.stdout)
+        pathlib.Path(filename).write_text(result.stdout, encoding="utf-8")
     os.unlink(temp_filename)
     print(f"Successfully folded '{filename}' in place.")
 

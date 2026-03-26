@@ -9,7 +9,11 @@ from termcolor import cprint
 
 def should_skip(path):
     path = Path(path)
-    return bool(path.is_symlink() or not path.stat().st_size or any(pat in path.parts for pat in (".git", "__pycache__", ".mypy_cache", ".ruff_cache")))
+    return bool(
+        path.is_symlink()
+        or not path.stat().st_size
+        or any(pat in path.parts for pat in (".git", "__pycache__", ".mypy_cache", ".ruff_cache"))
+    )
 
 
 def get_hash_file(path):
@@ -20,10 +24,7 @@ def find_duplicates():
     root_dir = Path.cwd()
     files_by_hash = defaultdict(list)
     duplicate_count = 0
-    ptp = []
-    for path in root_dir.rglob("*"):
-        if path.is_file() and not should_skip(path):
-            ptp.append(path)
+    ptp = [path for path in root_dir.rglob("*") if path.is_file() and not should_skip(path)]
     files_by_size = {}
     for p in ptp:
         try:

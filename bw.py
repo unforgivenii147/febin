@@ -8,7 +8,7 @@ from PIL import Image
 def analyze_image(path, dark_threshold=50, ratio_threshold=0.6):
     """
     dark_threshold: brightness below this = considered dark (0–255)
-    ratio_threshold: if % of dark pixels > this => mostly dark
+    ratio_threshold: if % of dark pixels > this => mostly dark.
     """
     with Image.open(path) as img:
         img = img.convert("RGB")

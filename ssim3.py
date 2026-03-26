@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 from collections import defaultdict
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 from pathlib import Path
 import shutil
@@ -21,7 +18,7 @@ EXCLUDE_DIRS = {
 
 
 class FileSimilarityDetector:
-    def __init__(self, root_dir="."):
+    def __init__(self, root_dir=".") -> None:
         self.root_dir = Path(root_dir)
         self.file_hashes = {}
         self.duplicates = defaultdict(list)

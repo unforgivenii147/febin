@@ -28,8 +28,7 @@ def translate_text(text):
 
 
 def translate_file(filepath):
-    with open(filepath, encoding="utf-8") as f:
-        content = f.read()
+    content = Path(filepath).read_text(encoding="utf-8")
     if not non_english_pattern.search(content):
         print(f"No non-English content found in {filepath}, skipping.")
         return
@@ -42,8 +41,7 @@ def translate_file(filepath):
         os.path.dirname(filepath),
         f"translated_{os.path.basename(filepath)}",
     )
-    with open(new_filepath, "w", encoding="utf-8") as f:
-        f.write(translated_content)
+    Path(new_filepath).write_text(translated_content, encoding="utf-8")
     print(f"saved as {new_filepath}")
 
 

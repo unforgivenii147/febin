@@ -7,7 +7,7 @@ import tree_sitter_python as tsp
 LANG = Language(tsp)
 parser = Parser()
 parser.set_language(LANG)
-ROOT_DIR = Path().resolve()
+ROOT_DIR = Path.cwd()
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 VALID_TOP_LEVEL_NODES = {
@@ -29,10 +29,11 @@ def extract_from_file(py_file: Path):
     source = py_file.read_bytes()
     tree = parser.parse(source)
     root = tree.root_node
-    extracted_chunks = []
-    for child in root.children:
-        if child.type in VALID_TOP_LEVEL_NODES:
-            extracted_chunks.append(source[child.start_byte : child.end_byte].decode())
+    extracted_chunks = [
+        source[child.start_byte : child.end_byte].decode()
+        for child in root.children
+        if child.type in VALID_TOP_LEVEL_NODES
+    ]
     return "\n\n".join(extracted_chunks)
 
 

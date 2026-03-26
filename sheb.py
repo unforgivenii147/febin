@@ -10,7 +10,7 @@ def is_python_file(filepath):
     if filepath.endswith(".py"):
         return True
     try:
-        with open(filepath) as f:
+        with open(filepath, encoding="utf-8") as f:
             first_line = f.readline().strip()
             if first_line.startswith("#!") and "python" in first_line:
                 return True
@@ -27,7 +27,7 @@ def is_python_file(filepath):
 
 
 def process_file(filepath):
-    with open(filepath, "r+") as f:
+    with open(filepath, "r+", encoding="utf-8") as f:
         lines = f.readlines()
         if not lines:
             return

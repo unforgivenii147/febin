@@ -4,6 +4,7 @@
 import datetime
 import json
 import os
+import pathlib
 
 INFO_PATH = os.path.expanduser("~/isaac/.info.json")
 
@@ -62,8 +63,7 @@ def process_file(path: str, header: str) -> None:
         new_contents = lines[0] + header + "".join(lines[1:])
     else:
         new_contents = header + "".join(lines)
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(new_contents)
+    pathlib.Path(path).write_text(new_contents, encoding="utf-8")
 
 
 def main() -> None:

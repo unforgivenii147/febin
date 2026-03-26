@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import pathlib
 import sys
 
 import PyPDF2
@@ -15,8 +16,7 @@ def extract_text_from_pdf(pdf_filename):
 
 
 def save_text_to_file(text, output_filename) -> None:
-    with open(output_filename, "w", encoding="utf-8") as text_file:
-        text_file.write(text)
+    pathlib.Path(output_filename).write_text(text, encoding="utf-8")
 
 
 if __name__ == "__main__":

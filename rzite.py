@@ -342,7 +342,7 @@ def build_wheel_from_tree(
 
 
 def main() -> None:
-    with open("all.xtx") as f:
+    with open("all.xtx", encoding="utf-8") as f:
         lines = f.readlines()
         allxtx = []
         for line in lines:

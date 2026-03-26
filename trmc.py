@@ -4,19 +4,14 @@ from multiprocessing import Pool
 from pathlib import Path
 import sys
 
-from dh import (
-    clean_blank_lines,
-    format_size,
-    get_files,
-    get_size,
-)
+from dh import clean_blank_lines, format_size, get_files, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
 import tree_sitter_python as tspython
 
 
 class TSRemover:
-    def __init__(self):
+    def __init__(self) -> None:
         self.parser = Parser()
         self.parser.language = Language(tspython.language())
 

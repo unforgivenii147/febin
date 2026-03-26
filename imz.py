@@ -313,9 +313,9 @@ def process_raw(
         return process_ipynb(p)
     if p.suffix == "" and p.is_file():
         return process_noext_python_script(p)
-    if name.endswith(".zip") or name.endswith(".whl"):
+    if name.endswith((".zip", ".whl")):
         return process_zip_file(p)
-    if name.endswith(".tar.gz") or name.endswith(".tgz") or name.endswith(".tar.xz"):
+    if name.endswith((".tar.gz", ".tgz", ".tar.xz")):
         return process_tar_file(p)
     return {
         "imports": [],
@@ -381,15 +381,18 @@ def trace_star_module(module: str, project_map: dict[str, list[str]]) -> set[str
                                     ast.Tuple,
                                 ),
                             ):
-                                for elt in val.elts:
+                                names.extend(
+                                    elt.value
+                                    for elt in val.elts
                                     if isinstance(
                                         elt,
                                         ast.Constant,
-                                    ) and isinstance(
+                                    )
+                                    and isinstance(
                                         elt.value,
                                         str,
-                                    ):
-                                        names.append(elt.value)
+                                    )
+                                )
                             for nm in names:
                                 if "." in nm:
                                     found_imports.add(nm.split(".", 1)[0])
@@ -443,16 +446,7 @@ def scan_sources(
         for f in files:
             fp = os.path.join(root, f)
             lower = f.lower()
-            if (
-                lower.endswith(".py")
-                or lower.endswith(".ipynb")
-                or lower.endswith(".whl")
-                or lower.endswith(".zip")
-                or lower.endswith(".tar.gz")
-                or lower.endswith(".tgz")
-                or lower.endswith(".tar.xz")
-                or Path(fp).suffix == ""
-            ):
+            if lower.endswith((".py", ".ipynb", ".whl", ".zip", ".tar.gz", ".tgz", ".tar.xz")) or Path(fp).suffix == "":
                 out.append(fp)
     return out
 

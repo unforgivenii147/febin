@@ -21,13 +21,11 @@ def beautify_json_file(file_path) -> bool | None:
 
 def beautify_code_file(file_path, beautify_function, asset_type) -> bool | None:
     try:
-        with pathlib.Path(file_path).open(encoding="utf-8") as f:
-            original_content = f.read()
+        original_content = pathlib.Path(file_path).read_text(encoding="utf-8")
         options = jsbeautifier.default_options()
         options.indent_size = 4
         beautified_content = beautify_function(original_content, options)
-        with pathlib.Path(file_path).open("w", encoding="utf-8") as f:
-            f.write(beautified_content)
+        pathlib.Path(file_path).write_text(beautified_content, encoding="utf-8")
         return True
     except Exception:
         return False

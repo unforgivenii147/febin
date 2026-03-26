@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import math
+import operator
 import os
 import shutil
 
@@ -88,7 +89,7 @@ def organize_files_in_root(
     print(f"  Average size: {convert_size(stats['avg'])}")
     print(f"  Size range: {convert_size(stats['min'])} - {convert_size(stats['max'])}")
     print("\n[3/5] Sorting files by size...")
-    files_info.sort(key=lambda x: x["size"])
+    files_info.sort(key=operator.itemgetter("size"))
     print("[4/5] Calculating optimal folder distribution...")
     if max_get_size_mb:
         max_size_bytes = max_get_size_mb * 1024 * 1024

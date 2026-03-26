@@ -63,18 +63,18 @@ def remove_remote_md_images(text: str) -> str:
 
 
 def remove_remote_rst_images(text: str) -> str:
-    """Remove RST image directives with remote URLs"""
+    """Remove RST image directives with remote URLs."""
     return RST_IMG_RE.sub("", text)
 
 
 def process_file(path: Path):
     original = path.read_text(encoding="utf-8", errors="ignore")
     modified = original
-    if path.suffix.lower() in (".html", ".htm"):
+    if path.suffix.lower() in {".html", ".htm"}:
         modified = remove_remote_html_images(original)
-    elif path.suffix.lower() in (".md",):
+    elif path.suffix.lower() == ".md":
         modified = remove_remote_md_images(original)
-    elif path.suffix.lower() in (".rst", ".txt"):
+    elif path.suffix.lower() in {".rst", ".txt"}:
         modified = remove_remote_rst_images(original)
         modified = remove_remote_md_images(modified)
     if modified != original:

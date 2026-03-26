@@ -20,18 +20,12 @@ def clean_text(text: str) -> str:
 
 def clean_file(path: str) -> None:
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
-            original = f.read()
+        original = Path(path).read_text(encoding="utf-8", errors="ignore")
     except Exception:
         return
     cleaned = clean_text(original)
     if cleaned != original:
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(cleaned)
+        Path(path).write_text(cleaned, encoding="utf-8")
 
 
 def main() -> None:

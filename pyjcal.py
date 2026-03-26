@@ -55,7 +55,7 @@ class JalaliDate:
         jalali_year: int,
         jalali_month: int,
         jalali_day: int,
-    ):
+    ) -> None:
         self.year = jalali_year
         self.month = jalali_month
         self.day = jalali_day
@@ -249,7 +249,7 @@ class JalaliCalendar:
         self,
         year: int | None = None,
         month: int | None = None,
-    ):
+    ) -> None:
         today = JalaliDate.today()
         self.year = year if year is not None else today.year
         self.month = month if month is not None else today.month
@@ -285,8 +285,7 @@ class JalaliCalendar:
             else:
                 month_name = JalaliDate.JALALI_MONTHS_EN[self.month - 1]
                 header = f"{month_name} {self.year}"
-            output.append(header.center(28))
-            output.append("")
+            output.extend((header.center(28), ""))
         if language == "fa":
             weekdays = JalaliDate.JALALI_WEEKDAYS_FA
         else:
@@ -299,8 +298,7 @@ class JalaliCalendar:
                 "Thu",
                 "Fri",
             ]
-        output.append("  ".join([f"{day:>3}" for day in weekdays]))
-        output.append("-" * 28)
+        output.extend(("  ".join([f"{day:>3}" for day in weekdays]), "-" * 28))
         today = JalaliDate.today()
         calendar_grid = self.get_month_calendar()
         for week in calendar_grid:

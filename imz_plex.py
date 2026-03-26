@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 from collections import defaultdict
+import operator
 from pathlib import Path
 import tarfile
 import zipfile
@@ -32,7 +33,7 @@ def load_known_packages():
     global KNOWN_PACKAGES
     if PIP_LIST_PATH.exists():
         try:
-            with open(PIP_LIST_PATH) as f:
+            with open(PIP_LIST_PATH, encoding="utf-8") as f:
                 KNOWN_PACKAGES = {
                     line.strip().split("==")[0].split(">")[0].split("<")[0].lower() for line in f if line.strip()
                 }
@@ -72,8 +73,7 @@ def extract_imports_from_ast(code):
         tree = ast.parse(code)
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
-                for alias in node.names:
-                    imports.add(alias.name.split(".")[0].lower())
+                imports.update(alias.name.split(".")[0].lower() for alias in node.names)
             elif isinstance(node, ast.ImportFrom) and node.module:
                 imports.add(node.module.split(".")[0].lower())
     except:
@@ -99,12 +99,7 @@ def extract_imports_regex(content):
 
 def get_imports_from_file(file_path):
     try:
-        with open(
-            file_path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
-            content = f.read()
+        content = Path(file_path).read_text(encoding="utf-8", errors="ignore")
         imports = extract_imports_from_ast(content)
         if not imports:
             imports = extract_imports_regex(content)
@@ -240,10 +235,10 @@ def generate_requirements(imports_count):
     }
     sorted_imports = sorted(
         filtered.items(),
-        key=lambda x: x[1],
+        key=operator.itemgetter(1),
         reverse=True,
     )
-    with open("requirements.txt", "w") as f:
+    with open("requirements.txt", "w", encoding="utf-8") as f:
         for pkg, count in sorted_imports:
             norm_pkg = pkg.replace("_", "-")
             if norm_pkg in {

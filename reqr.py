@@ -6,7 +6,7 @@ import regex as re
 
 
 def extract_requirements(metadata_path):
-    with open(metadata_path) as f:
+    with open(metadata_path, encoding="utf-8") as f:
         lines = f.readlines()
     requirements = []
     for line in lines:
@@ -21,7 +21,7 @@ def extract_requirements(metadata_path):
         print("No dependencies found in METADATA.")
         return
     print(f"{len(requirements)} reqs found")
-    with open("/sdcard/requirements.txt", "a") as f:
+    with open("/sdcard/requirements.txt", "a", encoding="utf-8") as f:
         f.write("\n".join(requirements))
 
 

@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import operator
 import os
 from pathlib import Path
 import shutil
@@ -14,7 +15,7 @@ def get_all_files(root_dir):
         if path.is_file():
             size = path.stat().st_size
             files.append((path, size))
-    return sorted(files, key=lambda x: x[1])
+    return sorted(files, key=operator.itemgetter(1))
 
 
 def calculate_optimal_folders(files):
@@ -68,7 +69,7 @@ def distribute_files(files, folders, base_dir):
         max_size,
         folder_name,
     ) in folders:
-        size_to_folder[(min_size, max_size)] = folder_name
+        size_to_folder[min_size, max_size] = folder_name
     moved_count = 0
     for filepath, size in files:
         for (
@@ -98,7 +99,7 @@ def distribute_files(files, folders, base_dir):
 
 
 def main():
-    base_dir = Path().resolve()
+    base_dir = Path.cwd()
     #    print(f"Processing files in: {base_dir}")
     files = get_all_files(base_dir)
     if not files:

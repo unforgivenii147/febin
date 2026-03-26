@@ -52,14 +52,12 @@ def main():
                     results[x] += result.get(x)
 
     outfile = Path("word_count.json")
-    wsorted = []
-    for key in results:
-        wsorted.append(results.get(key))
+    wsorted = [results.get(key) for key in results]
     wsorted = sorted(wsorted, reverse=True)
     word_sorted = {}
     for item in wsorted:
         word_sorted[item] = results.get(item)
-    with open(outfile, "w") as fo:
+    with open(outfile, "w", encoding="utf-8") as fo:
         json.dump(word_sorted, fo, ensure_ascii=False, indent=2)
 
 

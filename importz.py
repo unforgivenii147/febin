@@ -24,8 +24,7 @@ def get_imports_from_file(file_path):
             tree = ast.parse(f.read(), filename=str(file_path))
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
-                for n in node.names:
-                    imports.add(n.name.split(".")[0])
+                imports.update(n.name.split(".")[0] for n in node.names)
             elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
                 imports.add(node.module.split(".")[0])
     except (SyntaxError, UnicodeDecodeError):

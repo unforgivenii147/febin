@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import math
 import os
@@ -22,7 +19,7 @@ class GracefulExit(Exception):
 
 
 def _signal_handler(signum, frame):
-    raise GracefulExit()
+    raise GracefulExit
 
 
 signal.signal(signal.SIGINT, _signal_handler)
@@ -33,20 +30,21 @@ def head_request(url: str) -> int:
     r = requests.head(url, allow_redirects=True, timeout=10)
     r.raise_for_status()
     if r.headers.get("Accept-Ranges") != "bytes":
-        raise RuntimeError("Server does not support range requests")
+        msg = "Server does not support range requests"
+        raise RuntimeError(msg)
     return int(r.headers["Content-Length"])
 
 
 def load_meta(path: str) -> dict:
     if os.path.exists(path):
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             return json.load(f)
     return {}
 
 
 def save_meta(path: str, meta: dict):
     tmp = path + ".tmp"
-    with open(tmp, "w") as f:
+    with open(tmp, "w", encoding="utf-8") as f:
         json.dump(meta, f)
     os.replace(tmp, path)
 

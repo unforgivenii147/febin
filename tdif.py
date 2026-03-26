@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-File Diff Viewer - A Textual-based application to show differences between two files
-"""
+"""File Diff Viewer - A Textual-based application to show differences between two files."""
 
 import argparse
 import difflib
@@ -10,16 +8,8 @@ import sys
 
 from textual.app import App, ComposeResult
 from textual.color import Color
-from textual.containers import (
-    Horizontal,
-    ScrollableContainer,
-)
-from textual.widgets import (
-    Footer,
-    Header,
-    Label,
-    Static,
-)
+from textual.containers import Horizontal, ScrollableContainer
+from textual.widgets import Footer, Header, Label, Static
 
 
 class DiffLine(Static):
@@ -30,13 +20,14 @@ class DiffLine(Static):
         text: str,
         line_type: str,
         line_num: int | None = None,
-    ):
+    ) -> None:
         """
         Initialize a diff line.
+
         Args:
             text: The line content
             line_type: Type of line (' ', '-', '+', or '?')
-            line_num: Optional line number
+            line_num: Optional line number.
         """
         self.raw_text = text
         self.line_type = line_type
@@ -83,12 +74,13 @@ class DiffPanel(ScrollableContainer):
         self,
         title: str,
         lines: list[tuple[str, str, int]],
-    ):
+    ) -> None:
         """
         Initialize a diff panel.
+
         Args:
             title: Panel title
-            lines: List of (text, line_type, line_num) tuples
+            lines: List of (text, line_type, line_num) tuples.
         """
         super().__init__()
         self.panel_title = title
@@ -164,7 +156,7 @@ class DiffViewerApp(App):
         ("n", "next_search", "Next Result"),
     ]
 
-    def __init__(self, file1: str, file2: str):
+    def __init__(self, file1: str, file2: str) -> None:
         """Initialize the app with two file paths."""
         super().__init__()
         self.file1 = Path(file1)

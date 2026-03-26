@@ -16,7 +16,7 @@ def dhash(image, hashSize=8):
     # column pixels
     diff = resized[:, 1:] > resized[:, :-1]
     # convert the difference image to a hash and return it
-    return sum([2**i for (i, v) in enumerate(diff.flatten()) if v])
+    return sum(2**i for (i, v) in enumerate(diff.flatten()) if v)
 
 
 def compute_hashes(dataset_path, hashSize=8):
@@ -64,7 +64,8 @@ Examples:
     # basic validation
     dataset_path = args["path"]
     if not os.path.isdir(dataset_path):
-        raise SystemExit(f"[ERROR] dataset path does not exist or is not a directory: {dataset_path}")
+        msg = f"[ERROR] dataset path does not exist or is not a directory: {dataset_path}"
+        raise SystemExit(msg)
 
     # conflict check: if both --dry-run and --remove, prefer --remove
     is_remove_mode = args["remove"]

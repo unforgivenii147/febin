@@ -16,7 +16,8 @@ PSM_OPTIONS = [3, 4, 6, 11, 12, 13]
 def prepare_image_for_ocr(img_path: Path):
     img = cv2.imread(str(img_path))
     if img is None:
-        raise ValueError(f"Could not read image: {img_path}")
+        msg = f"Could not read image: {img_path}"
+        raise ValueError(msg)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.fastNlMeansDenoising(gray, h=15)
     thresh = cv2.adaptiveThreshold(
@@ -31,7 +32,7 @@ def prepare_image_for_ocr(img_path: Path):
     rect = cv2.minAreaRect(coords)
     angle = rect[-1]
     if angle < -45:
-        angle = 90 + angle
+        angle += 90
     h, w = thresh.shape
     M = cv2.getRotationMatrix2D((w // 2, h // 2), angle, 1.0)
     return cv2.warpAffine(thresh, M, (w, h), flags=cv2.INTER_CUBIC)

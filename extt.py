@@ -112,10 +112,7 @@ for (
     # Build content with better organization
     content_parts = []
     # Add table of contents
-    content_parts.append("#" + "=" * 78)
-    content_parts.append("# TABLE OF CONTENTS")
-    content_parts.append("#" + "=" * 78)
-    content_parts.append("")
+    content_parts.extend(("#" + "=" * 78, "# TABLE OF CONTENTS", "#" + "=" * 78, ""))
     for file_name, file_data in sorted(files_dict.items()):
         content_parts.append(f"# File: {file_name}")
         def_counts = {"function": 0, "class": 0}
@@ -126,24 +123,17 @@ for (
         if def_counts["class"] > 0:
             content_parts.append(f"#   Classes: {def_counts['class']}")
         content_parts.append("")
-    content_parts.append("#" + "=" * 78)
-    content_parts.append("# DEFINITIONS")
-    content_parts.append("#" + "=" * 78)
-    content_parts.append("")
+    content_parts.extend(("#" + "=" * 78, "# DEFINITIONS", "#" + "=" * 78, ""))
     # Add actual definitions
     for file_name, file_data in sorted(files_dict.items()):
-        content_parts.append(f"\n# {'=' * 76}")
-        content_parts.append(f"# File: {file_name}")
-        content_parts.append(f"# Path: {file_data['path']}")
-        content_parts.append(f"# {'=' * 76}\n")
+        content_parts.extend(
+            (f"\n# {'=' * 76}", f"# File: {file_name}", f"# Path: {file_data['path']}", f"# {'=' * 76}\n")
+        )
         # Group by type (classes first, then functions)
         classes = [d for d in file_data["definitions"] if d["type"] == "class"]
         functions = [d for d in file_data["definitions"] if d["type"] == "function"]
         if classes:
-            content_parts.append("#" + "-" * 40)
-            content_parts.append("# CLASSES")
-            content_parts.append("#" + "-" * 40)
-            content_parts.append("")
+            content_parts.extend(("#" + "-" * 40, "# CLASSES", "#" + "-" * 40, ""))
             for i, cls in enumerate(classes):
                 if i > 0:
                     content_parts.append("\n" + "#" + "-" * 38 + "\n")
@@ -156,9 +146,7 @@ for (
                 content_parts.append("\n" + "#" + "-" * 40)
             else:
                 content_parts.append("#" + "-" * 40)
-            content_parts.append("# FUNCTIONS")
-            content_parts.append("#" + "-" * 40)
-            content_parts.append("")
+            content_parts.extend(("# FUNCTIONS", "#" + "-" * 40, ""))
             for i, func in enumerate(functions):
                 if i > 0:
                     content_parts.append("\n" + "#" + "-" * 38 + "\n")

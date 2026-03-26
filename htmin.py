@@ -19,8 +19,7 @@ def process_file(file: Path) -> bool:
         # fmt: on
         print(len(code))
         if len(code) != len(orig):
-            with open(file, "w", encoding="utf-8") as fo:
-                fo.write(code)
+            Path(file).write_text(code, encoding="utf-8")
             print(f"[OK] {file.name}")
             return True
     except Exception:

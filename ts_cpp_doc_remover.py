@@ -7,7 +7,7 @@ import tree_sitter_cpp as tscpp
 
 
 class TSCppRemover:
-    def __init__(self):
+    def __init__(self) -> None:
         self.parser = Parser()
         self.parser.language = Language(tscpp.language())
 

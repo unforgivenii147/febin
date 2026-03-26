@@ -67,11 +67,11 @@ def _collect_docstrings(node, source: bytes, deletions: list):
                         first.end_byte,
                     )
                 )
-    if node.type in (
+    if node.type in {
         "class_definition",
         "function_definition",
         "async_function_definition",
-    ):
+    }:
         body = node.child_by_field_name("body")
         if body:
             first = first_named_child(body)

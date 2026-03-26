@@ -12,7 +12,7 @@ def ensure_bracket(fn):
     with open(fn, encoding="utf-8") as f:
         content = f.read()
         lc = len(content)
-        for i in range(0, lc):
+        for i in range(lc):
             if content[i] == "(":
                 open_parantez_count += 1
             if content[i] == ")":

@@ -30,17 +30,17 @@ def detect_icon(name: str, mode: int) -> str:
     if stat.S_ISLNK(mode):
         return "🔗"
     ext = name.lower().split(".")[-1]
-    if ext in (
+    if ext in {
         "png",
         "jpg",
         "jpeg",
         "gif",
         "webp",
-    ):
+    }:
         return "🖼️"
-    if ext in ("py", "sh"):
+    if ext in {"py", "sh"}:
         return "🐍"
-    if ext in ("zip", "tar", "gz", "bz2", "xz"):
+    if ext in {"zip", "tar", "gz", "bz2", "xz"}:
         return "📦"
     return "📄"
 
@@ -266,20 +266,19 @@ def list_recursive(base: str, args, depth=0) -> None:
 
 def print_entries(entries: list[Entry], args) -> None:
     if args.json:
-        out = []
-        for e in entries:
-            out.append(
-                {
-                    "name": e.name,
-                    "size": e.stat.st_size,
-                    "mode": mode_to_string(e.stat.st_mode),
-                    "mtime": e.stat.st_mtime,
-                    "git": e.git,
-                    "type": (
-                        "dir" if stat.S_ISDIR(e.stat.st_mode) else ("link" if stat.S_ISLNK(e.stat.st_mode) else "file")
-                    ),
-                }
-            )
+        out = [
+            {
+                "name": e.name,
+                "size": e.stat.st_size,
+                "mode": mode_to_string(e.stat.st_mode),
+                "mtime": e.stat.st_mtime,
+                "git": e.git,
+                "type": (
+                    "dir" if stat.S_ISDIR(e.stat.st_mode) else ("link" if stat.S_ISLNK(e.stat.st_mode) else "file")
+                ),
+            }
+            for e in entries
+        ]
         print(json.dumps(out, indent=2))
         return
     if args.long:

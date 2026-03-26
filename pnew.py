@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import pathlib
 from sys import argv
 
 
@@ -50,8 +51,7 @@ if __name__ == "__main__":
     exit(main())
 
 """
-    with open(fn, "w") as f:
-        f.write(template)
+    pathlib.Path(fn).write_text(template, encoding="utf-8")
     print(f"{fn} created.")
 
 

@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import operator
 import os
 from pathlib import Path
 
@@ -8,10 +9,7 @@ ROOT_DIR = Path.cwd()
 
 
 def get_sizes():
-    sz = []
-    for file_path in get_files(ROOT_DIR):
-        sz.append((file_path.relative_to(ROOT_DIR), file_path.stat().st_size))
-    return sz
+    return [(file_path.relative_to(ROOT_DIR), file_path.stat().st_size) for file_path in get_files(ROOT_DIR)]
 
 
 def main() -> None:
@@ -19,7 +17,7 @@ def main() -> None:
     if not sizez:
         print("No files found or unable to access directory.")
         return
-    sizez.sort(key=lambda x: x[1], reverse=True)
+    sizez.sort(key=operator.itemgetter(1), reverse=True)
     top_files = sizez[:10]
     print("\n" + "=" * 60)
     print(f"TOP 10 LARGEST FILES (in {os.getcwd()})")
@@ -49,7 +47,7 @@ def alternative_version_with_details() -> None:
     if not sizez:
         print("No files found.")
         return
-    sizez.sort(key=lambda x: x[1], reverse=True)
+    sizez.sort(key=operator.itemgetter(1), reverse=True)
     top_files = sizez[:10]
     print("\nTOP 10 LARGEST FILES (Detailed View)")
     print("=" * 70)

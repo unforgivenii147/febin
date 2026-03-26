@@ -7,10 +7,7 @@ import sys
 def main():
     root_dir = Path.cwd()
     req = sys.argv[1].strip()
-    found = []
-    for f in os.listdir(root_dir):
-        if f.startswith(req):
-            found.append(f)
+    found = [f for f in os.listdir(root_dir) if f.startswith(req)]
     for k in found:
         print(k)
 

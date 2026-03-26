@@ -10,7 +10,8 @@ SVGCPATH = "/data/data/com.termux/files/home/.cargo/bin/svgcleaner"
 def clean_single_svg(in_file, svgcleaner_path=SVGCPATH):
     """Clean a single SVG file and return size change."""
     if not os.path.exists(in_file):
-        raise FileNotFoundError(f"Input file not found: {in_file}")
+        msg = f"Input file not found: {in_file}"
+        raise FileNotFoundError(msg)
     before_size = os.path.getsize(in_file)
     tmp_out_path = None
     try:

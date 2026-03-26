@@ -16,7 +16,8 @@ def read_text_file(path: Path) -> str:
         "",
     }
     if path.suffix.lower() not in allowed:
-        raise ValueError(f"Unsupported file type: {path.suffix}")
+        msg = f"Unsupported file type: {path.suffix}"
+        raise ValueError(msg)
     return path.read_text(encoding="utf-8")
 
 

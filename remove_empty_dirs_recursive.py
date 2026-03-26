@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-find and remove empty dirs in current directory
-"""
+"""find and remove empty dirs in current directory."""
 
 import os
 from pathlib import Path

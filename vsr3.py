@@ -159,7 +159,7 @@ def repack_package(
     existing_files, missing_files = read_record_file(dist_dir, site_packages)
     if not existing_files:
         return False
-    has_missing_critical = any(f.suffix in [".py", ""] or f.is_dir() for f in missing_files)
+    has_missing_critical = any(f.suffix in {".py", ""} or f.is_dir() for f in missing_files)
     if has_missing_critical:
         pkg_not_repacked = not_repacked_dir / pkg_name
         pkg_not_repacked.mkdir(parents=True, exist_ok=True)

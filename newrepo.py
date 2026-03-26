@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 """
 GitHub Repository Creator
-Creates a GitHub repo using git and GitHub API with token from ~/.env
+Creates a GitHub repo using git and GitHub API with token from ~/.env.
 """
 
 from datetime import datetime
@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 
 class GitHubRepoCreator:
-    def __init__(self):
+    def __init__(self) -> None:
         self.current_dir = Path.cwd()
         self.repo_name = self.current_dir.name
         self.env_file = Path.home() / ".env"
@@ -23,7 +23,7 @@ class GitHubRepoCreator:
         self.github_username = self._get_github_username()
 
     def _load_github_token(self) -> str:
-        """Load GitHub token from ~/.env file"""
+        """Load GitHub token from ~/.env file."""
         print(f"🔑 Loading GitHub token from {self.env_file}")
         # Load environment variables from ~/.env
         if self.env_file.exists():
@@ -42,7 +42,7 @@ class GitHubRepoCreator:
             sys.exit(1)
 
     def _get_github_username(self) -> str:
-        """Get GitHub username from git config or token"""
+        """Get GitHub username from git config or token."""
         # Try to get from git config first
         success, username, _ = self._run_cmd(
             [
@@ -90,7 +90,7 @@ class GitHubRepoCreator:
         sys.exit(1)
 
     def _run_cmd(self, cmd: list, cwd: Path | None = None) -> tuple[bool, str, str]:
-        """Run a command and return success, stdout, stderr"""
+        """Run a command and return success, stdout, stderr."""
         try:
             result = subprocess.run(
                 cmd,
@@ -108,7 +108,7 @@ class GitHubRepoCreator:
             return False, "", str(e)
 
     def _check_prerequisites(self):
-        """Check if all required tools are available"""
+        """Check if all required tools are available."""
         print("\n🔍 Checking prerequisites...")
         # Check git
         if not self._run_cmd(["git", "--version"])[0]:
@@ -120,8 +120,6 @@ class GitHubRepoCreator:
             sys.exit(1)
         # Check if python-dotenv is installed
         try:
-            pass
-
             print("✅ python-dotenv is installed")
         except ImportError:
             print("❌ python-dotenv is not installed")
@@ -130,7 +128,7 @@ class GitHubRepoCreator:
         print("✅ All prerequisites satisfied")
 
     def _initialize_git(self):
-        """Initialize git repository if needed"""
+        """Initialize git repository if needed."""
         print(f"\n📁 Initializing git repository: {self.repo_name}")
         # Check if already a git repo
         success, _, _ = self._run_cmd(["git", "rev-parse", "--git-dir"])
@@ -160,7 +158,7 @@ class GitHubRepoCreator:
         print("✅ Git repository initialized")
 
     def _setup_gitignore(self):
-        """Copy .gitignore from home if it exists"""
+        """Copy .gitignore from home if it exists."""
         home_gitignore = Path.home() / ".gitignore"
         local_gitignore = self.current_dir / ".gitignore"
         if home_gitignore.exists() and not local_gitignore.exists():
@@ -177,7 +175,7 @@ class GitHubRepoCreator:
                 print(f"⚠️  Could not copy .gitignore: {e}")
 
     def _check_repo_exists(self) -> bool:
-        """Check if repository already exists on GitHub"""
+        """Check if repository already exists on GitHub."""
         cmd = [
             "curl",
             "-s",
@@ -193,7 +191,7 @@ class GitHubRepoCreator:
         return bool(success and status_code == "200")
 
     def _create_github_repo(self) -> bool:
-        """Create repository on GitHub using API"""
+        """Create repository on GitHub using API."""
         print(f"\n🌐 Creating GitHub repository: {self.github_username}/{self.repo_name}")
         # Check if repo already exists
         if self._check_repo_exists():
@@ -211,7 +209,7 @@ class GitHubRepoCreator:
         # Create temp file with JSON data
         import tempfile
 
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+        with tempfile.NamedTemporaryFile(encoding="utf-8", mode="w", suffix=".json", delete=False) as f:
             json.dump(data, f)
             temp_file = f.name
         try:
@@ -258,7 +256,7 @@ class GitHubRepoCreator:
             sys.exit(1)
 
     def _setup_remote(self):
-        """Add or update remote origin"""
+        """Add or update remote origin."""
         print("\n🔗 Configuring remote...")
         # Use HTTPS URL without token (we'll authenticate with token during push)
         remote_url = f"https://github.com/{self.github_username}/{self.repo_name}.git"
@@ -296,7 +294,7 @@ class GitHubRepoCreator:
                 print(f"⚠️  Could not add remote: {stderr}")
 
     def _commit_changes(self):
-        """Commit all changes"""
+        """Commit all changes."""
         print("\n💾 Committing changes...")
         # Add all files
         success, _, stderr = self._run_cmd(["git", "add", "-A"])
@@ -325,7 +323,7 @@ class GitHubRepoCreator:
         return True
 
     def _push_to_github(self):
-        """Push to GitHub using token for authentication"""
+        """Push to GitHub using token for authentication."""
         print("\n🚀 Pushing to GitHub...")
         # Create a temporary remote with token for push
         auth_remote_url = (
@@ -372,7 +370,7 @@ class GitHubRepoCreator:
         print("✅ Successfully pushed to GitHub")
 
     def run(self):
-        """Main execution flow"""
+        """Main execution flow."""
         # Print header
         print("=" * 60)
         print("🚀 GITHUB REPOSITORY CREATOR")

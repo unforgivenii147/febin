@@ -24,8 +24,7 @@ def main(path: str):
         colors = [line.strip() for line in f if HEX_RE.match(line.strip())]
     colors.sort(key=sort_key)
     with open(path, "w", encoding="utf-8") as f:
-        for c in colors:
-            f.write(c.lower() + "\n")
+        f.writelines(c.lower() + "\n" for c in colors)
 
 
 if __name__ == "__main__":

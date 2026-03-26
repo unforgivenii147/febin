@@ -1,9 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 from pathlib import Path
 import shutil
@@ -76,8 +73,7 @@ def translate_docstring(docstr):
 def process_file(filepath):
     backup_path = filepath + BACKUP_EXT
     shutil.copyfile(filepath, backup_path)
-    with open(filepath, encoding="utf-8") as f:
-        code = f.read()
+    code = Path(filepath).read_text(encoding="utf-8")
     if len(code) > CHUNK_SIZE:
         pass
     try:
@@ -147,17 +143,18 @@ def process_file(filepath):
             if trans:
                 indentation = re.match(r"\s*", line).group(0)
                 final_lines.append(f"{indentation}# {trans}")
-    with open(filepath, "w", encoding="utf-8") as f:
-        f.write("\n".join(final_lines) + "\n")
+    Path(filepath).write_text("\n".join(final_lines) + "\n", encoding="utf-8")
     print(f"Translated: {filepath}")
 
 
 def find_py_files(root="."):
     files = []
     for dirpath, _, filenames in os.walk(root):
-        for fname in filenames:
-            if fname.endswith(PYTHON_EXT) and get_size(os.path.join(dirpath, fname)) != 0:
-                files.append(os.path.join(dirpath, fname))
+        files.extend(
+            os.path.join(dirpath, fname)
+            for fname in filenames
+            if fname.endswith(PYTHON_EXT) and get_size(os.path.join(dirpath, fname)) != 0
+        )
     return files
 
 

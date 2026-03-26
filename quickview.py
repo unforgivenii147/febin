@@ -78,7 +78,7 @@ def main(stdscr):
     draw(stdscr, files, idx)
     while True:
         key = stdscr.getch()
-        if key in (ord("q"), ord("Q")):
+        if key in {ord("q"), ord("Q")}:
             break
         if key == curses.KEY_NPAGE:
             if idx < len(files) - 1:

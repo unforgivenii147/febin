@@ -2,7 +2,7 @@
 """
 open uv.lock file
 extract python package name and version from lines that contain (name = ")
-save found pkgs in requirements.txt in current dir
+save found pkgs in requirements.txt in current dir.
 """
 
 from pathlib import Path

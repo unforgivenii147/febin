@@ -56,8 +56,7 @@ def main() -> None:
             seen.add(c)
     cleaned = sorted(cleaned, key=group_key)
     with open(fname, "w", encoding="utf-8") as f:
-        for item in cleaned:
-            f.write(item + "\n")
+        f.writelines(item + "\n" for item in cleaned)
     print("\n=== Cleaned Requirements ===")
     for item in cleaned:
         print(item)

@@ -3,10 +3,7 @@ import argparse
 from pathlib import Path
 import sys
 
-from deep_translator import (
-    GoogleTranslator,
-    single_detection,
-)
+from deep_translator import GoogleTranslator, single_detection
 
 CHUNK_SIZE = 2000
 ALLOWED_EXT = {
@@ -24,10 +21,8 @@ def translator():
 
 def translate_text_chunked(text: str) -> str:
     chunks = [text[i : i + CHUNK_SIZE] for i in range(0, len(text), CHUNK_SIZE)]
-    out = []
     t = translator()
-    for c in chunks:
-        out.append(t.translate(c))
+    out = [t.translate(c) for c in chunks]
     return "".join(out)
 
 
@@ -38,7 +33,7 @@ def translate_python_file(content: str) -> str:
     doc_delim = None
     for line in lines:
         stripped = line.strip()
-        if not in_docstring and (stripped.startswith('"""') or stripped.startswith("'''")):
+        if not in_docstring and (stripped.startswith(('"""', "'''"))):
             in_docstring = True
             doc_delim = stripped[:3]
             inside = stripped[3:]

@@ -9,7 +9,7 @@ from fastwalk import walk_files
 
 def is_all_upper(str1):
     ln = len(str1)
-    return all(str1[i] in string.ascii_uppercase for i in range(0, ln))
+    return all(str1[i] in string.ascii_uppercase for i in range(ln))
 
 
 def process_file(fp):

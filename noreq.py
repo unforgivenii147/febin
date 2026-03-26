@@ -29,19 +29,13 @@ def clean_text(
 
 def clean_file(path: str) -> None:
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
-            original = f.read()
+        original = Path(path).read_text(encoding="utf-8", errors="ignore")
     except Exception:
         return
     cleaned, removed = clean_text(original)
     if removed:
         removed_lines_accumulator.extend(removed)
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(cleaned)
+        Path(path).write_text(cleaned, encoding="utf-8")
 
 
 def process_zip(path: str) -> None:
@@ -109,8 +103,7 @@ def main() -> None:
     if removed_lines_accumulator:
         try:
             with open(LOG_FILE, "a", encoding="utf-8") as f:
-                for line in removed_lines_accumulator:
-                    f.write(line + "\n")
+                f.writelines(line + "\n" for line in removed_lines_accumulator)
             print(f"--- Saved {len(removed_lines_accumulator)} lines to {LOG_FILE} ---")
         except PermissionError:
             print(f"Warning: Could not write to {LOG_FILE}. Check Termux storage permissions.")

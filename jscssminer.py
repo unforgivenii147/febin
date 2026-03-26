@@ -27,11 +27,9 @@ def minify_assets_in_directory(
                 continue
             try:
                 print(f"processing ...{pathlib.Path(file_path).name}")
-                with pathlib.Path(file_path).open(encoding="utf-8") as f:
-                    original_content = f.read()
+                original_content = pathlib.Path(file_path).read_text(encoding="utf-8")
                 minified_content = minifier_func(original_content)
-                with pathlib.Path(file_path).open("w", encoding="utf-8") as f:
-                    f.write(minified_content)
+                pathlib.Path(file_path).write_text(minified_content, encoding="utf-8")
                 minified_count += 1
             except Exception:
                 errors_count += 1

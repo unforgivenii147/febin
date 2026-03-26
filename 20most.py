@@ -13,7 +13,7 @@ def extract_words(text):
 
 
 def process_file(path: Path):
-    text = path.read_text()
+    text = path.read_text(encoding="utf-8")
     words = extract_words(text)
     filtered = list(words)
     for word, _count in Counter(filtered).most_common(30):

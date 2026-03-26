@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 import sys
 
 import regex as re
@@ -86,12 +87,12 @@ def man_to_markdown(content):
             pending_tp = False
             md_lines.append(f"- {term}:")
             continue
-        if line.startswith(".nf") or line.startswith(".RS") or line.startswith(".EX"):
+        if line.startswith((".nf", ".RS", ".EX")):
             if not in_code_block:
                 md_lines.append("```sh")
                 in_code_block = True
             continue
-        if line.startswith(".fi") or line.startswith(".RE") or line.startswith(".EE"):
+        if line.startswith((".fi", ".RE", ".EE")):
             if in_code_block:
                 md_lines.append("```")
                 in_code_block = False
@@ -130,8 +131,7 @@ def main():
     markdown = man_to_markdown(raw)
     base, _ = os.path.splitext(filename)
     outname = base + ".md"
-    with open(outname, "w", encoding="utf-8") as f:
-        f.write(markdown)
+    pathlib.Path(outname).write_text(markdown, encoding="utf-8")
     print(f"Converted {filename} → {outname}")
 
 

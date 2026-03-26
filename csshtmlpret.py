@@ -4,6 +4,7 @@ from datetime import datetime
 import itertools
 from multiprocessing import cpu_count
 import os
+import pathlib
 from subprocess import getoutput
 import sys
 from time import sleep
@@ -246,7 +247,7 @@ def justify_right(css: str) -> str:
         c_4 = not css_line.lstrip().lower().startswith("@import ")
         if c_1 and c_2 and c_4:
             lenght = len(css_line.split(":")[0].rstrip()) + 1
-            max_indent = lenght if lenght > max_indent else max_indent
+            max_indent = max(max_indent, lenght)
     for line_of_css in css.splitlines():
         c_1 = "{" not in line_of_css and "}" not in line_of_css
         c_2 = max_indent > 1 and len(line_of_css.split(":")) == 2
@@ -368,7 +369,7 @@ def process_multiple_files(file_path):
                 sleep(60)
             else:
                 previous = actual
-                print("Modification detected on {file_path}.")
+                print(f"Modification detected on {file_path}.")
                 if file_path.endswith((".css", ".scss")):
                     process_single_css_file(file_path)
                 else:
@@ -391,15 +392,13 @@ def process_single_css_file(
     css_file_path: str,
 ) -> str:
     global args
-    with open(css_file_path, encoding="utf-8-sig") as css_file:
-        original_css = css_file.read()
+    original_css = pathlib.Path(css_file_path).read_text(encoding="utf-8-sig")
     pretty_css = css_prettify(original_css, args.justify, args.extraline)
     if args.timestamp:
         taim = f"/* {datetime.now().replace(microsecond=0).isoformat(' ')} */ "
         pretty_css = taim + pretty_css
     min_css_file_path = prefixer_extensioner(css_file_path)
-    with open(min_css_file_path, "w", encoding="utf-8") as output_file:
-        output_file.write(pretty_css)
+    pathlib.Path(min_css_file_path).write_text(pretty_css, encoding="utf-8")
     return pretty_css
 
 
@@ -409,8 +408,7 @@ def process_single_html_file(
     with open(html_file_path, encoding="utf-8-sig") as html_file:
         pretty_html = html_prettify(html_file.read(), args.extraline)
     html_file_path = prefixer_extensioner(html_file_path)
-    with open(html_file_path, "w", encoding="utf-8") as output_file:
-        output_file.write(pretty_html)
+    pathlib.Path(html_file_path).write_text(pretty_html, encoding="utf-8")
     return pretty_html
 
 

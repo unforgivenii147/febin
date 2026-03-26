@@ -56,7 +56,7 @@ def enhanced_shuffle(
                 shuffle3(shuffled_lines)
             # weighted method is removed as per instructions
 
-        output_path = output_file_prefix if output_file_prefix else input_file
+        output_path = output_file_prefix or input_file
         # Append method name to output file to distinguish them
         if output_file_prefix:
             output_path = f"{output_file_prefix}_{method}.txt"

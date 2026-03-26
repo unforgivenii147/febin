@@ -3,11 +3,7 @@ import ast
 from pathlib import Path
 import sys
 
-from dh import (
-    format_size,
-    get_files,
-    get_size,
-)
+from dh import format_size, get_files, get_size
 import regex as re
 from termcolor import cprint
 

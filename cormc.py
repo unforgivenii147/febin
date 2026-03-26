@@ -3,13 +3,11 @@ import glob
 import logging
 from multiprocessing import cpu_count
 import os
+import pathlib
 import sys
 
 try:
-    from tree_sitter_languages import (
-        get_language,
-        get_parser,
-    )
+    from tree_sitter_languages import get_language, get_parser
 except ImportError:
     print(
         "Error: tree-sitter dependencies not installed.",
@@ -37,12 +35,12 @@ class CommentRemover:
         "mypy:",
     ]
 
-    def __init__(self):
+    def __init__(self) -> None:
         try:
             self.language = get_language("python")
             self.parser = get_parser("python")
         except Exception as e:
-            logger.error(f"Failed to initialize tree-sitter: {e}")
+            logger.exception("Failed to initialize tree-sitter: %s", e)
             raise
 
     def should_preserve_comment(self, comment_text: str) -> bool:
@@ -53,19 +51,14 @@ class CommentRemover:
 
     def parse_file(self, filepath: str) -> tuple[str, list[dict]] | None:
         try:
-            with open(
-                filepath,
-                encoding="utf-8",
-                errors="replace",
-            ) as f:
-                source_code = f.read()
+            source_code = pathlib.Path(filepath).read_text(encoding="utf-8", errors="replace")
         except Exception as e:
-            logger.error(f"Failed to read {filepath}: {e}")
+            logger.exception("Failed to read %s: %s", filepath, e)
             return None
         try:
             tree = self.parser.parse(source_code.encode("utf-8"))
         except Exception as e:
-            logger.error(f"Failed to parse {filepath}: {e}")
+            logger.exception("Failed to parse %s: %s", filepath, e)
             return None
         return source_code, tree
 
@@ -106,11 +99,11 @@ class CommentRemover:
         docstring_ranges = []
 
         def walk_tree(node, parent_type=None):
-            if node.type == "string" and parent_type in (
+            if node.type == "string" and parent_type in {
                 "function_definition",
                 "class_definition",
                 "module",
-            ):
+            }:
                 docstring_ranges.append(
                     (
                         node.start_byte,
@@ -121,10 +114,10 @@ class CommentRemover:
                 child_parent = (
                     child.type
                     if child.type
-                    in (
+                    in {
                         "function_definition",
                         "class_definition",
-                    )
+                    }
                     else parent_type
                 )
                 walk_tree(child, child_parent)
@@ -167,12 +160,11 @@ class CommentRemover:
                 return False
             source_code, tree = parsed
             cleaned_code = self.remove_comments_and_docstrings(source_code, tree)
-            with open(filepath, "w", encoding="utf-8") as f:
-                f.write(cleaned_code)
-            logger.info(f"Processed: {filepath}")
+            pathlib.Path(filepath).write_text(cleaned_code, encoding="utf-8")
+            logger.info("Processed: %s", filepath)
             return True
         except Exception as e:
-            logger.error(f"Error processing {filepath}: {e}")
+            logger.exception("Error processing %s: %s", filepath, e)
             return False
 
 
@@ -251,7 +243,7 @@ def main():
         sys.exit(0)
     logger.info(f"Found {len(python_files)} Python files")
     successful, failed = process_files_mp(python_files, args.workers)
-    logger.info(f"Completed: {successful} successful, {failed} failed")
+    logger.info("Completed: %s successful, %s failed", successful, failed)
     if failed > 0:
         sys.exit(1)
 

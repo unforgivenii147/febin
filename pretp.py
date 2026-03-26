@@ -45,9 +45,11 @@ def main():
     print("Scanning directory for files...")
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
-        for file in files:
-            if file.endswith(target_extensions) and not file.endswith(exclude_extensions):
-                files_to_format.append(os.path.join(root, file))
+        files_to_format.extend(
+            os.path.join(root, file)
+            for file in files
+            if file.endswith(target_extensions) and not file.endswith(exclude_extensions)
+        )
     if not files_to_format:
         print("No matching files found.")
         return

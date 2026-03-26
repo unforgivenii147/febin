@@ -22,15 +22,13 @@ def save_style(str1):
         cprint(f"[{fn}] exists.", "red")
         return False
     if not os.path.exists(fn):
-        with open(fn, "w") as f:
-            f.write("\n".join(list(str1)))
+        Path(fn).write_text("\n".join(list(str1)), encoding="utf-8")
         cprint(f"{[fn]} created.", "cyan")
     return True
 
 
 def process_file(fp):
-    with open(fp, encoding="utf-8") as file:
-        html_content = file.read()
+    html_content = Path(fp).read_text(encoding="utf-8")
     soup = BeautifulSoup(html_content, "html.parser")
     styles = soup.find_all("style")
     if styles:

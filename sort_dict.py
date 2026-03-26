@@ -21,7 +21,7 @@ def main():
         lines = f.readlines()
     all_lines = [line for line in lines if ":" in line or "=" in line]
     all_lines.sort(key=dict_val)
-    with open(fname, "w") as fo:
+    with open(fname, "w", encoding="utf-8") as fo:
         fo.writelines(all_lines)
 
 

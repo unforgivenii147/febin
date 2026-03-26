@@ -1,24 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 import shutil
 import sys
 
 
 def replace_in_file(path: str, old: str, new: str) -> None:
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
-            text = f.read()
+        text = pathlib.Path(path).read_text(encoding="utf-8", errors="ignore")
     except (UnicodeDecodeError, PermissionError):
         return
     if old not in text:
         return
     new_text = text.replace(old, new)
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(new_text)
+    pathlib.Path(path).write_text(new_text, encoding="utf-8")
 
 
 def rename_path(path: str, old: str, new: str) -> str:

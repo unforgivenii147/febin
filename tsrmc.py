@@ -6,19 +6,14 @@ from pathlib import Path
 from dh import format_size, get_size
 from fastwalk import walk_files
 from termcolor import cprint
-from tree_sitter import (
-    Language,
-    Parser,
-    Query,
-    QueryCursor,
-)
+from tree_sitter import Language, Parser, Query, QueryCursor
 import tree_sitter_python as tspython
 
 ts_remover = None
 
 
 class TSRemover:
-    def __init__(self):
+    def __init__(self) -> None:
         self.language = Language(tspython.language())
         self.parser = Parser(self.language)
         self.query = Query(
@@ -115,8 +110,7 @@ def process_file(fp):
     global ts_remover
     file_path = Path(fp)
     try:
-        with open(file_path, encoding="utf-8") as f:
-            code = f.read()
+        code = Path(file_path).read_text(encoding="utf-8")
     except Exception as e:
         cprint(
             f"[ERROR] {file_path.name} failed to read: {e}",
@@ -134,8 +128,7 @@ def process_file(fp):
     if comments != 0 or docstrings != 0:
         try:
             ast.parse(result)
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(result)
+            Path(file_path).write_text(result, encoding="utf-8")
             cprint(
                 f"[OK] {file_path.name}: {comments} comments, {docstrings} docstrings removed",
                 "cyan",

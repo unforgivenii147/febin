@@ -37,16 +37,15 @@ def determine_script_type(content: str) -> str | None:
         "import " in content
         or "def " in content
         or "class " in content
-        or stripped_content.startswith("print(")
-        or stripped_content.startswith("sys.exit(")
+        or stripped_content.startswith(("print(", "sys.exit("))
     ):
         return "python"
     # Heuristic for Python (alternative shebangs)
-    if stripped_content.startswith("#!python") or stripped_content.startswith("#!/usr/bin/env python"):
+    if stripped_content.startswith(("#!python", "#!/usr/bin/env python")):
         return "python"
 
     # Check for explicit Bash shebangs
-    if stripped_content.startswith("#!/bin/sh") or stripped_content.startswith("#!/bin/bash"):
+    if stripped_content.startswith(("#!/bin/sh", "#!/bin/bash")):
         return "bash"
     # Heuristic for Bash: common shell commands
     if stripped_content.startswith(
@@ -70,7 +69,7 @@ def determine_script_type(content: str) -> str | None:
     ):
         return "bash"
     # Heuristic for Bash (alternative shebangs)
-    if stripped_content.startswith("#!/bin/sh") or stripped_content.startswith("#!/bin/bash"):
+    if stripped_content.startswith(("#!/bin/sh", "#!/bin/bash")):
         return "bash"
 
     return None

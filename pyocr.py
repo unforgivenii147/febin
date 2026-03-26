@@ -31,8 +31,7 @@ def extract_text(file_path: str) -> bool:
         text = pytesseract.image_to_string(gray)
         if not text.strip():
             print(f"Warning: No text detected in '{path.name}'.")
-        with open(output_path, "w", encoding="utf-8") as f:
-            f.write(text)
+        Path(output_path).write_text(text, encoding="utf-8")
         print(f"Success! Text saved to '{output_path.name}'")
         return True
     except Exception as e:

@@ -7,7 +7,7 @@ import sys
 
 
 class GitHubRepoManager:
-    def __init__(self, repo_name: str | None = None):
+    def __init__(self, repo_name: str | None = None) -> None:
         self.current_dir = Path.cwd()
         self.repo_name = repo_name or self.current_dir.name
         self.github_username = "uno2os3es"
@@ -152,7 +152,7 @@ class GitHubRepoManager:
         files = list(self.current_dir.glob("*"))
         hidden_files = list(self.current_dir.glob(".*"))
         files = [f for f in files if f.name != ".git"]
-        hidden_files = [f for f in hidden_files if f.name not in [".git", ".", ".."]]
+        hidden_files = [f for f in hidden_files if f.name not in {".git", ".", ".."}]
         has_content = len(files) > 0 or len(hidden_files) > 0
         if not has_content:
             print("📄 No files found, creating initial README. md...")

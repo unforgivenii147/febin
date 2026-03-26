@@ -4,10 +4,10 @@ from sys import argv
 
 def remove_spaces_from_file(fname) -> None:
     try:
-        with open(fname) as file:
+        with open(fname, encoding="utf-8") as file:
             lines = file.readlines()
             cleaned_lines = [line.lstrip().strip().rstrip() for line in lines]
-        with open(fname, "w") as file:
+        with open(fname, "w", encoding="utf-8") as file:
             for k in cleaned_lines:
                 file.writelines(k + "\n")
         print(f"{fname} cleaned.")

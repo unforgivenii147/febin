@@ -8,10 +8,7 @@ def process_file(path, text):
     target = "Requires-Dist: " + text
     if target in content:
         lines = content.splitlines()
-        nl = []
-        for line in lines:
-            if target not in line:
-                nl.append(line)
+        nl = [line for line in lines if target not in line]
         newcontent = "\n".join(nl)
         path.write_text(newcontent, encoding="utf-8")
         print(f"{path.parent.name} updated.")

@@ -64,8 +64,7 @@ def clean_file_large(file_path: Path) -> tuple:
         lines = content.splitlines(keepends=True)
         cleaned_lines = [clean_line(line) for line in lines]
         cleaned_content = "".join(cleaned_lines)
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(cleaned_content)
+        Path(file_path).write_text(cleaned_content, encoding="utf-8")
         return (
             file_path,
             True,

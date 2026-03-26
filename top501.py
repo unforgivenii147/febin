@@ -45,11 +45,13 @@ def collect_top_lines(directory, text_extensions, top_n=500):
         output_file = f"/sdcard/top500{ext}.txt"
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(f"Top {top_n} most frequent lines for {ext} files:\n\n")
-            for (
-                line,
-                count,
-            ) in lines_counter.most_common(top_n):
-                f.write(f"{count}: {line}\n")
+            f.writelines(
+                f"{count}: {line}\n"
+                for (
+                    line,
+                    count,
+                ) in lines_counter.most_common(top_n)
+            )
         elapsed = time.time() - start_time
         print(f"Saved top {top_n} lines for {ext} files to {output_file} (took {elapsed:.2f} seconds)")
 

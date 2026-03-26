@@ -9,10 +9,10 @@ if __name__ == "__main__":
     llen = int(str(sys.argv[2]).strip()) if len(sys.argv) == 3 else 10
     lines = []
     try:
-        with open(fname) as f:
+        with open(fname, encoding="utf-8") as f:
             lines = f.readlines()
         filtered = [line for line in lines if len(line.strip()) >= llen]
-        with open(fname, "w") as f:
+        with open(fname, "w", encoding="utf-8") as f:
             f.writelines(filtered)
     except FileNotFoundError:
         print(f"Error: File '{fname}' not found.")

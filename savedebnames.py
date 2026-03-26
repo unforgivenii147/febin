@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import pathlib
 import subprocess
 
 
@@ -22,8 +23,7 @@ def save_installed_packages(
             check=True,
         )
         installed_packages = result.stdout.splitlines()
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write("\n".join(installed_packages))
+        pathlib.Path(output_file).write_text("\n".join(installed_packages), encoding="utf-8")
         print(f"Installed package names saved to '{output_file}'")
     except FileNotFoundError:
         print("Error: dpkg-query command not found. Are you running this script on a Debian-based system?")

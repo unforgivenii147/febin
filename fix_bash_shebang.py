@@ -41,7 +41,7 @@ def is_bash_file(filepath):
 
 def process_file(filepath):
     print(f"processing {filepath}")
-    with open(filepath, "r+") as f:
+    with open(filepath, "r+", encoding="utf-8") as f:
         lines = f.readlines()
         if not lines:
             return

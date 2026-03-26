@@ -18,7 +18,7 @@ def extract_links(url: str):
         if href:
             abs_url = urljoin(url, href)
             parsed = urlparse(abs_url)
-            if parsed.scheme in ("http", "https"):
+            if parsed.scheme in {"http", "https"}:
                 links.add(abs_url)
     return sorted(links)
 
@@ -38,8 +38,7 @@ def split_internal_external(base_url, links):
 def save_links(out_dir, name, links):
     path = os.path.join(out_dir, name)
     with open(path, "w", encoding="utf-8") as f:
-        for link in links:
-            f.write(link + "\n")
+        f.writelines(link + "\n" for link in links)
 
 
 def main():

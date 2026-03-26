@@ -20,12 +20,7 @@ def convert_html_to_markdown(root_dir):
                 ) as html_file:
                     html_content = html_file.read()
                     md_content = markdownify(html_content)
-                with open(
-                    md_file_path,
-                    "w",
-                    encoding="utf-8",
-                ) as md_file:
-                    md_file.write(md_content)
+                Path(md_file_path).write_text(md_content, encoding="utf-8")
                 print(f"[\u2714] {Path(md_file_path).name}")
 
 

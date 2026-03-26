@@ -18,7 +18,8 @@ def read_text_file(path: Path) -> str:
     }
     ext = path.suffix.lower()
     if ext not in allowed:
-        raise ValueError(f"Unsupported file type: {ext}")
+        msg = f"Unsupported file type: {ext}"
+        raise ValueError(msg)
     return path.read_text(encoding="utf-8")
 
 
@@ -28,9 +29,7 @@ def chunk_text(text: str, size: int = CHUNK_SIZE) -> list[str]:
 
 def translate_chunks(chunks: list[str]) -> str:
     translator = GoogleTranslator(source="ko", target="en")
-    translated_parts = []
-    for chunk in chunks:
-        translated_parts.append(translator.translate(chunk))
+    translated_parts = [translator.translate(chunk) for chunk in chunks]
     return "".join(translated_parts)
 
 

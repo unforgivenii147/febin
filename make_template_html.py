@@ -7,11 +7,8 @@ from bs4 import BeautifulSoup
 def find_html_files(
     root_dir: str = ".",
 ) -> list[Path]:
-    html_files = []
     root_path = Path(root_dir).resolve()
-    for file_path in root_path.rglob("*.html"):
-        if file_path.name != "template.html":
-            html_files.append(file_path)
+    html_files = [file_path for file_path in root_path.rglob("*.html") if file_path.name != "template.html"]
     for file_path in root_path.rglob("*.htm"):
         html_files.append(file_path)
     return sorted(html_files)
@@ -29,13 +26,9 @@ def extract_common_structure(
             with open(file_path, encoding="utf-8") as f:
                 soup = BeautifulSoup(f.read(), "html.parser")
                 if soup.head:
-                    for meta in soup.head.find_all("meta"):
-                        meta_tags.append(str(meta))
-                    for link in soup.head.find_all("link"):
-                        link_tags.append(str(link))
-                    for script in soup.head.find_all("script"):
-                        if script.get("src"):
-                            script_tags.append(str(script))
+                    meta_tags.extend(str(meta) for meta in soup.head.find_all("meta"))
+                    link_tags.extend(str(link) for link in soup.head.find_all("link"))
+                    script_tags.extend(str(script) for script in soup.head.find_all("script") if script.get("src"))
                 if soup.body and soup.body.get("class"):
                     body_classes.extend(soup.body.get("class"))
         except Exception as e:
@@ -190,8 +183,7 @@ def create_template_html(
 </html>
 """
     try:
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(template)
+        Path(output_file).write_text(template, encoding="utf-8")
         print(f"✅ Template created successfully: {output_file}")
         print(f"📊 Merged {len(html_files)} HTML files")
         return True

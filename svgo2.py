@@ -14,7 +14,8 @@ MAX_QUEUE = 16
 
 def process_file(in_file):
     if not in_file.exists():
-        raise FileNotFoundError(f"Input file not found: {in_file.name}")
+        msg = f"Input file not found: {in_file.name}"
+        raise FileNotFoundError(msg)
     with tempfile.NamedTemporaryFile(suffix=".svg", delete=False) as tmp_file:
         tmp_file_path = tmp_file.name
     try:

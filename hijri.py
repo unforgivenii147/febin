@@ -12,4 +12,4 @@ def get_current_ymd():
 
 y, m, d = get_current_ymd()
 
-print_persian(f"{y}-{m}-{d} == {georgian_to_hijri(y, m, d)}")
+print_persian(f"{georgian_to_hijri(y, m, d)}")

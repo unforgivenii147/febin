@@ -73,7 +73,8 @@ def clone_repo(repo, branch="main"):
             elif line:
                 tqdm.write(f"[INFO] {line}")
     except Exception as e:
-        raise Exception(f"[ERROR] Clone failed: {e}")
+        msg = f"[ERROR] Clone failed: {e}"
+        raise Exception(msg)
 
 
 def main():

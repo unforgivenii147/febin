@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from datetime import datetime
+import operator
 from pathlib import Path
 import sys
 from typing import Any
@@ -10,7 +11,7 @@ import markdown
 
 
 class GUIFramework:
-    def __init__(self):
+    def __init__(self) -> None:
         self.session_id = None
         self.dialogs = {}
 
@@ -184,12 +185,13 @@ class Document:
         self,
         file_path: str,
         format_type: str = "markdown",
-    ):
+    ) -> None:
         """
         Initialize Document.
+
         Args:
             file_path: Path to document file
-            format_type: Document format ('markdown', 'todo', 'text', 'json')
+            format_type: Document format ('markdown', 'todo', 'text', 'json').
         """
         self.file_path = Path(file_path)
         self.format_type = format_type
@@ -269,7 +271,7 @@ class Document:
 
 
 class FileManager:
-    def __init__(self, root_path: str | None = None):
+    def __init__(self, root_path: str | None = None) -> None:
         if root_path is None:
             root_path = str(Path.home() / "Documents" / "Markor")
         self.root_path = Path(root_path)
@@ -322,19 +324,18 @@ class FileManager:
         search_path = self.root_path / folder if folder else self.root_path
         if not search_path.exists():
             return []
-        documents = []
         pattern = "**/*" if recursive else "*"
-        for file_path in search_path.glob(pattern):
-            if file_path.is_file() and file_path.suffix in [".md", ".txt", ".json"]:
-                documents.append(
-                    {
-                        "name": file_path.name,
-                        "path": str(file_path.relative_to(self.root_path)),
-                        "size": file_path.stat().st_size,
-                        "modified": datetime.fromtimestamp(file_path.stat().st_mtime).isoformat(),
-                    }
-                )
-        return sorted(documents, key=lambda x: x["name"])
+        documents = [
+            {
+                "name": file_path.name,
+                "path": str(file_path.relative_to(self.root_path)),
+                "size": file_path.stat().st_size,
+                "modified": datetime.fromtimestamp(file_path.stat().st_mtime).isoformat(),
+            }
+            for file_path in search_path.glob(pattern)
+            if file_path.is_file() and file_path.suffix in {".md", ".txt", ".json"}
+        ]
+        return sorted(documents, key=operator.itemgetter("name"))
 
     def create_folder(
         self,
@@ -370,14 +371,14 @@ class FileManager:
     def get_recent_documents(self, limit: int = 10) -> list[dict[str, Any]]:
         docs = self.list_documents(recursive=True)
         docs.sort(
-            key=lambda x: x["modified"],
+            key=operator.itemgetter("modified"),
             reverse=True,
         )
         return docs[:limit]
 
 
 class TextEditor:
-    def __init__(self):
+    def __init__(self) -> None:
         self.gui = GUIFramework()
         self.file_manager = FileManager()
         self.current_document: Document | None = None

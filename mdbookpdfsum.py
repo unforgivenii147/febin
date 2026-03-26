@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import os
+import pathlib
 import re
 import urllib
 
@@ -15,7 +16,7 @@ class Section:
         source_file: str,
         depth: int,
         index: int,
-    ):
+    ) -> None:
         self.title = title
         self.source_file = source_file
         self.depth = depth
@@ -41,7 +42,7 @@ class Section:
     def is_root(self):
         return self.parent is None
 
-    def __str__(self):
+    def __str__(self) -> str:
         path = self.path_to_root()
         return "{}. {}".format(".".join(path), self.title)
 
@@ -62,7 +63,7 @@ def check_title(
     if not os.path.exists(source_file):
         print(f"File {source_file} does not exist")
         return False
-    with open(source_file) as f:
+    with open(source_file, encoding="utf-8") as f:
         lines = f.readlines()
     for idx, line in enumerate(lines):
         if line.startswith("# "):
@@ -76,7 +77,7 @@ def check_title(
     if not all_matched and overwrite:
         lines.insert(0, f"# {node.title}\n")
         print(f"[Info] Overwrite title as {node.title} in {node.source_file}")
-        with open(source_file, "w") as f:
+        with open(source_file, "w", encoding="utf-8") as f:
             f.writelines(lines)
         all_matched = True
     return all_matched
@@ -84,8 +85,7 @@ def check_title(
 
 def get_dom_id(node: Section):
     source_path = node.source_file
-    if source_path.startswith("./"):
-        source_path = source_path[2:]
+    source_path = source_path.removeprefix("./")
     source_path = source_path.split(".")[0]
     result = source_path
     result = result.lower()
@@ -168,16 +168,18 @@ def main():
     print("args.summary_path: ", args.summary_path)
     print("args.output_path: ", args.output_path)
     if not os.path.exists(args.html_path):
-        raise FileNotFoundError(f"{args.html_path} does not exist")
+        msg = f"{args.html_path} does not exist"
+        raise FileNotFoundError(msg)
     if not os.path.exists(args.pdf_path):
-        raise FileNotFoundError(f"{args.pdf_path} does not exist")
+        msg = f"{args.pdf_path} does not exist"
+        raise FileNotFoundError(msg)
     if not os.path.exists(args.summary_path):
-        raise FileNotFoundError(f"{args.summary_path} does not exist")
+        msg = f"{args.summary_path} does not exist"
+        raise FileNotFoundError(msg)
     reader = pypdf.PdfReader(args.pdf_path)
     writer = pypdf.PdfWriter()
     writer.append(reader)
-    with open(args.summary_path) as f:
-        md_text = f.read()
+    md_text = pathlib.Path(args.summary_path).read_text(encoding="utf-8")
     section_root = parse_section_tree(md_text)
     html_root = None
     with open(args.html_path, encoding="utf8") as f:

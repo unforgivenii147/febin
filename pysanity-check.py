@@ -64,10 +64,10 @@ def main():
     outdated_pkgs = []
     for pkg_name, pkg_version in installed_pkgs:
         latest_version = get_latest_version(pkg_name)
-        if latest_version not in (
+        if latest_version not in {
             "Unknown",
             pkg_version,
-        ):
+        }:
             outdated_pkgs.append(
                 (
                     pkg_name,

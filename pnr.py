@@ -23,9 +23,9 @@ def ask_user_for_rename(old_name, new_name):
         response = (
             input(f"'{new_name}' already exists. Rename '{old_name}' with _number suffix? (y/n): ").lower().strip()
         )
-        if response in ["y", "yes"]:
+        if response in {"y", "yes"}:
             return True
-        elif response in ["n", "no"]:
+        elif response in {"n", "no"}:
             return False
         else:
             print("Please enter 'y' or 'n'")
@@ -76,7 +76,7 @@ def remove_string_from_names(
             else:
                 try:
                     os.rename(old_path, new_path)
-                    print(f"Renamed: '{old_path}' -> '{new_name}'")
+                    print(f"{old_path} -> {new_name}")
                     renamed_count += 1
                 except OSError as e:
                     print(f"Error renaming '{filename}': {e}")
@@ -110,7 +110,7 @@ def remove_string_from_names(
             else:
                 try:
                     os.rename(old_path, new_path)
-                    print(f"Renamed: '{old_path}' -> '{new_name}'")
+                    print(f"{old_path} -> {new_name}")
                     renamed_count += 1
                     dirs_to_process.append((new_name, new_name))
                 except OSError as e:
@@ -173,7 +173,7 @@ def replace_string_in_names(
             else:
                 try:
                     os.rename(old_path, new_path)
-                    print(f"Renamed: '{old_path}' -> '{new_name}'")
+                    print(f"{old_path} -> {new_name}")
                     renamed_count += 1
                 except OSError as e:
                     print(f"Error renaming '{filename}': {e}")
@@ -203,7 +203,7 @@ def replace_string_in_names(
             else:
                 try:
                     os.rename(old_path, new_path)
-                    print(f"Renamed: '{old_path}' -> '{new_name}'")
+                    print(f"{old_path} -> {new_name}")
                     renamed_count += 1
                     dirs_to_process.append((new_name, new_name))
                 except OSError as e:
@@ -279,7 +279,7 @@ def rename_by_template(
                     np = Path(new_path)
                     new_path = get_unique_name(np.parent, np.name)
                     os.rename(old_path, new_path)
-                    print(f"Renamed: '{old_path}' -> '{new_name}'")
+                    print(f"{old_path} -> {new_name}")
                     renamed_count += 1
                 except OSError as e:
                     print(f"Error renaming '{filename}': {e}")
@@ -303,10 +303,6 @@ def main() -> None:
         epilog="""
 Examples:
   python pnr.py -r "old_string"              # Remove "old_string" from names
-  python pnr.py -r "old_string" --recursive  # Remove recursively
-  python pnr.py -s whl zip                   # Replace "whl" with "zip"
-  python pnr.py -t myfile                    # Rename files to myfile001, myfile002, etc.
-  python pnr.py -t doc --dry-run             # Show what would be renamed
         """,
     )
     group = parser.add_mutually_exclusive_group(required=True)

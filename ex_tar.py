@@ -67,7 +67,7 @@ def process_archive(
 ):
     """
     Process a single archive: extract it and delete original if successful.
-    Returns tuple (success, archive_size, extracted_size)
+    Returns tuple (success, archive_size, extracted_size).
     """
     if not archive_path.exists():
         if not quiet:
@@ -134,11 +134,8 @@ def process_archive(
 def find_archives(directory):
     """Find all supported archives in directory recursively."""
     directory = Path(directory).resolve()
-    archives = []
     # Find standalone .zst files (not ending with .tar.zst)
-    for zst_file in directory.rglob("*.zst"):
-        if not zst_file.name.endswith(".tar.zst"):
-            archives.append(zst_file)
+    archives = [zst_file for zst_file in directory.rglob("*.zst") if not zst_file.name.endswith(".tar.zst")]
     # Find tar.zst files
     archives.extend(directory.rglob("*.tar.zst"))
     # Find tar.xz files

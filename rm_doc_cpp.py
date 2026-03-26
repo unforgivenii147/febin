@@ -6,7 +6,7 @@ import regex as re
 
 
 class RegexCommentRemover:
-    def __init__(self):
+    def __init__(self) -> None:
         self.pattern = re.compile(
             r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
             re.DOTALL | re.MULTILINE,
@@ -30,12 +30,7 @@ class RegexCommentRemover:
 
 def process_file(file_path, remover):
     try:
-        with open(
-            file_path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
-            code = f.read()
+        code = Path(file_path).read_text(encoding="utf-8", errors="ignore")
     except Exception as e:
         print(f"[ERROR] {file_path.name} read: {e}")
         return ("error", file_path, 0)
@@ -49,8 +44,7 @@ def process_file(file_path, remover):
         return ("error", file_path, 0)
     if result != code:
         try:
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(result)
+            Path(file_path).write_text(result, encoding="utf-8")
             print(f"[OK] {file_path.name}: ~{comments} comment markers removed")
             return (
                 "changed",
@@ -71,7 +65,7 @@ if __name__ == "__main__":
         p
         for p in dir_path.rglob("*")
         if p.suffix
-        in [
+        in {
             ".c",
             ".cpp",
             ".cc",
@@ -81,7 +75,7 @@ if __name__ == "__main__":
             ".hxx",
             ".C",
             ".H",
-        ]
+        }
         and p.is_file()
     ]
     if not files:

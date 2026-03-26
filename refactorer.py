@@ -30,8 +30,7 @@ for root, _, files in os.walk("."):
     for file in files:
         if file.endswith(".py") and not file.startswith("output"):
             file_path = Path(root) / file
-            with Path(file_path).open(encoding="utf-8") as f:
-                content = f.read()
+            content = Path(file_path).read_text(encoding="utf-8")
             tree = ast.parse(content)
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):

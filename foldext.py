@@ -15,7 +15,7 @@ def folderize_by_extension():
         if path.is_file() and not path.is_symlink():
             _name = path.stem
             ext = path.suffix.lower().lstrip(".")
-            target_dir = ext if ext else NO_EXT_DIR
+            target_dir = ext or NO_EXT_DIR
             target_path = base_dir / target_dir
             if not target_path.exists():
                 target_path.mkdir(exist_ok=True)

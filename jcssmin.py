@@ -10,8 +10,7 @@ from rcssmin import cssmin
 
 def process_file(path) -> str:
     try:
-        with open(path, encoding="utf-8") as f:
-            content = f.read()
+        content = Path(path).read_text(encoding="utf-8")
         if path.suffix == ".css" or ".min.css" in path.name:
             minified = cssmin(content)
         else:
@@ -19,8 +18,7 @@ def process_file(path) -> str:
         if len(minified) == len(content):
             return f"[NO CHANGE] {path.name}"
         else:
-            with open(path, "w", encoding="utf-8") as f:
-                f.write(minified)
+            Path(path).write_text(minified, encoding="utf-8")
             return f"[OK] {path.name}"
     except Exception as e:
         return f"[ERROR] ({path}): {e}"

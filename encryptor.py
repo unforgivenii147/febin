@@ -5,15 +5,9 @@ from pathlib import Path
 import random
 import string
 
-from cryptography.hazmat.backends import (
-    default_backend,
-)
+from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.primitives.ciphers import (
-    Cipher,
-    algorithms,
-    modes,
-)
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from fastwalk import walk_files
 
 AES_BLOCK_SIZE = 128
@@ -32,19 +26,16 @@ def encrypt_file(file_path, key):
         backend=backend,
     )
     encryptor = cipher.encryptor()
-    with open(file_path, "rb") as f:
-        data = f.read()
+    data = Path(file_path).read_bytes()
     padder = padding.PKCS7(128).padder()
     padded_data = padder.update(data) + padder.finalize()
     encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
-    with open(file_path, "wb") as f:
-        f.write(iv + encrypted_data)
+    Path(file_path).write_bytes(iv + encrypted_data)
 
 
 def decrypt_file(file_path, key):
     backend = default_backend()
-    with open(file_path, "rb") as f:
-        raw = f.read()
+    raw = Path(file_path).read_bytes()
     iv = raw[:AES_BLOCK_SIZE]
     ciphertext = raw[AES_BLOCK_SIZE:]
     cipher = Cipher(
@@ -56,8 +47,7 @@ def decrypt_file(file_path, key):
     padded_data = decryptor.update(ciphertext) + decryptor.finalize()
     unpadder = padding.PKCS7(128).unpadder()
     data = unpadder.update(padded_data) + unpadder.finalize()
-    with open(file_path, "wb") as f:
-        f.write(data)
+    Path(file_path).write_bytes(data)
 
 
 def main():
@@ -70,17 +60,19 @@ def main():
         key = random_key()
         print(f"Encryption key: {key}")
         action = encrypt_file
-        with open("key", "a") as f:
+        with open("key", "a", encoding="utf-8") as f:
             f.write("\n")
             f.write(key)
     elif args.decrypt:
         if not args.key:
-            raise SystemExit("Decryption requires --key")
-        with open("key") as f:
+            msg = "Decryption requires --key"
+            raise SystemExit(msg)
+        with open("key", encoding="utf-8") as f:
             key = f.read().strip()
         action = decrypt_file
     else:
-        raise SystemExit("Specify --encrypt or --decrypt")
+        msg = "Specify --encrypt or --decrypt"
+        raise SystemExit(msg)
     for file_path in walk_files("."):
         path = Path(file_path)
         if path.exists():

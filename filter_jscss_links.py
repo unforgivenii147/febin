@@ -30,8 +30,7 @@ def main():
             if url and is_static_asset(url) and url not in seen:
                 seen.add(url)
                 filtered.append(url)
-    with OUTPUT_FILE.open("w", encoding="utf-8") as f:
-        f.write("\n".join(filtered))
+    OUTPUT_FILE.write_text("\n".join(filtered), encoding="utf-8")
     print(f"Kept {len(filtered)} URLs.")
     print(f"Saved to {OUTPUT_FILE}")
 

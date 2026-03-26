@@ -34,7 +34,7 @@ def detect_text_based_extension(text):
         return "py"
     if text.startswith("#!") and ("sh" in text or "bash" in text):
         return "sh"
-    if text.startswith("# ") or text.startswith("## ") or "---" in text:
+    if text.startswith(("# ", "## ")) or "---" in text:
         return "md"
     if text.startswith("---") or (": " in text and "\n" in text):
         return "yaml"
@@ -67,7 +67,7 @@ def detect_extension(path, mime_type):
         return MIME_TO_EXT[mime_type]
     if mime_type == "text/plain":
         try:
-            with open(path, errors="ignore") as f:
+            with open(path, encoding="utf-8", errors="ignore") as f:
                 sample = f.read(4096)
             guessed = detect_text_based_extension(sample)
             if guessed:

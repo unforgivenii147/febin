@@ -47,13 +47,15 @@ def load_root(input_path: Path) -> Path:
         tmp = Path(tempfile.mkdtemp())
         extract_wheel(input_path, tmp)
         return tmp
-    raise SystemExit("Input must be a .whl file or an unzipped wheel directory")
+    msg = "Input must be a .whl file or an unzipped wheel directory"
+    raise SystemExit(msg)
 
 
 def read_metadata(root: Path) -> dict:
     dist_info = next(root.glob("*.dist-info"), None)
     if not dist_info:
-        raise RuntimeError("No .dist-info directory found")
+        msg = "No .dist-info directory found"
+        raise RuntimeError(msg)
     meta_file = dist_info / "METADATA"
     meta = Parser().parsestr(meta_file.read_text())
     return {
@@ -65,11 +67,7 @@ def read_metadata(root: Path) -> dict:
 
 
 def find_extensions(root: Path) -> list[str]:
-    modules = []
-    for f in root.rglob("*"):
-        if f.suffix in EXT_SUFFIXES:
-            modules.append(".".join(f.relative_to(root).with_suffix("").parts))
-    return modules
+    return [".".join(f.relative_to(root).with_suffix("").parts) for f in root.rglob("*") if f.suffix in EXT_SUFFIXES]
 
 
 def generate_setup_py(
@@ -122,7 +120,8 @@ build-backend = "setuptools.build_meta"
 
 def main() -> None:
     if len(sys.argv) != 2:
-        raise SystemExit("Usage: python mk_setuppy.py <wheel.whl | unzipped-dir>")
+        msg = "Usage: python mk_setuppy.py <wheel.whl | unzipped-dir>"
+        raise SystemExit(msg)
     input_path = Path(sys.argv[1]).resolve()
     root = load_root(input_path)
     meta = read_metadata(root)

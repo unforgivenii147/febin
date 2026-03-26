@@ -47,7 +47,7 @@ def extract_with_lzma(xz_path, remove_original=True):
             shutil.copyfileobj(compressed_file, output_file)
         if remove_original:
             xz_path.unlink()
-            logging.debug(f"Removed original: {xz_path}")
+            logging.debug("Removed original: %s", xz_path)
         return True, xz_path, output_path, None
     except lzma.LZMAError as e:
         return (
@@ -118,13 +118,9 @@ def extract_with_system_xz(xz_path, remove_original=False):
 def find_xz_files(directory):
     directory = Path(directory)
     if not directory.exists():
-        logging.error(f"Directory does not exist: {directory}")
+        logging.error("Directory does not exist: %s", directory)
         return []
-    xz_files = []
-    for path in directory.rglob("*.xz"):
-        if path.is_file():
-            xz_files.append(path)
-    return xz_files
+    return [path for path in directory.rglob("*.xz") if path.is_file()]
 
 
 def process_file(args):
@@ -230,9 +226,9 @@ Examples:
     elapsed_time = datetime.now() - start_time
     logging.info("=" * 50)
     logging.info(f"Extraction complete in {elapsed_time.total_seconds():.2f} seconds")
-    logging.info(f"Successfully extracted: {success_count} files")
+    logging.info("Successfully extracted: %s files", success_count)
     if error_count > 0:
-        logging.warning(f"Failed to extract: {error_count} files")
+        logging.warning("Failed to extract: %s files", error_count)
     return 0 if error_count == 0 else 1
 
 

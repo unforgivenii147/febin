@@ -11,7 +11,8 @@ TIME_PATTERN = re.compile(r"^\d{2}:\d{2}:\d{2}$")
 
 def validate_time(value: str) -> str:
     if not TIME_PATTERN.match(value):
-        raise argparse.ArgumentTypeError("Time must be in HH:MM:SS format (e.g. 00:10:00)")
+        msg = "Time must be in HH:MM:SS format (e.g. 00:10:00)"
+        raise argparse.ArgumentTypeError(msg)
     return value
 
 

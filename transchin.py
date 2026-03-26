@@ -26,8 +26,7 @@ def translate_chunk(chunk: str) -> str:
 
 def translate_file(path: Path):
     try:
-        with open(path, encoding="utf-8") as f:
-            content = f.read()
+        content = Path(path).read_text(encoding="utf-8")
     except:
         print(f"Skipping unreadable file: {path}")
         return
@@ -40,8 +39,7 @@ def translate_file(path: Path):
     new_name = f"{path.stem}_eng{path.suffix}"
     new_path = path.parent / new_name
     try:
-        with open(new_path, "w", encoding="utf-8") as f:
-            f.write(translated_text)
+        Path(new_path).write_text(translated_text, encoding="utf-8")
         print(f"Translated → {new_path.name}")
     except Exception as e:
         print(f"Error writing {new_path}: {e}")

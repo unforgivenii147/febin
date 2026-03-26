@@ -1,14 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 import multiprocessing
+import operator
 import os
+import pathlib
 
-from tree_sitter import (
-    Language,
-    Parser,
-    Query,
-    QueryCursor,
-)
+from tree_sitter import Language, Parser, Query, QueryCursor
 import tree_sitter_python as tspython
 
 PY_LANGUAGE = Language(tspython.language())
@@ -33,8 +30,7 @@ def should_preserve_comment(content):
 
 def strip_file(file_path):
     try:
-        with open(file_path, encoding="utf-8") as f:
-            source_code = f.read()
+        source_code = pathlib.Path(file_path).read_text(encoding="utf-8")
         source_bytes = bytes(source_code, "utf8")
         tree = parser.parse(source_bytes)
         captures = cursor.captures(tree.root_node)
@@ -70,7 +66,7 @@ def strip_file(file_path):
                     )
         if not modifications:
             return
-        modifications.sort(key=lambda x: x[0], reverse=True)
+        modifications.sort(key=operator.itemgetter(0), reverse=True)
         working_code = source_code
         for (
             start,
@@ -80,8 +76,7 @@ def strip_file(file_path):
             working_code = working_code[:start] + replacement + working_code[end:]
         try:
             ast.parse(working_code)
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(working_code)
+            pathlib.Path(file_path).write_text(working_code, encoding="utf-8")
         except SyntaxError:
             pass
     except Exception as e:

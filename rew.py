@@ -4,6 +4,7 @@ import base64
 from configparser import ConfigParser
 from email.parser import Parser
 import hashlib
+import operator
 import os
 from pathlib import Path
 import shutil
@@ -26,17 +27,18 @@ def site_packages_paths(prefix):
     candidates.append(prefix / "lib" / pyver / "site-packages")
     for p in sys.path:
         try:
-            ppath = Path(p)
+            pth = Path(p)
         except Exception:
             continue
-        if (prefix in ppath.parents or ppath == prefix) and ppath.exists():
-            candidates.append(ppath)
+        if (prefix in pth.parents or pth == prefix) and pth.exists():
+            candidates.append(pth)
     seen = []
     out = []
     for c in candidates:
         if c not in seen and c.exists():
             seen.append(c)
             out.append(c)
+
     return out
 
 
@@ -167,11 +169,9 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
         if all("/" not in p and "\\" not in p for p in rec_list):
             for name in rec_list:
                 candidates = []
-                candidates.append(base / name)
-                candidates.append(base / (name + ".py"))
+                candidates.extend((base / name, base / (name + ".py")))
                 if "-" in name:
-                    candidates.append(base / name.replace("-", "_"))
-                    candidates.append(base / (name.replace("-", "_") + ".py"))
+                    candidates.extend((base / name.replace("-", "_"), base / (name.replace("-", "_") + ".py")))
                 for c in candidates:
                     if c.exists():
                         if c.is_dir():
@@ -334,8 +334,8 @@ def build_wheel_from_tree(
             full = Path(root) / fn
             rel = full.relative_to(workdir).as_posix()
             all_files.append((full, rel))
-    for full, rel in sorted(all_files, key=lambda x: x[1]):
-        if rel.endswith("/RECORD") or rel.endswith("RECORD"):
+    for full, rel in sorted(all_files, key=operator.itemgetter(1)):
+        if rel.endswith(("/RECORD", "RECORD")):
             continue
         h, size = compute_hash_and_size(full)
         record_lines.append(f"{rel},{h},{size}")

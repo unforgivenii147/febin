@@ -75,7 +75,7 @@ if __name__ == "__main__":
                     p2 = Path(paths[j])
                     if not is_nested(p1, p2):
                         cleaned[hsh].append(str(p1))
-        with open("/sdcard/dupdirs.json", "w") as fo:
+        with open("/sdcard/dupdirs.json", "w", encoding="utf-8") as fo:
             json.dump(cleaned, fo)
     else:
         print("No duplicate folders found.")

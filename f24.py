@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import operator
 import os
 from pathlib import Path
 import time
@@ -18,8 +16,7 @@ def iter_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
         dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
-        for fname in filenames:
-            files.append(Path(dirpath) / fname)
+        files.extend(Path(dirpath) / fname for fname in filenames)
     return files
 
 
@@ -56,7 +53,7 @@ def main() -> None:
             result = fut.result()
             if result is not None:
                 recent.append(result)
-    recent.sort(key=lambda x: x[0])
+    recent.sort(key=operator.itemgetter(0))
     for _, path in recent:
         print(path.relative_to(root))
 

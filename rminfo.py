@@ -37,7 +37,6 @@ def is_python_file(path: str) -> bool:
 
 def remove_header(path) -> None:
     original = []
-    cleaned = []
     try:
         with open(
             path,
@@ -47,15 +46,12 @@ def remove_header(path) -> None:
             original = f.readlines()
     except Exception:
         return
-    for line in original:
-        if not (line.startswith("# Author ") or line.startswith("# Email ") or line.startswith("# Time ")):
-            cleaned.append(line)
+    cleaned = [line for line in original if not (line.startswith(("# Author ", "# Email ", "# Time ")))]
     print(f"{len(original)}=={len(cleaned)}")
     if cleaned != original:
         ans = "y"
         if ans == "y":
-            with open(path, "w", encoding="utf-8") as fo:
-                fo.write("".join(cleaned))
+            Path(path).write_text("".join(cleaned), encoding="utf-8")
 
 
 def main() -> None:

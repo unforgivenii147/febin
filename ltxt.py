@@ -1,9 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from collections import Counter
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 
 from dh import BIN_EXT

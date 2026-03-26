@@ -1,7 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def unicode_unescape(text: str) -> str:
@@ -9,7 +12,7 @@ def unicode_unescape(text: str) -> str:
 
 
 def process_file(input_file: Path) -> None:
-    with open(input_file) as f:
+    with open(input_file, encoding="utf-8") as f:
         lines = f.readlines()
         for line in lines:
             nl = "\\u" + str(line.strip())

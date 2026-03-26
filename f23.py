@@ -102,7 +102,7 @@ if __name__ == "__main__":
     if not any(vars(args).values()):
         args.force = True
         args.all = True
-    root = Path().resolve()
+    root = Path.cwd()
     scan_and_fix(root, force=args.force, apply_all=args.all)
     print("\n=== SUMMARY ===")
     print(f"Files changed: {len(changed_files)}")

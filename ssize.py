@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import operator
 from pathlib import Path
 
 
@@ -13,7 +14,7 @@ def list_and_sort_by_size(path: Path = Path()):
     for p in path.glob("*"):
         size = get_size(p)
         items.append({"name": p.name, "size": size})
-    items.sort(key=lambda x: x["size"], reverse=False)
+    items.sort(key=operator.itemgetter("size"), reverse=False)
     return items
 
 

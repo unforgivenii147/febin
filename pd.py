@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
+import pathlib
 
 from packaging import tags
 import requests
@@ -17,10 +18,11 @@ def get_package_urls(pkg_name):
     url = f"https://pypi.org/pypi/{pkg_name}/json"
     response = requests.get(url)
     if response.status_code != 200:
-        raise ValueError(f"Failed to fetch package info for {pkg_name}")
+        msg = f"Failed to fetch package info for {pkg_name}"
+        raise ValueError(msg)
     data = response.json()
     releases = data.get("releases", {})
-    latest_version = sorted(releases.keys(), reverse=True)[0]
+    latest_version = max(releases.keys())
 
     print(f"latest version : {latest_version}")
 
@@ -47,9 +49,9 @@ def download_package(pkg_name):
     print(f"Downloading {filename}...")
     response = requests.get(download_url)
     if response.status_code != 200:
-        raise ValueError(f"Failed to download {filename}")
-    with open(filename, "wb") as f:
-        f.write(response.content)
+        msg = f"Failed to download {filename}"
+        raise ValueError(msg)
+    pathlib.Path(filename).write_bytes(response.content)
     print(f"Downloaded {filename}")
 
 

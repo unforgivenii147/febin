@@ -46,7 +46,7 @@ def process_file(path: Path, shift_ms: int):
 def main():
     raw = sys.argv[1:]
     force_shift = None
-    if raw and raw[0] in ("+", "-"):
+    if raw and raw[0] in {"+", "-"}:
         force_shift = ONE_SEC_MS if raw[0] == "+" else -ONE_SEC_MS
         raw = raw[1:]
     ap = argparse.ArgumentParser(description="Shift SRT subtitles inplace (batch supported)")

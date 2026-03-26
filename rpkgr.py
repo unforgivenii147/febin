@@ -1,9 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 from pathlib import Path
 import shutil
@@ -35,10 +32,7 @@ def get_wheel_tags(dist_info: Path):
     if not wheel_file.exists():
         return ["py3-none-any"]
     content = wheel_file.read_text()
-    tags = []
-    for line in content.splitlines():
-        if line.startswith("Tag:"):
-            tags.append(line.split(":", 1)[1].strip())
+    tags = [line.split(":", 1)[1].strip() for line in content.splitlines() if line.startswith("Tag:")]
     return tags or ["py3-none-any"]
 
 

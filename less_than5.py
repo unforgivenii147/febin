@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 """
 Move files created less than 5 minutes ago to a subdirectory called '5min'
-Recursively processes all files starting from current directory
+Recursively processes all files starting from current directory.
 """
 
 import os
@@ -12,7 +12,7 @@ TIME_THRESHOLD = 8 * 60
 
 
 def get_file_age(filepath):
-    """Get file age in seconds"""
+    """Get file age in seconds."""
     current_time = time.time()
     file_stat = os.stat(filepath)
     file_creation_time = file_stat.st_ctime
@@ -20,7 +20,7 @@ def get_file_age(filepath):
 
 
 def move_recent_files(start_dir="."):
-    """Move files created in last 5 minutes to '5min' subdirectory"""
+    """Move files created in last 5 minutes to '5min' subdirectory."""
     target_dir = os.path.join(start_dir, "5min")
     os.makedirs(target_dir, exist_ok=True)
     moved_count = 0
@@ -63,7 +63,7 @@ def move_recent_files(start_dir="."):
 
 
 def main():
-    """Main function"""
+    """Main function."""
     try:
         start_dir = os.getcwd()
         print(f"Starting from directory: {start_dir}")

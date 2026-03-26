@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Simple converter from .py to .ipynb
-"""
+"""Simple converter from .py to .ipynb."""
 
 import json
 from pathlib import Path
@@ -11,12 +9,11 @@ import nbformat as nbf
 
 
 def simple_convert(py_file, ipynb_file=None):
-    """Convert Python file to Jupyter notebook (one cell only)"""
+    """Convert Python file to Jupyter notebook (one cell only)."""
     if not ipynb_file:
         ipynb_file = Path(py_file).stem + ".ipynb"
     # Read Python file
-    with open(py_file, encoding="utf-8") as f:
-        code = f.read()
+    code = Path(py_file).read_text(encoding="utf-8")
     # Create notebook
     nb = nbf.v4.new_notebook()
     nb["cells"] = [nbf.v4.new_code_cell(code)]

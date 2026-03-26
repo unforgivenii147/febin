@@ -35,7 +35,7 @@ def minify_json_file(path: Path, dry_run: bool = False) -> bool:
 
 
 def main():
-    root = Path().resolve()
+    root = Path.cwd()
     dry_run = "--dry" in sys.argv
     modified_count = 0
     total_count = 0

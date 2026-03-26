@@ -68,7 +68,7 @@ def fzf_select(all_words):
         )
         sys.exit(1)
     selection = proc.stdout.strip()
-    return selection if selection else None
+    return selection or None
 
 
 def interactive_mode(fa_en, en_fa):
@@ -85,7 +85,7 @@ def interactive_mode(fa_en, en_fa):
         if not word:
             continue
         result = translate(word, fa_en, en_fa)
-        print(result if result else "Not found")
+        print(result or "Not found")
 
 
 def main():

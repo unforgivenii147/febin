@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 """
 Convert a Python script to a Jupyter notebook.
-Usage: python py2ipynb.py input.py [output.ipynb]
+Usage: python py2ipynb.py input.py [output.ipynb].
 """
 
 import argparse
@@ -14,17 +14,17 @@ import nbformat as nbf
 def py_to_ipynb(input_file, output_file=None):
     """
     Convert a Python file to a Jupyter notebook.
+
     Args:
         input_file (str): Path to input .py file
-        output_file (str, optional): Path to output .ipynb file
+        output_file (str, optional): Path to output .ipynb file.
     """
     # Check if input file exists
     if not Path(input_file).exists():
         print(f"Error: File '{input_file}' not found.")
         return False
     # Read the Python file
-    with open(input_file, encoding="utf-8") as f:
-        code = f.read()
+    code = Path(input_file).read_text(encoding="utf-8")
     # Create a new notebook
     nb = nbf.v4.new_notebook()
     # Split code into cells (separate by double newlines or function/class definitions)
@@ -37,17 +37,9 @@ def py_to_ipynb(input_file, output_file=None):
         # Check for potential cell breaks
         if i > 0 and (
             # Function or class definition
-            line.startswith("def ")
-            or line.startswith("class ")
-            or
-            # Import statements (group them)
-            (
-                (line.startswith("import ") or line.startswith("from "))
-                and not current_cell[-1].startswith(("import ", "from "))
-            )
-            or
-            # Empty line after some code
-            (
+            line.startswith(("def ", "class "))
+            or ((line.startswith(("import ", "from "))) and not current_cell[-1].startswith(("import ", "from ")))
+            or (
                 line.strip() == ""
                 and current_cell
                 and i + 1 < len(lines)
@@ -98,8 +90,7 @@ def main():
     # Override splitting behavior if requested
     if args.no_split:
         # Simple conversion - everything in one cell
-        with open(args.input, encoding="utf-8") as f:
-            code = f.read()
+        code = Path(args.input).read_text(encoding="utf-8")
         nb = nbf.v4.new_notebook()
         nb["cells"] = [nbf.v4.new_code_cell(code)]
         output_file = args.output or Path(args.input).stem + ".ipynb"

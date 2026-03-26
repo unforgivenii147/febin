@@ -22,7 +22,7 @@ class WheelBuilder:
         self,
         site_packages: Path,
         output_dir: Path,
-    ):
+    ) -> None:
         self.site_packages = site_packages.resolve()
         self.output_dir = output_dir.resolve()
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -175,10 +175,10 @@ class WheelBuilder:
             return None
         pkg_name = parts[0]
         version = parts[1] if len(parts) > 1 else "0.0.0"
-        log.info(f"Building wheel for {pkg_name} {version}")
+        log.info("Building wheel for %s %s", pkg_name, version)
         records = self._read_record(dist_info_dir)
         if not records:
-            log.warning(f"No RECORD file for {pkg_name}")
+            log.warning("No RECORD file for %s", pkg_name)
             return None
         is_pure = self._detect_purity(records)
         if is_pure:
@@ -210,10 +210,7 @@ class WheelBuilder:
             data_dir_name = f"{pkg_name}-{version}.data"
             data_dir = None
             new_record = []
-            for (
-                path_str,
-                _info,
-            ) in records.items():
+            for path_str in records:
                 src = self.site_packages / path_str
                 if not src.exists():
                     continue
@@ -273,7 +270,7 @@ class WheelBuilder:
                         )
                     )
             wheel_file = dist_info_dest / "WHEEL"
-            with open(wheel_file, "w") as f:
+            with open(wheel_file, "w", encoding="utf-8") as f:
                 f.write("Wheel-Version: 1.0\n")
                 f.write("Generator: wheel-builder 1.0\n")
                 f.write(f"Root-Is-Purelib: {'true' if is_pure else 'false'}\n")
@@ -331,7 +328,7 @@ class WheelBuilder:
                 if self.build_wheel(dist_info):
                     built += 1
             except Exception as e:
-                log.error(f"Failed to build {dist_info.name}: {e}")
+                log.exception(f"Failed to build {dist_info.name}: {e}")
                 if log.level == logging.DEBUG:
                     import traceback
 
@@ -389,7 +386,7 @@ Examples:
         "--output",
         "-o",
         type=Path,
-        default=Path("./wheels"),
+        default=Path("/sdcard/whl"),
         help="Output directory for wheels (default: ./wheels)",
     )
     parser.add_argument(
@@ -398,20 +395,13 @@ Examples:
         help="Build only this package (by name)",
     )
     parser.add_argument(
-        "--verbose",
-        "-v",
-        action="store_true",
-        help="Verbose output",
-    )
-    parser.add_argument(
         "--list",
         "-l",
         action="store_true",
         help="List available site-packages directories and exit",
     )
     args = parser.parse_args()
-    if args.verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
+    logging.getLogger().setLevel(logging.DEBUG)
     if args.list:
         sites = find_site_packages()
         print(f"Found {len(sites)} site-packages:")
@@ -421,7 +411,7 @@ Examples:
     if args.site_packages:
         site_packages = args.site_packages.resolve()
         if not site_packages.exists():
-            log.error(f"Site-packages not found: {site_packages}")
+            log.error("Site-packages not found: %s", site_packages)
             return 1
     else:
         sites = find_site_packages()
@@ -438,9 +428,9 @@ Examples:
                 choice = int(input("\nSelect site-packages [1]: ") or "1")
                 site_packages = sites[choice - 1]
             except (ValueError, IndexError):
-                log.error("Invalid selection")
+                log.exception("Invalid selection")
                 return 1
-    log.info(f"Using site-packages: {site_packages}")
+    log.info("Using site-packages: %s", site_packages)
     builder = WheelBuilder(site_packages, args.output)
     if args.package:
         dist_info = site_packages / f"{args.package}-*.dist-info"

@@ -2,6 +2,7 @@
 import contextlib
 from multiprocessing import cpu_count
 import os
+import pathlib
 import tarfile
 import zipfile
 
@@ -32,8 +33,7 @@ def extract_git_urls_from_bytes(data: bytes):
 
 def process_regular_file(path):
     try:
-        with open(path, "rb") as f:
-            data = f.read()
+        data = pathlib.Path(path).read_bytes()
         return extract_git_urls_from_bytes(data)
     except Exception:
         return set()
@@ -110,9 +110,8 @@ def main() -> None:
         for urls in pool.imap_unordered(worker, files):
             if urls:
                 found_urls |= urls
-    with open(OUTPUT_FILE, "w") as out:
-        for url in sorted(found_urls):
-            out.write(url + "\n")
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
+        out.writelines(url + "\n" for url in sorted(found_urls))
     print(f"\nExtracted {len(found_urls)} unique git URLs → {OUTPUT_FILE}")
 
 

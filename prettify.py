@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 
 from bs4 import BeautifulSoup
 import cssbeautifier
@@ -8,12 +9,10 @@ import yapf
 
 def beautify_html(file_path) -> bool:
     try:
-        with open(file_path, encoding="utf-8") as file:
-            content = file.read()
+        content = pathlib.Path(file_path).read_text(encoding="utf-8")
         soup = BeautifulSoup(content, "html.parser")
         beautified_content = soup.prettify()
-        with open(file_path, "w", encoding="utf-8") as file:
-            file.write(beautified_content)
+        pathlib.Path(file_path).write_text(beautified_content, encoding="utf-8")
     except Exception as e:
         print(f"Error beautifying HTML file {file_path}: {e}")
         return False
@@ -22,11 +21,9 @@ def beautify_html(file_path) -> bool:
 
 def beautify_css(file_path) -> bool:
     try:
-        with open(file_path, encoding="utf-8") as file:
-            content = file.read()
+        content = pathlib.Path(file_path).read_text(encoding="utf-8")
         beautified_content = cssbeautifier.beautify(content)
-        with open(file_path, "w", encoding="utf-8") as file:
-            file.write(beautified_content)
+        pathlib.Path(file_path).write_text(beautified_content, encoding="utf-8")
     except Exception as e:
         print(f"Error beautifying CSS file {file_path}: {e}")
         return False
@@ -35,11 +32,9 @@ def beautify_css(file_path) -> bool:
 
 def beautify_js(file_path) -> bool:
     try:
-        with open(file_path, encoding="utf-8") as file:
-            content = file.read()
+        content = pathlib.Path(file_path).read_text(encoding="utf-8")
         beautified_content, _ = yapf.yapf_api.FormatCode(content)
-        with open(file_path, "w", encoding="utf-8") as file:
-            file.write(beautified_content)
+        pathlib.Path(file_path).write_text(beautified_content, encoding="utf-8")
     except Exception as e:
         print(f"Error beautifying JS file {file_path}: {e}")
         return False

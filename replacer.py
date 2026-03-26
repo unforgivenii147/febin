@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import os
+import pathlib
 import sys
 
 from dh import is_binary
@@ -13,10 +14,9 @@ def process_file(
     replace_text=None,
     dry_run=False,
 ):
-    """Process a single file and perform replacement/removal"""
+    """Process a single file and perform replacement/removal."""
     try:
-        with open(file_path, encoding="utf-8") as f:
-            content = f.read()
+        content = pathlib.Path(file_path).read_text(encoding="utf-8")
         replacement = replace_text if replace_text is not None else ""
         escaped_search = re.escape(search_text)
         pattern = re.compile(escaped_search)
@@ -37,12 +37,7 @@ def process_file(
                     print(f"  ... and {len(matches) - 3} more matches")
             else:
                 new_content = pattern.sub(replacement, content)
-                with open(
-                    file_path,
-                    "w",
-                    encoding="utf-8",
-                ) as f:
-                    f.write(new_content)
+                pathlib.Path(file_path).write_text(new_content, encoding="utf-8")
                 print(f"Updated: {file_path}")
             return True
         return False
@@ -66,7 +61,7 @@ def replace_in_files(
     target_file=None,
     dry_run=False,
 ):
-    """Main function to process files"""
+    """Main function to process files."""
     exclude_dirs = {
         ".git",
         "build",

@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import operator
 import os
 import subprocess
 
@@ -27,7 +28,7 @@ def get_bash_history():
     history_file = os.path.expanduser("~/.bash_history")
     if not os.path.exists(history_file):
         return []
-    with open(history_file) as f:
+    with open(history_file, encoding="utf-8") as f:
         return f.read().splitlines()
 
 
@@ -59,7 +60,7 @@ def exclude_build_packages(installed_packages):
 def suggest_unused_packages(installed_packages, used_packages, top_n=200):
     unused_packages = [pkg for pkg in installed_packages if pkg[0] not in used_packages]
     unused_packages = exclude_build_packages(unused_packages)
-    unused_packages.sort(key=lambda x: x[1], reverse=True)
+    unused_packages.sort(key=operator.itemgetter(1), reverse=True)
     return unused_packages[:top_n]
 
 

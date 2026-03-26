@@ -13,7 +13,7 @@ import time
 
 
 class LineProcessor:
-    def __init__(self, verbose: bool = False):
+    def __init__(self, verbose: bool = False) -> None:
         self.verbose = verbose
 
     def log(self, message: str):
@@ -32,7 +32,7 @@ class LineProcessor:
 
 
 class MmapReader(LineProcessor):
-    def __init__(self, verbose: bool = False):
+    def __init__(self, verbose: bool = False) -> None:
         super().__init__(verbose=verbose)
 
     def read_lines_mmap(
@@ -74,7 +74,8 @@ class MmapReader(LineProcessor):
                         if not skip_empty or decoded_line.strip():
                             yield decoded_line
         except Exception as e:
-            raise OSError(f"Error reading file: {e!s}")
+            msg = f"Error reading file: {e!s}"
+            raise OSError(msg)
 
     def read_lines_regular(
         self,
@@ -90,7 +91,8 @@ class MmapReader(LineProcessor):
                     if not skip_empty or decoded_line.strip():
                         yield decoded_line
         except Exception as e:
-            raise OSError(f"Error reading file: {e!s}")
+            msg = f"Error reading file: {e!s}"
+            raise OSError(msg)
 
     def read_lines(
         self,
@@ -106,7 +108,7 @@ class MmapReader(LineProcessor):
 
 
 class LineSorter(LineProcessor):
-    def __init__(self, verbose: bool = False):
+    def __init__(self, verbose: bool = False) -> None:
         super().__init__(verbose=verbose)
 
     def sort_in_memory(
@@ -182,7 +184,7 @@ class LineSorter(LineProcessor):
 
 
 class LineDeduplicator(LineProcessor):
-    def __init__(self, verbose: bool = False):
+    def __init__(self, verbose: bool = False) -> None:
         super().__init__(verbose=verbose)
 
     def deduplicate_list(
@@ -219,7 +221,7 @@ class FileSorter(LineProcessor):
         self,
         verbose: bool = False,
         dry_run: bool = False,
-    ):
+    ) -> None:
         super().__init__(verbose=verbose)
         self.dry_run = dry_run
         self.reader = MmapReader(verbose=verbose)
@@ -240,7 +242,8 @@ class FileSorter(LineProcessor):
     ) -> dict:
         input_path = Path(file_path)
         if not input_path.exists():
-            raise FileNotFoundError(f"File not found: {file_path}")
+            msg = f"File not found: {file_path}"
+            raise FileNotFoundError(msg)
         if output_path is None:
             output_path = file_path
         output_path = Path(output_path)
@@ -293,8 +296,7 @@ class FileSorter(LineProcessor):
                     "w",
                     encoding=encoding,
                 ) as f:
-                    for line in lines:
-                        f.write(line + "\n")
+                    f.writelines(line + "\n" for line in lines)
                 self.log(f"Output written: {output_path}")
             else:
                 self.log("DRY RUN: File not written")
@@ -319,7 +321,8 @@ class FileSorter(LineProcessor):
                 "lines_per_second": (original_lines / elapsed_time if elapsed_time > 0 else 0),
             }
         except Exception as e:
-            raise RuntimeError(f"Error processing file: {e!s}")
+            msg = f"Error processing file: {e!s}"
+            raise RuntimeError(msg)
 
     def print_stats(self, stats: dict):
         print("\n" + "=" * 60)
@@ -354,7 +357,7 @@ class FileSorter(LineProcessor):
             "statistics": stats,
         }
         try:
-            with open(report_file, "w") as f:
+            with open(report_file, "w", encoding="utf-8") as f:
                 json.dump(report, f, indent=2)
             print(f"\n✓ Report saved: {report_file}")
         except Exception as e:
@@ -362,7 +365,7 @@ class FileSorter(LineProcessor):
 
 
 class FileAnalyzer(LineProcessor):
-    def __init__(self, verbose: bool = False):
+    def __init__(self, verbose: bool = False) -> None:
         super().__init__(verbose=verbose)
         self.reader = MmapReader(verbose=verbose)
 

@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 
 import dh
 
@@ -20,8 +21,7 @@ def find_license_files() -> None:
                 lf.append(file)
     print(f"Found {len(lf)} license files")
     for file_path in lf:
-        with open(file_path, "w") as f:
-            f.write("")
+        pathlib.Path(file_path).write_text("", encoding="utf-8")
 
 
 if __name__ == "__main__":

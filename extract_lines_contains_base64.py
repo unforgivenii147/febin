@@ -20,10 +20,9 @@ def process_file(fp):
             nl.append(cleaned)
     if found:
         print(f"{fp.name} : {found}")
-        with open("b64", "a") as f:
+        with open("b64", "a", encoding="utf-8") as f:
             f.write("\n")
-            for k in nl:
-                f.write(f"{k}\n")
+            f.writelines(f"{k}\n" for k in nl)
 
 
 def main():

@@ -4,19 +4,14 @@ from pathlib import Path
 import sys
 
 from dh import format_size, get_files, get_size
-from tree_sitter import (
-    Language,
-    Parser,
-    Query,
-    QueryCursor,
-)
+from tree_sitter import Language, Parser, Query, QueryCursor
 import tree_sitter_cpp as tscpp
 
 ts_remover = None
 
 
 class TSCppRemover:
-    def __init__(self):
+    def __init__(self) -> None:
         self.language = Language(tscpp.language())
         self.parser = Parser(self.language)
         self.query = Query(
@@ -37,10 +32,7 @@ class TSCppRemover:
             _pattern_idx,
             captures_dict,
         ) in matches:
-            for (
-                _capture_name,
-                nodes,
-            ) in captures_dict.items():
+            for nodes in captures_dict.values():
                 for node in nodes:
                     start = node.start_byte
                     end = node.end_byte

@@ -1,17 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
 import sys
 
-from dh import (
-    SOURCE_CODE_EXT,
-    clean_blank_lines,
-    format_size,
-    get_nobinary,
-    get_size,
-    is_binary,
-)
+from dh import SOURCE_CODE_EXT, clean_blank_lines, format_size, get_nobinary, get_size, is_binary
 from termcolor import cprint
 
 
@@ -48,8 +41,7 @@ def process_file(fp):
     code = "\n".join(cleaned)
     code = clean_blank_lines(code)
     if fp.suffix != ".py":
-        with open(fp, "w") as fout:
-            fout.write(code)
+        Path(fp).write_text(code, encoding="utf-8")
         after = get_size(fp)
         diffsize = after - before
         cprint(
@@ -59,8 +51,7 @@ def process_file(fp):
     else:
         try:
             _ = ast.parse(code)
-            with open(fp, "w") as fo:
-                fo.write(code)
+            Path(fp).write_text(code, encoding="utf-8")
             after = get_size(fp)
             diffsize = after - before
             cprint(
@@ -82,7 +73,7 @@ def main() -> None:
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-    p = Pool(8)
+    p = get_context("spawn").Pool(8)
     for _ in p.imap_unordered(process_file, files):
         pass
     p.close()

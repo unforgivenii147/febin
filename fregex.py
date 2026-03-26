@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 from pathlib import Path
 
@@ -14,8 +11,7 @@ def extract_regex_patterns(file_path):
     patterns = []
     regex_pattern = re.compile(r're\.(compile|search|match|findall|fullmatch|finditer)\(\s*([rR]?[\'"])(.*?)(?<!\\)\2')
     try:
-        with open(file_path, encoding="utf-8") as f:
-            content = f.read()
+        content = Path(file_path).read_text(encoding="utf-8")
         patterns = regex_pattern.findall(content)
     except (OSError, UnicodeDecodeError):
         pass
@@ -28,8 +24,7 @@ def process_file(file_path, output_dir):
         relative_path = os.path.relpath(file_path, os.getcwd())
         output_file = output_dir / f"{relative_path.replace(os.sep, '_')}.txt"
         output_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write("\n".join(patterns))
+        Path(output_file).write_text("\n".join(patterns), encoding="utf-8")
     return file_path, len(patterns)
 
 

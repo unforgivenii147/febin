@@ -20,14 +20,13 @@ def fix_links(file_path: Path):
                 )
     backup_path = file_path.with_suffix(".bak")
     os.replace(file_path, backup_path)
-    with open(file_path, "w") as file:
-        file.write(content)
+    Path(file_path).write_text(content, encoding="utf-8")
 
 
 def main():
     for root, _dirs, files in os.walk("."):
         for file in files:
-            if file.endswith(".md") or file.endswith(".html"):
+            if file.endswith((".md", ".html")):
                 file_path = Path(root) / file
                 fix_links(file_path)
 

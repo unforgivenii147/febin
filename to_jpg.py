@@ -4,12 +4,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from dh import (
-    format_size,
-    get_size,
-    is_image,
-    unique_path,
-)
+from dh import format_size, get_size, is_image, unique_path
 
 try:
     import cv2
@@ -65,7 +60,7 @@ def convert_file(file_path: str) -> bool:
             )
         else:
             img = Image.open(path)
-            if img.mode in ("RGBA", "LA"):
+            if img.mode in {"RGBA", "LA"}:
                 background = Image.new(
                     "RGB",
                     img.size,

@@ -5,11 +5,7 @@ from pathlib import Path
 import sys
 
 from bs4 import BeautifulSoup
-from dh import (
-    format_size,
-    get_files,
-    get_size,
-)
+from dh import format_size, get_files, get_size
 from termcolor import cprint
 
 
@@ -31,7 +27,7 @@ def process_file(file_path: Path) -> None:
                 del tag["style"]
 
         clean_html = str(soup)
-        file_path.write_text(clean_html)
+        file_path.write_text(clean_html, encoding="utf-8")
         after = get_size(file_path)
         print(f"{file_path.name}", end=" ")
         diffsize = before - after

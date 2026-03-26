@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import operator
 import os
 import stat
 import sys
@@ -70,7 +71,7 @@ def list_dir(path="."):
     name_col_width = max(len(n) for _, n, _ in items)
     print(f"{'size'.ljust(size_col_width)}  {'name'}")
     print("-" * (size_col_width + name_col_width + 2))
-    for size, name, color in sorted(items, key=lambda x: x[0]):
+    for size, name, color in sorted(items, key=operator.itemgetter(0)):
         size_str = human_readable_size(size).ljust(size_col_width)
         print(f"{size_str}  {color}{name}{RESET}")
 

@@ -11,7 +11,8 @@ def extract_subtitles(input_file, output_file=None, subtitle_index=0):
     :param subtitle_index: Index of the subtitle track to extract (default: 0).
     """
     if not os.path.exists(input_file):
-        raise FileNotFoundError(f"Input file not found: {input_file}")
+        msg = f"Input file not found: {input_file}"
+        raise FileNotFoundError(msg)
     if output_file is None:
         output_file = os.path.splitext(input_file)[0] + ".srt"
     cmd = [

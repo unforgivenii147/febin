@@ -1,18 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
-from collections.abc import Iterable
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 import tarfile
 import threading
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse, urlunparse
 import zipfile
 
 import regex as re
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 try:
     import zstandard as zstd
@@ -182,15 +182,13 @@ def main() -> None:
         for _ in as_completed(futures):
             pass
     with open("/sdcard/urls.txt", "a", encoding="utf-8") as f:
-        for u in sorted(all_urls):
-            f.write(u + "\n")
+        f.writelines(u + "\n" for u in sorted(all_urls))
     with open(
         "/sdcard/giturls.txt",
         "a",
         encoding="utf-8",
     ) as f:
-        for u in sorted(git_urls):
-            f.write(u + "\n")
+        f.writelines(u + "\n" for u in sorted(git_urls))
     with open(
         "/sdcard/giturls_classified.txt",
         "a",
@@ -200,8 +198,7 @@ def main() -> None:
             cat,
             urls,
         ) in git_urls_classified.items():
-            for u in sorted(urls):
-                f.write(f"{cat}\t{u}\n")
+            f.writelines(f"{cat}\t{u}\n" for u in sorted(urls))
 
 
 if __name__ == "__main__":

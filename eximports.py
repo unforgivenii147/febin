@@ -1,16 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import sys
 
-from dh import (
-    STDLIB,
-    get_files,
-    get_installed_pkgs,
-)
+from dh import STDLIB, get_files, get_installed_pkgs
 from tree_sitter import Language, Parser
 import tree_sitter_python as tsp
 
@@ -24,11 +17,7 @@ VALID = {
 
 def extract_file(src: bytes, tree):
     root = tree.root_node
-    chunks = []
-    for node in root.children:
-        if node.type in VALID:
-            chunks.append(src[node.start_byte : node.end_byte].decode())
-    return chunks
+    return [src[node.start_byte : node.end_byte].decode() for node in root.children if node.type in VALID]
 
 
 def process_file(fp):
@@ -45,15 +34,14 @@ def main():
     results = []
     with ThreadPoolExecutor(max_workers=8) as ex:
         futures = [ex.submit(process_file, f) for f in files]
-        for future in as_completed(futures):
-            results.append(future.result())
+        results.extend(future.result() for future in as_completed(futures))
     for imports in results:
         if imports:
             for k in imports:
                 if k not in all_imports:
                     all_imports.append(k)
     all_imports = sorted(set(all_imports))
-    outfile.write_text("\n".join(all_imports))
+    outfile.write_text("\n".join(all_imports), encoding="utf-8")
     content = outfile.read_text(encoding="utf-8")
     impoz = []
     for line in content.splitlines():
@@ -92,7 +80,7 @@ def main():
         if rq.strip() not in stdlib_plus_installed:
             print(rq.strip())
             filterd.append(rq)
-    outfile.write_text("\n".join(filterd))
+    outfile.write_text("\n".join(filterd), encoding="utf-8")
 
 
 if __name__ == "__main__":

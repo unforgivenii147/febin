@@ -49,7 +49,8 @@ def collect_all_files(directory: Path):
 def find_duplicate_files(directory: str):
     directory = Path(directory)
     if not directory.exists():
-        raise ValueError(f"Directory does not exist: {directory}")
+        msg = f"Directory does not exist: {directory}"
+        raise ValueError(msg)
     all_files = collect_all_files(directory)
     duplicates = defaultdict(list)
     print(f"📁 Scanning {len(all_files)} files...\n")

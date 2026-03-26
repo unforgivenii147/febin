@@ -4,10 +4,7 @@ import sys
 from markdown2 import markdown_path
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
-from pygments.lexers import (
-    TextLexer,
-    get_lexer_by_name,
-)
+from pygments.lexers import TextLexer, get_lexer_by_name
 import regex as re
 from weasyprint import CSS, HTML
 
@@ -58,7 +55,8 @@ def md2pdf(
     ]
     html = markdown_path(md_file_path, extras=extras)
     if not html.strip():
-        raise ValidationError("Input markdown seems empty")
+        msg = "Input markdown seems empty"
+        raise ValidationError(msg)
     html = pygments_highlight(html)
     html = TOC_HTML + html
     html_doc = HTML(string=html, base_url=base_url)

@@ -13,14 +13,14 @@ def get_installed_packages():
 def read_requirements(filename):
     req_file = Path(filename)
     if not req_file.exists():
-        raise FileNotFoundError("file not found in current directory")
-    with open(req_file) as f:
+        msg = "file not found in current directory"
+        raise FileNotFoundError(msg)
+    with open(req_file, encoding="utf-8") as f:
         return [line.strip().replace("-", "_").lower() for line in f if line.strip() and not line.startswith("#")]
 
 
 def write_requirements(lines, filename):
-    with open(filename, "w") as f:
-        f.write("\n".join(lines) + "\n")
+    Path(filename).write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def strip_installed_from_requirements(fname):

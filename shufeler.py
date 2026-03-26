@@ -24,7 +24,7 @@ def enhanced_shuffle(
             shuffle3(shuffled_lines)
         elif method == "weighted":
             weighted_shuffle(shuffled_lines)
-    output_path = output_file if output_file else input_file
+    output_path = output_file or input_file
     with open(output_path, "w", encoding="utf-8") as f:
         f.writelines(shuffled_lines)
     print(f"Shuffled {original_count} lines using method '{method}' with {repeats} passes")

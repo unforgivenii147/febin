@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import pathlib
 import sys
 
 import requests
@@ -50,7 +48,7 @@ def main() -> None:
     pure = set()
     native = set()
     missing = set()
-    with open(infile) as f:
+    with open(infile, encoding="utf-8") as f:
         packages = [line.strip() for line in f if line.strip()]
     with ThreadPoolExecutor(max_workers=10) as executor:
         futures = {executor.submit(check_package, pkg): pkg for pkg in packages}
@@ -62,12 +60,9 @@ def main() -> None:
                 native.add(pkg)
             else:
                 missing.add(pkg)
-    with open("pure_python.txt", "w") as f:
-        f.write("\n".join(sorted(pure)))
-    with open("native_extensions.txt", "w") as f:
-        f.write("\n".join(sorted(native)))
-    with open("not_found.txt", "w") as f:
-        f.write("\n".join(sorted(missing)))
+    pathlib.Path("pure_python.txt").write_text("\n".join(sorted(pure)), encoding="utf-8")
+    pathlib.Path("native_extensions.txt").write_text("\n".join(sorted(native)), encoding="utf-8")
+    pathlib.Path("not_found.txt").write_text("\n".join(sorted(missing)), encoding="utf-8")
     print("Done!")
     print(f"Pure Python: {len(pure)}")
     print(f"Native-required: {len(native)}")

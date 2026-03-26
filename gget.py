@@ -11,14 +11,7 @@ from urllib.parse import unquote
 
 import requests
 from rich.console import Console
-from rich.progress import (
-    BarColumn,
-    DownloadColumn,
-    Progress,
-    TextColumn,
-    TimeRemainingColumn,
-    TransferSpeedColumn,
-)
+from rich.progress import BarColumn, DownloadColumn, Progress, TextColumn, TimeRemainingColumn, TransferSpeedColumn
 
 console = Console()
 
@@ -34,7 +27,7 @@ class Downloader:
         url,
         output_path=None,
         expected_hash=None,
-    ):
+    ) -> None:
         self.url = url
         self.stop_event = threading.Event()
         self.file_size = 0
@@ -91,7 +84,7 @@ class Downloader:
     def _load_state(self):
         if self.state_file.exists():
             try:
-                with open(self.state_file) as f:
+                with open(self.state_file, encoding="utf-8") as f:
                     self.progress_data = json.load(f)
             except Exception:
                 pass
@@ -99,7 +92,7 @@ class Downloader:
     def _save_state(self):
         with (
             self.lock,
-            open(self.state_file, "w") as f,
+            open(self.state_file, "w", encoding="utf-8") as f,
         ):
             json.dump(self.progress_data, f)
 
@@ -146,17 +139,16 @@ class Downloader:
             with open(self.filename, "wb") as f:
                 f.truncate(self.file_size)
 
-        chunks = []
-        for i in range(0, self.file_size, CHUNK_SIZE):
-            chunks.append(
-                (
-                    i,
-                    min(
-                        i + CHUNK_SIZE - 1,
-                        self.file_size - 1,
-                    ),
-                )
+        chunks = [
+            (
+                i,
+                min(
+                    i + CHUNK_SIZE - 1,
+                    self.file_size - 1,
+                ),
             )
+            for i in range(0, self.file_size, CHUNK_SIZE)
+        ]
 
         self.progress_data["total_chunks"] = len(chunks)
         pending_chunks = [

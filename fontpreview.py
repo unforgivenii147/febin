@@ -36,12 +36,14 @@ def generate_html(font_files):
     ]
     for font_path in font_files:
         font_name = pathlib.Path(font_path).name
-        html.append("<div class='font-preview'>")
-        html.append("<style>")
-        html.append(
-            f"@font-face {{ font-family: '{font_name}'; src: url('{font_path}'); }}",
+        html.extend(
+            (
+                "<div class='font-preview'>",
+                "<style>",
+                f"@font-face {{ font-family: '{font_name}'; src: url('{font_path}'); }}",
+                "</style>",
+            )
         )
-        html.append("</style>")
         html.extend(
             f"<p style='font-family: \"{font_name}\"; font-size: {size}px;'>({font_path})فارسی</p>"
             for size in FONT_SIZES
@@ -56,8 +58,7 @@ def main() -> None:
     if not fonts:
         return
     html_content = generate_html(fonts)
-    with pathlib.Path(OUTPUT_HTML).open("w", encoding="utf-8") as f:
-        f.write(html_content)
+    pathlib.Path(OUTPUT_HTML).write_text(html_content, encoding="utf-8")
     print("font-preview.html created.")
 
 

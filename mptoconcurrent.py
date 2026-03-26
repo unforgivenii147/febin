@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 from concurrent.futures import ThreadPoolExecutor
 import os
+import pathlib
 import shutil
 
 import regex as re
@@ -9,9 +10,7 @@ import regex as re
 def find_py_files(directory):
     py_files = []
     for root, _, files in os.walk(directory):
-        for file in files:
-            if file.endswith(".py"):
-                py_files.append(os.path.join(root, file))
+        py_files.extend(os.path.join(root, file) for file in files if file.endswith(".py"))
     return py_files
 
 
@@ -23,8 +22,7 @@ def backup_file(file_path):
 
 def replace_multiprocessing(file_path):
     try:
-        with open(file_path, encoding="utf-8") as f:
-            content = f.read()
+        content = pathlib.Path(file_path).read_text(encoding="utf-8")
         if "import multiprocessing" not in content and "from multiprocessing" not in content:
             return False, file_path, "No mp"
         backup_file(file_path)
@@ -55,8 +53,7 @@ def replace_multiprocessing(file_path):
             "ProcessPoolExecutor",
             content,
         )
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(content)
+        pathlib.Path(file_path).write_text(content, encoding="utf-8")
         return (
             True,
             file_path,

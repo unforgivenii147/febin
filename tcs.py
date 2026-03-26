@@ -36,7 +36,6 @@ def copy_lines_to_clipboard(filename: str, start_line: int | None = None, end_li
     if start_line is None:
         # If no start_line is given, copy the entire file
         content_to_copy = "".join(lines)
-        print(f"Copying entire content of '{filename}' to clipboard.")
     else:
         # Adjust start_line to be 0-based index
         start_index = start_line - 1
@@ -58,18 +57,10 @@ def copy_lines_to_clipboard(filename: str, start_line: int | None = None, end_li
             )
             sys.exit(1)
         if start_index >= end_index:
-            print(
-                f"Error: Start line ({start_line}) must be before or equal to end line ({end_line if end_line is not None else total_lines}).",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-
+            start_index, end_index
         # Extract the lines
         selected_lines = lines[start_index:end_index]
         content_to_copy = "".join(selected_lines)
-        print(
-            f"Copying lines {start_line} to {end_line if end_line is not None else 'end'} of '{filename}' to clipboard."
-        )
 
     if not content_to_copy:
         print("No content selected to copy.", file=sys.stderr)
@@ -82,7 +73,6 @@ def copy_lines_to_clipboard(filename: str, start_line: int | None = None, end_li
         if process.returncode != 0:
             print(f"Error: Failed to copy to clipboard. STDERR: {stderr}", file=sys.stderr)
             sys.exit(1)
-        print("Successfully copied to clipboard.")
     except FileNotFoundError:
         print("Error: 'termux-clipboard-set' command not found. Is Termux:API installed?", file=sys.stderr)
         sys.exit(1)
@@ -105,7 +95,7 @@ def main():
         )
         sys.exit(1)
 
-    filename = sys.argv[1]
+    path = Path(sys.argv[1])
 
     start_line = None
     end_line = None
@@ -131,12 +121,11 @@ def main():
         # We need to read the file once to check total_lines for validation before copying
         # This is a slight inefficiency, but necessary for robust validation.
         # Alternatively, we could try to copy and catch errors, but explicit validation is cleaner.
-        input_file = Path(filename)
-        if not input_file.is_file():
+        if not path.is_file():
             print(f"Error: File not found at '{filename}'", file=sys.stderr)
             sys.exit(1)
         try:
-            with input_file.open("r", encoding="utf-8") as f:
+            with path.open("r", encoding="utf-8") as f:
                 total_lines = len(f.readlines())
             if not (1 <= start_line <= total_lines):
                 print(
@@ -147,7 +136,7 @@ def main():
             print(f"Error reading file '{filename}' for validation: {e}", file=sys.stderr)
             sys.exit(1)
 
-    copy_lines_to_clipboard(filename, start_line, end_line)
+    copy_lines_to_clipboard(path, start_line, end_line)
 
 
 if __name__ == "__main__":

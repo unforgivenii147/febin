@@ -1,9 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 import json
 import logging
@@ -50,7 +47,7 @@ class HTTPSession:
             response.raise_for_status()
             return response.text
         except requests.RequestException as e:
-            logger.error(f"Failed to fetch {url}: {e}")
+            logger.exception("Failed to fetch %s: %s", url, e)
             return None
 
     def close(self) -> None:
@@ -237,19 +234,14 @@ class FileProcessor:
             file_path = Path(file_path)
             if file_path.suffix.lower() != ".html":
                 return 0
-            with open(
-                file_path,
-                encoding="utf-8",
-                errors="ignore",
-            ) as f:
-                html_content = f.read()
+            html_content = Path(file_path).read_text(encoding="utf-8", errors="ignore")
             code_blocks = self.extractor.extract_from_html(html_content, str(file_path))
             if code_blocks:
                 self._save_code_blocks(code_blocks, file_path)
                 logger.info(f"Extracted {len(code_blocks)} code blocks from {file_path}")
             return len(code_blocks)
         except Exception as e:
-            logger.error(f"Error processing {file_path}: {e}")
+            logger.exception("Error processing %s: %s", file_path, e)
             return 0
 
     def process_url(self, url: str) -> int:
@@ -263,7 +255,7 @@ class FileProcessor:
                 logger.info(f"Extracted {len(code_blocks)} code blocks from {url}")
             return len(code_blocks)
         except Exception as e:
-            logger.error(f"Error processing URL {url}: {e}")
+            logger.exception("Error processing URL %s: %s", url, e)
             return 0
 
     def _save_code_blocks(
@@ -287,20 +279,16 @@ class FileProcessor:
                     base_name = original_filepath.stem
                 filepath = source_dir / f"{base_name}_{counter}.py"
                 counter += 1
-            with open(filepath, "w", encoding="utf-8") as f:
-                f.write(block.content)
-            logger.debug(f"Saved code block to {filepath}")
+            Path(filepath).write_text(block.content, encoding="utf-8")
+            logger.debug("Saved code block to %s", filepath)
 
     def close(self) -> None:
         self.extractor.close()
 
 
 def find_html_files(directory: str) -> list[str]:
-    html_files = []
     path = Path(directory)
-    for html_file in path.rglob("*.html"):
-        html_files.append(str(html_file))
-    return html_files
+    return [str(html_file) for html_file in path.rglob("*.html")]
 
 
 def main() -> None:
@@ -395,7 +383,7 @@ Examples:
                         total_blocks += future.result()
             else:
                 logger.warning("No HTML files found in current directory")
-        logger.info(f"Total code blocks extracted: {total_blocks}")
+        logger.info("Total code blocks extracted: %s", total_blocks)
         logger.info(f"Results saved to: {processor.output_dir}")
     finally:
         processor.close()

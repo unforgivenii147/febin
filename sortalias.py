@@ -11,12 +11,12 @@ def main():
         print(f"Usage: {sys.argv[0]} <file>")
         sys.exit(1)
     fname = sys.argv[1]
-    with open(fname) as f:
+    with open(fname, encoding="utf-8") as f:
         lines = f.readlines()
     alias_lines = [l for l in lines if l.startswith("alias ")]
     other_lines = [l for l in lines if not l.startswith("alias ")]
     alias_lines.sort(key=alias_name)
-    with open(fname, "w") as f:
+    with open(fname, "w", encoding="utf-8") as f:
         f.writelines(alias_lines + other_lines)
 
 

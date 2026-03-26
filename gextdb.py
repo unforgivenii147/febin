@@ -21,7 +21,7 @@ class EntityExtractor(ast.NodeVisitor):
         self,
         source_content: str,
         original_path: Path,
-    ):
+    ) -> None:
         self.entities = []
         self.source_lines = source_content.splitlines(keepends=True)
         self.original_path = original_path
@@ -56,7 +56,7 @@ class EntityExtractor(ast.NodeVisitor):
                 "path": str(self.original_path),
                 "is_constant": entity_type == "constant",
                 "is_class": entity_type == "class",
-                "is_function": entity_type in ("function", "method"),
+                "is_function": entity_type in {"function", "method"},
             }
         )
 

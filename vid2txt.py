@@ -1,9 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import (
-    Process,
-    Queue,
-    cpu_count,
-)
+from multiprocessing import Process, Queue, cpu_count
 import pathlib
 import sys
 

@@ -13,8 +13,7 @@ def download_image(url, output_dir):
         response.raise_for_status()
         filename = os.path.join(output_dir, os.path.basename(url))
         with open(filename, "wb") as f:
-            for chunk in response.iter_content(1024):
-                f.write(chunk)
+            f.writelines(response.iter_content(1024))
         print(f"Downloaded: {filename}")
     except Exception as e:
         print(f"Failed to download {url}: {e}")

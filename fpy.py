@@ -54,14 +54,13 @@ if __name__ == "__main__":
         sys.exit(1)
     fname = sys.argv[1]
     try:
-        with open(fname) as f:
+        with open(fname, encoding="utf-8") as f:
             lines = f.readlines()
-        filtered = []
-        for line in lines:
-            if is_python_like(line) or looks_like_python(line) or is_probably_python(line):
-                filtered.append(line)
+        filtered = [
+            line for line in lines if is_python_like(line) or looks_like_python(line) or is_probably_python(line)
+        ]
         print(filtered)
-        with open("out.py", "w") as f:
+        with open("out.py", "w", encoding="utf-8") as f:
             for l in filtered:
                 f.write(l)
                 f.write("\n")

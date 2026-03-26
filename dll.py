@@ -13,7 +13,7 @@ def delete_lines_from_file():
     fromline = int(fromline)
     toline = int(toline)
     try:
-        with open(filename) as file:
+        with open(filename, encoding="utf-8") as file:
             lines = file.readlines()
     except FileNotFoundError:
         print(f"Error: File '{filename}' not found.")
@@ -29,7 +29,7 @@ def delete_lines_from_file():
         del temp
     new_lines = lines[: fromline - 1] + lines[toline:]
     try:
-        with open(filename, "w") as file:
+        with open(filename, "w", encoding="utf-8") as file:
             file.writelines(new_lines)
         print(f"emaining lines: {len(new_lines)}")
     except Exception as e:

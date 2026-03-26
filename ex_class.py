@@ -16,11 +16,7 @@ VALID = {
 
 def extract_file(src: bytes, tree):
     root = tree.root_node
-    chunks = []
-    for node in root.children:
-        if node.type in VALID:
-            chunks.append(src[node.start_byte : node.end_byte].decode())
-    return chunks
+    return [src[node.start_byte : node.end_byte].decode() for node in root.children if node.type in VALID]
 
 
 folder_imports = defaultdict(list)

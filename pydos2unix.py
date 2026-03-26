@@ -111,7 +111,7 @@ def worker(args):
     path, dry = args
     res = safe_convert(path, dry_run=dry)
     if res == "ERROR":
-        logging.error(f"Failed to convert: {path}")
+        logging.error("Failed to convert: %s", path)
     return res
 
 

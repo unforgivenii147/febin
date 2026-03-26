@@ -5,11 +5,7 @@ from pathlib import Path
 import sys
 
 import cv2
-from dh import (
-    format_size,
-    get_files,
-    get_size,
-)
+from dh import format_size, get_files, get_size
 from PIL import Image
 
 MAX_QUEUE = 16

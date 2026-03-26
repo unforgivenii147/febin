@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 import os
+import pathlib
 
 OUTPUT_FILE = "found.txt"
 
@@ -20,12 +21,7 @@ def is_probably_python(path: str) -> bool:
 
 def has_late_import(path: str) -> bool:
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
-            code = f.read()
+        code = pathlib.Path(path).read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(code)
     except Exception:
         return False
@@ -56,8 +52,7 @@ def find_files(root: str) -> list[str]:
 def main() -> None:
     matches = find_files(os.getcwd())
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        for path in matches:
-            f.write(path + "\n")
+        f.writelines(path + "\n" for path in matches)
     print(f"Found {len(matches)} files with late imports.")
     print(f"Results saved to {OUTPUT_FILE}")
 

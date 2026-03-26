@@ -40,14 +40,13 @@ def write_summary(filename=".dirinfo"):
         extensions,
         size_by_ext,
     ) = scan_directory()
-    with open(filename, "w") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write(f"total size: {total_size} bytes\n")
         f.write(f"extensions: {', '.join(sorted(extensions))}\n")
         f.write(f"number of files: {file_count}\n")
         f.write(f"number of folders: {folder_count}\n")
         f.write("size by extension:\n")
-        for ext, size in sorted(size_by_ext.items()):
-            f.write(f"  {ext}: {size} bytes\n")
+        f.writelines(f"  {ext}: {size} bytes\n" for ext, size in sorted(size_by_ext.items()))
 
 
 if __name__ == "__main__":

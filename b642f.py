@@ -21,8 +21,7 @@ def decode_base64_lines(input_path, output_folder="decoded_files"):
                     decoded_bytes = base64.b64decode(line.strip())
                     output_filename = f"decoded_{i:04d}.bin"
                     output_path = output_dir / output_filename
-                    with open(output_path, "wb") as out_file:
-                        out_file.write(decoded_bytes)
+                    Path(output_path).write_bytes(decoded_bytes)
                     #                    print(f"✓ Line {i:4d} → {output_path}")
                     success_count += 1
                 except Exception as e:
@@ -39,9 +38,8 @@ def decode_base64_lines(input_path, output_folder="decoded_files"):
         print(f"Error: Input file not found: {input_path}")
     except Exception as e:
         print(f"Unexpected error: {e}")
-    with open(input_path, "w") as fo:
-        for k in remained:
-            fo.write(f"{k}\n")
+    with open(input_path, "w", encoding="utf-8") as fo:
+        fo.writelines(f"{k}\n" for k in remained)
 
 
 if __name__ == "__main__":

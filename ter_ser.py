@@ -3,12 +3,7 @@ from collections import deque
 from pathlib import Path
 import sys
 
-from dh import (
-    format_size,
-    get_files,
-    get_size,
-    run_command,
-)
+from dh import format_size, get_files, get_size, run_command
 from termcolor import cprint
 
 MAX_QUEUE = 16

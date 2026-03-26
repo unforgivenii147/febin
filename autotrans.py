@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from deep_translator import GoogleTranslator
@@ -43,8 +40,7 @@ def contains_non_english(text: str) -> bool:
 def translate_file(path: Path):
     print(f"\n[INFO] Processing file: {path}")
     try:
-        with open(path, encoding="utf-8") as f:
-            content = f.read()
+        content = Path(path).read_text(encoding="utf-8")
     except Exception as e:
         print(f"[ERROR] Cannot read file {path}: {e}")
         return
@@ -63,8 +59,7 @@ def translate_file(path: Path):
     new_path = path.parent / new_name
     print(f"[INFO] Writing translated output to: {new_path}")
     try:
-        with open(new_path, "w", encoding="utf-8") as f:
-            f.write(translated_text)
+        Path(new_path).write_text(translated_text, encoding="utf-8")
         print(f"[DONE] Translated → {new_path.name}")
     except Exception as e:
         print(f"[ERROR] Failed to write output file {new_path}: {e}")

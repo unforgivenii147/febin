@@ -7,10 +7,10 @@ import sys
 
 
 def convert_html_to_md(html_file: Path, executable: str = "html2md") -> tuple[Path, bool]:
-    if html_file.suffix.lower() in [
+    if html_file.suffix.lower() in {
         ".html",
         ".htm",
-    ]:
+    }:
         md_file = html_file.with_suffix(".md")
     else:
         print(f"Warning: {html_file} doesn't have .html/.htm extension, skipping.")

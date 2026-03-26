@@ -8,10 +8,10 @@ def main():
     start = perf_counter()
     fn = sys.argv[1]
     lines = []
-    with open(fn) as f:
+    with open(fn, encoding="utf-8") as f:
         lines = f.readlines()
     new_fn = Path(fn).stem + "_list.txt"
-    with open(new_fn, "w") as fo:
+    with open(new_fn, "w", encoding="utf-8") as fo:
         fo.write("{")
         for line in lines:
             str1 = '"' + str(line.strip()) + '", ' if '"' not in line else "'" + str(line.strip()) + "', "

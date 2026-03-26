@@ -11,7 +11,7 @@ import os
 import subprocess
 import sys
 
-from dh import MIME_TO_EXT
+from dh import MIME2EXT
 
 
 def get_file_mime(file_path):
@@ -57,7 +57,7 @@ def check_files(directory, auto_fix=False):
             mime = get_file_mime(file_path)
             print(f"{name} --> {mime}")
             if mime:
-                expected_exts = MIME_TO_EXT.get(mime, [])
+                expected_exts = MIME2EXT.get(mime, [])[0]
                 if expected_exts and ext not in expected_exts:
                     new_path = None
                     if auto_fix:

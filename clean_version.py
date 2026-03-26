@@ -24,7 +24,7 @@ def extract_package_name(line: str) -> str | None:
         return None
     if "@" in line:
         name = line.split("@", 1)[0].strip()
-        return name if name else None
+        return name or None
     match = PKG_NAME_RE.match(line)
     if match:
         return match.group("name")
@@ -39,7 +39,8 @@ def main() -> None:
     args = parser.parse_args()
     path = Path(args.file)
     if not path.is_file():
-        raise SystemExit(f"Error: file not found: {path}")
+        msg = f"Error: file not found: {path}"
+        raise SystemExit(msg)
     lines = path.read_text(encoding="utf-8", errors="ignore").splitlines()
     packages = []
     for line in lines:

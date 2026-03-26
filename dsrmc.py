@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import multiprocessing as mp
 import os
+import pathlib
 import sys
 
 from tree_sitter import Node, Parser
@@ -20,7 +21,7 @@ def is_preserved_comment(source_bytes: bytes, node: Node) -> bool:
     if node.start_byte == 0 and text.startswith(b"#!"):
         return True
     stripped = text.lstrip(b"#").strip()
-    return bool(stripped.startswith(b"type:") or stripped.startswith(b"fmt:"))
+    return bool(stripped.startswith((b"type:", b"fmt:")))
 
 
 def collect_nodes_to_remove(source_bytes: bytes, node: Node) -> list[Node]:
@@ -47,8 +48,7 @@ def process_file(
 ) -> tuple[str, bool]:
     global _parser
     try:
-        with open(filepath, "rb") as f:
-            source_bytes = f.read()
+        source_bytes = pathlib.Path(filepath).read_bytes()
         tree = _parser.parse(source_bytes)
         root = tree.root_node
         to_delete = collect_nodes_to_remove(source_bytes, root)
@@ -61,8 +61,7 @@ def process_file(
         new_source = bytearray(source_bytes)
         for node in to_delete:
             del new_source[node.start_byte : node.end_byte]
-        with open(filepath, "wb") as f:
-            f.write(new_source)
+        pathlib.Path(filepath).write_bytes(new_source)
         return filepath, True
     except Exception as e:
         print(
@@ -76,9 +75,7 @@ def main():
     py_files = []
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"]
-        for file in files:
-            if file.endswith(".py"):
-                py_files.append(os.path.join(root, file))
+        py_files.extend(os.path.join(root, file) for file in files if file.endswith(".py"))
     if not py_files:
         print("No Python files found.")
         return

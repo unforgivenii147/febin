@@ -104,7 +104,7 @@ def create_symlinks(duplicates, dry_run=False):
                 symlink_count += 1
                 total_saved += get_size
     if not dry_run and symlink_count > 0:
-        with open(BACKUP_FILE, "w") as f:
+        with open(BACKUP_FILE, "w", encoding="utf-8") as f:
             json.dump(backup_data, f, indent=2)
         print(f"\n[INFO] Backup data saved to {BACKUP_FILE}")
     print(f"\n{'[DRY RUN] ' if dry_run else ''}Summary:")
@@ -119,7 +119,7 @@ def reverse_symlinks(backup_file=BACKUP_FILE):
     if not os.path.exists(backup_file):
         print(f"[ERROR] Backup file {backup_file} not found!")
         return False
-    with open(backup_file) as f:
+    with open(backup_file, encoding="utf-8") as f:
         backup_data = json.load(f)
     print(f"[INFO] Restoring from backup created at: {backup_data['timestamp']}")
     print(f"[INFO] Operations to reverse: {len(backup_data['operations'])}")

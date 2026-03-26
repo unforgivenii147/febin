@@ -68,11 +68,9 @@ def morse_to_text(morse):
 
 def encrypt_file(input_filename, output_filename) -> None:
     try:
-        with pathlib.Path(input_filename).open("r", encoding="utf-8") as infile:
-            content = infile.read()
+        content = pathlib.Path(input_filename).read_text(encoding="utf-8")
         morse_content = text_to_morse(content)
-        with pathlib.Path(output_filename).open("w", encoding="utf-8") as outfile:
-            outfile.write(morse_content)
+        pathlib.Path(output_filename).write_text(morse_content, encoding="utf-8")
     except FileNotFoundError:
         sys.exit(1)
     except Exception:
@@ -81,11 +79,9 @@ def encrypt_file(input_filename, output_filename) -> None:
 
 def decrypt_file(input_filename, output_filename) -> None:
     try:
-        with pathlib.Path(input_filename).open("r", encoding="utf-8") as infile:
-            morse_content = infile.read()
+        morse_content = pathlib.Path(input_filename).read_text(encoding="utf-8")
         text_content = morse_to_text(morse_content)
-        with pathlib.Path(output_filename).open("w", encoding="utf-8") as outfile:
-            outfile.write(text_content)
+        pathlib.Path(output_filename).write_text(text_content, encoding="utf-8")
     except FileNotFoundError:
         sys.exit(1)
     except Exception:

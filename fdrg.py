@@ -1,9 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import fnmatch
 from pathlib import Path
 from queue import Queue
@@ -37,7 +34,7 @@ def setup_keyboard_listener():
         import keyboard
 
         def on_key_press(event):
-            if event.name in ("space", "p") and pause_event.is_set():
+            if event.name in {"space", "p"} and pause_event.is_set():
                 pause_event.clear()
                 print("\n[PAUSED] Press 'c' to continue...")
             elif event.name == "c" and not pause_event.is_set():

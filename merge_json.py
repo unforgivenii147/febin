@@ -14,7 +14,8 @@ def load_json_object(path):
     with path.open(encoding="utf-8") as f:
         data = json.load(f)
     if not isinstance(data, dict):
-        raise ValueError(f"{path} is not a JSON object")
+        msg = f"{path} is not a JSON object"
+        raise ValueError(msg)
     return data
 
 
@@ -48,7 +49,7 @@ def main():
     if out_file.exists():
         print(f"{out_file} exists")
         sys.exit(0)
-    with open(out_file, "w") as fj:
+    with open(out_file, "w", encoding="utf-8") as fj:
         json.dump(
             merged,
             fj,

@@ -44,7 +44,7 @@ def process_regular_file(path):
         if b"\x00" in header:
             text = use_strings(path)
             return extract_git_urls_from_text(text)
-        with open(path, errors="ignore") as f:
+        with open(path, encoding="utf-8", errors="ignore") as f:
             return extract_git_urls_from_text(f.read())
     except Exception:
         return set()
@@ -139,8 +139,7 @@ def worker(path):
 def collect_files():
     out = []
     for root, _dirs, files in os.walk("."):
-        for f in files:
-            out.append(os.path.join(root, f))
+        out.extend(os.path.join(root, f) for f in files)
     return out
 
 
@@ -152,10 +151,9 @@ def main() -> None:
         for urls in pool.imap_unordered(worker, files):
             if urls:
                 found |= urls
-    with open(OUTPUT_FILE, "a") as fp:
+    with open(OUTPUT_FILE, "a", encoding="utf-8") as fp:
         fp.write("\n")
-        for url in sorted(found):
-            fp.write(url + "\n")
+        fp.writelines(url + "\n" for url in sorted(found))
     print(f"\nExtracted {len(found)} unique git URLs → {OUTPUT_FILE}")
 
 

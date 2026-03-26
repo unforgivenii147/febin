@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Inspect and validate generated .whl files.
-"""
+"""Inspect and validate generated .whl files."""
 
 from pathlib import Path
 import sys
@@ -11,7 +9,7 @@ import zipfile
 class WheelInspector:
     """Inspect .whl files."""
 
-    def __init__(self, verbose: bool = False):
+    def __init__(self, verbose: bool = False) -> None:
         """
         Initialize WheelInspector.
 
@@ -165,12 +163,12 @@ class WheelInspector:
         if info["metadata"]:
             print("\nMetadata:")
             for key, value in info["metadata"].items():
-                if key in [
+                if key in {
                     "Name",
                     "Version",
                     "Summary",
                     "Author",
-                ]:
+                }:
                     print(f"  {key}: {value}")
 
         is_valid, issues = self.validate_wheel(wheel_path)

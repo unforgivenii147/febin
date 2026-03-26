@@ -17,11 +17,11 @@ def process_file(path):
         cprint(f"{jsonpath} created.", "cyan")
         xml_content = path.read_text(encoding="utf-8", errors="ignore")
 
-        with open(jsonpath, "w") as f:
+        with jsonpath.open("w") as f:
             data = xmltodict.parse(xml_content)
             json.dump(data, f, indent=4)
-    except:
-        print("error")
+    except OSError as e:
+        print(f"error {e}")
 
 
 def main():

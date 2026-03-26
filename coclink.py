@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 from datetime import UTC, datetime, timedelta
 import os
+import pathlib
 
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
@@ -81,8 +82,7 @@ def create_html(channel_name, base_data):
             html_content += f'<li><a href="{link}">Get Base Layout</a></li>'
         html_content += "</ul></div>"
     html_content += "</body></html>"
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write(html_content)
+    pathlib.Path(file_path).write_text(html_content, encoding="utf-8")
     print(f"Generated: {file_path}")
 
 

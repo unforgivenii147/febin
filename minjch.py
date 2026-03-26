@@ -2,6 +2,7 @@
 import json
 import multiprocessing
 import os
+import pathlib
 
 from rcssmin import cssmin
 import regex as re
@@ -16,8 +17,7 @@ def minify_html(html: str) -> str:
 def process_file(path: str) -> str:
     try:
         ext = os.path.splitext(path)[1].lower()
-        with open(path, encoding="utf-8") as f:
-            content = f.read()
+        content = pathlib.Path(path).read_text(encoding="utf-8")
         if ext == ".css":
             content = cssmin(content)
         elif ext == ".json":
@@ -27,8 +27,7 @@ def process_file(path: str) -> str:
             content = minify_html(content)
         else:
             return f"SKIP → {path}"
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(content)
+        pathlib.Path(path).write_text(content, encoding="utf-8")
         return f"OK → {path}"
     except Exception as e:
         return f"ERR ({path}): {e}"

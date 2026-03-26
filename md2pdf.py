@@ -23,7 +23,8 @@ def md2pdf(
     elif md_content:
         raw_html = markdown(md_content, extras=extras)
     if not len(raw_html):
-        raise ValidationError("Input markdown seems empty")
+        msg = "Input markdown seems empty"
+        raise ValidationError(msg)
     html = HTML(string=raw_html, base_url=base_url)
     css = []
     if css_file_path:

@@ -26,7 +26,7 @@ def chunk_text(text: str, size: int = 800) -> list[str]:
 def translate_chunk(chunk: str) -> str:
     try:
         result = GoogleTranslator(source="auto", target="en").translate(chunk)
-        return result if result else chunk
+        return result or chunk
     except Exception as e:
         print(f"  Translation error for chunk: {e}")
         return chunk
@@ -86,8 +86,7 @@ def translate_python_file(source: str, filepath: Path) -> str:
         if start > prev_end:
             lines_between = source.splitlines()[prev_end[0] - 1 : start[0]]
             if len(lines_between) > 1:
-                for line_content in lines_between[:-1]:
-                    result.append(line_content + "\n")
+                result.extend(line_content + "\n" for line_content in lines_between[:-1])
                 result.append(lines_between[-1][: start[1]])
             elif lines_between:
                 result.append(lines_between[0][prev_end[1] : start[1]])
@@ -103,7 +102,7 @@ def translate_python_file(source: str, filepath: Path) -> str:
                 try:
                     print(f"  Translating string: {stripped[:50]}...")
                     translated = translate_text(stripped)
-                    if tok_str.startswith('"""') or tok_str.startswith("'''"):
+                    if tok_str.startswith(('"""', "'''")):
                         quote_char = tok_str[:3]
                         tok_str = f"{quote_char}{translated}{quote_char}"
                     else:

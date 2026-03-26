@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 
 import jsbeautifier
 
 
 def beautify_file(file_path) -> None:
-    with open(file_path, encoding="utf-8") as file:
-        content = file.read()
+    content = pathlib.Path(file_path).read_text(encoding="utf-8")
     if file_path.endswith(".js"):
         beautified_content = jsbeautifier.beautify(content)
     elif file_path.endswith(".css"):
@@ -15,8 +15,7 @@ def beautify_file(file_path) -> None:
         beautified_content = jsbeautifier.html(content)
     else:
         return
-    with open(file_path, "w", encoding="utf-8") as file:
-        file.write(beautified_content)
+    pathlib.Path(file_path).write_text(beautified_content, encoding="utf-8")
 
 
 def beautify_directory(directory) -> None:

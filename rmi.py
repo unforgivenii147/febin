@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import pathlib
 import sys
 
 INVISIBLE_CHARS = {
@@ -31,20 +32,14 @@ def clean_text(text: str) -> str:
 
 
 def main():
-    with open(
-        sys.argv[1],
-        encoding="utf-8",
-        errors="ignore",
-    ) as f:
-        text = f.read()
+    text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8", errors="ignore")
     cleaned = clean_text(text)
     removed = len(text) - len(cleaned)
     if removed:
         print(f"{removed} invisible characters removed")
     else:
         print("No invisible characters found")
-    with open(sys.argv[1], "w", encoding="utf-8") as f:
-        f.write(cleaned)
+    pathlib.Path(sys.argv[1]).write_text(cleaned, encoding="utf-8")
     print("done")
 
 

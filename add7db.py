@@ -42,7 +42,7 @@ def create_folder_table(cursor, folder_name):
 
 
 def compress_data(data_bytes):
-    """Compress data using 7z and return as base64 string"""
+    """Compress data using 7z and return as base64 string."""
     if not data_bytes:
         return None
     try:

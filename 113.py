@@ -46,9 +46,7 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
 
 
 def safe_delete(file_path: Path, max_retries: int = 3, delay: float = 0.5) -> bool:
-    """
-    Safely deletes a file with retries.
-    """
+    """Safely deletes a file with retries."""
     for attempt in range(max_retries):
         try:
             if file_path.exists():
@@ -138,9 +136,7 @@ def compress_file(file_path: Path, delete_delay: float = 0.5) -> bool:
 
 
 def calculate_directory_size(path: Path = Path()) -> tuple[int, int]:
-    """
-    Calculates the total size and file count of a directory, excluding hidden files/dirs.
-    """
+    """Calculates the total size and file count of a directory, excluding hidden files/dirs."""
     total_size = 0
     file_count = 0
     # Use rglob to recursively find all files, then filter

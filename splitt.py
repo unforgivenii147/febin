@@ -5,8 +5,7 @@ import sys
 
 
 def split_file_by_delimiter(fname, delim) -> None:
-    with open(fname) as f:
-        content = f.read()
+    content = Path(fname).read_text(encoding="utf-8")
     path = Path(fname)
     basen = path.stem
     i = 0
@@ -16,7 +15,7 @@ def split_file_by_delimiter(fname, delim) -> None:
         os.mkdir("output")
     for part in content.split(delim):
         outfile = f"output/{basen + str(i) + ext}"
-        with open(outfile, "w") as fo:
+        with open(outfile, "w", encoding="utf-8") as fo:
             fo.write(delim)
             fo.write(part)
             fo.write(endl)

@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 import shutil
 import tarfile
 import tempfile
@@ -17,18 +18,12 @@ def clean_text(text: str) -> str:
 
 def clean_file(path: str) -> None:
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
-            original = f.read()
+        original = pathlib.Path(path).read_text(encoding="utf-8", errors="ignore")
     except Exception:
         return
     cleaned = clean_text(original)
     if cleaned != original:
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(cleaned)
+        pathlib.Path(path).write_text(cleaned, encoding="utf-8")
 
 
 def process_zip(path: str) -> None:
@@ -68,9 +63,9 @@ def process_tar(path: str) -> None:
 
 def dispatch_archive(path: str) -> None:
     name = path.lower()
-    if name.endswith(".zip") or name.endswith(".whl"):
+    if name.endswith((".zip", ".whl")):
         process_zip(path)
-    elif name.endswith(".tar.gz") or name.endswith(".tgz") or name.endswith(".tar"):
+    elif name.endswith((".tar.gz", ".tgz", ".tar")):
         process_tar(path)
 
 

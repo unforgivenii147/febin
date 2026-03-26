@@ -18,11 +18,7 @@ VALID = {
 def extract_file(src: bytes, tree):
     """Extract import statements from a parsed tree."""
     root = tree.root_node
-    chunks = []
-    for node in root.children:
-        if node.type in VALID:
-            chunks.append(src[node.start_byte : node.end_byte].decode())
-    return chunks
+    return [src[node.start_byte : node.end_byte].decode() for node in root.children if node.type in VALID]
 
 
 def get_relative_path(file_path: Path, base_path: Path) -> Path:

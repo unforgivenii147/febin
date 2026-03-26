@@ -44,7 +44,7 @@ STATX_BTIME = 0x800
 
 
 def get_creation_time_statx(path):
-    """Get file creation time using statx (Linux 4.11+)"""
+    """Get file creation time using statx (Linux 4.11+)."""
     statx_buf = Statx()
     result = libc.statx(
         AT_FDCWD,

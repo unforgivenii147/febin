@@ -8,7 +8,7 @@ import regex as re
 
 wheel_pattern = re.compile(r"^(?P<name>.+)-(?P<version>\d+(\.\d+)+).*\.metadata$")
 
-files = [f for f in os.listdir(".") if (f.endswith(".metadata") or f.endswith(".whl"))]
+files = [f for f in os.listdir(".") if (f.endswith((".metadata", ".whl")))]
 print(f"{len(files)} files found.")
 packages = {}
 for f in files:

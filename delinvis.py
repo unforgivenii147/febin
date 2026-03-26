@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 import shutil
 import string
 import sys
@@ -37,12 +38,7 @@ def clean_text(text):
 def clean_file(path: str) -> None:
     backup_path = path + ".bak"
     shutil.copy2(path, backup_path)
-    with open(
-        path,
-        encoding="utf-8",
-        errors="ignore",
-    ) as f:
-        data = f.read()
+    data = pathlib.Path(path).read_text(encoding="utf-8", errors="ignore")
     positions = find_unprintable_positions(data)
     if positions:
         print(f"Found {len(positions)} unprintable character(s):")
@@ -51,13 +47,7 @@ def clean_file(path: str) -> None:
     else:
         print("No unprintable characters found.")
     cleaned = clean_text(data)
-    with open(
-        path,
-        "w",
-        encoding="utf-8",
-        errors="ignore",
-    ) as f:
-        f.write(cleaned)
+    pathlib.Path(path).write_text(cleaned, encoding="utf-8", errors="ignore")
 
 
 def main():

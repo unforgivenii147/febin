@@ -4,12 +4,12 @@ import sysconfig
 
 
 def clean_record_file(record_path: Path):
-    lines = record_path.read_text().splitlines()
+    lines = record_path.read_text(encoding="utf-8").splitlines()
     cleaned = [line for line in lines if ".pyc" not in line]
     cleaned = [line for line in cleaned if "licenses" not in line]
     cleaned = [line for line in cleaned if "license.md" not in line.lower()]
     cleaned = [line for line in cleaned if "license.txt" not in line.lower()]
-    record_path.write_text("\n".join(cleaned) + "\n")
+    record_path.write_text("\n".join(cleaned) + "\n", encoding="utf-8")
     print(f"{record_path.name} in {record_path.parent.name} cleaned")
 
 

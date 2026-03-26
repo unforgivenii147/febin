@@ -30,12 +30,12 @@ def load_file(input_file):
                 return f.read()
         except (OSError, UnicodeDecodeError):
             continue
-    raise OSError(f"Could not read file {input_file} with any encoding")
+    msg = f"Could not read file {input_file} with any encoding"
+    raise OSError(msg)
 
 
 def save_file(output_file, content):
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(content)
+    Path(output_file).write_text(content, encoding="utf-8")
 
 
 def find_chunk_boundary(text, max_chars):
@@ -84,7 +84,8 @@ def translate_chunk(text, source_lang="auto"):
         except Exception as e:
             print(f"[WARN] Translation failed (attempt {attempt + 1}/3): {e}")
             time.sleep(1 + attempt)
-    raise Exception("Failed to translate chunk after 3 attempts")
+    msg = "Failed to translate chunk after 3 attempts"
+    raise Exception(msg)
 
 
 def translate_file(input_file, source_lang="auto"):

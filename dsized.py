@@ -16,7 +16,7 @@ def fetch_content_length(url: str) -> int | None:
             if length:
                 return int(length)
     except urllib.error.HTTPError as e:
-        if e.code not in (405, 403):
+        if e.code not in {405, 403}:
             raise
     request = urllib.request.Request(url, method="GET")
     request.add_header("Range", "bytes=0-0")

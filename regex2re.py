@@ -25,8 +25,7 @@ def is_python_file(file_path):
 
 def process_file(file_path):
     try:
-        with open(file_path, encoding="utf-8") as f:
-            content = f.read()
+        content = Path(file_path).read_text(encoding="utf-8")
         original_content = content
         replacement = r"^(\s*)import\s+re\s*($|#)"
         pattern = r"\1import regex as re\2"
@@ -37,8 +36,7 @@ def process_file(file_path):
             flags=re.MULTILINE,
         )
         if content != original_content:
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(content)
+            Path(file_path).write_text(content, encoding="utf-8")
             return True
         return False
     except Exception as e:

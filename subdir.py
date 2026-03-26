@@ -24,15 +24,15 @@ def safe_mkdir(base: Path) -> Path:
 def unzip_file(archive: Path, target_dir: Path) -> bool:
     archive_lower = archive.name.lower()
     try:
-        if archive_lower.endswith(".tar.gz") or archive_lower.endswith(".tgz"):
+        if archive_lower.endswith((".tar.gz", ".tgz")):
             with tarfile.open(archive, "r:gz") as tar:
-                tar.extractall(target_dir,filter="data")
+                tar.extractall(target_dir, filter="data")
             return True
-        elif archive_lower.endswith(".tar.bz2") or archive_lower.endswith(".tbz2"):
+        elif archive_lower.endswith((".tar.bz2", ".tbz2")):
             with tarfile.open(archive, "r:bz2") as tar:
                 tar.extractall(target_dir)
             return True
-        elif archive_lower.endswith(".tar.xz") or archive_lower.endswith(".txz"):
+        elif archive_lower.endswith((".tar.xz", ".txz")):
             with tarfile.open(archive, "r:xz") as tar:
                 tar.extractall(target_dir)
             return True

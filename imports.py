@@ -10,7 +10,7 @@ from dh import STDLIB, get_files, get_installed_pkgs
 
 
 class ImportVisitor(ast.NodeVisitor):
-    def __init__(self):
+    def __init__(self) -> None:
         self.imports = set()
 
     def visit_Import(self, node):
@@ -78,19 +78,18 @@ def main():
         if "Not Installed" in ver:
             results.append(f"{mod}=={ver}")
 
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write("\n".join(results))
+    Path(output_file).write_text("\n".join(results), encoding="utf-8")
     cleaned = []
     with open(output_file, encoding="utf-8") as fin:
         lines = fin.readlines()
-        for line in lines:
-            cleaned.append(
-                line.rstrip()
-                .replace("Not Installed", "")
-                .replace("==(NA)", "")
-                .replace("==(unknown)", "")
-                .replace("==", "")
-            )
+        cleaned.extend(
+            line.rstrip()
+            .replace("Not Installed", "")
+            .replace("==(NA)", "")
+            .replace("==(unknown)", "")
+            .replace("==", "")
+            for line in lines
+        )
     pkgz = get_installed_pkgs()
     cleaned = [p for p in cleaned if p not in pkgz and not p.startswith("_")]
     if cleaned:

@@ -1,16 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 from collections import Counter
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import csv
 import os
 
 from tqdm import tqdm
 
-binf = open("/sdcard/bin")
-EXCLUDED_EXTENSIONS = [line.strip() for line in binf.readlines()]
+binf = open("/sdcard/bin", encoding="utf-8")
+EXCLUDED_EXTENSIONS = [line.strip() for line in binf]
 binf.close()
 
 

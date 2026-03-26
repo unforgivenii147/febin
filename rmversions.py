@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+import pathlib
 import sys
 
 
 def clean_requirements(fname):
-    with open(fname) as f:
+    with open(fname, encoding="utf-8") as f:
         lines = f.readlines()
     packages = set()
     for line in lines:
@@ -13,8 +14,7 @@ def clean_requirements(fname):
         pkg = line.split(">")[0].split("<")[0].split("=")[0].split("~")[0].strip()
         if pkg:
             packages.add(pkg)
-    with open(fname, "w") as f:
-        f.write("\n".join(sorted(packages)))
+    pathlib.Path(fname).write_text("\n".join(sorted(packages)), encoding="utf-8")
     print(f"Updated  {fname} with {len(packages)} unique packages.")
 
 

@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 import sys
+
+
 def create_python_project(pkg_name):
 
     current_dir = Path.cwd()
@@ -50,10 +52,10 @@ where = ["src"]
 """
     pyproject_file.write_text(pyproject_content)
     setuppy_file = current_dir / "setup.py"
-    setuppy_content = f"""from setuptools import setup
+    setuppy_content = """from setuptools import setup
 setup()
 """
-    setuppy_file.write_text(setuppy_content,encoding="utf-8")
+    setuppy_file.write_text(setuppy_content, encoding="utf-8")
     setupcfg_file = current_dir / "setup.cfg"
     setupcfg_content = f"""[metadata]
 name = {pkg_name}
@@ -85,7 +87,7 @@ exclude =
     .eggs
     docs/conf.py
 """
-    setupcfg_file.write_text(setupcfg_content,encoding="utf-8")
+    setupcfg_file.write_text(setupcfg_content, encoding="utf-8")
 
 
 def main():

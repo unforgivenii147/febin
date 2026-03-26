@@ -26,12 +26,10 @@ def process_file(fp):
                 continue
             text = page.extract_text(encoding="utf-8")
             if text:
-                with open(txtfile, "w") as fo:
-                    fo.write(text)
+                Path(txtfile).write_text(text, encoding="utf-8")
                 cprint(f"{txtfile} created", "cyan")
             else:
-                with open(txtfile, "w") as fo:
-                    fo.write("empty page")
+                Path(txtfile).write_text("empty page", encoding="utf-8")
                 cprint(f"page {i} is empty", "blue")
             i += 1
     del i
@@ -40,10 +38,7 @@ def process_file(fp):
 
 
 def main():
-    files = []
-    for file in os.listdir("."):
-        if file.endswith(".pdf"):
-            files.append(file)
+    files = [file for file in os.listdir(".") if file.endswith(".pdf")]
     if len(files) == 0:
         print("no pdf file found.")
         return

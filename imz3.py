@@ -60,13 +60,12 @@ def main():
     root_dir = Path.cwd()
     importz = []
     for file in get_files(root_dir, extensions=[".py"]):
-        with open(file) as f:
+        with open(file, encoding="utf-8") as f:
             contents = f.read()
             importz.append(extract_imports_from_py(contents))
-    with open("importz.txt", "w") as fo:
+    with open("importz.txt", "w", encoding="utf-8") as fo:
         for im in importz:
-            for k in im:
-                fo.write(str(k) + "\n")
+            fo.writelines(str(k) + "\n" for k in im)
 
 
 if __name__ == "__main__":

@@ -19,7 +19,7 @@ except ImportError:
 
 
 class BashCommentRemover:
-    def __init__(self):
+    def __init__(self) -> None:
         # Try to find or build the bash grammar
         self.parser = self._setup_parser()
         if not self.parser:
@@ -31,9 +31,7 @@ class BashCommentRemover:
         try:
             # Try to import bash language directly (if installed)
             try:
-                from tree_sitter_bash import (
-                    language,
-                )
+                from tree_sitter_bash import language
 
                 bash_language = Language(language())
             except ImportError:
@@ -87,7 +85,7 @@ class BashCommentRemover:
     def remove_comments(self, content: str) -> tuple[str, bool]:
         """
         Remove comments from bash script content.
-        Returns (modified_content, was_modified)
+        Returns (modified_content, was_modified).
         """
         try:
             tree = self.parser.parse(bytes(content, "utf8"))
@@ -187,18 +185,17 @@ class BashCommentRemover:
     ) -> tuple[bool, int, int]:
         """
         Process a single bash file.
-        Returns (success, original_size, new_size)
+        Returns (success, original_size, new_size).
         """
         try:
             # Read file
-            with open(filepath, encoding="utf-8") as f:
-                original_content = f.read()
+            original_content = Path(filepath).read_text(encoding="utf-8")
             original_size = len(original_content.encode("utf-8"))
             # Check if it looks like a bash script (even without extension)
-            if filepath.suffix not in [
+            if filepath.suffix not in {
                 ".sh",
                 ".bash",
-            ]:
+            }:
                 # Check shebang
                 if not original_content.startswith("#!/bin/bash") and not original_content.startswith(
                     "#!/usr/bin/env bash"
@@ -228,12 +225,7 @@ class BashCommentRemover:
             new_size = len(modified_content.encode("utf-8"))
             if not dry_run:
                 # Write modified content
-                with open(
-                    filepath,
-                    "w",
-                    encoding="utf-8",
-                ) as f:
-                    f.write(modified_content)
+                Path(filepath).write_text(modified_content, encoding="utf-8")
                 print(f"  ✓ Processed: {filepath} ({original_size} -> {new_size} bytes)")
             else:
                 print(f"  ✓ Would process: {filepath} ({original_size} -> {new_size} bytes)")
@@ -250,7 +242,7 @@ class BashCommentRemover:
     ) -> tuple[int, int, int]:
         """
         Process a file or directory.
-        Returns (success_count, total_original_size, total_new_size)
+        Returns (success_count, total_original_size, total_new_size).
         """
         success_count = 0
         total_original = 0
@@ -268,10 +260,10 @@ class BashCommentRemover:
                 for file in files:
                     filepath = Path(root) / file
                     # Check if it's a bash script
-                    if filepath.suffix in [
+                    if filepath.suffix in {
                         ".sh",
                         ".bash",
-                    ]:
+                    }:
                         bash_files.append(filepath)
                     else:
                         # Check for shebang
@@ -281,7 +273,7 @@ class BashCommentRemover:
                                 encoding="utf-8",
                             ) as f:
                                 first_line = f.readline()
-                                if first_line.startswith("#!/bin/bash") or first_line.startswith("#!/usr/bin/env bash"):
+                                if first_line.startswith(("#!/bin/bash", "#!/usr/bin/env bash")):
                                     bash_files.append(filepath)
                         except:
                             continue

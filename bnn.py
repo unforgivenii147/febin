@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import pathlib
 import sys
 
 
@@ -7,11 +8,9 @@ def main():
         print(f"Usage: {sys.argv[0]} <filename>")
         sys.exit(1)
     fname = sys.argv[1]
-    with open(fname, encoding="utf-8") as f:
-        content = f.read()
+    content = pathlib.Path(fname).read_text(encoding="utf-8")
     content = content.replace("\\n", "\n")
-    with open(fname, "w", encoding="utf-8") as f:
-        f.write(content)
+    pathlib.Path(fname).write_text(content, encoding="utf-8")
 
 
 if __name__ == "__main__":

@@ -2,11 +2,9 @@
 from __future__ import annotations
 
 import argparse
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import fnmatch
+import operator
 import os
 import stat
 import sys
@@ -119,8 +117,7 @@ def search_file_text_mode(
                 line = raw_line.rstrip("\n")
                 spans: list[tuple[int, int]] = []
                 if regex:
-                    for m in regex.finditer(line):
-                        spans.append((m.start(), m.end()))
+                    spans.extend((m.start(), m.end()) for m in regex.finditer(line))
                 else:
                     hay = line.lower() if ignore_case else line
                     needle = fixed.lower() if ignore_case else fixed
@@ -320,7 +317,7 @@ def main(argv: list[str] | None = None) -> int:
                         if color and spans:
                             for s, e in sorted(
                                 spans,
-                                key=lambda x: x[0],
+                                key=operator.itemgetter(0),
                                 reverse=True,
                             ):
                                 out_line = colorize(

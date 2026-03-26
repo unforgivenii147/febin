@@ -2,7 +2,7 @@
 input_file = "/data/data/com.termux/files/home/.local/share/mc/history"
 output_file = "/data/data/com.termux/files/home/.bash_history"
 cmdline_section = []
-with open(input_file) as file:
+with open(input_file, encoding="utf-8") as file:
     lines = file.readlines()
     capture = False
     for line in lines:
@@ -16,6 +16,5 @@ with open(input_file) as file:
             cleaned_line = line.split("=", 1)[-1].strip()
             cmdline_section.append(cleaned_line)
 soniq = list(set(cmdline_section))
-with open(output_file, "a") as file:
-    for cmd in soniq:
-        file.write(cmd + "\n")
+with open(output_file, "a", encoding="utf-8") as file:
+    file.writelines(cmd + "\n" for cmd in soniq)

@@ -47,7 +47,7 @@ def get_main_branch_name():
     if result:
         branches = [b.strip().replace("* ", "") for b in result.stdout.split("\n") if b.strip()]
         for branch in branches:
-            if branch in ["main", "master"]:
+            if branch in {"main", "master"}:
                 return branch
     return "main"
 
@@ -153,13 +153,13 @@ def main() -> None:
         print("Error: Not a git repository!")
         sys.exit(1)
     response = input("\nAre you sure you want to continue? (yes/NO): ")
-    if response.lower() not in ["yes", "y"]:
+    if response.lower() not in {"yes", "y"}:
         print("Operation cancelled.")
         sys.exit(0)
     print("\n1. Creating backup...")
     if not create_backup():
         response = input("Backup failed. Continue anyway? (yes/NO): ")
-        if response.lower() not in ["yes", "y"]:
+        if response.lower() not in {"yes", "y"}:
             print("Operation cancelled.")
             sys.exit(0)
     print("\n2. Checking repository status...")

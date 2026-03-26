@@ -38,7 +38,7 @@ class PackageInfo:
 class PackageDetector:
     """Detect package types and characteristics."""
 
-    def __init__(self, verbose: bool = False):
+    def __init__(self, verbose: bool = False) -> None:
         """
         Initialize PackageDetector.
 
@@ -229,7 +229,7 @@ class PackageDetector:
 class WheelBuilder:
     """Build .whl files from package directories."""
 
-    def __init__(self, verbose: bool = False):
+    def __init__(self, verbose: bool = False) -> None:
         """
         Initialize WheelBuilder.
 
@@ -448,7 +448,7 @@ class VenvRepacker:
         output_dir: str | None = None,
         verbose: bool = False,
         dry_run: bool = False,
-    ):
+    ) -> None:
         """
         Initialize VenvRepacker.
 
@@ -468,7 +468,8 @@ class VenvRepacker:
         self.site_packages = Path(site_packages_dir).resolve()
 
         if not self.site_packages.exists():
-            raise ValueError(f"Site-packages directory not found: {site_packages_dir}")
+            msg = f"Site-packages directory not found: {site_packages_dir}"
+            raise ValueError(msg)
 
         # Setup output directory
         if output_dir is None:
@@ -493,10 +494,10 @@ class VenvRepacker:
 
     def log(self, message: str, level: str = "INFO"):
         """Log message."""
-        if self.verbose or level in [
+        if self.verbose or level in {
             "ERROR",
             "WARNING",
-        ]:
+        }:
             timestamp = datetime.now().strftime("%H:%M:%S")
             print(f"[{timestamp}] [{level}] {message}")
 
@@ -683,7 +684,7 @@ class VenvRepacker:
 
         try:
             report_path = self.output_dir / report_file
-            with open(report_path, "w") as f:
+            with open(report_path, "w", encoding="utf-8") as f:
                 json.dump(report, f, indent=2)
             print(f"\n✓ Report saved: {report_path}")
         except Exception as e:

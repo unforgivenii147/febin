@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import os
+import pathlib
 
 import regex as re
 
 
 def remove_comments_and_strings(content, filetype, keep_strings=False):
-    if filetype in ["c", "cpp", "h", "hpp"]:
+    if filetype in {"c", "cpp", "h", "hpp"}:
         content = re.sub(r"//.*", "", content)
         content = re.sub(
             r"/\*.*?\*/",
@@ -35,22 +36,20 @@ def remove_comments_and_strings(content, filetype, keep_strings=False):
 def process_file(filepath, inplace=False, keep_strings=False):
     _, ext = os.path.splitext(filepath)
     ext = ext[1:].lower()
-    if ext not in [
+    if ext not in {
         "hpp",
         "h",
         "c",
         "cpp",
         "py",
         "sh",
-    ]:
+    }:
         print(f"Unsupported file type: {ext}")
         return
-    with open(filepath) as f:
-        content = f.read()
+    content = pathlib.Path(filepath).read_text(encoding="utf-8")
     cleaned = remove_comments_and_strings(content, ext, keep_strings)
     if inplace:
-        with open(filepath, "w") as f:
-            f.write(cleaned)
+        pathlib.Path(filepath).write_text(cleaned, encoding="utf-8")
         print(f"File {filepath} cleaned and saved in-place.")
     else:
         print(f"--- Cleaned {filepath} ---\n{cleaned}\n")

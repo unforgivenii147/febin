@@ -20,8 +20,7 @@ def process_file(fp):
                 txtfile = f"{outdir}/{Path(fp).stem}0{i!s}.txt"
             else:
                 txtfile = f"{outdir}/{Path(fp).stem}{i!s}.txt"
-            with open(txtfile, "w") as fo:
-                fo.write(text)
+            Path(txtfile).write_text(text, encoding="utf-8")
             print(f"{txtfile} created")
             i += 1
 

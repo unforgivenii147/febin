@@ -168,8 +168,7 @@ def collect_and_build(distinfo_path, prefix, wheel_out_path):
         else:
             missing_files.append(rel)
     if "console_scripts" in md:
-        for sp in find_script_paths(prefix, md["console_scripts"]):
-            collected_files.append((sp, f"bin/{sp.name}"))
+        collected_files.extend((sp, f"bin/{sp.name}") for sp in find_script_paths(prefix, md["console_scripts"]))
     if missing_files:
         print(f"[!] Error: Missing files for {dist_name}:")
         for m in missing_files:
@@ -202,8 +201,7 @@ def collect_and_build(distinfo_path, prefix, wheel_out_path):
             f"{distinfo_path.name}/WHEEL",
             wheel_content,
         )
-        record_lines.append(f"{distinfo_path.name}/WHEEL,,")
-        record_lines.append(f"{distinfo_path.name}/RECORD,,")
+        record_lines.extend((f"{distinfo_path.name}/WHEEL,,", f"{distinfo_path.name}/RECORD,,"))
         zf.writestr(
             f"{distinfo_path.name}/RECORD",
             "\n".join(record_lines) + "\n",

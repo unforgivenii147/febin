@@ -1,9 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from concurrent.futures import (
-    ProcessPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 import shutil
 
@@ -72,8 +69,7 @@ def main():
     results = []
     with ProcessPoolExecutor(max_workers=8) as executor:
         futures = [executor.submit(black_check, f) for f in files]
-        for future in as_completed(futures):
-            results.append(future.result())
+        results.extend(future.result() for future in as_completed(futures))
     for file_path, passed in results:
         target_dir = OK_DIR if passed else ERROR_DIR
         dest = unique_destination(target_dir / file_path.name)

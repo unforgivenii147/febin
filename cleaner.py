@@ -22,8 +22,7 @@ def clean_log(path):
         rb"\(0mqq\(B\s+\d+M\s*/\s*\d+G"
     )
     try:
-        with open(path, "rb") as f:
-            content = f.read()
+        content = Path(path).read_bytes()
         content = status_re.sub(b"", content)
         content = ansi_tmux_re.sub(b"", content)
         text = content.decode("utf-8", errors="replace")
@@ -36,8 +35,7 @@ def clean_log(path):
             )
             cleaned_lines.append(cleaned_line)
         result = "".join(cleaned_lines)
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(result)
+        Path(path).write_text(result, encoding="utf-8")
         print(f"✓ Cleaned (newlines preserved): {os.path.basename(path)}")
     except Exception as e:
         print(f"✗ Error: {e}", file=sys.stderr)

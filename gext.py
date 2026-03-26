@@ -36,7 +36,7 @@ class EntityExtractor(ast.NodeVisitor):
         self,
         source_content: str,
         original_path: Path,
-    ):
+    ) -> None:
         self.entities = []
         self.source_lines = source_content.splitlines(keepends=True)
         self.original_path = original_path
@@ -134,8 +134,7 @@ def save_entity(entity: dict[str, Any]):
     content = entity["code"]
     final_py_path = get_unique_filepath(output_path_base)
     try:
-        with open(final_py_path, "w", encoding="utf-8") as f:
-            f.write(content)
+        Path(final_py_path).write_text(content, encoding="utf-8")
     except Exception as e:
         print(f"Error saving {final_py_path}: {e}")
         return
@@ -200,7 +199,7 @@ def process_archive(
         except Exception as e:
             print(f"Error decompressing ZST file {path}: {e}")
             return []
-    if path.suffix in (".zip", ".whl"):
+    if path.suffix in {".zip", ".whl"}:
         try:
             with zipfile.ZipFile(path, "r") as zf:
                 for member in zf.namelist():

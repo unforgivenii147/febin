@@ -38,8 +38,7 @@ def minify_with_jq(path: Path):
                 size_after,
                 None,
             )
-        with open(tmp_path, "wb") as f:
-            f.write(minified_bytes)
+        Path(tmp_path).write_bytes(minified_bytes)
         os.replace(tmp_path, path)
         return (
             str(path),
@@ -71,7 +70,7 @@ def human_readable(n: int) -> str:
 
 
 def main():
-    root = Path().resolve()
+    root = Path.cwd()
     files = list(collect_json_files(root))
     if not files:
         print("No JSON files found.")

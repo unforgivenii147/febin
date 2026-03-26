@@ -65,7 +65,8 @@ def main():
         process_file(path, shift_ms)
         return
     if not path.is_dir():
-        raise SystemExit("Invalid path")
+        msg = "Invalid path"
+        raise SystemExit(msg)
     glob = "**/*.srt" if args.recursive else "*.srt"
     files = sorted(path.glob(glob))
     if not files:

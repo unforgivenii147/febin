@@ -19,20 +19,17 @@ def format_markdown(module_name: str, module_doc: str, functions, classes) -> st
     parts = [f"# Module `{module_name}`\n"]
 
     if module_doc:
-        parts.append("## Module Doc\n")
-        parts.append(module_doc + "\n")
+        parts.extend(("## Module Doc\n", module_doc + "\n"))
 
     if functions:
         parts.append("## Functions\n")
         for name, doc in functions:
-            parts.append(f"### `{name}()`\n")
-            parts.append(doc + "\n")
+            parts.extend((f"### `{name}()`\n", doc + "\n"))
 
     if classes:
         parts.append("## Classes\n")
         for name, doc in classes:
-            parts.append(f"### `{name}`\n")
-            parts.append(doc + "\n")
+            parts.extend((f"### `{name}`\n", doc + "\n"))
 
     return "\n".join(parts).strip() + "\n"
 
@@ -65,8 +62,7 @@ def extract_ast_docs(src: str) -> tuple[str, list, list]:
 
 def extract_from_file(py_path: str) -> tuple[str, str, str, list, list]:
     try:
-        with open(py_path, encoding="utf-8") as f:
-            src = f.read()
+        src = Path(py_path).read_text(encoding="utf-8")
     except Exception:
         return None
 

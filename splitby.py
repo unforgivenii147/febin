@@ -1,14 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+import pathlib
 import sys
 
 
 def split_file_by_delimiter(fname, delimiter) -> None:
-    with open(fname, encoding="utf-8") as f:
-        content = f.read()
+    content = pathlib.Path(fname).read_text(encoding="utf-8")
     parts = content.split(delimiter)
     with open(fname, "w", encoding="utf-8") as f:
-        for part in parts:
-            f.write(part.strip() + f"{delimiter}\n")
+        f.writelines(part.strip() + f"{delimiter}\n" for part in parts)
 
 
 def main() -> None:

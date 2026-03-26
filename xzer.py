@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
-import lzma_mt
 from pathlib import Path
 import sys
 import tempfile
@@ -8,6 +7,7 @@ import time
 
 from dh import format_size
 from loguru import logger
+import lzma_mt
 
 
 def atomic_write(data: bytes, final_path: Path) -> bool:
@@ -37,18 +37,18 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
         return False
 
 
-def safe_delete(file_path: Path, max_retries: int = 3, delay: float = 0.5) -> bool:
+def safe_delete(file_path: Path, max_retries: int = 3) -> bool:
     for attempt in range(max_retries):
         try:
             if file_path.exists():
-                time.sleep(delay)
+                time.sleep(0.0005)
                 file_path.unlink()
                 logger.debug(f"Deleted: {file_path}")
                 return True
             return True
         except PermissionError:
             if attempt < max_retries - 1:
-                time.sleep(delay * (attempt + 1))
+                time.sleep(0.0005 * (attempt + 1))
                 continue
             logger.error(f"Cannot delete {file_path} after {max_retries} attempts due to PermissionError")
             return False
@@ -61,7 +61,7 @@ def safe_delete(file_path: Path, max_retries: int = 3, delay: float = 0.5) -> bo
     return False
 
 
-def compress_file(file_path: Path, delete_delay: float = 0.5) -> bool:
+def compress_file(file_path: Path) -> bool:
     compressed_path = file_path.with_suffix(file_path.suffix + ".xz")
     if compressed_path.exists():
         return False
@@ -75,7 +75,7 @@ def compress_file(file_path: Path, delete_delay: float = 0.5) -> bool:
             return False
         if not compressed_path.exists() or compressed_path.stat().st_size == 0:
             return False
-        if safe_delete(file_path, delay=delete_delay):
+        if safe_delete(file_path):
             compressed_size = compressed_path.stat().st_size
             reduction = (1 - compressed_size / original_size) * 100
             logger.info(f"{file_path.name}|{original_size} → {compressed_size} bytes ({reduction:.1f}% reduction)")
@@ -102,13 +102,13 @@ def calculate_directory_size(path: Path = Path()) -> tuple[int, int]:
 
 
 def scan_files(directory: Path) -> list[Path]:
-    files_to_compress = []
     logger.info(f"Scanning directory: {directory}")
 
-    for file_path in directory.rglob("*"):
-        if file_path.is_file() and not file_path.is_symlink() and should_compress(file_path):
-            files_to_compress.append(file_path)
-    return files_to_compress
+    return [
+        file_path
+        for file_path in directory.rglob("*")
+        if file_path.is_file() and not file_path.is_symlink() and should_compress(file_path)
+    ]
 
 
 def should_compress(file_path):
@@ -136,7 +136,7 @@ def should_compress(file_path):
 
 
 def main() -> None:
-    args = sys.argv[1:]
+    sys.argv[1:]
     start_dir = Path.cwd()
     files_to_compress = scan_files(start_dir)
     if not files_to_compress:
@@ -149,7 +149,7 @@ def main() -> None:
         logger.info(f"\n[{i}/{len(files_to_compress)}] Processing...")
         orig_size = file_path.stat().st_size
         total_original += orig_size
-        if compress_file(file_path, args.delay):
+        if compress_file(file_path):
             successful += 1
             compressed_path = file_path.with_suffix(file_path.suffix + ".xz")
             if compressed_path.exists():

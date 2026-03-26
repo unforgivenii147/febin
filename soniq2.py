@@ -37,9 +37,9 @@ def sort_and_uniq(file_path):
                     tmp.write(line + "\n")
             os.replace(temp_path, file_path)
             print(f"Successfully updated '{file_path}'.")
-        except Exception as e:
+        except Exception:
             os.remove(temp_path)
-            raise e
+            raise
     except Exception as e:
         print(f"Failed to process file: {e}")
 

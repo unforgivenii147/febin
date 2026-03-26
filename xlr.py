@@ -5,9 +5,7 @@ import sys
 
 def process_file(fp):
     con = fp.read_text()
-    nl = []
-    for line in con.splitlines():
-        nl.append(line + "\n\n\n\n")
+    nl = [line + "\n\n\n\n" for line in con.splitlines()]
     newconn = "\n".join(nl)
     fp.write_text(newconn)
 

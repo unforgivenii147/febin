@@ -39,10 +39,7 @@ def find_similar_files(
     similarity_threshold: int,
     min_group_size: int,
 ) -> None:
-    """
-    Finds similar files recursively, calculates their hashes, and moves similar groups.
-    """
-
+    """Finds similar files recursively, calculates their hashes, and moves similar groups."""
     output_dir.mkdir(parents=True, exist_ok=True)
 
     file_hashes: dict[Path, str] = {}
@@ -96,8 +93,7 @@ def find_similar_files(
         # If the current group has enough files to meet the minimum size requirement
         if len(current_group) >= min_group_size:
             # Add all files from this group to processed_files to avoid re-processing them
-            for f in current_group:
-                processed_files.add(f)
+            processed_files.update(current_group)
 
             # Use the first file of the group as the key for this group
             # Ensure this group isn't a subset of an already found larger group
@@ -136,8 +132,7 @@ def find_similar_files(
         valid_group = [f for f in group if f not in processed_files or f == rep_file]
         if len(valid_group) >= min_group_size:
             final_groups_to_move.append(valid_group)
-            for f in valid_group:
-                files_to_move.add(f)  # Add to a set of all files that will be moved
+            files_to_move.update(valid_group)  # Add to a set of all files that will be moved
 
     # Update processed_files with all files that are confirmed to be moved
     processed_files.update(files_to_move)

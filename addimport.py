@@ -15,21 +15,18 @@ def process_file(fp):
     print(f"processing {fp}")
     data = []
     newdata = []
-    with open(fp) as fin:
+    with open(fp, encoding="utf-8") as fin:
         data = fin.readlines()
     if data[0].startswith("#!"):
-        newdata.append(data[0])
-        newdata.append("import regex as re\nimport os\n")
+        newdata.extend((data[0], "import regex as re\nimport os\n"))
         for k in data[1:]:
             newdata.append(k)
     else:
-        newdata.append(shebang)
-        newdata.append("import regex as re\nimport os\n")
+        newdata.extend((shebang, "import regex as re\nimport os\n"))
         for k in data:
             newdata.append(k)
-    with open(fp, "w") as fo:
-        for x in newdata:
-            fo.write(x)
+    with open(fp, "w", encoding="utf-8") as fo:
+        fo.writelines(newdata)
     return
 
 

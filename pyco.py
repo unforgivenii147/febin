@@ -12,7 +12,6 @@ def clean_pyc_and_pycache():
     total_size = 0
     dirs_removed = 0
     files_removed = 0
-    d2r = []
     for path in cwd.rglob("*.pyc"):
         pyfile_samedir = path.with_name(
             path.name.replace(".cpython-312", "")
@@ -30,9 +29,7 @@ def clean_pyc_and_pycache():
             total_size += sz
             files_removed += 1
 
-    for dirp in cwd.rglob("__pycache__"):
-        if dirp.is_dir():
-            d2r.append(dirp)
+    d2r = [dirp for dirp in cwd.rglob("__pycache__") if dirp.is_dir()]
 
     for d in d2r:
         if d.exists():

@@ -47,14 +47,12 @@ def replace_multiprocessing_patterns(content):
 
 def process_python_file(file_path):
     try:
-        with open(file_path, encoding="utf-8") as f:
-            original_content = f.read()
+        original_content = Path(file_path).read_text(encoding="utf-8")
         if "multiprocessing" not in original_content:
             return False
         modified_content = replace_multiprocessing_patterns(original_content)
         if modified_content != original_content:
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(modified_content)
+            Path(file_path).write_text(modified_content, encoding="utf-8")
             print(f"✓ Modified: {file_path}")
             return True
         return False

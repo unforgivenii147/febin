@@ -1,4 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
+"""list content of current dir by time."""
+
 import datetime
 from pathlib import Path
 
@@ -13,14 +15,24 @@ if __name__ == "__main__":
         key=lambda e: e.stat().st_mtime,
     ):
         mtime = datetime.datetime.fromtimestamp(path.stat().st_mtime).strftime("%H:%M")
-        if path.is_file() or path.is_dir():
-            sz = str(format_size(get_size(path)))
-            if len(sz) == 7:
-                sz = "  " + sz
-            if len(sz) == 8:
-                sz = " " + sz
-        elif path.is_symlink():
+        if path.is_symlink():
             sz = " symlink "
+        elif path.is_file() or path.is_dir():
+            sz = str(format_size(get_size(path)))
+            match len(sz):
+                case 3:
+                    sz = "      " + sz
+                case 4:
+                    sz = "     " + sz
+                case 5:
+                    sz = "    " + sz
+                case 6:
+                    sz = "   " + sz
+                case 7:
+                    sz = "  " + sz
+                case 8:
+                    sz = " " + sz
+
         cprint(f"{path.name[:24]:25}", "blue", end=" ")
         cprint(f"{sz}", "cyan", end=" ")
         cprint(f"{mtime}", "yellow")

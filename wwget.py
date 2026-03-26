@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import (
-    ThreadPoolExecutor,
-    as_completed,
-)
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import os
 import signal
@@ -22,7 +19,7 @@ class GracefulExit(Exception):
 
 
 def _signal_handler(signum, frame):
-    raise GracefulExit()
+    raise GracefulExit
 
 
 signal.signal(signal.SIGINT, _signal_handler)
@@ -35,7 +32,8 @@ def head_request(url: str) -> tuple[int, bool]:
     size = int(r.headers.get("Content-Length", 0))
     ranges = r.headers.get("Accept-Ranges", "") == "bytes"
     if not ranges:
-        raise RuntimeError("Server does not support byte-range requests.")
+        msg = "Server does not support byte-range requests."
+        raise RuntimeError(msg)
     return size, ranges
 
 
@@ -47,14 +45,14 @@ def init_files(path: str, size: int):
 
 def load_meta(meta_path: str) -> dict:
     if os.path.exists(meta_path):
-        with open(meta_path) as f:
+        with open(meta_path, encoding="utf-8") as f:
             return json.load(f)
     return {}
 
 
 def save_meta(meta_path: str, meta: dict):
     tmp = meta_path + ".tmp"
-    with open(tmp, "w") as f:
+    with open(tmp, "w", encoding="utf-8") as f:
         json.dump(meta, f)
     os.replace(tmp, meta_path)
 

@@ -5,9 +5,9 @@ from sys import argv, exit
 
 def main():
     fn = Path(argv[1])
-    content = fn.read_text()
+    content = fn.read_text(encoding="utf-8")
     lower_content = content.lower()
-    fn.write_text(lower_content)
+    fn.write_text(lower_content, encoding="utf-8")
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ import requests
 
 
 class MultiPartDownloader:
-    def __init__(self, url, output_path, num_threads=4):
+    def __init__(self, url, output_path, num_threads=4) -> None:
         self.url = url
         self.output_path = output_path
         self.num_threads = num_threads

@@ -64,7 +64,7 @@ def group_similar_files(hashes, threshold):
                 visited.add(f2)
         if len(group) > 1:
             groups.append(group)
-    with open("similars.json", "w") as f:
+    with open("similars.json", "w", encoding="utf-8") as f:
         json.dump(matrx, f)
     print("similars.json created.")
     return groups

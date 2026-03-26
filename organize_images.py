@@ -40,7 +40,7 @@ def get_image_features_cv2(image_path, size=(64, 64)):
         )
         norm = np.linalg.norm(features)
         if norm > 0:
-            features = features / norm
+            features /= norm
         return features
     except Exception as e:
         print(f"Error processing {image_path}: {e!s}")

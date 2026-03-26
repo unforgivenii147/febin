@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 
 
 def create_html_template(filename="index.html"):
@@ -17,8 +18,7 @@ def create_html_template(filename="index.html"):
 </html>
 """
     try:
-        with open(filename, "w") as f:
-            f.write(html_template)
+        pathlib.Path(filename).write_text(html_template, encoding="utf-8")
         print(f"Successfully created {filename} in {os.getcwd()}")
     except Exception as e:
         print(f"Error: {e}")

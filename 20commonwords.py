@@ -35,8 +35,7 @@ def main():
         sys.exit(1)
     src = sys.argv[1]
     try:
-        with open(src, errors="ignore") as f:
-            text = f.read()
+        text = Path(src).read_text(encoding="utf-8", errors="ignore")
     except FileNotFoundError:
         print("File not found")
         sys.exit(1)

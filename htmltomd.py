@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
+import sys
 from multiprocessing import cpu_count
 from pathlib import Path
-import sys
 
 from bs4 import BeautifulSoup
 from html_to_markdown import Options, convert
@@ -16,15 +16,13 @@ def clean_html(html_content: str) -> str:
         style.decompose()
     for comment in soup.find_all(string=lambda text: isinstance(text, str) and text.strip().startswith("<!--")):
         comment.extract()
-    for tag in soup.find_all(
-        [
-            "nav",
-            "footer",
-            "aside",
-            "iframe",
-            "noscript",
-        ]
-    ):
+    for tag in soup.find_all([
+        "nav",
+        "footer",
+        "aside",
+        "iframe",
+        "noscript",
+    ]):
         tag.decompose()
     for form in soup.find_all("form"):
         form.decompose()

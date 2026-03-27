@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import math
 import os
+import pathlib
 import signal
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 
@@ -36,17 +37,17 @@ def head_request(url: str) -> int:
 
 
 def load_meta(path: str) -> dict:
-    if os.path.exists(path):
-        with open(path, encoding="utf-8") as f:
+    if pathlib.Path(path).exists():
+        with pathlib.Path(path).open(encoding="utf-8") as f:
             return json.load(f)
     return {}
 
 
 def save_meta(path: str, meta: dict):
     tmp = path + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
+    with pathlib.Path(tmp).open("w", encoding="utf-8") as f:
         json.dump(meta, f)
-    os.replace(tmp, path)
+    pathlib.Path(tmp).replace(path)
 
 
 def build_parts(
@@ -81,8 +82,8 @@ def download_part(
                 timeout=15,
             ) as r:
                 r.raise_for_status()
-                mode = "ab" if os.path.exists(part_path) else "wb"
-                with open(part_path, mode) as f:
+                mode = "ab" if pathlib.Path(part_path).exists() else "wb"
+                with pathlib.Path(part_path).open(mode) as f:
                     for chunk in r.iter_content(1024 * 64):
                         if not chunk:
                             continue
@@ -97,10 +98,10 @@ def download_part(
 
 
 def merge_parts(output: str, parts: list[tuple[int, int, int]]):
-    with open(output, "wb") as out:
+    with pathlib.Path(output).open("wb") as out:
         for part_id, _, _ in parts:
             part_path = f"{output}.part{part_id}"
-            with open(part_path, "rb") as p:
+            with pathlib.Path(part_path).open("rb") as p:
                 while True:
                     buf = p.read(1024 * 1024)
                     if not buf:
@@ -114,8 +115,8 @@ def cleanup(
     meta_path: str,
 ):
     for part_id, _, _ in parts:
-        os.remove(f"{output}.part{part_id}")
-    os.remove(meta_path)
+        pathlib.Path(f"{output}.part{part_id}").unlink()
+    pathlib.Path(meta_path).unlink()
 
 
 def download(url: str, output: str, workers: int):

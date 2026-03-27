@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
-from pathlib import Path
 import tarfile
 import zipfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
-from dh import BIN_EXT, TXT_EXT
 import py7zr
 import regex as re
+from dh import BIN_EXT, TXT_EXT
 
 url_pattern = re.compile(r'https?://[^\s"\']+')
 EXT = BIN_EXT
@@ -21,11 +21,7 @@ def extract_urls_from_text(content):
 def extract_urls_from_file(filepath):
     urls = set()
     try:
-        with open(
-            filepath,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(filepath).open(encoding="utf-8", errors="ignore") as f:
             content = f.read()
             urls.update(extract_urls_from_text(content))
     except Exception as e:
@@ -118,6 +114,6 @@ if __name__ == "__main__":
         futures = [executor.submit(extract_urls, fp) for fp in file_paths]
     for future in as_completed(futures):
         all_urls.update(future.result())
-    with open("urls.txt", "w", encoding="utf-8") as f:
+    with Path("urls.txt").open("w", encoding="utf-8") as f:
         f.writelines(url + "\n" for url in sorted(all_urls))
     print(f"Extracted {len(all_urls)} unique URLs to urls.txt")

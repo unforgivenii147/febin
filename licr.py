@@ -11,9 +11,9 @@ def find_license_files() -> None:
     lf = []
     allfiles = dh.get_files(".")
     for file in allfiles:
-        if os.path.islink(file):
+        if pathlib.Path(file).is_symlink():
             continue
-        if os.path.isfile(file):
+        if pathlib.Path(file).is_file():
             fn = str(dh.get_fname(file))
             ext = str(dh.get_ext(file))
             if fn.lower().startswith("license") and (ext.lower() in EXT or not ext):

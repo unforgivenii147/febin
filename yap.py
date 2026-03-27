@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from collections import deque
 import contextlib
+import sys
+from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-import sys
 
 from dh import format_size, get_pyfiles, get_size
 from termcolor import cprint
@@ -94,9 +94,9 @@ def main() -> None:
         help="Autoflake cleanup",
     )
     args = p.parse_args()
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
-    files = get_pyfiles(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
+    files = get_pyfiles(cwd)
     if not files:
         print("No Python files detected.")
         return
@@ -120,7 +120,7 @@ def main() -> None:
         while pending:
             pending.popleft().get()
 
-    diffsize = before - get_size(root_dir)
+    diffsize = before - get_size(cwd)
     cprint(f"{format_size(diffsize)}", "cyan")
 
 

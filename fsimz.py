@@ -1,18 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
-from collections import defaultdict
 import os
 import sys
+from collections import defaultdict
 
 from dh import get_files
 from ppdeep import hash_from_file
 
 
-def find_dups(root_dir):
+def find_dups(cwd):
     files_by_hash = defaultdict(list)
     duplicate_count = 0
     deleted_count = 0
     total_deleted_size = 0
-    files = get_files(root_dir)
+    files = get_files(cwd)
     for path in files:
         if path.is_symlink():
             continue

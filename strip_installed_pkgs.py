@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from importlib.metadata import distributions
 from pathlib import Path
-import sys
 
 from dh import STDLIB
 
@@ -15,7 +15,7 @@ def read_requirements(filename):
     if not req_file.exists():
         msg = "file not found in current directory"
         raise FileNotFoundError(msg)
-    with open(req_file, encoding="utf-8") as f:
+    with Path(req_file).open(encoding="utf-8") as f:
         return [line.strip().replace("-", "_").lower() for line in f if line.strip() and not line.startswith("#")]
 
 

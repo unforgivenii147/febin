@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import get_context
 import os
+from multiprocessing import get_context
 from pathlib import Path
 from time import perf_counter
 
@@ -26,7 +26,7 @@ def process_file(path) -> str:
 
 def collect_files() -> list:
     targets = []
-    root = os.getcwd()
+    root = Path.cwd()
     EXT = {".css", ".min.css"}
     for pth in walk_files(root):
         path = Path(pth)

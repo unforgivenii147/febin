@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import contextlib
 import multiprocessing
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import tarfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 BASE_DIR = Path.home() / "tmp" / "debs"
 BASE_DIR.mkdir(parents=True, exist_ok=True)
@@ -23,7 +23,7 @@ def get_installed_packages():
 
 def get_package_files(pkg):
     files = run(f"dpkg -L {pkg}").splitlines()
-    return [f for f in files if os.path.exists(f)]
+    return [f for f in files if Path(f).exists()]
 
 
 def get_package_metadata(pkg):

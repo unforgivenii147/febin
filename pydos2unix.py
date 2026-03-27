@@ -65,7 +65,7 @@ def convert_with_temp(path: Path) -> None:
     ):
         for line in src:
             dst.write(line.replace("\r\n", "\n"))
-    os.replace(tmp, path)
+    Path(tmp).replace(path)
 
 
 def safe_convert(path: Path, dry_run: bool = False) -> str:

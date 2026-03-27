@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+import os
+import pathlib
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import os
 
 from dh import BIN_EXT
 from tqdm import tqdm
@@ -12,11 +13,7 @@ EXCLUDED_EXTENSIONS = BIN_EXT
 def process_file(filepath):
     counter = Counter()
     try:
-        with open(
-            filepath,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with pathlib.Path(filepath).open(encoding="utf-8", errors="ignore") as f:
             for line in f:
                 line = line.strip()
                 if line:
@@ -28,7 +25,7 @@ def process_file(filepath):
 
 def collect_files_by_extension():
     ext_map = {}
-    for root, _, filenames in os.walk(os.getcwd()):
+    for root, _, filenames in os.walk(pathlib.Path.cwd()):
         for fname in filenames:
             if fname.startswith("."):
                 continue
@@ -55,11 +52,7 @@ def collect_lines_for_extension(ext, files):
         ):
             global_counter.update(future.result())
     output_file = f"{ext}.txt"
-    with open(
-        output_file,
-        "w",
-        encoding="utf-8",
-    ) as fo:
+    with pathlib.Path(output_file).open("w", encoding="utf-8") as fo:
         for (
             line,
             count,

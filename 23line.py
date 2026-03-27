@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 
 import dh
 
@@ -18,7 +19,7 @@ EXT = [
 
 
 def get_first_13(path: str) -> str:
-    with open(path, encoding="utf-8", errors="ignore") as f:
+    with pathlib.Path(path).open(encoding="utf-8", errors="ignore") as f:
         lines = f.readlines()
     return "".join(lines[:13])
 
@@ -26,18 +27,18 @@ def get_first_13(path: str) -> str:
 def main() -> None:
     output_path = "all.txt"
     collected = []
-    for base, _, files in os.walk(os.getcwd()):
+    for base, _, files in os.walk(pathlib.Path.cwd()):
         for name in files:
             ext = dh.get_ext(name)
             if ext not in EXT:
                 continue
             path = os.path.join(base, name)
-            if os.path.abspath(path) == os.path.abspath(output_path):
+            if pathlib.Path(path).resolve() == pathlib.Path(output_path).resolve():
                 continue
             snippet = get_first_13(path)
             collected.append(snippet)
     unique_collected = list(set(collected))
-    with open(output_path, "w", encoding="utf-8") as out:
+    with pathlib.Path(output_path).open("w", encoding="utf-8") as out:
         for snippet in unique_collected:
             out.write(snippet)
             out.write("\n\n\n")

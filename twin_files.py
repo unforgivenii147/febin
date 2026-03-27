@@ -33,5 +33,5 @@ if __name__ == "__main__":
         help="Actually delete files (default is dry run).",
     )
     args = parser.parse_args()
-    root_dir = Path.cwd()
-    remove_ipynb_if_md_exists(root_dir, dry_run=not args.apply)
+    cwd = Path.cwd()
+    remove_ipynb_if_md_exists(cwd, dry_run=not args.apply)

@@ -21,10 +21,10 @@ def get_hash_file(path):
 
 
 def find_duplicates():
-    root_dir = Path.cwd()
+    cwd = Path.cwd()
     files_by_hash = defaultdict(list)
     duplicate_count = 0
-    ptp = [path for path in root_dir.rglob("*") if path.is_file() and not should_skip(path)]
+    ptp = [path for path in cwd.rglob("*") if path.is_file() and not should_skip(path)]
     files_by_size = {}
     for p in ptp:
         try:
@@ -55,7 +55,7 @@ def find_duplicates():
             duplicate_count += len(paths) - 1
             print(f"hash {hash}:")
             for file_path in paths:
-                relative_path = file_path.relative_to(root_dir)
+                relative_path = file_path.relative_to(cwd)
                 cprint(f"  {relative_path}", "cyan")
             print()
 

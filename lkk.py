@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def main():
-    root_dir = Path.cwd()
+    cwd = Path.cwd()
     req = sys.argv[1].strip()
-    found = [f for f in os.listdir(root_dir) if req in f]
+    found = [f for f in os.listdir(cwd) if req in f]
     for k in found:
         print(k)
 

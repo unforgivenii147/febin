@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import Pool
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from multiprocessing import Pool
+from pathlib import Path
 
 from dh import format_size, get_files, get_size, move_file
 from termcolor import cprint
@@ -38,15 +38,15 @@ def process_file(in_file):
         print(f"An error occurred: {e}")
         sys.exit(1)
     finally:
-        if os.path.exists(tmp_file_path):
-            os.unlink(tmp_file_path)
+        if Path(tmp_file_path).exists():
+            Path(tmp_file_path).unlink()
 
 
 def main() -> None:
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".svg"])
+    files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".svg"])
     if not files:
         print("no files found")
         return
@@ -59,7 +59,7 @@ def main() -> None:
             pass
         p.close()
         p.join()
-        after = get_size(root_dir)
+        after = get_size(cwd)
         cprint(
             f"{format_size(before - after)}",
             "cyan",

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import ffmpeg
 import regex as re
@@ -48,7 +48,8 @@ def main():
     output_path = input_path.with_name(f"{input_path.stem}_trimmed{input_path.suffix}")
     try:
         (
-            ffmpeg.input(
+            ffmpeg
+            .input(
                 str(input_path),
                 ss=args.start,
                 t=duration,

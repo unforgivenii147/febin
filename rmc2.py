@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from multiprocessing import get_context
 from pathlib import Path
-import sys
 
+import tree_sitter_python
 from dh import cleanup_blank_lines, format_size, get_files, get_size
 from tree_sitter import Language, Parser
-import tree_sitter_python
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 
@@ -26,12 +26,10 @@ def _collect_docstrings(node, source: bytes, deletions: list):
         if first and first.type == "expression_statement":
             string_node = first.child_by_field_name("expression")
             if string_node and string_node.type == "string":
-                deletions.append(
-                    (
-                        first.start_byte,
-                        first.end_byte,
-                    )
-                )
+                deletions.append((
+                    first.start_byte,
+                    first.end_byte,
+                ))
     if node.type in {
         "class_definition",
         "function_definition",
@@ -42,12 +40,10 @@ def _collect_docstrings(node, source: bytes, deletions: list):
             if first and first.type == "expression_statement":
                 string_node = first.child_by_field_name("expression")
                 if string_node and string_node.type == "string":
-                    deletions.append(
-                        (
-                            first.start_byte,
-                            first.end_byte,
-                        )
-                    )
+                    deletions.append((
+                        first.start_byte,
+                        first.end_byte,
+                    ))
     for child in node.children:
         _collect_docstrings(child, source, deletions)
 
@@ -62,12 +58,10 @@ def process_file(path: Path) -> None:
             if node.type == "comment":
                 text = source[node.start_byte : node.end_byte]
                 if not text.lstrip().startswith(EXCLUDE_PREFIXES):
-                    deletions.append(
-                        (
-                            node.start_byte,
-                            node.end_byte,
-                        )
-                    )
+                    deletions.append((
+                        node.start_byte,
+                        node.end_byte,
+                    ))
             for child in node.children:
                 walk_comments(child)
 
@@ -88,14 +82,14 @@ def process_file(path: Path) -> None:
 
 def main() -> None:
 
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".py"])
+    files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".py"])
 
     with get_context("spawn").Pool(8) as pool:
         pool.map(process_file, files)
-    diffsize = before - get_size(root_dir)
+    diffsize = before - get_size(cwd)
     print(f"space freed: {format_size(diffsize)}")
 
 

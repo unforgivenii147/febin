@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 import shutil
 import sys
 
@@ -19,7 +20,7 @@ def compute_hashes(files):
     hashes = {}
     for f in files:
         try:
-            with open(f, "rb") as fh:
+            with pathlib.Path(f).open("rb") as fh:
                 data = fh.read()
                 hashes[f] = ssdeep.hash(data)
         except Exception as e:
@@ -49,10 +50,10 @@ def group_similar_files(hashes, threshold):
 
 
 def copy_groups(groups, output_dir="output"):
-    os.makedirs(output_dir, exist_ok=True)
+    pathlib.Path(output_dir).mkdir(exist_ok=True, parents=True)
     for idx, group in enumerate(groups, start=1):
         group_dir = os.path.join(output_dir, f"group_{idx}")
-        os.makedirs(group_dir, exist_ok=True)
+        pathlib.Path(group_dir).mkdir(exist_ok=True, parents=True)
         for f in group:
             try:
                 shutil.move(f, group_dir)

@@ -4,6 +4,7 @@ import datetime
 import grp
 import json
 import os
+import pathlib
 import pwd
 import shutil
 import stat
@@ -253,7 +254,7 @@ def list_recursive(base: str, args, depth=0) -> None:
         link_t = None
         if stat.S_ISLNK(st.st_mode):
             try:
-                link_t = os.readlink(path)
+                link_t = pathlib.Path(path).readlink()
             except OSError:
                 link_t = None
         git = gitmap.get(n)
@@ -325,18 +326,18 @@ def main() -> None:
         if args.recursive:
             list_recursive(path, args)
             continue
-        if os.path.isfile(path) or os.path.islink(path):
+        if pathlib.Path(path).is_file() or pathlib.Path(path).is_symlink():
             try:
                 st = os.lstat(path)
             except FileNotFoundError:
                 continue
             git = None
             if args.git:
-                gitmap = get_git_status_for_dir(os.path.dirname(path))
-                git = gitmap.get(os.path.basename(path))
+                gitmap = get_git_status_for_dir(pathlib.Path(path).parent)
+                git = gitmap.get(pathlib.Path(path).name)
             e = Entry(
-                os.path.dirname(path),
-                os.path.basename(path),
+                pathlib.Path(path).parent,
+                pathlib.Path(path).name,
                 st,
                 git=git,
             )
@@ -361,7 +362,7 @@ def main() -> None:
             link_t = None
             if stat.S_ISLNK(st.st_mode):
                 try:
-                    link_t = os.readlink(fp)
+                    link_t = pathlib.Path(fp).readlink()
                 except OSError:
                     link_t = None
             entries.append(

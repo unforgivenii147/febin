@@ -2,9 +2,9 @@
 from pathlib import Path
 from sys import exit
 
+import pillow_heif as ph
 from dh import get_size
 from fastwalk import walk_files
-import pillow_heif as ph
 
 
 def process_file(fp):
@@ -18,10 +18,10 @@ def process_file(fp):
 
 
 def main():
-    root_dir = Path().cwd()
-    start_size = get_size(root_dir)
+    cwd = Path().cwd()
+    start_size = get_size(cwd)
     files = []
-    for pth in walk_files(root_dir):
+    for pth in walk_files(cwd):
         path = Path(pth)
         if path.is_file() and path.suffix in {
             ".heif",
@@ -32,7 +32,7 @@ def main():
     pool.imap_unordered(process_file, files)
     pool.close()
     pool.join()
-    after = get_size(root_dir)
+    after = get_size(cwd)
     print(f"{fornat_size(abs(after - start_size))}")
 
 

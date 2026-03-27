@@ -1,36 +1,43 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import subprocess
+from pathlib import Path
+from multiprocessing import get_context
+from collections import deque
+from dh import get_files, run_command
+from termcolor import cprint
 
-from fastwalk import walk_files
+c_files = {".c", ".h", ".inc"}
+cpp_files = {".cpp", ".cc", ".cxx", ".hpp", ".hpp11", ".hh", ".hxx"}
 
 
 def validate_cpp(path: Path) -> tuple[bool, str]:
-    proc = subprocess.run(
-        ["clang++", "-fsyntax-only", str(path)],
-        capture_output=True,
-        text=True,
-    )
-    if proc.returncode == 0:
-        return True, ""
-    return False, proc.stderr
+    cmd = ""
+    if path.suffix in c_files:
+        cmd = f"clang -fsyntax-only str(path)"
+    if path.suffix in cpp_files:
+        cmd = f"clang++ -fsyntax-only str(path)"
+    ret, txt, err = run_command(cmd)
+    del cmd
+    return path, ret, txt, err
 
 
 if __name__ == "__main__":
-    root_dir = Path().cwd()
-    for pth in walk_files(root_dir):
-        path = Path(pth)
-        if path.is_file() and path.suffix in {
-            ".c",
-            ".cc",
-            ".cpp",
-            ".cxx",
-            ".h",
-            ".hh",
-            ".hpp",
-            ".hxx",
-        }:
-            if not validate_cpp(path):
-                print(f"[\u2716] : {path.name}")
-            else:
-                print(f"[\u2705] : {path.name}")
+    cwd = Path.cwd()
+    files = []
+    for path in get_files(cwd, extensions=[".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx", ".inc", "hpp11"]):
+        if path.is_file() and not path.is_symlink():
+            files.append(path)
+    results = []
+    with get_context("spawn").Pool(8) as pool:
+        pending = deque()
+        for f in files:
+            pending.append(pool.apply_async(validate_cpp, (f,)))
+            if len(pending) > 16:
+                results.append(pending.popleft().get())
+        while pending:
+            results.append(pending.popleft().get())
+    for result in results:
+        if int(result[1]) == 2:
+            cprint(f"[\u2716] : {result[0].name} has error", "white")
+        else:
+            cprint(f"[\u2705] : {result[0].name} is ok", "cyan")

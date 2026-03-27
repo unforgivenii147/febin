@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from multiprocessing import get_context
 from pathlib import Path
-import sys
 
 from dh import format_size, get_files, get_size, is_binary, run_command
 

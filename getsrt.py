@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 import subprocess
 
 
@@ -10,7 +11,7 @@ def extract_subtitles(input_file, output_file=None, subtitle_index=0):
     :param output_file: Path to save the subtitle file. If None, uses input filename with .srt extension.
     :param subtitle_index: Index of the subtitle track to extract (default: 0).
     """
-    if not os.path.exists(input_file):
+    if not pathlib.Path(input_file).exists():
         msg = f"Input file not found: {input_file}"
         raise FileNotFoundError(msg)
     if output_file is None:

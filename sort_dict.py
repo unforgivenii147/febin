@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import pathlib
 import sys
 
 
@@ -17,11 +18,11 @@ def dict_val(line: str) -> str:
 
 def main():
     fname = sys.argv[1]
-    with open(fname, encoding="utf8", errors="replace") as f:
+    with pathlib.Path(fname).open(encoding="utf8", errors="replace") as f:
         lines = f.readlines()
     all_lines = [line for line in lines if ":" in line or "=" in line]
     all_lines.sort(key=dict_val)
-    with open(fname, "w", encoding="utf-8") as fo:
+    with pathlib.Path(fname).open("w", encoding="utf-8") as fo:
         fo.writelines(all_lines)
 
 

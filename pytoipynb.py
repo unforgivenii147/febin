@@ -2,8 +2,8 @@
 """Simple converter from .py to .ipynb."""
 
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import nbformat as nbf
 
@@ -18,7 +18,7 @@ def simple_convert(py_file, ipynb_file=None):
     nb = nbf.v4.new_notebook()
     nb["cells"] = [nbf.v4.new_code_cell(code)]
     # Save notebook
-    with open(ipynb_file, "w", encoding="utf-8") as f:
+    with Path(ipynb_file).open("w", encoding="utf-8") as f:
         json.dump(nb, f, indent=1)
     print(f"Converted {py_file} to {ipynb_file}")
 

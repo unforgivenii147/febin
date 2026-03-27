@@ -6,7 +6,7 @@ import sys
 def split_file_by_delimiter(fname, delimiter) -> None:
     content = pathlib.Path(fname).read_text(encoding="utf-8")
     parts = content.split(delimiter)
-    with open(fname, "w", encoding="utf-8") as f:
+    with pathlib.Path(fname).open("w", encoding="utf-8") as f:
         f.writelines(part.strip() + f"{delimiter}\n" for part in parts)
 
 

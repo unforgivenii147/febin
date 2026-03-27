@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from multiprocessing import get_context
 from pathlib import Path
-import sys
 
 from dh import format_size, get_pyfiles, get_size, run_command
 from termcolor import cprint
@@ -17,10 +17,10 @@ def process_file(path):
 
 
 def main() -> None:
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_pyfiles(root_dir)
+    files = [Path(arg) for arg in args] if args else get_pyfiles(cwd)
     if not files:
         print("no files found")
         return
@@ -32,7 +32,7 @@ def main() -> None:
         pass
     p.close()
     p.join()
-    diffsize = before - get_size(root_dir)
+    diffsize = before - get_size(cwd)
     cprint(
         f"{format_size(diffsize)}",
         "cyan",

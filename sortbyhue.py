@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import colorsys
+import pathlib
 import sys
 
 import regex as re
@@ -20,10 +21,10 @@ def sort_key(color: str):
 
 
 def main(path: str):
-    with open(path, encoding="utf-8") as f:
+    with pathlib.Path(path).open(encoding="utf-8") as f:
         colors = [line.strip() for line in f if HEX_RE.match(line.strip())]
     colors.sort(key=sort_key)
-    with open(path, "w", encoding="utf-8") as f:
+    with pathlib.Path(path).open("w", encoding="utf-8") as f:
         f.writelines(c.lower() + "\n" for c in colors)
 
 

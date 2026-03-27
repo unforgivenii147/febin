@@ -2,8 +2,8 @@
 import argparse
 import pathlib
 
-from packaging import tags
 import requests
+from packaging import tags
 
 
 def is_pure_python(requires_python):

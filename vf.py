@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 
 import regex as re
 
@@ -31,13 +32,13 @@ def cleanup_wheels(whl_files):
             if (package_name == "pycryptodome" and python_variant == "py3-none-any") or (
                 package_name == "matplotlib" and python_variant == "py3-none-any"
             ):
-                os.remove(os.path.join(whl_directory, file))
+                pathlib.Path(os.path.join(whl_directory, file)).unlink()
                 print(f"Deleted: {file}")
                 deleted_files += 1
             elif "-" in version:
                 date_part = version.split("-")[-1]
                 if latest_versions[package_name][0] != date_part:
-                    os.remove(os.path.join(whl_directory, file))
+                    pathlib.Path(os.path.join(whl_directory, file)).unlink()
                     print(f"Deleted: {file}")
                     deleted_files += 1
     return deleted_files

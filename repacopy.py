@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import logging
-from pathlib import Path
 import shutil
 import sys
+from pathlib import Path
 
 logging.basicConfig(
     level=logging.INFO,
@@ -81,10 +81,7 @@ class PackageRepacker:
         metadata_file = dist_info_dir / "METADATA"
         if metadata_file.exists():
             try:
-                with open(
-                    metadata_file,
-                    encoding="utf-8",
-                ) as f:
+                with Path(metadata_file).open(encoding="utf-8") as f:
                     for line in f:
                         line = line.strip()
                         if line.startswith("Version:"):
@@ -154,7 +151,7 @@ class PackageRepacker:
             else:
                 logger.warning("File from RECORD not found at %s", source_path)
         wheel_file = dist_info_dir / "WHEEL"
-        with open(wheel_file, "w", encoding="utf-8") as f:
+        with Path(wheel_file).open("w", encoding="utf-8") as f:
             f.write("Wheel-Version: 1.0\n")
             f.write("Generator: auto-repacker 1.0\n")
             f.write(f"Root-Is-Purelib: {root_is_purelib}\n")
@@ -167,7 +164,7 @@ class PackageRepacker:
                 new_metadata_path,
             )
         elif not new_metadata_path.exists():
-            with open(new_metadata_path, "w", encoding="utf-8") as f:
+            with Path(new_metadata_path).open("w", encoding="utf-8") as f:
                 f.write("Metadata-Version: 2.1\n")
                 f.write(f"Name: {package_name}\n")
                 f.write(f"Version: {version}\n")
@@ -199,7 +196,7 @@ class PackageRepacker:
                 return False
             files_to_include = []
             is_pure_python = True
-            with open(record_file, encoding="utf-8") as f:
+            with Path(record_file).open(encoding="utf-8") as f:
                 for line in f:
                     file_path_str = line.split(",")[0].strip()
                     if file_path_str and not file_path_str.endswith(".dist-info/RECORD"):

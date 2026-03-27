@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from collections import deque
 import importlib
 import inspect
-from multiprocessing import get_context
 import os
-from pathlib import Path
 import sys
+from collections import deque
+from multiprocessing import get_context
+from pathlib import Path
 from textwrap import dedent
 
 from dh import get_files, unique_path
@@ -148,9 +148,9 @@ def process_file_task(py_file):
 def main():
     if not BASE_DIR.exists():
         BASE_DIR.mkdir(exist_ok=True)
-    root_dir = Path.cwd()
+    cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".py", ".pyi", ".pyx", ".pxd"])
+    files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".py", ".pyi", ".pyx", ".pxd"])
 
     logger.info(f"processing {len(files)} files")
     with get_context("spawn").Pool(8) as pool:

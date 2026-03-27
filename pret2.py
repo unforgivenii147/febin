@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 from dh import unique_path
 
@@ -27,9 +27,9 @@ def should_format(file_path: Path) -> bool:
 
 
 def get_files_to_format(
-    root_dir: str = ".",
+    cwd: str = ".",
 ) -> list[Path]:
-    root = Path(root_dir).resolve()
+    root = Path(cwd).resolve()
     files: list[Path] = []
     for path in root.rglob("*"):
         if path.is_dir():
@@ -88,7 +88,7 @@ def format_file(
 
 
 def main():
-    cwd = os.getcwd()
+    cwd = Path.cwd()
     print(f"📁 Scanning directory: {cwd}")
     files = get_files_to_format(cwd)
     if not files:

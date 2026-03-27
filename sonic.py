@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from collections import Counter
-from collections.abc import Generator
-from datetime import datetime
 import mmap
 import os
-from pathlib import Path
 import shutil
 import sys
 import tempfile
 import time
+from collections import Counter
+from collections.abc import Generator
+from datetime import datetime
+from pathlib import Path
 
 
 class LineProcessor:
@@ -44,7 +44,7 @@ class MmapReader(LineProcessor):
         get_size = self.get_file_size(file_path)
         self.log(f"Reading {file_path} ({self.format_size(get_size)})")
         try:
-            with open(file_path, "rb") as f:
+            with Path(file_path).open("rb") as f:
                 if get_size > 1024 * 1024:
                     with mmap.mmap(
                         f.fileno(),
@@ -85,7 +85,7 @@ class MmapReader(LineProcessor):
     ) -> Generator[str, None, None]:
         self.log(f"Reading {file_path} (regular mode)")
         try:
-            with open(file_path, encoding=encoding) as f:
+            with Path(file_path).open(encoding=encoding) as f:
                 for line in f:
                     decoded_line = line.rstrip("\r\n")
                     if not skip_empty or decoded_line.strip():
@@ -150,11 +150,7 @@ class LineSorter(LineProcessor):
                         case_insensitive,
                     )
                     temp_file = temp_dir / f".sort_chunk_{os.getpid()}_{len(temp_files)}.tmp"
-                    with open(
-                        temp_file,
-                        "w",
-                        encoding=encoding,
-                    ) as f:
+                    with Path(temp_file).open("w", encoding=encoding) as f:
                         for line in sorted_chunk:
                             f.write(line + "\n")
                     temp_files.append(temp_file)
@@ -167,11 +163,7 @@ class LineSorter(LineProcessor):
                     case_insensitive,
                 )
                 temp_file = temp_dir / f".sort_chunk_{os.getpid()}_{len(temp_files)}.tmp"
-                with open(
-                    temp_file,
-                    "w",
-                    encoding=encoding,
-                ) as f:
+                with Path(temp_file).open("w", encoding=encoding) as f:
                     for line in sorted_chunk:
                         f.write(line + "\n")
                 temp_files.append(temp_file)
@@ -291,11 +283,7 @@ class FileSorter(LineProcessor):
                     shutil.copy2(input_path, backup_path)
                     self.log(f"Backup created: {backup_path}")
                 output_path.parent.mkdir(parents=True, exist_ok=True)
-                with open(
-                    output_path,
-                    "w",
-                    encoding=encoding,
-                ) as f:
+                with Path(output_path).open("w", encoding=encoding) as f:
                     f.writelines(line + "\n" for line in lines)
                 self.log(f"Output written: {output_path}")
             else:
@@ -357,7 +345,7 @@ class FileSorter(LineProcessor):
             "statistics": stats,
         }
         try:
-            with open(report_file, "w", encoding="utf-8") as f:
+            with Path(report_file).open("w", encoding="utf-8") as f:
                 json.dump(report, f, indent=2)
             print(f"\n✓ Report saved: {report_file}")
         except Exception as e:

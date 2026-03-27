@@ -1,17 +1,24 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import os
-from pathlib import Path
 import signal
 import sys
 import threading
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from urllib.parse import unquote
 
 import requests
 from rich.console import Console
-from rich.progress import BarColumn, DownloadColumn, Progress, TextColumn, TimeRemainingColumn, TransferSpeedColumn
+from rich.progress import (
+    BarColumn,
+    DownloadColumn,
+    Progress,
+    TextColumn,
+    TimeRemainingColumn,
+    TransferSpeedColumn,
+)
 
 console = Console()
 
@@ -63,7 +70,7 @@ class Downloader:
         sha256_hash = hashlib.sha256()
         console.print("\n[bold cyan]Verifying file integrity...[/]")
 
-        with open(self.filename, "rb") as f:
+        with Path(self.filename).open("rb") as f:
             # Read in 1MB chunks to be memory efficient
             for byte_block in iter(lambda: f.read(1024 * 1024), b""):
                 sha256_hash.update(byte_block)
@@ -84,7 +91,7 @@ class Downloader:
     def _load_state(self):
         if self.state_file.exists():
             try:
-                with open(self.state_file, encoding="utf-8") as f:
+                with Path(self.state_file).open(encoding="utf-8") as f:
                     self.progress_data = json.load(f)
             except Exception:
                 pass
@@ -92,7 +99,7 @@ class Downloader:
     def _save_state(self):
         with (
             self.lock,
-            open(self.state_file, "w", encoding="utf-8") as f,
+            Path(self.state_file).open("w", encoding="utf-8") as f,
         ):
             json.dump(self.progress_data, f)
 
@@ -115,7 +122,7 @@ class Downloader:
                 timeout=15,
             ) as r:
                 r.raise_for_status()
-                with open(self.filename, "r+b") as f:
+                with Path(self.filename).open("r+b") as f:
                     f.seek(start)
                     for data in r.iter_content(chunk_size=1024 * 64):
                         if self.stop_event.is_set():
@@ -135,8 +142,8 @@ class Downloader:
         self._get_info()
         self._load_state()
 
-        if not os.path.exists(self.filename):
-            with open(self.filename, "wb") as f:
+        if not Path(self.filename).exists():
+            with Path(self.filename).open("wb") as f:
                 f.truncate(self.file_size)
 
         chunks = [

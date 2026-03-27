@@ -17,14 +17,14 @@ def fold_content_pure(fname, width=45):
             line = line[width:]
         if line:
             folded_lines.append(line)
-    with open(fname, "w", encoding="utf-8") as fo:
+    with pathlib.Path(fname).open("w", encoding="utf-8") as fo:
         for line in folded_lines:
             fo.write(line + "\n")
     print(f"{fname} updated.")
 
 
 def fold_file_inplace(filename):
-    if not os.path.exists(filename):
+    if not pathlib.Path(filename).exists():
         print(
             f"Error: File '{filename}' not found.",
             file=sys.stderr,
@@ -58,10 +58,10 @@ def fold_file_inplace(filename):
                 f"Error running fold: {result.stderr}",
                 file=sys.stderr,
             )
-            os.unlink(temp_filename)
+            pathlib.Path(temp_filename).unlink()
             sys.exit(1)
         pathlib.Path(filename).write_text(result.stdout, encoding="utf-8")
-    os.unlink(temp_filename)
+    pathlib.Path(temp_filename).unlink()
     print(f"Successfully folded '{filename}' in place.")
 
 

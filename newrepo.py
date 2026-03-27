@@ -4,12 +4,12 @@ GitHub Repository Creator
 Creates a GitHub repo using git and GitHub API with token from ~/.env.
 """
 
-from datetime import datetime
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from datetime import datetime
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -44,14 +44,12 @@ class GitHubRepoCreator:
     def _get_github_username(self) -> str:
         """Get GitHub username from git config or token."""
         # Try to get from git config first
-        success, username, _ = self._run_cmd(
-            [
-                "git",
-                "config",
-                "--global",
-                "user.name",
-            ]
-        )
+        success, username, _ = self._run_cmd([
+            "git",
+            "config",
+            "--global",
+            "user.name",
+        ])
         if success and username:
             return username
         # If not in git config, try to get from GitHub API using token
@@ -72,15 +70,13 @@ class GitHubRepoCreator:
                 username = user_data.get("login")
                 if username:
                     # Save to git config for future use
-                    self._run_cmd(
-                        [
-                            "git",
-                            "config",
-                            "--global",
-                            "user.name",
-                            username,
-                        ]
-                    )
+                    self._run_cmd([
+                        "git",
+                        "config",
+                        "--global",
+                        "user.name",
+                        username,
+                    ])
                     print(f"✅ Username found: {username}")
                     return username
             except json.JSONDecodeError:
@@ -229,7 +225,7 @@ class GitHubRepoCreator:
             ]
             success, stdout, stderr = self._run_cmd(cmd)
             # Clean up temp file
-            os.unlink(temp_file)
+            Path(temp_file).unlink()
             if not success:
                 print(f"❌ Failed to create repository: {stderr}")
                 # Try to parse error message
@@ -264,30 +260,26 @@ class GitHubRepoCreator:
         success, remotes, _ = self._run_cmd(["git", "remote"])
         if "origin" in remotes.split("\n"):
             # Update existing remote
-            success, _, stderr = self._run_cmd(
-                [
-                    "git",
-                    "remote",
-                    "set-url",
-                    "origin",
-                    remote_url,
-                ]
-            )
+            success, _, stderr = self._run_cmd([
+                "git",
+                "remote",
+                "set-url",
+                "origin",
+                remote_url,
+            ])
             if success:
                 print("✅ Remote origin updated")
             else:
                 print(f"⚠️  Could not update remote: {stderr}")
         else:
             # Add new remote
-            success, _, stderr = self._run_cmd(
-                [
-                    "git",
-                    "remote",
-                    "add",
-                    "origin",
-                    remote_url,
-                ]
-            )
+            success, _, stderr = self._run_cmd([
+                "git",
+                "remote",
+                "add",
+                "origin",
+                remote_url,
+            ])
             if success:
                 print("✅ Remote origin added")
             else:
@@ -308,14 +300,12 @@ class GitHubRepoCreator:
             return False
         # Commit with timestamp
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        success, _, stderr = self._run_cmd(
-            [
-                "git",
-                "commit",
-                "-m",
-                f"Initial commit - {timestamp}",
-            ]
-        )
+        success, _, stderr = self._run_cmd([
+            "git",
+            "commit",
+            "-m",
+            f"Initial commit - {timestamp}",
+        ])
         if not success:
             print(f"❌ Failed to commit: {stderr}")
             sys.exit(1)
@@ -330,36 +320,30 @@ class GitHubRepoCreator:
             f"https://{self.github_username}:{self.github_token}@github.com/{self.github_username}/{self.repo_name}.git"
         )
         # Set remote with token temporarily
-        self._run_cmd(
-            [
-                "git",
-                "remote",
-                "set-url",
-                "origin",
-                auth_remote_url,
-            ]
-        )
+        self._run_cmd([
+            "git",
+            "remote",
+            "set-url",
+            "origin",
+            auth_remote_url,
+        ])
         # Push to GitHub
-        success, _, stderr = self._run_cmd(
-            [
-                "git",
-                "push",
-                "-u",
-                "origin",
-                "main",
-            ]
-        )
+        success, _, stderr = self._run_cmd([
+            "git",
+            "push",
+            "-u",
+            "origin",
+            "main",
+        ])
         # Reset remote to clean URL (without token)
         clean_url = f"https://github.com/{self.github_username}/{self.repo_name}.git"
-        self._run_cmd(
-            [
-                "git",
-                "remote",
-                "set-url",
-                "origin",
-                clean_url,
-            ]
-        )
+        self._run_cmd([
+            "git",
+            "remote",
+            "set-url",
+            "origin",
+            clean_url,
+        ])
         if not success:
             print(f"❌ Failed to push: {stderr}")
             print("\nTroubleshooting tips:")

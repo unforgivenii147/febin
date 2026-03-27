@@ -32,7 +32,7 @@ def beautify_code_file(file_path, beautify_function, asset_type) -> bool | None:
 
 
 def beautify_files_in_directory(
-    root_dir=".",
+    cwd=".",
 ) -> None:
     processed_count = 0
     errors_count = 0
@@ -45,7 +45,7 @@ def beautify_files_in_directory(
         foldername,
         _subfolders,
         filenames,
-    ) in os.walk(root_dir):
+    ) in os.walk(cwd):
         for filename in filenames:
             file_path = os.path.join(foldername, filename)
             if filename.endswith(".json"):

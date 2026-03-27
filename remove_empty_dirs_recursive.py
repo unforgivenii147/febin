@@ -10,7 +10,7 @@ def main():
     for dirpath, dirnames, filenames in os.walk(Path.cwd(), topdown=False):
         if not dirnames and not filenames:
             print(f"removing empty dir: {dirpath}")
-            os.rmdir(dirpath)
+            Path(dirpath).rmdir()
             count += 1
     print(f"total {count} empty dirs removed")
 

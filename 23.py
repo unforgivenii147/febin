@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import Lock, Pool
 import os
-from pathlib import Path
 import subprocess
 import sys
+from multiprocessing import Lock, Pool
+from pathlib import Path
 
 from fastwalk import walk_files
 
@@ -15,7 +15,7 @@ def is_python_file(path: Path) -> bool:
         return True
     if path.suffix == "":
         try:
-            with open(path, "rb") as f:
+            with Path(path).open("rb") as f:
                 head = f.read(64)
                 if b"python" in head and b"#!" in head:
                     return True
@@ -80,9 +80,9 @@ def process_file(file_path) -> None:
             sys.stdout.flush()
 
 
-def get_all_files(root_dir):
+def get_all_files(cwd):
     py_files = []
-    for pth in walk_files(root_dir):
+    for pth in walk_files(cwd):
         path = Path(pth)
         if path.is_file() and is_python_file(path):
             py_files.append(path)
@@ -103,8 +103,8 @@ def main() -> None:
         print("Error: 'ruff' is not installed or not in PATH.")
         print("Please run: pip install ruff")
         sys.exit(1)
-    root_dir = os.getcwd()
-    files = get_all_files(root_dir)
+    cwd = Path.cwd()
+    files = get_all_files(cwd)
     if not files:
         print("no file found.")
         return

@@ -19,7 +19,7 @@ def fix_links(file_path: Path):
                     str(static_file.resolve()),
                 )
     backup_path = file_path.with_suffix(".bak")
-    os.replace(file_path, backup_path)
+    Path(file_path).replace(backup_path)
     Path(file_path).write_text(content, encoding="utf-8")
 
 

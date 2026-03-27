@@ -15,11 +15,7 @@ def list_files():
 def head_lines(path, n):
     lines = []
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="replace",
-        ) as f:
+        with Path(path).open(encoding="utf-8", errors="replace") as f:
             for _ in range(n):
                 line = f.readline()
                 if not line:

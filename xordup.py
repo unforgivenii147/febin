@@ -84,10 +84,10 @@ def find_dups_optimized(root: Path):
 
 
 if __name__ == "__main__":
-    root_dir = Path.cwd()
-    print(f"Scanning directory: {root_dir}")
+    cwd = Path.cwd()
+    print(f"Scanning directory: {cwd}")
 
-    dupes = find_dups_optimized(root_dir)
+    dupes = find_dups_optimized(cwd)
     if not dupes:
         print("No duplicate files found.")
     else:

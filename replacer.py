@@ -4,8 +4,8 @@ import os
 import pathlib
 import sys
 
-from dh import is_binary
 import regex as re
+from dh import is_binary
 
 
 def process_file(
@@ -72,7 +72,7 @@ def replace_in_files(
     files_processed = 0
     files_changed = 0
     if target_file:
-        if os.path.isfile(target_file) and not os.path.islink(target_file):
+        if pathlib.Path(target_file).is_file() and not pathlib.Path(target_file).is_symlink():
             print(f"Processing file: {target_file}")
             if process_file(
                 target_file,
@@ -92,7 +92,7 @@ def replace_in_files(
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         for filename in files:
             file_path = os.path.join(root, filename)
-            if os.path.islink(file_path) or is_binary(file_path):
+            if pathlib.Path(file_path).is_symlink() or is_binary(file_path):
                 continue
             files_processed += 1
             if process_file(

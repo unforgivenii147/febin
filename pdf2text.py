@@ -6,7 +6,7 @@ import PyPDF2
 
 
 def extract_text_from_pdf(pdf_filename):
-    with open(pdf_filename, "rb") as file:
+    with pathlib.Path(pdf_filename).open("rb") as file:
         pdf_reader = PyPDF2.PdfReader(file)
         extracted_text = ""
         for page_num in range(len(pdf_reader.pages)):

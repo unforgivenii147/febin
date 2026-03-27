@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from collections import defaultdict
 import operator
-from pathlib import Path
 import tarfile
 import zipfile
+from collections import defaultdict
+from pathlib import Path
 
-from dh import STDLIB
 import regex as re
+from dh import STDLIB
 
 SHEBANG_PATTERNS = [
     r"#!/data/data/com.termux/files/usr/bin/python",
@@ -33,7 +33,7 @@ def load_known_packages():
     global KNOWN_PACKAGES
     if PIP_LIST_PATH.exists():
         try:
-            with open(PIP_LIST_PATH, encoding="utf-8") as f:
+            with Path(PIP_LIST_PATH).open(encoding="utf-8") as f:
                 KNOWN_PACKAGES = {
                     line.strip().split("==")[0].split(">")[0].split("<")[0].lower() for line in f if line.strip()
                 }
@@ -45,11 +45,7 @@ def is_python_file(path):
     path = Path(path)
     if not path.suffix or path.suffix == ".py":
         try:
-            with open(
-                path,
-                encoding="utf-8",
-                errors="ignore",
-            ) as f:
+            with Path(path).open(encoding="utf-8", errors="ignore") as f:
                 first_line = f.readline()
                 for pattern in SHEBANG_PATTERNS:
                     if re.match(pattern, first_line):
@@ -168,7 +164,7 @@ def handle_compressed_file(archive_path):
 
                 dctx = zstd.ZstdDecompressor()
                 with (
-                    open(path, "rb") as f,
+                    Path(path).open("rb") as f,
                     dctx.stream_reader(f) as reader,
                     tarfile.open(
                         fileobj=reader,
@@ -238,7 +234,7 @@ def generate_requirements(imports_count):
         key=operator.itemgetter(1),
         reverse=True,
     )
-    with open("requirements.txt", "w", encoding="utf-8") as f:
+    with Path("requirements.txt").open("w", encoding="utf-8") as f:
         for pkg, count in sorted_imports:
             norm_pkg = pkg.replace("_", "-")
             if norm_pkg in {

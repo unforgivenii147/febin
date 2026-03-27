@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import shutil
+from pathlib import Path
 from sys import exit
 
 from dh import unique_path
@@ -27,8 +27,8 @@ def process_file(fp):
 
 
 def main():
-    root_dir = Path.cwd()
-    for pth in walk_files(root_dir):
+    cwd = Path.cwd()
+    for pth in walk_files(cwd):
         path = Path(pth)
         if path.is_file() and (path.name == "METADATA" or path.suffix in {".metadata", ".md"}):
             process_file(path)

@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from multiprocessing import get_context
 from pathlib import Path
-import sys
 
+import tree_sitter_cpp as tscpp
 from dh import format_size, get_files, get_size
 from tree_sitter import Language, Parser, Query, QueryCursor
-import tree_sitter_cpp as tscpp
 
 ts_remover = None
 
@@ -38,16 +38,14 @@ class TSCppRemover:
                     end = node.end_byte
                     text = source_bytes[start:end].decode("utf-8")
                     stripped = text.strip()
-                    if stripped.startswith(
-                        (
-                            "//!",
-                            "///",
-                            "/**",
-                            "/*!",
-                            "///<",
-                            "//!<",
-                        )
-                    ):
+                    if stripped.startswith((
+                        "//!",
+                        "///",
+                        "/**",
+                        "/*!",
+                        "///<",
+                        "//!<",
+                    )):
                         continue
                     comment_count += 1
                     if end < len(source_bytes) and source_bytes[end : end + 1] == b"\n":

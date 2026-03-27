@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-from collections import Counter
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import csv
 import os
+import pathlib
+from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from tqdm import tqdm
 
-binf = open("/sdcard/bin", encoding="utf-8")
+binf = pathlib.Path("/sdcard/bin").open(encoding="utf-8")
 EXCLUDED_EXTENSIONS = [line.strip() for line in binf]
 binf.close()
 
@@ -14,11 +15,7 @@ binf.close()
 def process_file(filepath):
     counter = Counter()
     try:
-        with open(
-            filepath,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with pathlib.Path(filepath).open(encoding="utf-8", errors="ignore") as f:
             for line in f:
                 line = line.strip()
                 if line:
@@ -30,7 +27,7 @@ def process_file(filepath):
 
 def collect_files_by_extension():
     ext_map = {}
-    for root, _, filenames in os.walk(os.getcwd()):
+    for root, _, filenames in os.walk(pathlib.Path.cwd()):
         for fname in filenames:
             if fname.startswith("."):
                 continue
@@ -57,12 +54,7 @@ def collect_lines_for_extension(ext, files):
         ):
             global_counter.update(future.result())
     output_file = f"{ext}.csv"
-    with open(
-        output_file,
-        "w",
-        newline="",
-        encoding="utf-8",
-    ) as csvfile:
+    with pathlib.Path(output_file).open("w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["number_of_appearance", "line"])
         for (

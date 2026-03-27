@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import base64
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def decode_base64_lines(input_path, output_folder="decoded_files"):
@@ -12,7 +12,7 @@ def decode_base64_lines(input_path, output_folder="decoded_files"):
     failed = []
     remained = []
     try:
-        with open(input_path, encoding="utf-8") as f:
+        with Path(input_path).open(encoding="utf-8") as f:
             for i, line in enumerate(f, 1):
                 line = line.strip()
                 if not line:
@@ -38,7 +38,7 @@ def decode_base64_lines(input_path, output_folder="decoded_files"):
         print(f"Error: Input file not found: {input_path}")
     except Exception as e:
         print(f"Unexpected error: {e}")
-    with open(input_path, "w", encoding="utf-8") as fo:
+    with Path(input_path).open("w", encoding="utf-8") as fo:
         fo.writelines(f"{k}\n" for k in remained)
 
 

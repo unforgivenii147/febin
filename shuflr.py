@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import mmap
-from pathlib import Path
 import random
 import secrets
+from pathlib import Path
 
 
 def enhanced_shuffle(
@@ -22,7 +22,7 @@ def enhanced_shuffle(
     if file_size > 5 * 1024 * 1024:  # 5MB threshold
         print("File size > 5MB, attempting to use mmap.")
         try:
-            with open(input_file, "r+b") as f:  # Open in binary mode for mmap
+            with Path(input_file).open("r+b") as f:  # Open in binary mode for mmap
                 mm = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
                 # Decode mmap'd bytes to string and split into lines
                 # This part can be tricky with encoding and line endings
@@ -35,10 +35,10 @@ def enhanced_shuffle(
         except Exception as e:
             print(f"Error using mmap: {e}. Falling back to standard file reading.")
             # Fallback to standard reading if mmap fails
-            with open(input_file, encoding="utf-8") as f:
+            with Path(input_file).open(encoding="utf-8") as f:
                 lines = f.readlines()
     else:
-        with open(input_file, encoding="utf-8") as f:
+        with Path(input_file).open(encoding="utf-8") as f:
             lines = f.readlines()
 
     original_count = len(lines)
@@ -65,7 +65,7 @@ def enhanced_shuffle(
             base, ext = os.path.splitext(input_file)
             output_path = f"{base}_{method}{ext}"
 
-        with open(output_path, "w", encoding="utf-8") as f:
+        with Path(output_path).open("w", encoding="utf-8") as f:
             f.writelines(shuffled_lines)
         print(f"Shuffled {original_count} lines using method '{method}' with {repeats} passes")
         print(f"Output written to: {output_path}")
@@ -93,7 +93,7 @@ def test_randomness(input_file):
 
     lines_to_test = []
     try:
-        with open(input_file, encoding="utf-8") as f:
+        with Path(input_file).open(encoding="utf-8") as f:
             lines_to_test = [line.strip() for line in f.readlines()[:100]]
     except Exception as e:
         print(f"Error reading file for testing: {e}")

@@ -7,8 +7,8 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-from PIL import Image
 import pytesseract
+from PIL import Image
 
 
 def pil_to_cv(img: Image.Image) -> np.ndarray:
@@ -125,15 +125,13 @@ def main() -> None:
                         ),
                         encoding="utf-8",
                     )
-                    report_index.append(
-                        {
-                            "variant": variant_name,
-                            "psm": psm,
-                            "oem": oem,
-                            "dpi": dpi,
-                            "text_file": str(txt_path),
-                        }
-                    )
+                    report_index.append({
+                        "variant": variant_name,
+                        "psm": psm,
+                        "oem": oem,
+                        "dpi": dpi,
+                        "text_file": str(txt_path),
+                    })
     (args.out / "index.json").write_text(
         json.dumps(report_index, indent=2),
         encoding="utf-8",

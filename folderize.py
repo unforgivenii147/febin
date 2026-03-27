@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 
-def falpha(root_dir="."):
-    root_path = Path(root_dir).resolve()
+def falpha(cwd="."):
+    root_path = Path(cwd).resolve()
     all_files = [f for f in root_path.rglob("*") if f.is_file()]
     for file_path in all_files:
         if is_in_alphabetical_folder(file_path, root_path):

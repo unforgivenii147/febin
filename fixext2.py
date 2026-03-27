@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 
 import magic
 
@@ -67,7 +68,7 @@ def detect_extension(path, mime_type):
         return MIME_TO_EXT[mime_type]
     if mime_type == "text/plain":
         try:
-            with open(path, encoding="utf-8", errors="ignore") as f:
+            with pathlib.Path(path).open(encoding="utf-8", errors="ignore") as f:
                 sample = f.read(4096)
             guessed = detect_text_based_extension(sample)
             if guessed:
@@ -78,16 +79,16 @@ def detect_extension(path, mime_type):
 
 
 def safe_rename(src, dst):
-    if not os.path.exists(dst):
-        os.rename(src, dst)
+    if not pathlib.Path(dst).exists():
+        pathlib.Path(src).rename(dst)
         return dst
     base, ext = os.path.splitext(dst)
     counter = 1
     new_path = f"{base} ({counter}){ext}"
-    while os.path.exists(new_path):
+    while pathlib.Path(new_path).exists():
         counter += 1
         new_path = f"{base} ({counter}){ext}"
-    os.rename(src, new_path)
+    pathlib.Path(src).rename(new_path)
     return new_path
 
 
@@ -96,7 +97,7 @@ def correct_file_extension(root="."):
     for dirpath, _, filenames in os.walk(root):
         for name in filenames:
             path = os.path.join(dirpath, name)
-            if os.path.islink(path):
+            if pathlib.Path(path).is_symlink():
                 continue
             try:
                 mime_type = mime.from_file(path)
@@ -116,7 +117,7 @@ def correct_file_extension(root="."):
             print(f"Renaming: {name}  →  {new_name}")
             final_path = safe_rename(path, new_path)
             if final_path != new_path:
-                print(f" ⚠  Collision detected. Saved as: {os.path.basename(final_path)}")
+                print(f" ⚠  Collision detected. Saved as: {pathlib.Path(final_path).name}")
 
 
 if __name__ == "__main__":

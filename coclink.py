@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-from datetime import UTC, datetime, timedelta
 import os
 import pathlib
+from datetime import UTC, datetime, timedelta
 
+import regex as re
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
-import regex as re
 
 load_dotenv()
 API_KEY = os.getenv("YOUTUBE_API_KEY")
@@ -33,13 +33,11 @@ def get_videos(youtube, channel_id):
             video_id = item["id"]["videoId"]
             video_details = youtube.videos().list(part="snippet", id=video_id).execute()
             snippet = video_details["items"][0]["snippet"]
-            videos.append(
-                {
-                    "title": snippet["title"],
-                    "description": snippet["description"],
-                    "url": f"https://www.youtube.com/watch?v={video_id}",
-                }
-            )
+            videos.append({
+                "title": snippet["title"],
+                "description": snippet["description"],
+                "url": f"https://www.youtube.com/watch?v={video_id}",
+            })
         request = youtube.search().list_next(request, response)
         if len(videos) > 100:
             break
@@ -55,7 +53,7 @@ def extract_th18_links(description):
 def create_html(channel_name, base_data):
     date_str = datetime.now().strftime("%d-%m-%Y")
     dir_name = f"output/{date_str}_{channel_name}"
-    os.makedirs(dir_name, exist_ok=True)
+    pathlib.Path(dir_name).mkdir(exist_ok=True, parents=True)
     file_path = os.path.join(dir_name, "bases.html")
     html_content = f"""
     <html>
@@ -98,13 +96,11 @@ def main():
         for v in vids:
             links = extract_th18_links(v["description"])
             if links:
-                results.append(
-                    {
-                        "title": v["title"],
-                        "video_url": v["url"],
-                        "links": list(set(links)),
-                    }
-                )
+                results.append({
+                    "title": v["title"],
+                    "video_url": v["url"],
+                    "links": list(set(links)),
+                })
         if results:
             create_html(name, results)
         else:

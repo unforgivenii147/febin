@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from dh import move_file
 
 MAX_QUEUE = 16
 
-root_dir = Path.cwd()
-ok_dir = Path(f"{root_dir}/OK")
-err_dir = Path(f"{root_dir}/ERROR")
+cwd = Path.cwd()
+ok_dir = Path(f"{cwd}/OK")
+err_dir = Path(f"{cwd}/ERROR")
 ok_dir.mkdir(exist_ok=True)
 err_dir.mkdir(exist_ok=True)
 
@@ -31,7 +31,7 @@ def process_file(fp) -> None:
 
 def main():
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else [Path(p) for p in root_dir.glob("*.py")]
+    files = [Path(f) for f in args] if args else [Path(p) for p in cwd.glob("*.py")]
     for f in files:
         process_file(f)
 

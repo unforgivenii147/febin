@@ -1,13 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
+import pathlib
 import tarfile
 import threading
+import zipfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse, urlunparse
-import zipfile
 
 import regex as re
 
@@ -43,16 +44,14 @@ def normalize_url(url: str) -> str:
         if (scheme == "http" and netloc.endswith(":80")) or (scheme == "https" and netloc.endswith(":443")):
             netloc = netloc.rsplit(":", 1)[0]
         path = p.path.rstrip("/") or "/"
-        return urlunparse(
-            (
-                scheme,
-                netloc,
-                path,
-                "",
-                p.query,
-                "",
-            )
-        )
+        return urlunparse((
+            scheme,
+            netloc,
+            path,
+            "",
+            p.query,
+            "",
+        ))
     except Exception:
         return url
 
@@ -104,7 +103,7 @@ def handle_file_bytes(data: bytes) -> None:
 
 def process_regular_file(path: str) -> None:
     try:
-        with open(path, "rb") as f:
+        with pathlib.Path(path).open("rb") as f:
             handle_file_bytes(f.read())
     except Exception:
         pass
@@ -141,7 +140,7 @@ def process_tar_zst(path: str) -> None:
     if not zstd:
         return
     try:
-        with open(path, "rb") as f:
+        with pathlib.Path(path).open("rb") as f:
             dctx = zstd.ZstdDecompressor()
             stream = dctx.stream_reader(f)
             with tarfile.open(fileobj=stream, mode="r|*") as t:
@@ -181,19 +180,11 @@ def main() -> None:
         futures = [ex.submit(process_path, f) for f in files]
         for _ in as_completed(futures):
             pass
-    with open("/sdcard/urls.txt", "a", encoding="utf-8") as f:
+    with pathlib.Path("/sdcard/urls.txt").open("a", encoding="utf-8") as f:
         f.writelines(u + "\n" for u in sorted(all_urls))
-    with open(
-        "/sdcard/giturls.txt",
-        "a",
-        encoding="utf-8",
-    ) as f:
+    with pathlib.Path("/sdcard/giturls.txt").open("a", encoding="utf-8") as f:
         f.writelines(u + "\n" for u in sorted(git_urls))
-    with open(
-        "/sdcard/giturls_classified.txt",
-        "a",
-        encoding="utf-8",
-    ) as f:
+    with pathlib.Path("/sdcard/giturls_classified.txt").open("a", encoding="utf-8") as f:
         for (
             cat,
             urls,

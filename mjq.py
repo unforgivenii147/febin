@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
-from multiprocessing import cpu_count
 import os
-from pathlib import Path
 import subprocess
+from multiprocessing import cpu_count
+from pathlib import Path
 
 EXCLUDE_DIRS = {".git", "__pycache__"}
 
@@ -39,7 +39,7 @@ def minify_with_jq(path: Path):
                 None,
             )
         Path(tmp_path).write_bytes(minified_bytes)
-        os.replace(tmp_path, path)
+        Path(tmp_path).replace(path)
         return (
             str(path),
             True,

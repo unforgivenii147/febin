@@ -66,7 +66,7 @@ def py_to_ipynb(input_file, output_file=None):
     if output_file is None:
         output_file = Path(input_file).stem + ".ipynb"
     # Write the notebook
-    with open(output_file, "w", encoding="utf-8") as f:
+    with Path(output_file).open("w", encoding="utf-8") as f:
         json.dump(nb, f, indent=1, ensure_ascii=False)
     print(f"Successfully converted '{input_file}' to '{output_file}'")
     print(f"Created {len(cells)} cell(s)")
@@ -94,7 +94,7 @@ def main():
         nb = nbf.v4.new_notebook()
         nb["cells"] = [nbf.v4.new_code_cell(code)]
         output_file = args.output or Path(args.input).stem + ".ipynb"
-        with open(output_file, "w", encoding="utf-8") as f:
+        with Path(output_file).open("w", encoding="utf-8") as f:
             json.dump(
                 nb,
                 f,

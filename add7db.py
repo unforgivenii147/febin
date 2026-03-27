@@ -2,6 +2,7 @@
 import base64
 import io
 import os
+import pathlib
 import sqlite3
 import sys
 
@@ -9,7 +10,7 @@ import py7zr
 
 
 def get_current_folder_name():
-    return os.path.basename(os.getcwd())
+    return pathlib.Path(pathlib.Path.cwd()).name
 
 
 def get_user_folder_name(default_name):
@@ -68,14 +69,14 @@ def read_file_contents(filepath):
             "cp1252",
             "iso-8859-1",
         ]
-        get_size = os.path.getsize(filepath)
+        get_size = pathlib.Path(filepath).stat().st_size
         # For very large files, warn but still try to read
         if get_size > 10 * 1024 * 1024:  # 10MB
             print(f"    Warning: Large file ({get_size / 1024 / 1024:.1f}MB), may take time to compress")
         # First try to read as text
         for encoding in encodings:
             try:
-                with open(filepath, encoding=encoding) as f:
+                with pathlib.Path(filepath).open(encoding=encoding) as f:
                     content = f.read()
                     return {
                         "content": content,
@@ -93,7 +94,7 @@ def read_file_contents(filepath):
             ):
                 continue
         # If text reading fails, read as binary
-        with open(filepath, "rb") as f:
+        with pathlib.Path(filepath).open("rb") as f:
             content = f.read()
             return {
                 "content": content,
@@ -117,13 +118,13 @@ def read_file_contents(filepath):
 
 
 def get_files_in_current_dir():
-    current_dir = os.getcwd()
+    current_dir = pathlib.Path.cwd()
     files = []
     try:
         for item in sorted(os.listdir(current_dir)):
             item_path = os.path.join(current_dir, item)
-            if os.path.isfile(item_path):
-                get_size = os.path.getsize(item_path)
+            if pathlib.Path(item_path).is_file():
+                get_size = pathlib.Path(item_path).stat().st_size
                 size_str = f"{get_size / 1024:.1f}KB" if get_size < 1024 * 1024 else f"{get_size / 1024 / 1024:.1f}MB"
                 print(f"  Processing: {item} ({size_str})")
                 file_data = read_file_contents(item_path)
@@ -132,40 +133,34 @@ def get_files_in_current_dir():
                     # Compress binary content
                     compressed = compress_data(file_data["content"])
                     if compressed:
-                        files.append(
-                            {
-                                "filename": item,
-                                "contents": compressed,
-                                "compressed": 1,
-                                "original_size": file_data["original_size"],
-                                "compressed_size": len(compressed),
-                            }
-                        )
+                        files.append({
+                            "filename": item,
+                            "contents": compressed,
+                            "compressed": 1,
+                            "original_size": file_data["original_size"],
+                            "compressed_size": len(compressed),
+                        })
                         print(
                             f"    ✓ Compressed {file_data['original_size'] / 1024:.1f}KB to {len(compressed) / 1024:.1f}KB"
                         )
                     else:
                         # Fallback to storing as text representation if compression fails
-                        files.append(
-                            {
-                                "filename": item,
-                                "contents": "[Binary file - compression failed]",
-                                "compressed": 0,
-                                "original_size": file_data["original_size"],
-                                "compressed_size": 0,
-                            }
-                        )
-                else:
-                    # Store text files uncompressed (they're already efficient)
-                    files.append(
-                        {
+                        files.append({
                             "filename": item,
-                            "contents": file_data["content"],
+                            "contents": "[Binary file - compression failed]",
                             "compressed": 0,
                             "original_size": file_data["original_size"],
                             "compressed_size": 0,
-                        }
-                    )
+                        })
+                else:
+                    # Store text files uncompressed (they're already efficient)
+                    files.append({
+                        "filename": item,
+                        "contents": file_data["content"],
+                        "compressed": 0,
+                        "original_size": file_data["original_size"],
+                        "compressed_size": 0,
+                    })
                     print(f"    ✓ Stored as text ({file_data['original_size'] / 1024:.1f}KB)")
     except PermissionError:
         print("Warning: Permission denied accessing some files")
@@ -218,7 +213,7 @@ def main():
             print(f"Using '{folder_name}' as default")
     # Create table with compression support
     create_folder_table(cursor, folder_name)
-    print(f"\nScanning current directory: {os.getcwd()}")
+    print(f"\nScanning current directory: {pathlib.Path.cwd()}")
     print("Reading and compressing file contents...")
     files = get_files_in_current_dir()
     if not files:

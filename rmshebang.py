@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-import sys
 
 from dh import format_size, get_files, get_size
 
@@ -27,10 +27,10 @@ def process_file(path) -> None:
 
 
 def main() -> None:
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, extensions=[".py"])
+    files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".py"])
     with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:
@@ -39,7 +39,7 @@ def main() -> None:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diffsize = before - get_size(root_dir)
+    diffsize = before - get_size(cwd)
     print(f"space saved: {format_size(diffsize)}")
 
 

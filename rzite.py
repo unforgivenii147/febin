@@ -3,16 +3,16 @@ from __future__ import annotations
 
 import argparse
 import base64
-from configparser import ConfigParser
-from email.parser import Parser
 import hashlib
 import operator
 import os
-from pathlib import Path
 import shutil
 import sys
 import sysconfig
 import zipfile
+from configparser import ConfigParser
+from email.parser import Parser
+from pathlib import Path
 
 
 def prefix_path():
@@ -203,12 +203,10 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
                                     rel = s.relative_to(base)
                                     collected.append((s, rel))
                         else:
-                            collected.append(
-                                (
-                                    c,
-                                    c.relative_to(base),
-                                )
-                            )
+                            collected.append((
+                                c,
+                                c.relative_to(base),
+                            ))
         else:
             for rel in rec_list:
                 if not rel or rel.startswith(("..", "/")):
@@ -342,7 +340,7 @@ def build_wheel_from_tree(
 
 
 def main() -> None:
-    with open("all.xtx", encoding="utf-8") as f:
+    with Path("all.xtx").open(encoding="utf-8") as f:
         lines = f.readlines()
         allxtx = []
         for line in lines:

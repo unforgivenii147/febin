@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-import sys
 
-from dh import format_size, get_files, get_size
 import regex as re
+from dh import format_size, get_files, get_size
 from termcolor import cprint
 
 MAX_QUEUE = 16
@@ -26,14 +26,14 @@ def process_file(fp) -> None:
 
 
 def main():
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
     files = (
         [Path(f) for f in args]
         if args
         else get_files(
-            root_dir,
+            cwd,
             recursive=True,
             extensions=[".html", ".htm", ".xml"],
         )
@@ -46,7 +46,7 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(root_dir)
+    diff_size = before - get_size(cwd)
     print(f"space saved : {format_size(diff_size)}")
 
 

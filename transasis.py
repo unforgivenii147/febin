@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
+import regex as re
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
-import regex as re
 
 DIRECTORY = "."
 CHUNK_SIZE = 2000
@@ -38,8 +38,8 @@ def translate_file(filepath):
         translated_chunks.append(translated_chunk)
     translated_content = "\n\n".join(translated_chunks)
     new_filepath = os.path.join(
-        os.path.dirname(filepath),
-        f"translated_{os.path.basename(filepath)}",
+        Path(filepath).parent,
+        f"translated_{Path(filepath).name}",
     )
     Path(new_filepath).write_text(translated_content, encoding="utf-8")
     print(f"saved as {new_filepath}")

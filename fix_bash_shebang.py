@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 
 TARGET_SHEBANG = "#!/data/data/com.termux/files/usr/bin/bash"
 BASH_KEYWORDS = {
@@ -41,7 +42,7 @@ def is_bash_file(filepath):
 
 def process_file(filepath):
     print(f"processing {filepath}")
-    with open(filepath, "r+", encoding="utf-8") as f:
+    with pathlib.Path(filepath).open("r+", encoding="utf-8") as f:
         lines = f.readlines()
         if not lines:
             return
@@ -54,18 +55,18 @@ def process_file(filepath):
         f.truncate()
         print(f"{os.path.relpath(filepath)} updated.")
     if "bin" in filepath.split(os.sep):
-        os.chmod(filepath, 0o755)
+        pathlib.Path(filepath).chmod(0o755)
 
 
 def traverse_directory(directory):
     for root, _, files in os.walk(directory):
         for filename in files:
             filepath = os.path.join(root, filename)
-            if os.path.islink(filepath):
+            if pathlib.Path(filepath).is_symlink():
                 continue
             if is_bash_file(filepath):
                 process_file(filepath)
 
 
 if __name__ == "__main__":
-    traverse_directory(os.getcwd())
+    traverse_directory(pathlib.Path.cwd())

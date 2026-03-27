@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
 import cv2 as cv
 from dh import get_files
 
-root_dir = Path.cwd()
+cwd = Path.cwd()
 
 
 def process_file(fp):
@@ -17,12 +17,12 @@ def process_file(fp):
         return
     img = 255 - img
     cv.imwrite(str(fp), img)
-    print(f"{fp.relative_to(root_dir)} updated.")
+    print(f"{fp.relative_to(cwd)} updated.")
 
 
 def main():
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, recursive=True, extensions=[".png", ".jpg"])
+    files = [Path(arg) for arg in args] if args else get_files(cwd, recursive=True, extensions=[".png", ".jpg"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

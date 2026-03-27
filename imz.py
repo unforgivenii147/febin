@@ -7,15 +7,15 @@ import contextlib
 import json
 import multiprocessing as mp
 import os
-from pathlib import Path
 import sys
 import tarfile
 import zipfile
+from pathlib import Path
 
-from dh import PKG_MAPPING, STDLIB
 import regex as re
-from tqdm import tqdm
 import xxhash
+from dh import PKG_MAPPING, STDLIB
+from tqdm import tqdm
 
 CACHE_FILE = ".reqcache.json"
 
@@ -26,7 +26,7 @@ def fast_hash(path: Path) -> str:
         stat = path.stat()
         h.update(str(stat.st_size).encode())
         h.update(str(int(stat.st_mtime)).encode())
-        with open(path, "rb") as f:
+        with Path(path).open("rb") as f:
             h.update(f.read())
         return h.hexdigest()
     except Exception:
@@ -35,29 +35,21 @@ def fast_hash(path: Path) -> str:
 
 def load_json(path: Path) -> dict:
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(path).open(encoding="utf-8", errors="ignore") as f:
             return json.load(f)
     except Exception:
         return {}
 
 
 def save_json(path: Path, obj: dict) -> None:
-    with open(path, "w", encoding="utf-8") as f:
+    with Path(path).open("w", encoding="utf-8") as f:
         json.dump(obj, f, indent=2, sort_keys=True)
 
 
 def load_set_file(path: str) -> set[str]:
     out = set()
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(path).open(encoding="utf-8", errors="ignore") as f:
             for line in f:
                 v = line.strip()
                 if v:
@@ -70,11 +62,7 @@ def load_set_file(path: str) -> set[str]:
 def load_mapping(path: str) -> dict[str, str]:
     out: dict[str, str] = {}
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(path).open(encoding="utf-8", errors="ignore") as f:
             for line in f:
                 line = line.strip()
                 if not line or line.startswith("#"):
@@ -168,11 +156,7 @@ def process_noext_python_script(
     path: Path,
 ) -> dict[str, list[str]]:
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(path).open(encoding="utf-8", errors="ignore") as f:
             first = f.readline()
             if "#!" not in first or "python" not in first.lower():
                 return {
@@ -202,11 +186,7 @@ def process_ipynb(
         "relative": [],
     }
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(path).open(encoding="utf-8", errors="ignore") as f:
             nb = json.load(f)
     except Exception:
         return out

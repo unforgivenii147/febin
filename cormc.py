@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import glob
 import logging
-from multiprocessing import cpu_count
 import os
 import pathlib
 import sys
+from multiprocessing import cpu_count
 
 try:
     from tree_sitter_languages import get_language, get_parser
@@ -104,12 +104,10 @@ class CommentRemover:
                 "class_definition",
                 "module",
             }:
-                docstring_ranges.append(
-                    (
-                        node.start_byte,
-                        node.end_byte,
-                    )
-                )
+                docstring_ranges.append((
+                    node.start_byte,
+                    node.end_byte,
+                ))
             for child in node.children:
                 child_parent = (
                     child.type
@@ -169,11 +167,11 @@ class CommentRemover:
 
 
 def find_python_files(
-    root_dir: str = ".",
+    cwd: str = ".",
 ) -> list[str]:
     python_files = []
     for py_file in glob.glob(
-        os.path.join(root_dir, "**", "*.py"),
+        os.path.join(cwd, "**", "*.py"),
         recursive=True,
     ):
         if any(
@@ -234,7 +232,7 @@ def main():
     args = parser.parse_args()
     if args.verbose:
         logger.setLevel(logging.DEBUG)
-    if not os.path.isdir(args.directory):
+    if not pathlib.Path(args.directory).is_dir():
         logger.error(f"Directory not found: {args.directory}")
         sys.exit(1)
     python_files = find_python_files(args.directory)

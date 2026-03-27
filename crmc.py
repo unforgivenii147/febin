@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from multiprocessing import cpu_count
 from pathlib import Path
-import sys
 
+import tree_sitter_cpp
 from dh import format_size, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
-import tree_sitter_cpp
 
 EXCLUDE_PREFIXES = (b"#!/",)
 parser = Parser()
@@ -39,12 +39,10 @@ def remove_comments_cpp(path: Path) -> None:
                 text = source[node.start_byte : node.end_byte]
                 if text.lstrip().startswith(EXCLUDE_PREFIXES):
                     return
-                deletions.append(
-                    (
-                        node.start_byte,
-                        node.end_byte,
-                    )
-                )
+                deletions.append((
+                    node.start_byte,
+                    node.end_byte,
+                ))
             for child in node.children:
                 walk(child)
 

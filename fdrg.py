@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import fnmatch
-from pathlib import Path
-from queue import Queue
 import tarfile
 import threading
 import zipfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+from queue import Queue
 
 from fastwalk import walk_files
 
@@ -75,11 +75,7 @@ def search_in_file(file_path, search_string, search_content):
             results.append((str(file_path), None))
         return results
     try:
-        with open(
-            file_path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(file_path).open(encoding="utf-8", errors="ignore") as f:
             for ln, line in enumerate(f, 1):
                 pause_event.wait()
                 if search_string in line:
@@ -143,12 +139,10 @@ def extract_and_search_archive(archive_path, search_string, search_content):
                                     1,
                                 ):
                                     if search_string in line:
-                                        results.append(
-                                            (
-                                                ref,
-                                                ln,
-                                            )
-                                        )
+                                        results.append((
+                                            ref,
+                                            ln,
+                                        ))
                         except Exception:
                             pass
     except Exception:

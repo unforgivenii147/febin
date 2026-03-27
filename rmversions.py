@@ -4,7 +4,7 @@ import sys
 
 
 def clean_requirements(fname):
-    with open(fname, encoding="utf-8") as f:
+    with pathlib.Path(fname).open(encoding="utf-8") as f:
         lines = f.readlines()
     packages = set()
     for line in lines:

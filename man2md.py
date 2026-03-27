@@ -8,11 +8,7 @@ import regex as re
 
 def read_man_file(filename):
     try:
-        with open(
-            filename,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with pathlib.Path(filename).open(encoding="utf-8", errors="ignore") as f:
             return f.read()
     except FileNotFoundError:
         sys.exit(f"Error: file {filename} not found")

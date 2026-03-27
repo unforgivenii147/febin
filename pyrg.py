@@ -2,16 +2,17 @@
 from __future__ import annotations
 
 import argparse
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import fnmatch
 import operator
 import os
+import pathlib
 import stat
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TYPE_CHECKING
 
-from dh import is_binary
 import regex as re
+from dh import is_binary
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -42,7 +43,7 @@ def colorize(
 
 
 def matches_any_glob(path: str, patterns: Iterable[str]) -> bool:
-    basename = os.path.basename(path)
+    basename = pathlib.Path(path).name
     return any(fnmatch.fnmatch(path, p) or fnmatch.fnmatch(basename, p) for p in patterns)
 
 
@@ -57,7 +58,7 @@ def collect_files(
     include_globs = include_globs or []
     exclude_globs = exclude_globs or []
     for root in roots:
-        if os.path.isfile(root):
+        if pathlib.Path(root).is_file():
             yield root
             continue
         for (
@@ -108,11 +109,7 @@ def search_file_text_mode(
 ]:
     matches = []
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="replace",
-        ) as fh:
+        with pathlib.Path(path).open(encoding="utf-8", errors="replace") as fh:
             for lineno, raw_line in enumerate(fh, start=1):
                 line = raw_line.rstrip("\n")
                 spans: list[tuple[int, int]] = []
@@ -126,12 +123,10 @@ def search_file_text_mode(
                         idx = hay.find(needle, start)
                         if idx == -1:
                             break
-                        spans.append(
-                            (
-                                idx,
-                                idx + len(needle),
-                            )
-                        )
+                        spans.append((
+                            idx,
+                            idx + len(needle),
+                        ))
                         start = idx + max(1, len(needle))
                 if spans:
                     matches.append((lineno, line, spans))

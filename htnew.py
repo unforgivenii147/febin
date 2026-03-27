@@ -19,7 +19,7 @@ def create_html_template(filename="index.html"):
 """
     try:
         pathlib.Path(filename).write_text(html_template, encoding="utf-8")
-        print(f"Successfully created {filename} in {os.getcwd()}")
+        print(f"Successfully created {filename} in {pathlib.Path.cwd()}")
     except Exception as e:
         print(f"Error: {e}")
 

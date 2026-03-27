@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 
 EXCLUDE_DIRS = {".git"}
 OUTPUT_FILE = "/sdcard/all2.txt"
@@ -7,11 +8,7 @@ OUTPUT_FILE = "/sdcard/all2.txt"
 
 def read_file(path):
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with pathlib.Path(path).open(encoding="utf-8", errors="ignore") as f:
             return f.read()
     except Exception:
         return None
@@ -22,7 +19,10 @@ def collect_files(root):
         dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
         for fname in filenames:
             full = os.path.join(dirpath, fname)
-            if os.path.abspath(full) == os.path.abspath(OUTPUT_FILE) or "license" not in str(fname).lower():
+            if (
+                pathlib.Path(full).resolve() == pathlib.Path(OUTPUT_FILE).resolve()
+                or "license" not in str(fname).lower()
+            ):
                 continue
             yield full
 
@@ -30,7 +30,7 @@ def collect_files(root):
 def build_all_txt(root) -> None:
     files = list(collect_files(root))
     print(f"Found {len(files)} files")
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
+    with pathlib.Path(OUTPUT_FILE).open("w", encoding="utf-8") as out:
         for i, path in enumerate(files, 1):
             content = read_file(path)
             if content is None:

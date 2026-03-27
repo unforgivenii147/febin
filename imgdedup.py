@@ -1,9 +1,10 @@
 import argparse
 import os
+import pathlib
 
 import cv2
-from imutils import paths
 import numpy as np
+from imutils import paths
 
 
 def dhash(image, hashSize=8):
@@ -63,7 +64,7 @@ Examples:
 
     # basic validation
     dataset_path = args["path"]
-    if not os.path.isdir(dataset_path):
+    if not pathlib.Path(dataset_path).is_dir():
         msg = f"[ERROR] dataset path does not exist or is not a directory: {dataset_path}"
         raise SystemExit(msg)
 
@@ -117,7 +118,7 @@ Examples:
                 # one, and only one, of the duplicate images)
                 print(f"[INFO] removing {len(hashedPaths) - 1} duplicates with hash: {h}")
                 for p in hashedPaths[1:]:
-                    os.remove(p)
+                    pathlib.Path(p).unlink()
 
 
 if __name__ == "__main__":

@@ -7,10 +7,10 @@ from dh import format_size, get_size
 EXCLUDED = {".mypy_cache", ".ruff_cache", ".git", "__pycache__"}
 
 if __name__ == "__main__":
-    root_dir = Path.cwd()
+    cwd = Path.cwd()
 
     for path in sorted(
-        root_dir.rglob("*"),
+        cwd.rglob("*"),
         key=lambda e: e.stat().st_mtime,
     ):
         if any(pat in path.parts for pat in EXCLUDED):

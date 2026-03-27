@@ -1,10 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
+import sys
 from multiprocessing import get_context
 from pathlib import Path
-import sys
 
-from dh import SOURCE_CODE_EXT, clean_blank_lines, format_size, get_nobinary, get_size, is_binary
+from dh import (
+    SOURCE_CODE_EXT,
+    clean_blank_lines,
+    format_size,
+    get_nobinary,
+    get_size,
+    is_binary,
+)
 from termcolor import cprint
 
 
@@ -19,7 +26,7 @@ def process_file(fp):
     before: int = get_size(fp)
     lines: list[str] = []
     print(f"[Ok] {fp.name} ", end="")
-    with open(fp, encoding="utf-8") as fin:
+    with Path(fp).open(encoding="utf-8") as fin:
         lines = fin.readlines()
         if not lines:
             return
@@ -63,10 +70,10 @@ def process_file(fp):
 
 
 def main() -> None:
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_nobinary(root_dir)
+    files = [Path(arg) for arg in args] if args else get_nobinary(cwd)
     if not files:
         print("no files found")
         return
@@ -78,7 +85,7 @@ def main() -> None:
         pass
     p.close()
     p.join()
-    diffsize = before - get_size(root_dir)
+    diffsize = before - get_size(cwd)
     cprint(
         f"{format_size(diffsize)}",
         "cyan",

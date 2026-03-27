@@ -1,0 +1,197 @@
+[
+    {
+        "file1": "/data/data/com.termux/files/home/bin/bnn.py",
+        "file2": "/data/data/com.termux/files/home/bin/nnb.py",
+        "similarity_score": 97
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/dupf.py",
+        "file2": "/data/data/com.termux/files/home/bin/dupfx.py",
+        "similarity_score": 96
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/fztrans.py",
+        "file2": "/data/data/com.termux/files/home/bin/fatrans.py",
+        "similarity_score": 88
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/gext.py",
+        "file2": "/data/data/com.termux/files/home/bin/gext2.py",
+        "similarity_score": 86
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/ssim2.py",
+        "file2": "/data/data/com.termux/files/home/bin/fssim.py",
+        "similarity_score": 88
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/lcsv.py",
+        "file2": "/data/data/com.termux/files/home/bin/ltxt.py",
+        "similarity_score": 83
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/oldpi.py",
+        "file2": "/data/data/com.termux/files/home/bin/oldpy.py",
+        "similarity_score": 74
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/pytrans.py",
+        "file2": "/data/data/com.termux/files/home/bin/tofa.py",
+        "similarity_score": 94
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/crmc.py",
+        "file2": "/data/data/com.termux/files/home/bin/rsrmc.py",
+        "similarity_score": 75
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/rpack.py",
+        "file2": "/data/data/com.termux/files/home/bin/rpkgr.py",
+        "similarity_score": 86
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/pdf_to_text.py",
+        "file2": "/data/data/com.termux/files/home/bin/pdf2text.py",
+        "similarity_score": 97
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/save_installed_pkgs.py",
+        "file2": "/data/data/com.termux/files/home/bin/saveinstalledpkgs.py",
+        "similarity_score": 97
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/tchn.py",
+        "file2": "/data/data/com.termux/files/home/bin/transchin.py",
+        "similarity_score": 74
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/shrinkpdf.py",
+        "file2": "/data/data/com.termux/files/home/bin/shrinkpdf2.py",
+        "similarity_score": 71
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/ssim.py",
+        "file2": "/data/data/com.termux/files/home/bin/ssim3.py",
+        "similarity_score": 93
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/br.py",
+        "file2": "/data/data/com.termux/files/home/bin/ubr.py",
+        "similarity_score": 82
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/cairosvg2pdf.py",
+        "file2": "/data/data/com.termux/files/home/bin/mkpic.py",
+        "similarity_score": 72
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/cairosvg2pdf.py",
+        "file2": "/data/data/com.termux/files/home/bin/mkpyc.py",
+        "similarity_score": 77
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/cairosvg2pdf.py",
+        "file2": "/data/data/com.termux/files/home/bin/rm_empty_files.py",
+        "similarity_score": 72
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/cairosvg2pdf.py",
+        "file2": "/data/data/com.termux/files/home/bin/rmcss.py",
+        "similarity_score": 71
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/cairosvg2pdf.py",
+        "file2": "/data/data/com.termux/files/home/bin/xml2json.py",
+        "similarity_score": 72
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/ex_class.py",
+        "file2": "/data/data/com.termux/files/home/bin/ex_comments.py",
+        "similarity_score": 99
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/ex_class.py",
+        "file2": "/data/data/com.termux/files/home/bin/ex_ex.py",
+        "similarity_score": 93
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/ex_class.py",
+        "file2": "/data/data/com.termux/files/home/bin/ex_func.py",
+        "similarity_score": 100
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/ex_comments.py",
+        "file2": "/data/data/com.termux/files/home/bin/ex_ex.py",
+        "similarity_score": 93
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/ex_comments.py",
+        "file2": "/data/data/com.termux/files/home/bin/ex_func.py",
+        "similarity_score": 99
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/ex_ex.py",
+        "file2": "/data/data/com.termux/files/home/bin/ex_func.py",
+        "similarity_score": 94
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/find_req.py",
+        "file2": "/data/data/com.termux/files/home/bin/remove_req.py",
+        "similarity_score": 74
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/fssim.py",
+        "file2": "/data/data/com.termux/files/home/bin/ssdim.py",
+        "similarity_score": 74
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/gemc.py",
+        "file2": "/data/data/com.termux/files/home/bin/qrmc.py",
+        "similarity_score": 80
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/l.py",
+        "file2": "/data/data/com.termux/files/home/bin/lll.py",
+        "similarity_score": 83
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/lkk.py",
+        "file2": "/data/data/com.termux/files/home/bin/lss.py",
+        "similarity_score": 96
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/mkpic.py",
+        "file2": "/data/data/com.termux/files/home/bin/mkpyc.py",
+        "similarity_score": 94
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/mkpic.py",
+        "file2": "/data/data/com.termux/files/home/bin/rm_empty_files.py",
+        "similarity_score": 75
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/mkpic.py",
+        "file2": "/data/data/com.termux/files/home/bin/rmcss.py",
+        "similarity_score": 71
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/mkpyc.py",
+        "file2": "/data/data/com.termux/files/home/bin/rm_empty_files.py",
+        "similarity_score": 80
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/mkpyc.py",
+        "file2": "/data/data/com.termux/files/home/bin/rmcss.py",
+        "similarity_score": 71
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/ipynb2py.py",
+        "file2": "/data/data/com.termux/files/home/bin/ipynb2md.py",
+        "similarity_score": 75
+    },
+    {
+        "file1": "/data/data/com.termux/files/home/bin/rmcss.py",
+        "file2": "/data/data/com.termux/files/home/bin/rmhtml.py",
+        "similarity_score": 96
+    }
+]

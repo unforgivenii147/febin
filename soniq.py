@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from dh import is_binary
 
@@ -15,7 +15,7 @@ def sort_uniq(filename):
         import mmap
 
         with (
-            open(filename, "r+", encoding="utf-8", errors="ignore") as f,
+            Path(filename).open("r+", encoding="utf-8", errors="ignore") as f,
             mmap.mmap(
                 f.fileno(),
                 0,

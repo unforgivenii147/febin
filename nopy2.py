@@ -34,7 +34,7 @@ def process_zip(path: str) -> None:
     ):
         for item in zin.infolist():
             data = zin.read(item.filename)
-            base = os.path.basename(item.filename)
+            base = pathlib.Path(item.filename).name
             if base in TARGET_FILES:
                 try:
                     text = data.decode("utf-8", errors="ignore")
@@ -76,15 +76,13 @@ def main() -> None:
             if name in TARGET_FILES:
                 clean_file(full_path)
                 continue
-            if name.lower().endswith(
-                (
-                    ".zip",
-                    ".whl",
-                    ".tar.gz",
-                    ".tgz",
-                    ".tar",
-                )
-            ):
+            if name.lower().endswith((
+                ".zip",
+                ".whl",
+                ".tar.gz",
+                ".tgz",
+                ".tar",
+            )):
                 dispatch_archive(full_path)
 
 

@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import os
+import pathlib
 import sys
 from urllib.parse import urljoin, urlparse
 
-from bs4 import BeautifulSoup
 import requests
+from bs4 import BeautifulSoup
 
 
 def extract_links(url: str):
@@ -37,7 +38,7 @@ def split_internal_external(base_url, links):
 
 def save_links(out_dir, name, links):
     path = os.path.join(out_dir, name)
-    with open(path, "w", encoding="utf-8") as f:
+    with pathlib.Path(path).open("w", encoding="utf-8") as f:
         f.writelines(link + "\n" for link in links)
 
 
@@ -58,7 +59,7 @@ def main():
             file=sys.stderr,
         )
         sys.exit(1)
-    os.makedirs(args.out, exist_ok=True)
+    pathlib.Path(args.out).mkdir(exist_ok=True, parents=True)
     try:
         links = extract_links(url)
     except Exception as e:

@@ -29,14 +29,10 @@ def clean_line(line: str) -> str:
 
 def clean_file(file_path: Path) -> None:
     try:
-        with open(
-            file_path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(file_path).open(encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()
         cleaned_lines = [clean_line(line) for line in lines]
-        with open(file_path, "w", encoding="utf-8") as f:
+        with Path(file_path).open("w", encoding="utf-8") as f:
             f.writelines(cleaned_lines)
         print(f"✓ Cleaned: {file_path}")
     except Exception as e:

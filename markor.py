@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+import operator
+import sys
 from abc import ABC, abstractmethod
 from datetime import datetime
-import operator
 from pathlib import Path
-import sys
 from typing import Any
 
 import markdown

@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-from collections import deque
-from multiprocessing import Pool
 import os
-from pathlib import Path
 import random
 import string
 import sys
+from collections import deque
+from multiprocessing import Pool
+from pathlib import Path
 
 from bs4 import BeautifulSoup
 from dh import format_size, get_files, get_size
@@ -16,15 +16,15 @@ MAX_QUEUE = 16
 
 def save_script(str1):
     fn = "js/"
-    if not os.path.exists("js"):
-        os.mkdir("js")
+    if not Path("js").exists():
+        Path("js").mkdir()
     for _i in range(10):
         fn += random.choice(string.ascii_lowercase)
     fn += ".js"
-    if os.path.exists(fn):
+    if Path(fn).exists():
         cprint(f"[{fn}] exists.", "red")
         return False
-    if not os.path.exists(fn):
+    if not Path(fn).exists():
         Path(fn).write_text("\n".join(list(str1)), encoding="utf-8")
         cprint(f"{[fn]} created.", "cyan")
     return True
@@ -45,10 +45,10 @@ def process_file(fp):
 
 
 def main():
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".html", "htm"])
+    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".html", "htm"])
     with Pool(8) as pool:
         pending = deque()
         for f in files:
@@ -57,7 +57,7 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(root_dir)
+    diff_size = before - get_size(cwd)
     print(f"space saved : {format_size(diff_size)}")
 
 

@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from datetime import datetime
 import logging
 import lzma
-from multiprocessing import cpu_count
 import os
-from pathlib import Path
 import shutil
 import sys
+from datetime import datetime
+from multiprocessing import cpu_count
+from pathlib import Path
 
 
 def setup_logging(verbose=True):
@@ -42,7 +42,7 @@ def extract_with_lzma(xz_path, remove_original=True):
             )
         with (
             lzma.open(xz_path, "rb") as compressed_file,
-            open(output_path, "wb") as output_file,
+            Path(output_path).open("wb") as output_file,
         ):
             shutil.copyfileobj(compressed_file, output_file)
         if remove_original:

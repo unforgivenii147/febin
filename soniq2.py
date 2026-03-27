@@ -1,22 +1,23 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor
 import mmap
 import os
+import pathlib
 import sys
 import tempfile
+from concurrent.futures import ThreadPoolExecutor
 
 
 def sort_and_uniq(file_path):
     MB_5 = 5 * 1024 * 1024
-    if not os.path.exists(file_path):
+    if not pathlib.Path(file_path).exists():
         print(f"Error: File '{file_path}' not found.")
         return
     try:
-        get_size = os.path.getsize(file_path)
+        get_size = pathlib.Path(file_path).stat().st_size
         lines = []
         if get_size > MB_5:
             with (
-                open(file_path, "r+b") as f,
+                pathlib.Path(file_path).open("r+b") as f,
                 mmap.mmap(
                     f.fileno(),
                     0,
@@ -25,20 +26,20 @@ def sort_and_uniq(file_path):
             ):
                 lines = mm.read().decode("utf-8").splitlines()
         else:
-            with open(file_path, encoding="utf-8") as f:
+            with pathlib.Path(file_path).open(encoding="utf-8") as f:
                 lines = f.read().splitlines()
         with ThreadPoolExecutor() as executor:
             processed_lines = list(executor.map(lambda x: x.strip(), lines))
         unique_sorted_lines = sorted(set(processed_lines))
-        fd, temp_path = tempfile.mkstemp(dir=os.path.dirname(file_path))
+        fd, temp_path = tempfile.mkstemp(dir=pathlib.Path(file_path).parent)
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as tmp:
                 for line in unique_sorted_lines:
                     tmp.write(line + "\n")
-            os.replace(temp_path, file_path)
+            pathlib.Path(temp_path).replace(file_path)
             print(f"Successfully updated '{file_path}'.")
         except Exception:
-            os.remove(temp_path)
+            pathlib.Path(temp_path).unlink()
             raise
     except Exception as e:
         print(f"Failed to process file: {e}")

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from dh import get_files
 
@@ -65,7 +65,7 @@ def detect_version(file_path) -> None:
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    root_dir = Path.cwd()
-    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".py"])
+    cwd = Path.cwd()
+    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
     for file_path in files:
         detect_version(file_path)

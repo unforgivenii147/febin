@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import regex as re
@@ -21,7 +21,7 @@ def extract_regex_patterns(file_path):
 def process_file(file_path, output_dir):
     patterns = extract_regex_patterns(file_path)
     if patterns:
-        relative_path = os.path.relpath(file_path, os.getcwd())
+        relative_path = os.path.relpath(file_path, Path.cwd())
         output_file = output_dir / f"{relative_path.replace(os.sep, '_')}.txt"
         output_file.parent.mkdir(parents=True, exist_ok=True)
         Path(output_file).write_text("\n".join(patterns), encoding="utf-8")
@@ -63,7 +63,7 @@ def find_regex_in_dir(start_dir, output_dir, max_workers=4):
 if __name__ == "__main__":
     output_directory = "output"
     find_regex_in_dir(
-        os.getcwd(),
+        Path.cwd(),
         output_directory,
         max_workers=4,
     )

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor
 import os
 import pathlib
 import shutil
+from concurrent.futures import ThreadPoolExecutor
 
 import regex as re
 
@@ -68,7 +68,7 @@ def replace_multiprocessing(file_path):
 
 
 def main():
-    current_dir = os.getcwd()
+    current_dir = pathlib.Path.cwd()
     py_files = find_py_files(current_dir)
     if not py_files:
         print("No Python files found in the current directory.")

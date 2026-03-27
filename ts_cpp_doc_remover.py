@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
+import tree_sitter_cpp as tscpp
 from termcolor import cprint
 from tree_sitter import Language, Parser
-import tree_sitter_cpp as tscpp
 
 
 class TSCppRemover:
@@ -18,12 +18,10 @@ class TSCppRemover:
 
         def walk(node):
             if node.type == "comment":
-                to_delete.append(
-                    (
-                        node.start_byte,
-                        node.end_byte,
-                    )
-                )
+                to_delete.append((
+                    node.start_byte,
+                    node.end_byte,
+                ))
             for child in node.children:
                 walk(child)
 

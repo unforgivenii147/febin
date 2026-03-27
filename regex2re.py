@@ -10,7 +10,7 @@ def is_python_file(file_path):
         return True
     if file_path.suffix == "":
         try:
-            with open(file_path, encoding="utf-8") as f:
+            with Path(file_path).open(encoding="utf-8") as f:
                 first_line = f.readline()
                 if first_line.startswith("#!") and "python" in first_line.lower():
                     return True
@@ -44,8 +44,8 @@ def process_file(file_path):
         return False
 
 
-def find_and_process_python_files(root_dir="."):
-    root_path = Path(root_dir)
+def find_and_process_python_files(cwd="."):
+    root_path = Path(cwd)
     modified_files = []
     total_files = 0
     skip_dirs = {".git"}
@@ -92,7 +92,7 @@ def main():
     )
     args = parser.parse_args()
     print("processing '...")
-    print(f"{os.path.abspath(args.directory)}\n")
+    print(f"{Path(args.directory).resolve()}\n")
     if args.dry_run:
         print("\n*** DRY RUN MODE - No files will be modified ***\n")
     find_and_process_python_files(args.directory)

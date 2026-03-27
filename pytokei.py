@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 
-from dh import is_binary
 import regex as re
+from dh import is_binary
 
 LANG_EXTENSIONS = {
     "python": [".py", ".pyi"],
@@ -48,7 +49,7 @@ def get_language_from_shebang(file_path):
     if ".git" in str(file_path):
         return None
     try:
-        with open(file_path, encoding="utf-8") as file:
+        with pathlib.Path(file_path).open(encoding="utf-8") as file:
             first_line = file.readline().strip()
             for (
                 lang,
@@ -68,7 +69,7 @@ def count_lines_of_code(file_path, lang):
     if is_binary(file_path):
         print(f"{file_path} is binary")
         return 0, 0, 0
-    with open(file_path, encoding="utf-8") as file:
+    with pathlib.Path(file_path).open(encoding="utf-8") as file:
         code_lines = 0
         comment_lines = 0
         blank_lines = 0

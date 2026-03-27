@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import shutil
 import tarfile
 import tempfile
 import zipfile
+from pathlib import Path
 
 TARGET_FILES = {"METADATA", "PKGINFO", "PKG-INFO"}
 PREFIX = "Requires-Dist:"
@@ -46,7 +46,7 @@ def process_zip(path: str) -> None:
     ):
         for item in zin.infolist():
             data = zin.read(item.filename)
-            base = os.path.basename(item.filename)
+            base = Path(item.filename).name
             if base in TARGET_FILES:
                 try:
                     text = data.decode("utf-8", errors="ignore")
@@ -90,19 +90,17 @@ def main() -> None:
             full_path = os.path.join(root, filename)
             if filename in TARGET_FILES:
                 clean_file(full_path)
-            elif filename.lower().endswith(
-                (
-                    ".zip",
-                    ".whl",
-                    ".tar.gz",
-                    ".tgz",
-                    ".tar",
-                )
-            ):
+            elif filename.lower().endswith((
+                ".zip",
+                ".whl",
+                ".tar.gz",
+                ".tgz",
+                ".tar",
+            )):
                 dispatch_archive(full_path)
     if removed_lines_accumulator:
         try:
-            with open(LOG_FILE, "a", encoding="utf-8") as f:
+            with Path(LOG_FILE).open("a", encoding="utf-8") as f:
                 f.writelines(line + "\n" for line in removed_lines_accumulator)
             print(f"--- Saved {len(removed_lines_accumulator)} lines to {LOG_FILE} ---")
         except PermissionError:

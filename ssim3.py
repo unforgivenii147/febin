@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
+import os
+import shutil
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import os
 from pathlib import Path
-import shutil
 
 import ssdeep
-from tqdm import tqdm
 import xxhash
+from tqdm import tqdm
 
 EXCLUDE_DIRS = {
     ".git",
@@ -18,13 +18,13 @@ EXCLUDE_DIRS = {
 
 
 class FileSimilarityDetector:
-    def __init__(self, root_dir=".") -> None:
-        self.root_dir = Path(root_dir)
+    def __init__(self, cwd=".") -> None:
+        self.cwd = Path(cwd)
         self.file_hashes = {}
         self.duplicates = defaultdict(list)
 
     def scan_files(self):
-        for root, dirs, files in os.walk(self.root_dir):
+        for root, dirs, files in os.walk(self.cwd):
             dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
             for name in files:
                 yield Path(root) / name

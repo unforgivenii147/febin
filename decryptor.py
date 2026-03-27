@@ -70,7 +70,7 @@ def main():
         msg = "Specify --encrypt or --decrypt"
         raise SystemExit(msg)
     for file_path in glob.glob("*"):
-        if os.path.isfile(file_path):
+        if pathlib.Path(file_path).is_file():
             print(f"Processing {file_path}...")
             action(file_path, key)
 

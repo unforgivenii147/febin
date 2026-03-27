@@ -3,9 +3,9 @@
 import contextlib
 import re
 
+import requests
 from dh import get_installed_packages
 from packaging.version import Version
-import requests
 from termcolor import cprint
 
 
@@ -35,6 +35,7 @@ def get_latest_pkg_version(pkg_name):
 
 if __name__ == "__main__":
     installed = get_installed_packages()
+    updatable: list = []
     for pkg, version in installed.items():
         latest_version = get_latest_pkg_version(pkg)
         if str(version).strip() != str(latest_version).strip():

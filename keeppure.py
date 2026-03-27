@@ -5,9 +5,10 @@ Minimal output - only reports removed packages.
 """
 
 import csv
-from multiprocessing import cpu_count
 import os
+import pathlib
 import site
+from multiprocessing import cpu_count
 
 
 def get_all_dist_info_dirs():
@@ -17,7 +18,7 @@ def get_all_dist_info_dirs():
         *site.getsitepackages(),
         site.getusersitepackages(),
     ]:
-        if os.path.exists(site_dir):
+        if pathlib.Path(site_dir).exists():
             dist_info_dirs.extend(
                 os.path.join(site_dir, item) for item in os.listdir(site_dir) if item.endswith(".dist-info")
             )
@@ -27,10 +28,10 @@ def get_all_dist_info_dirs():
 def check_package_binary(dist_info_path):
     """Check a single package for binary files (for multiprocessing)."""
     record_file = os.path.join(dist_info_path, "RECORD")
-    pkg_name = os.path.basename(dist_info_path).replace(".dist-info", "").split("-")[0].lower()
-    if os.path.exists(record_file):
+    pkg_name = pathlib.Path(dist_info_path).name.replace(".dist-info", "").split("-")[0].lower()
+    if pathlib.Path(record_file).exists():
         try:
-            with open(record_file, encoding="utf-8") as f:
+            with pathlib.Path(record_file).open(encoding="utf-8") as f:
                 reader = csv.reader(f)
                 for row in reader:
                     if row and any(
@@ -58,14 +59,14 @@ def clean_requirements_txt(
     requirements_file="requirements.txt",
 ):
     """Fast cleanup of requirements.txt - minimal output."""
-    if not os.path.exists(requirements_file):
+    if not pathlib.Path(requirements_file).exists():
         print(f"Error: {requirements_file} not found")
         return
     binary_packages = get_binary_packages_parallel()
-    with open("/sdcard/binary_pkgs", "w", encoding="utf-8") as fbin:
+    with pathlib.Path("/sdcard/binary_pkgs").open("w", encoding="utf-8") as fbin:
         fbin.write("\n".join(binary_packages))
         print("binary_pkgs created.")
-    with open(requirements_file, encoding="utf-8") as f:
+    with pathlib.Path(requirements_file).open(encoding="utf-8") as f:
         lines = [line.rstrip() for line in f]
     comments = [line for line in lines if line.startswith("#")]
     requirements = [line for line in lines if line and not line.startswith("#")]
@@ -77,7 +78,7 @@ def clean_requirements_txt(
             removed.append(req)
         else:
             pure_python.append(req)
-    with open(requirements_file, "w", encoding="utf-8") as f:
+    with pathlib.Path(requirements_file).open("w", encoding="utf-8") as f:
         f.writelines(f"{comment}\n" for comment in comments)
         f.writelines(f"{pkg}\n" for pkg in sorted(pure_python))
     if removed:

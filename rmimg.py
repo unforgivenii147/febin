@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-import sys
 
 from bs4 import BeautifulSoup
 from dh import format_size, get_files, get_size
@@ -42,14 +42,14 @@ def process_file(file_path: Path) -> None:
 
 
 def main():
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
     if args:
         files = [Path(f) for f in args]
     else:
         files = get_files(
-            root_dir,
+            cwd,
             recursive=True,
             extensions=[
                 ".html",
@@ -68,7 +68,7 @@ def main():
         while pending:
             pending.popleft().get()
 
-    diff_size = before - get_size(root_dir)
+    diff_size = before - get_size(cwd)
     print(f"space saved : {format_size(diff_size)}")
 
 

@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-from argparse import ArgumentParser
-from datetime import datetime
 import itertools
-from multiprocessing import cpu_count
 import os
 import pathlib
-from subprocess import getoutput
 import sys
+from argparse import ArgumentParser
+from datetime import datetime
+from multiprocessing import cpu_count
+from subprocess import getoutput
 from time import sleep
 
 import regex as re
@@ -351,7 +351,7 @@ def walk2list(
         followlinks=followlinks,
     )
     return [
-        os.path.abspath(os.path.join(r, f))
+        pathlib.Path(os.path.join(r, f)).resolve()
         for r, d, fs in oswalk
         for f in fs
         if not f.startswith(() if showhidden else ".") and not f.endswith(omit) and f.endswith(target)
@@ -382,9 +382,9 @@ def process_multiple_files(file_path):
 
 def prefixer_extensioner(file_path: str) -> str:
     extension = os.path.splitext(file_path)[1].lower()
-    filenames = os.path.splitext(os.path.basename(file_path))[0]
+    filenames = os.path.splitext(pathlib.Path(file_path).name)[0]
     filenames = args.prefix + filenames if args.prefix else filenames
-    dir_names = os.path.dirname(file_path)
+    dir_names = pathlib.Path(file_path).parent
     return os.path.join(dir_names, filenames + extension)
 
 
@@ -405,7 +405,7 @@ def process_single_css_file(
 def process_single_html_file(
     html_file_path: str,
 ) -> str:
-    with open(html_file_path, encoding="utf-8-sig") as html_file:
+    with pathlib.Path(html_file_path).open(encoding="utf-8-sig") as html_file:
         pretty_html = html_prettify(html_file.read(), args.extraline)
     html_file_path = prefixer_extensioner(html_file_path)
     pathlib.Path(html_file_path).write_text(pretty_html, encoding="utf-8")
@@ -488,15 +488,15 @@ def main():
     global log
     if args.before and getoutput:
         print(getoutput(str(args.before)))
-    if os.path.isfile(args.fullpath) and args.fullpath.endswith((".css", ".scss")):
+    if pathlib.Path(args.fullpath).is_file() and args.fullpath.endswith((".css", ".scss")):
         print("Target is a CSS / SCSS File.")
         list_of_files = str(args.fullpath)
         process_single_css_file(args.fullpath)
-    elif os.path.isfile(args.fullpath) and args.fullpath.endswith((".htm", ".html")):
+    elif pathlib.Path(args.fullpath).is_file() and args.fullpath.endswith((".htm", ".html")):
         print("Target is a HTML File.")
         list_of_files = str(args.fullpath)
         process_single_html_file(args.fullpath)
-    elif os.path.isdir(args.fullpath):
+    elif pathlib.Path(args.fullpath).is_dir():
         print("Target is a Folder with CSS / SCSS, HTML, JS.")
         print("Processing a whole Folder may take some time...")
         list_of_files = walk2list(

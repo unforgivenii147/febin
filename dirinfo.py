@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-from collections import defaultdict
+import sys
 import os
+from pathlib import Path
+from collections import defaultdict
 
 
 def scan_directory(path="."):
@@ -13,13 +15,14 @@ def scan_directory(path="."):
         folder_count += len(dirs)
         for filename in files:
             file_count += 1
-            full_path = os.path.join(root, filename)
+            full_path = Path(root) / filename
             try:
-                size = os.path.getsize(full_path)
+                size = full_path.stat().st_size
             except OSError:
                 size = 0
             total_size += size
-            _, ext = os.path.splitext(filename)
+            # determine extension (empty if none)
+            ext = full_path.suffix
             ext = ext.lower() if ext else "(no extension)"
             extensions.add(ext)
             size_by_ext[ext] += size
@@ -32,7 +35,7 @@ def scan_directory(path="."):
     )
 
 
-def write_summary(filename=".dirinfo"):
+def write_summary(filename: Path) -> None:
     (
         total_size,
         file_count,
@@ -40,15 +43,20 @@ def write_summary(filename=".dirinfo"):
         extensions,
         size_by_ext,
     ) = scan_directory()
-    with open(filename, "w", encoding="utf-8") as f:
+    with filename.open("w") as f:
         f.write(f"total size: {total_size} bytes\n")
-        f.write(f"extensions: {', '.join(sorted(extensions))}\n")
+        f.write(f"extensions:\n{'\n   - '.join(sorted(extensions))}\n")
         f.write(f"number of files: {file_count}\n")
         f.write(f"number of folders: {folder_count}\n")
         f.write("size by extension:\n")
-        f.writelines(f"  {ext}: {size} bytes\n" for ext, size in sorted(size_by_ext.items()))
+        for ext, size in sorted(size_by_ext.items(), key=lambda x: x[1], reverse=True):
+            f.write(f"  {ext}: {size} bytes\n")
 
 
 if __name__ == "__main__":
-    write_summary()
+    outf = Path(".dirinfo")
+    if outf.exists():
+        print("remove .dirinfo and run again")
+        sys.exit(1)
+    write_summary(outf)
     print("Summary saved to .dirinfo")

@@ -14,9 +14,9 @@ OUTPUT_HTML = "fonts_preview.html"
 FONT_SIZES = [22]
 
 
-def find_fonts(root_dir="."):
+def find_fonts(cwd="."):
     fonts = []
-    for dirpath, _, filenames in os.walk(root_dir):
+    for dirpath, _, filenames in os.walk(cwd):
         fonts.extend(
             os.path.join(dirpath, filename) for filename in filenames if filename.lower().endswith(FONT_EXTENSIONS)
         )
@@ -36,14 +36,12 @@ def generate_html(font_files):
     ]
     for font_path in font_files:
         font_name = pathlib.Path(font_path).name
-        html.extend(
-            (
-                "<div class='font-preview'>",
-                "<style>",
-                f"@font-face {{ font-family: '{font_name}'; src: url('{font_path}'); }}",
-                "</style>",
-            )
-        )
+        html.extend((
+            "<div class='font-preview'>",
+            "<style>",
+            f"@font-face {{ font-family: '{font_name}'; src: url('{font_path}'); }}",
+            "</style>",
+        ))
         html.extend(
             f"<p style='font-family: \"{font_name}\"; font-size: {size}px;'>({font_path})فارسی</p>"
             for size in FONT_SIZES

@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
+import pathlib
 
 import requests
 
@@ -15,7 +16,7 @@ def get_github_repos(username, output_file=None) -> None:
         if not repos:
             print(f"No repositories found for user: {username}")
             return
-        with open(output_file, "w", encoding="utf-8") as f:
+        with pathlib.Path(output_file).open("w", encoding="utf-8") as f:
             f.write(f"GitHub repositories for user: {username}\n")
             f.write("=" * 50 + "\n\n")
             for repo in repos:

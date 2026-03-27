@@ -2,11 +2,11 @@
 import argparse
 import csv
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 
 try:
     from tqdm import tqdm
@@ -44,17 +44,13 @@ def read_record_file(dist_dir: Path, site_packages: Path) -> tuple[list[Path], s
         return [], set()
     existing_files = []
     missing_files = set()
-    with open(
-        record_file,
-        newline="",
-        encoding="utf-8",
-    ) as f:
+    with Path(record_file).open(newline="", encoding="utf-8") as f:
         reader = csv.reader(f)
         for row in reader:
             if not row or not row[0]:
                 continue
             file_path = row[0]
-            full_path = Path(file_path) if os.path.isabs(file_path) else site_packages / file_path
+            full_path = Path(file_path) if Path(file_path).is_absolute() else site_packages / file_path
             if full_path.suffix == ".pyc":
                 continue
             if full_path.exists():
@@ -70,7 +66,7 @@ def get_wheel_tag(
     wheel_file = dist_dir / "WHEEL"
     if not wheel_file.exists():
         return None
-    with open(wheel_file, encoding="utf-8") as f:
+    with Path(wheel_file).open(encoding="utf-8") as f:
         for line in f:
             if line.startswith("Tag:"):
                 return line.split(":", 1)[1].strip()

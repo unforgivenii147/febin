@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from dh import format_size, get_files, get_size
 import regex as re
+from dh import format_size, get_files, get_size
 from termcolor import cprint
 
 
@@ -85,12 +85,10 @@ def find_docstring_ranges(
             value = child.body[0].value
             if isinstance(value, ast.Constant) and isinstance(value.value, str):
                 if child.body[0].lineno and child.body[0].end_lineno:
-                    ranges.append(
-                        (
-                            child.body[0].lineno,
-                            child.body[0].end_lineno,
-                        )
-                    )
+                    ranges.append((
+                        child.body[0].lineno,
+                        child.body[0].end_lineno,
+                    ))
     return ranges
 
 
@@ -127,10 +125,10 @@ def process_file(file_path: Path) -> None:
 
 
 def main():
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
     with Pool(8) as pool:
         pending = deque()
         for f in files:
@@ -139,7 +137,7 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(root_dir)
+    diff_size = before - get_size(cwd)
     print(f"space saved : {format_size(diff_size)}")
 
 

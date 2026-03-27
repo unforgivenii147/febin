@@ -4,11 +4,11 @@ import base64
 import csv
 import hashlib
 import logging
-from pathlib import Path
 import shutil
 import sys
 import tempfile
 import zipfile
+from pathlib import Path
 
 logging.basicConfig(
     level=logging.INFO,
@@ -54,7 +54,7 @@ class WheelBuilder:
 
     def _compute_hash(self, path: Path) -> str:
         h = hashlib.sha256()
-        with open(path, "rb") as f:
+        with Path(path).open("rb") as f:
             for chunk in iter(lambda: f.read(8192), b""):
                 h.update(chunk)
         digest = h.digest()
@@ -65,11 +65,7 @@ class WheelBuilder:
         if not record_file.exists():
             return {}
         records = {}
-        with open(
-            record_file,
-            encoding="utf-8",
-            newline="",
-        ) as f:
+        with Path(record_file).open(encoding="utf-8", newline="") as f:
             reader = csv.reader(f)
             for row in reader:
                 if not row or not row[0]:
@@ -220,13 +216,11 @@ class WheelBuilder:
                 rel_path = dest.relative_to(tmp_path)
                 file_hash = self._compute_hash(dest)
                 get_size = dest.stat().st_size
-                new_record.append(
-                    (
-                        str(rel_path),
-                        file_hash,
-                        str(get_size),
-                    )
-                )
+                new_record.append((
+                    str(rel_path),
+                    file_hash,
+                    str(get_size),
+                ))
             if scripts:
                 data_dir = tmp_path / data_dir_name
                 scripts_dir = data_dir / "scripts"
@@ -237,13 +231,11 @@ class WheelBuilder:
                     rel_path = dest.relative_to(tmp_path)
                     file_hash = self._compute_hash(dest)
                     get_size = dest.stat().st_size
-                    new_record.append(
-                        (
-                            str(rel_path),
-                            file_hash,
-                            str(get_size),
-                        )
-                    )
+                    new_record.append((
+                        str(rel_path),
+                        file_hash,
+                        str(get_size),
+                    ))
             if data_files:
                 if not data_dir:
                     data_dir = tmp_path / data_dir_name
@@ -262,15 +254,13 @@ class WheelBuilder:
                     rel_path = dest.relative_to(tmp_path)
                     file_hash = self._compute_hash(dest)
                     get_size = dest.stat().st_size
-                    new_record.append(
-                        (
-                            str(rel_path),
-                            file_hash,
-                            str(get_size),
-                        )
-                    )
+                    new_record.append((
+                        str(rel_path),
+                        file_hash,
+                        str(get_size),
+                    ))
             wheel_file = dist_info_dest / "WHEEL"
-            with open(wheel_file, "w", encoding="utf-8") as f:
+            with Path(wheel_file).open("w", encoding="utf-8") as f:
                 f.write("Wheel-Version: 1.0\n")
                 f.write("Generator: wheel-builder 1.0\n")
                 f.write(f"Root-Is-Purelib: {'true' if is_pure else 'false'}\n")
@@ -278,30 +268,21 @@ class WheelBuilder:
             rel_path = wheel_file.relative_to(tmp_path)
             file_hash = self._compute_hash(wheel_file)
             get_size = wheel_file.stat().st_size
-            new_record.append(
-                (
-                    str(rel_path),
-                    file_hash,
-                    str(get_size),
-                )
-            )
+            new_record.append((
+                str(rel_path),
+                file_hash,
+                str(get_size),
+            ))
             record_file = dist_info_dest / "RECORD"
-            with open(
-                record_file,
-                "w",
-                newline="",
-                encoding="utf-8",
-            ) as f:
+            with Path(record_file).open("w", newline="", encoding="utf-8") as f:
                 writer = csv.writer(f)
                 for row in new_record:
                     writer.writerow(row)
-                writer.writerow(
-                    [
-                        f"{dist_info_name}/RECORD",
-                        "",
-                        "",
-                    ]
-                )
+                writer.writerow([
+                    f"{dist_info_name}/RECORD",
+                    "",
+                    "",
+                ])
             with zipfile.ZipFile(
                 wheel_path,
                 "w",

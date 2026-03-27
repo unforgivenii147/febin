@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import pathlib
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 
@@ -48,7 +48,7 @@ def main() -> None:
     pure = set()
     native = set()
     missing = set()
-    with open(infile, encoding="utf-8") as f:
+    with pathlib.Path(infile).open(encoding="utf-8") as f:
         packages = [line.strip() for line in f if line.strip()]
     with ThreadPoolExecutor(max_workers=10) as executor:
         futures = {executor.submit(check_package, pkg): pkg for pkg in packages}

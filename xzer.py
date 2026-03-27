@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
-from pathlib import Path
 import sys
 import tempfile
 import time
+from pathlib import Path
 
+import lzma_mt
 from dh import format_size
 from loguru import logger
-import lzma_mt
 
 
 def atomic_write(data: bytes, final_path: Path) -> bool:

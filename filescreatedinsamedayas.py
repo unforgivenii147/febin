@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 """Simpler version - finds files in the same directory created on the same day as input file."""
 
-from datetime import datetime
 import os
+import pathlib
 import sys
+from datetime import datetime
 
 
 def get_file_creation_time(filepath):
@@ -24,10 +25,10 @@ def main():
         print("Usage: python script.py <filename>")
         sys.exit(1)
     filename = sys.argv[1]
-    if not os.path.exists(filename):
+    if not pathlib.Path(filename).exists():
         print(f"Error: File '{filename}' does not exist.")
         sys.exit(1)
-    directory = os.path.dirname(filename) or "."
+    directory = pathlib.Path(filename).parent or "."
     target_time = get_file_creation_time(filename)
     if not target_time:
         sys.exit(1)
@@ -38,7 +39,7 @@ def main():
     found_files = []
     for file in os.listdir(directory):
         filepath = os.path.join(directory, file)
-        if not os.path.isfile(filepath) or os.path.samefile(filepath, filename):
+        if not pathlib.Path(filepath).is_file() or pathlib.Path(filepath).samefile(filename):
             continue
         file_time = get_file_creation_time(filepath)
         if file_time and file_time.date() == target_date:

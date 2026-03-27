@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from dh import get_nobinary
 
@@ -20,15 +20,15 @@ def process_file(fp):
             nl.append(cleaned)
     if found:
         print(f"{fp.name} : {found}")
-        with open("b64", "a", encoding="utf-8") as f:
+        with Path("b64").open("a", encoding="utf-8") as f:
             f.write("\n")
             f.writelines(f"{k}\n" for k in nl)
 
 
 def main():
     args = sys.argv[1:]
-    root_dir = Path.cwd()
-    files = [Path(arg) for arg in args] if args else get_nobinary(root_dir)
+    cwd = Path.cwd()
+    files = [Path(arg) for arg in args] if args else get_nobinary(cwd)
     for f in files:
         process_file(f)
 

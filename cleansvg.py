@@ -1,18 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import subprocess
 import tempfile
+from pathlib import Path
 
 SVGCPATH = "/data/data/com.termux/files/home/.cargo/bin/svgcleaner"
 
 
 def clean_single_svg(in_file, svgcleaner_path=SVGCPATH):
     """Clean a single SVG file and return size change."""
-    if not os.path.exists(in_file):
+    if not Path(in_file).exists():
         msg = f"Input file not found: {in_file}"
         raise FileNotFoundError(msg)
-    before_size = os.path.getsize(in_file)
+    before_size = Path(in_file).stat().st_size
     tmp_out_path = None
     try:
         with tempfile.NamedTemporaryFile(suffix=".svg", delete=False) as tmp_out:
@@ -28,9 +28,9 @@ def clean_single_svg(in_file, svgcleaner_path=SVGCPATH):
             check=True,
             capture_output=True,
         )
-        after_size = os.path.getsize(tmp_out_path)
+        after_size = Path(tmp_out_path).stat().st_size
         if after_size != 0:
-            os.replace(tmp_out_path, in_file)
+            Path(tmp_out_path).replace(in_file)
             size_change = before_size - after_size
             return (
                 True,
@@ -64,18 +64,18 @@ def clean_single_svg(in_file, svgcleaner_path=SVGCPATH):
             f"Unexpected error: {e}",
         )
     finally:
-        if tmp_out_path and os.path.exists(tmp_out_path):
-            os.unlink(tmp_out_path)
+        if tmp_out_path and Path(tmp_out_path).exists():
+            Path(tmp_out_path).unlink()
 
 
-def find_svg_files(root_dir):
+def find_svg_files(cwd):
     """Find all SVG files in a directory recursively."""
-    return [str(f) for f in Path(root_dir).rglob("*.svg")]
+    return [str(f) for f in Path(cwd).rglob("*.svg")]
 
 
-def clean_svg_dir(root_dir, svgcleaner_path="svgcleaner"):
+def clean_svg_dir(cwd, svgcleaner_path="svgcleaner"):
     """Clean all SVG files in a directory and show size changes."""
-    svg_files = find_svg_files(root_dir)
+    svg_files = find_svg_files(cwd)
     if not svg_files:
         print("No SVG files found.")
         return

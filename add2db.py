@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 import sqlite3
 
 
 def get_current_folder_name():
-    return os.path.basename(os.getcwd())
+    return pathlib.Path(pathlib.Path.cwd()).name
 
 
 def get_user_folder_name(default_name):
@@ -43,7 +44,7 @@ def read_file_contents(filepath):
         ]
         for encoding in encodings:
             try:
-                with open(filepath, encoding=encoding) as f:
+                with pathlib.Path(filepath).open(encoding=encoding) as f:
                     return f.read(1024 * 1024)
             except (
                 UnicodeDecodeError,
@@ -58,20 +59,18 @@ def read_file_contents(filepath):
 
 
 def get_files_in_current_dir():
-    current_dir = os.getcwd()
+    current_dir = pathlib.Path.cwd()
     files = []
     try:
         for item in os.listdir(current_dir):
             item_path = os.path.join(current_dir, item)
-            if os.path.isfile(item_path):
+            if pathlib.Path(item_path).is_file():
                 print(f"  Reading: {item}")
                 contents = read_file_contents(item_path)
-                files.append(
-                    {
-                        "filename": item,
-                        "contents": contents,
-                    }
-                )
+                files.append({
+                    "filename": item,
+                    "contents": contents,
+                })
     except PermissionError:
         print("Warning: Permission denied accessing some files")
     return files
@@ -103,7 +102,7 @@ def main():
             folder_name = default_name + "_new"
             print(f"Using '{folder_name}' as default")
     create_folder_table(cursor, folder_name)
-    print(f"\nScanning current directory: {os.getcwd()}")
+    print(f"\nScanning current directory: {pathlib.Path.cwd()}")
     print("Reading file contents (limited to 1MB per file)...")
     files = get_files_in_current_dir()
     if not files:

@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import Pool
 import os
+from multiprocessing import Pool
 from pathlib import Path
 
 import pdfplumber
@@ -13,14 +13,14 @@ def process_file(fp):
         numpages = len(pdf.pages)
         strn = len(str(numpages))
         Path(fp).stem.replace(str(numpages), "")
-        if not os.path.exists(outdir):
-            os.mkdir(outdir)
+        if not Path(outdir).exists():
+            Path(outdir).mkdir()
         for page in pdf.pages:
             stri = str(i)
             while len(stri) < strn:
                 stri = "0" + stri
             txtfile = f"{outdir}/{stri}.txt"
-            if os.path.exists(txtfile):
+            if Path(txtfile).exists():
                 print(f"{Path(txtfile).name} exists")
                 i += 1
                 continue

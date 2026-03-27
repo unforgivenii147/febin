@@ -1,16 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
+import operator
+import sys
 from collections import deque
 from multiprocessing import Pool
-import operator
 from pathlib import Path
-import sys
 
-from dh import format_size, get_files, get_size
 import regex as re
+import tree_sitter_python as tspython
+from dh import format_size, get_files, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
-import tree_sitter_python as tspython
 
 MAX_QUEUE = 16
 DOC_TH1 = '"""'
@@ -112,31 +112,25 @@ def strip_code(source_code):
             if node.type == "comment":
                 comment_text = source_code[node.start_byte : node.end_byte]
                 if not should_preserve_comment(comment_text):
-                    to_delete.append(
-                        (
-                            node.start_byte,
-                            node.end_byte,
-                        )
-                    )
+                    to_delete.append((
+                        node.start_byte,
+                        node.end_byte,
+                    ))
             elif node.type == "expression_statement":
                 child = node.named_children[0] if node.named_children else None
                 if child and child.type == "string":
                     parent = node.parent
                     if parent and parent.type == "block":
                         if parent.named_child_count == 1:
-                            to_replace_with_pass.append(
-                                (
-                                    node.start_byte,
-                                    node.end_byte,
-                                )
-                            )
+                            to_replace_with_pass.append((
+                                node.start_byte,
+                                node.end_byte,
+                            ))
                         else:
-                            to_delete.append(
-                                (
-                                    node.start_byte,
-                                    node.end_byte,
-                                )
-                            )
+                            to_delete.append((
+                                node.start_byte,
+                                node.end_byte,
+                            ))
             for child in node.children:
                 traverse(child)
 
@@ -191,12 +185,10 @@ def find_docstring_ranges(
             value = child.body[0].value
             if isinstance(value, ast.Constant) and isinstance(value.value, str):
                 if child.body[0].lineno and child.body[0].end_lineno:
-                    ranges.append(
-                        (
-                            child.body[0].lineno,
-                            child.body[0].end_lineno,
-                        )
-                    )
+                    ranges.append((
+                        child.body[0].lineno,
+                        child.body[0].end_lineno,
+                    ))
     return ranges
 
 
@@ -248,10 +240,10 @@ def process_file(file_path: Path) -> None:
 
 
 def main():
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
@@ -263,7 +255,7 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(root_dir)
+    diff_size = before - get_size(cwd)
     print(f"space saved : {format_size(diff_size)}")
 
 

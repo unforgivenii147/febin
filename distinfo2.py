@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
 from sys import exit
 
 from termcolor import cprint
@@ -68,9 +68,9 @@ def process_lic(fp):
 
 def main():
     missings = []
-    root_dir = Path("/data/data/com.termux/files/usr/lib/python3.12/site-packages")
-    for pth in os.listdir(root_dir):
-        path = Path(os.path.join(root_dir, pth))
+    cwd = Path("/data/data/com.termux/files/usr/lib/python3.12/site-packages")
+    for pth in os.listdir(cwd):
+        path = Path(os.path.join(cwd, pth))
         if path.is_dir() and "dist-info" in path.name:
             if len(os.listdir(path)) < 2:
                 cprint(

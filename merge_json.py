@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from dh import get_random_name
 
@@ -49,7 +49,7 @@ def main():
     if out_file.exists():
         print(f"{out_file} exists")
         sys.exit(0)
-    with open(out_file, "w", encoding="utf-8") as fj:
+    with Path(out_file).open("w", encoding="utf-8") as fj:
         json.dump(
             merged,
             fj,

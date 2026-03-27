@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 import shutil
 
 from packaging.tags import parse_tag
@@ -39,7 +40,7 @@ def is_valid_wheel_name(filename):
 
 def main():
     invalid_dir = "invalid_wheels"
-    os.makedirs(invalid_dir, exist_ok=True)
+    pathlib.Path(invalid_dir).mkdir(exist_ok=True, parents=True)
     for filename in os.listdir("."):
         if filename.endswith(".whl"):
             if not is_valid_wheel_name(filename):

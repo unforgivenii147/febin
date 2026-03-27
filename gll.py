@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def main() -> int:
@@ -43,7 +43,7 @@ def main() -> int:
                 encoding="utf-8",
                 errors="replace",
             ) as infile,
-            open(outname, "w", encoding="utf-8") as outfile,
+            Path(outname).open("w", encoding="utf-8") as outfile,
         ):
             for lineno, line in enumerate(infile, start=1):
                 if lineno < start:

@@ -8,10 +8,10 @@ from dh import format_size, get_size
 from termcolor import cprint
 
 if __name__ == "__main__":
-    root_dir = Path.cwd()
+    cwd = Path.cwd()
 
     for path in sorted(
-        root_dir.glob("*"),
+        cwd.glob("*"),
         key=lambda e: e.stat().st_mtime,
     ):
         mtime = datetime.datetime.fromtimestamp(path.stat().st_mtime).strftime("%H:%M")

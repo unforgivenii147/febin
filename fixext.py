@@ -8,6 +8,7 @@ Description: Recursively checks files in a directory to detect mismatched file e
 
 import argparse
 import os
+import pathlib
 import subprocess
 import sys
 
@@ -39,10 +40,10 @@ def get_file_mime(file_path):
 def safe_rename(old_path, new_path):
     base, ext = os.path.splitext(new_path)
     counter = 1
-    while os.path.exists(new_path):
+    while pathlib.Path(new_path).exists():
         new_path = f"{base}_{counter}{ext}"
         counter += 1
-    os.rename(old_path, new_path)
+    pathlib.Path(old_path).rename(new_path)
     return new_path
 
 
@@ -57,7 +58,7 @@ def check_files(directory, auto_fix=False):
             mime = get_file_mime(file_path)
             print(f"{name} --> {mime}")
             if mime:
-                expected_exts = MIME2EXT.get(mime, [])[0]
+                expected_exts = MIME2EXT.get(mime, [])
                 if expected_exts and ext not in expected_exts:
                     new_path = None
                     if auto_fix:
@@ -65,14 +66,12 @@ def check_files(directory, auto_fix=False):
                         new_name = os.path.splitext(name)[0] + new_ext
                         new_path = os.path.join(root, new_name)
                         new_path = safe_rename(file_path, new_path)
-                    mismatched_files.append(
-                        (
-                            file_path,
-                            ext,
-                            mime,
-                            new_path,
-                        )
-                    )
+                    mismatched_files.append((
+                        file_path,
+                        ext,
+                        mime,
+                        new_path,
+                    ))
     return mismatched_files
 
 
@@ -81,7 +80,7 @@ def main():
     parser.add_argument(
         "directory",
         nargs="*",
-        default=os.getcwd(),
+        default=pathlib.Path.cwd(),
         help="Directory to scan (defaults to current directory)",
     )
     parser.add_argument(
@@ -92,7 +91,7 @@ def main():
         help="Automatically fix mismatched extensions",
     )
     args = parser.parse_args()
-    if not os.path.isdir(args.directory):
+    if not pathlib.Path(args.directory).is_dir():
         print(f"Error: {args.directory} is not a valid directory")
         sys.exit(1)
     mismatches = check_files(args.directory, auto_fix=args.auto_fix)

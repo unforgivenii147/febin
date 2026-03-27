@@ -7,6 +7,7 @@ references to .pyc files and direct_url.json.
 import argparse
 import csv
 import os
+import pathlib
 import sys
 
 
@@ -17,14 +18,14 @@ def find_site_packages():
     valid_paths = [p for p in site_packages if p is not None]
     if not valid_paths:
         user_site = site.getusersitepackages()
-        if user_site and os.path.exists(user_site):
+        if user_site and pathlib.Path(user_site).exists():
             valid_paths = [user_site]
     return valid_paths
 
 
 def update_record_file(record_path):
     try:
-        with open(record_path, encoding="utf-8") as f:
+        with pathlib.Path(record_path).open(encoding="utf-8") as f:
             lines = list(csv.reader(f))
         original_count = len(lines)
         filtered_lines = []
@@ -45,12 +46,7 @@ def update_record_file(record_path):
             filtered_lines.append(row)
         if len(filtered_lines) == original_count:
             return False
-        with open(
-            record_path,
-            "w",
-            encoding="utf-8",
-            newline="",
-        ) as f:
+        with pathlib.Path(record_path).open("w", encoding="utf-8", newline="") as f:
             writer = csv.writer(f)
             writer.writerows(filtered_lines)
         print(f"  Updated: {record_path} (removed {original_count - len(filtered_lines)} entries)")
@@ -67,7 +63,7 @@ def scan_and_update(site_packages_dirs, dry_run=False):
     total_updated = 0
     total_files = 0
     for site_dir in site_packages_dirs:
-        if not os.path.exists(site_dir):
+        if not pathlib.Path(site_dir).exists():
             print(f"Directory does not exist: {site_dir}")
             continue
         print(f"\nScanning: {site_dir}")
@@ -79,10 +75,7 @@ def scan_and_update(site_packages_dirs, dry_run=False):
                 total_files += 1
                 if dry_run:
                     try:
-                        with open(
-                            record_path,
-                            encoding="utf-8",
-                        ) as f:
+                        with pathlib.Path(record_path).open(encoding="utf-8") as f:
                             lines = list(csv.reader(f))
                         pyc_count = sum(1 for row in lines if row and row[0].endswith(".pyc"))
                         direct_url_count = sum(1 for row in lines if row and row[0] == "direct_url.json")

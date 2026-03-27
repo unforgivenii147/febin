@@ -3,8 +3,8 @@ import ast
 import importlib.metadata
 import importlib.util
 import numbers
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from dh import STDLIB, get_files, get_installed_pkgs
 
@@ -38,9 +38,9 @@ def find_imports(start_path):
         except (SyntaxError, UnicodeDecodeError):
             continue
     local_files = {p.stem for p in start_path.glob("*.py")}
-    return sorted(
-        [imp for imp in all_imports if imp not in std_libs and imp not in local_files and imp != "__future__"]
-    )
+    return sorted([
+        imp for imp in all_imports if imp not in std_libs and imp not in local_files and imp != "__future__"
+    ])
 
 
 def get_version(module_name):
@@ -62,10 +62,10 @@ def get_version(module_name):
 
 
 def main():
-    root_dir = Path.cwd()
+    cwd = Path.cwd()
     sys.argv[1:]
-    output_file = root_dir / "importz.txt"
-    modules = find_imports(root_dir)
+    output_file = cwd / "importz.txt"
+    modules = find_imports(cwd)
     results = []
     print(f"{'Module':<20} | {'Version':<15}")
     print("-" * 40)
@@ -80,10 +80,11 @@ def main():
 
     Path(output_file).write_text("\n".join(results), encoding="utf-8")
     cleaned = []
-    with open(output_file, encoding="utf-8") as fin:
+    with Path(output_file).open(encoding="utf-8") as fin:
         lines = fin.readlines()
         cleaned.extend(
-            line.rstrip()
+            line
+            .rstrip()
             .replace("Not Installed", "")
             .replace("==(NA)", "")
             .replace("==(unknown)", "")

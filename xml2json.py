@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-from collections import deque
 import json
+import sys
+from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-import sys
 
-from termcolor import cprint
 import xmltodict
+from termcolor import cprint
 
 MAX_QUEUE = 16
 
@@ -25,9 +25,9 @@ def process_file(path):
 
 
 def main():
-    root_dir = Path.cwd()
+    cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else list(root_dir.rglob("*.xml"))
+    files = [Path(p) for p in args] if args else list(cwd.rglob("*.xml"))
 
     with get_context("spawn").Pool(8) as pool:
         pending = deque()

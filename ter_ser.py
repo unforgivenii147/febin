@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from collections import deque
 from pathlib import Path
-import sys
 
 from dh import format_size, get_files, get_size, run_command
 from termcolor import cprint
@@ -39,13 +39,13 @@ def process_file(fp):
 
 def main():
     args = sys.argv[1:]
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     files = (
         list(args)
         if args
         else get_files(
-            root_dir,
+            cwd,
             recursive=True,
             extensions=[".js", ".ts", ".mjs", ".jsx", ".tsx"],
         )
@@ -58,7 +58,7 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(root_dir)
+    diff_size = before - get_size(cwd)
     cprint(f"space freed : {format_size(diff_size)}", "green")
 
 

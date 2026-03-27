@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+import subprocess
+import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-import subprocess
-import sys
 
 from dh import format_size, get_size
 from fastwalk import walk_files
@@ -66,13 +66,13 @@ def format_file(file_path):
 
 def main() -> None:
     cfiles: list = []
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
     if args:
         cfiles = [Path(arg) for arg in args]
     else:
-        for pth in walk_files(root_dir):
+        for pth in walk_files(cwd):
             path = Path(pth)
             if any(path.suffix == ext for ext in FILE_EXTENSIONS):
                 cfiles.append(path)
@@ -93,7 +93,7 @@ def main() -> None:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    after = get_size(root_dir)
+    after = get_size(cwd)
     diffsize = after - before
     print(f"space change: {format_size(diffsize)}")
 

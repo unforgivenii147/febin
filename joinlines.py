@@ -5,7 +5,7 @@ from sys import argv
 
 def main():
     nl = ""
-    with open(argv[1], encoding="utf-8") as f:
+    with pathlib.Path(argv[1]).open(encoding="utf-8") as f:
         lines = f.readlines()
         for line in lines:
             if line.strip():

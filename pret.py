@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-from collections import deque
-from multiprocessing import Pool
-from pathlib import Path
 import sys
+from collections import deque
+from multiprocessing import get_context
+from pathlib import Path
 
 from dh import format_size, get_files, get_size, run_command
 from termcolor import cprint
@@ -10,7 +10,7 @@ from termcolor import cprint
 MAX_IN_FLIGHT = 16
 
 
-def format_file(file_path):
+def process_file(file_path):
     before = get_size(file_path)
     cmd = f"prettier -w {file_path!s}"
     code, _out, _err = run_command(cmd)
@@ -46,13 +46,13 @@ def format_file(file_path):
 
 
 def main() -> None:
-    root_dir = Path.cwd()
+    cwd = Path.cwd()
     args = sys.argv[1:]
     files = (
         [Path(arg) for arg in args]
         if args
         else get_files(
-            root_dir,
+            cwd,
             extensions=[
                 ".js",
                 ".css",
@@ -66,20 +66,17 @@ def main() -> None:
             ],
         )
     )
-    if len(files) == 1:
-        process_file(files[0])
-        return
 
-    before = get_size(root_dir)
-    with Pool(8) as p:
+    before = get_size(cwd)
+    with get_context("spawn").Pool(8) as p:
         pending = deque()
         for f in files:
-            pending.append(p.apply_async(format_file, (f,)))
+            pending.append(p.apply_async(process_file, (f,)))
             if len(pending) >= MAX_IN_FLIGHT:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diffsize = before - get_size(root_dir)
+    diffsize = before - get_size(cwd)
     print(f"space change:{format_size(diffsize)}")
 
 

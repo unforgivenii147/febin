@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import get_context
 import os
+from multiprocessing import get_context
 from pathlib import Path
 from sys import exit
 from time import perf_counter
 
-from fastwalk import walk_files
 import pdfplumber
+from fastwalk import walk_files
 
 
 def process_file(fp):
@@ -22,7 +22,7 @@ def process_file(fp):
             if str(numpages) in fp.stem:
                 return
             if not np.exists():
-                os.rename(fp, np)
+                Path(fp).rename(np)
                 print(f"{fp.name} --> {np.name}")
             else:
                 print(f"{np.name} exists.")

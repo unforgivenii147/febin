@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+import os
+import time
 from collections import Counter
 from multiprocessing import cpu_count
-import os
 from pathlib import Path
-import time
 
 
 def is_text_file(file_path, text_extensions):
@@ -14,7 +14,7 @@ def process_file(file_path, text_extensions):
     if not is_text_file(file_path, text_extensions):
         return Counter()
     try:
-        with open(file_path, encoding="utf-8") as f:
+        with Path(file_path).open(encoding="utf-8") as f:
             return Counter(line.strip() for line in f if line.strip())
     except (UnicodeDecodeError, PermissionError):
         return Counter()
@@ -43,7 +43,7 @@ def collect_top_lines(directory, text_extensions, top_n=500):
         for result in results:
             lines_counter.update(result)
         output_file = f"/sdcard/top500{ext}.txt"
-        with open(output_file, "w", encoding="utf-8") as f:
+        with Path(output_file).open("w", encoding="utf-8") as f:
             f.write(f"Top {top_n} most frequent lines for {ext} files:\n\n")
             f.writelines(
                 f"{count}: {line}\n"

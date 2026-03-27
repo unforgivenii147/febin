@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import csv
+import pathlib
 
 
 def sort_packages_by_size(filename: str):
-    with open(filename, newline="", encoding="utf-8") as f:
+    with pathlib.Path(filename).open(newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         rows = list(reader)
         fieldnames = reader.fieldnames
@@ -15,12 +16,7 @@ def sort_packages_by_size(filename: str):
         key=lambda x: int(x.get("Installed-Size") or 0),
         reverse=True,
     )
-    with open(
-        filename,
-        "w",
-        newline="",
-        encoding="utf-8",
-    ) as f:
+    with pathlib.Path(filename).open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)

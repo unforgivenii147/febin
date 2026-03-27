@@ -2,9 +2,9 @@
 import os
 import pathlib
 
-from bs4 import BeautifulSoup
 import cssbeautifier
 import yapf
+from bs4 import BeautifulSoup
 
 
 def beautify_html(file_path) -> bool:

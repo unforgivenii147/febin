@@ -36,8 +36,8 @@ def process_file(fp: Path):
 
 
 if __name__ == "__main__":
-    root_dir = Path().cwd().resolve()
-    for pth in walk_files(root_dir):
+    cwd = Path().cwd().resolve()
+    for pth in walk_files(cwd):
         path = Path(pth)
         if path.suffix in {
             ".html",

@@ -1,0 +1,114 @@
+#!/data/data/com.termux/files/usr/bin/python
+import hashlib
+import json
+import os
+from pathlib import Path
+
+import ssdeep
+
+
+def calculate_ssdeep_hash(filepath: Path, min_file_size: int = 1):
+    try:
+        if filepath.stat().st_size < min_file_size:
+            return None
+
+        with filepath.open("rb") as f:
+            data = f.read()
+
+            if len(data) < min_file_size:
+                return None
+
+            return ssdeep.hash(data)
+    except FileNotFoundError:
+        print(f"Error: File not found at {filepath}")
+        return None
+    except ssdeep.error as e:
+        print(f"Error calculating ssdeep hash for {filepath}: {e}")
+        return None
+    except OSError as e:
+        print(f"OS error accessing {filepath}: {e}")
+        return None
+    except Exception as e:
+        print(f"An unexpected error occurred for {filepath}: {e}")
+        return None
+
+
+def find_files_recursively(directory: Path, ignored_dirs: list[str] | None = None, follow_symlinks: bool = False):
+    if ignored_dirs is None:
+        ignored_dirs = [".git", "__pycache__"]
+
+    file_list = []
+    for item in directory.rglob("*"):
+        if any(ignored_dir in item.parts for ignored_dir in ignored_dirs):
+            continue
+
+        if item.is_symlink():
+            continue
+
+        if item.is_file():
+            try:
+                if item.stat().st_size > 100:
+                    file_list.append(item.resolve())
+            except OSError:
+                continue
+    return file_list
+
+
+def compare_files(file_paths: list[Path], similarity_threshold: int = 70):
+    file_hashes = {}
+    print(f"Calculating ssdeep hashes for {len(file_paths)} files...")
+    for filepath in file_paths:
+        file_hash = calculate_ssdeep_hash(filepath)
+        if file_hash:
+            file_hashes[str(filepath)] = file_hash
+    similarities = []
+    filepaths_list = list(file_hashes.keys())
+    print(f"Comparing {len(filepaths_list)} files with valid hashes...")
+
+    for i in range(len(filepaths_list)):
+        for j in range(i + 1, len(filepaths_list)):
+            filepath1_str = filepaths_list[i]
+            filepath2_str = filepaths_list[j]
+            hash1 = file_hashes[filepath1_str]
+            hash2 = file_hashes[filepath2_str]
+            try:
+                score = ssdeep.compare(hash1, hash2)
+                if score >= similarity_threshold:
+                    similarities.append({"file1": filepath1_str, "file2": filepath2_str, "similarity_score": score})
+                    print(f"Found similarity ({score}%): {filepath1_str} <-> {filepath2_str}")
+            except ssdeep.error as e:
+                print(f"Error comparing hashes for {filepath1_str} and {filepath2_str}: {e}")
+            except Exception as e:
+                print(f"An unexpected error occurred during comparison for {filepath1_str} and {filepath2_str}: {e}")
+    return similarities
+
+
+def save_to_json(data, filename="similar_files.json"):
+    try:
+        with Path(filename).open("w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+        print(f"\nSimilarity results saved to '{filename}'")
+    except Exception as e:
+        print(f"Error saving data to JSON file '{filename}': {e}")
+
+
+if __name__ == "__main__":
+    TARGET_DIRECTORY = Path()
+    MIN_SIMILARITY_THRESHOLD = 70
+    OUTPUT_JSON_FILE = "similar_files_report.json"
+
+    IGNORED_DIRS = [".git", "__pycache__", "node_modules", ".venv", "venv"]
+
+    print(f"Starting ssdeep analysis in directory: {TARGET_DIRECTORY.resolve()}")
+    all_files = find_files_recursively(TARGET_DIRECTORY, ignored_dirs=IGNORED_DIRS, follow_symlinks=False)
+
+    if not all_files:
+        print("No files found matching the criteria in the specified directory.")
+    else:
+        print(f"Found {len(all_files)} files (excluding ignored directories, symlinks, and very small files).")
+        similar_file_pairs = compare_files(all_files, MIN_SIMILARITY_THRESHOLD)
+
+        if similar_file_pairs:
+            save_to_json(similar_file_pairs, OUTPUT_JSON_FILE)
+        else:
+            print(f"\nNo files found with similarity >= {MIN_SIMILARITY_THRESHOLD}%.")

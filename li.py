@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import operator
 import os
+import pathlib
 import stat
 import sys
 
@@ -37,8 +38,8 @@ def get_dir_size(path):
         for f in files:
             try:
                 fp = os.path.join(root, f)
-                if os.path.isfile(fp):
-                    total += os.path.getsize(fp)
+                if pathlib.Path(fp).is_file():
+                    total += pathlib.Path(fp).stat().st_size
             except Exception:
                 pass
     return total
@@ -50,11 +51,11 @@ def list_dir(path="."):
     for entry in entries:
         full_path = os.path.join(path, entry)
         try:
-            if os.path.isdir(full_path):
+            if pathlib.Path(full_path).is_dir():
                 size = get_dir_size(full_path)
                 color = BLUE
             else:
-                size = os.path.getsize(full_path)
+                size = pathlib.Path(full_path).stat().st_size
                 mode = os.stat(full_path).st_mode
                 ext = os.path.splitext(entry)[1].lower()
                 if ext in COMPRESSED_EXTS:

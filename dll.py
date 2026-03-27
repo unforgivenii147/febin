@@ -6,35 +6,25 @@ Deletes lines from x to y (inclusive) and updates file in place.
 """
 
 import sys
+from pathlib import Path
 
 
 def delete_lines_from_file():
-    filename, fromline, toline = sys.argv[1:]
-    fromline = int(fromline)
-    toline = int(toline)
-    try:
-        with open(filename, encoding="utf-8") as file:
-            lines = file.readlines()
-    except FileNotFoundError:
-        print(f"Error: File '{filename}' not found.")
-        return
-    except Exception as e:
-        print(f"Error reading file: {e}")
-        return
-    len(lines)
-    if fromline > toline:
-        temp = fromline
-        fromline = toline
-        toline = temp
-        del temp
+    filename = sys.argv[1]
+    path = Path(filename)
+    lines = path.read_text(encoding="utf-8").splitlines()
+
+    if len(sys.argv) == 4:
+        fromline = int(sys.argv[2])
+        toline = int(sys.argv[3])
+
+    if len(sys.argv) == 3:
+        fromline = int(sys.argv[2])
+        toline = len(lines)
+
     new_lines = lines[: fromline - 1] + lines[toline:]
-    try:
-        with open(filename, "w", encoding="utf-8") as file:
-            file.writelines(new_lines)
-        print(f"emaining lines: {len(new_lines)}")
-    except Exception as e:
-        print(f"Error writing to file: {e}")
-        return
+    path.write_text("\n".join(new_lines), encoding="utf-8")
+    print(f"remained: {len(new_lines)} lines")
 
 
 if __name__ == "__main__":

@@ -1,18 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/python
 import mmap
 import os
+import pathlib
 import tokenize
 
-from dh import get_files
 import regex as re
+from dh import get_files
 
 SIZE_THRESHOLD = 1 * 1024 * 1024
 OLD_PRINT_RE = re.compile(r"(?m)^[ \t]*print[ \t]+[^(\n]")
 
 
 def _open_source(filepath: str):
-    size = os.path.getsize(filepath)
-    f = open(filepath, "rb")
+    size = pathlib.Path(filepath).stat().st_size
+    f = pathlib.Path(filepath).open("rb")
     if size > SIZE_THRESHOLD:
         return mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
     return f
@@ -20,11 +21,7 @@ def _open_source(filepath: str):
 
 def _read_text(filepath: str) -> str | None:
     try:
-        with open(
-            filepath,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with pathlib.Path(filepath).open(encoding="utf-8", errors="ignore") as f:
             return f.read()
     except Exception:
         return None
@@ -81,9 +78,9 @@ def process_file(filepath):
 
 
 def main() -> None:
-    root_dir = Path.getcwd()
+    cwd = Path.getcwd()
     pool = Pool(8)
-    for f in get_files(root_dir, extensions=[".py"]):
+    for f in get_files(cwd, extensions=[".py"]):
         pool.apply_async(process_file, ((f),))
     pool.close()
     pool.join()

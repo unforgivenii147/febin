@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from multiprocessing import cpu_count
 import os
-from pathlib import Path
 import shutil
 import tarfile
-from typing import Any
 import zipfile
+from multiprocessing import cpu_count
+from pathlib import Path
+from typing import Any
 
 import regex as re
 
@@ -58,18 +58,16 @@ class EntityExtractor(ast.NodeVisitor):
         entity_code = self._get_source_slice(node)
         scope_prefix = "_".join(self.scope_stack)
         full_name = f"{scope_prefix}_{name}" if scope_prefix else name
-        self.entities.append(
-            {
-                "name": name,
-                "full_name": full_name,
-                "type": entity_type,
-                "code": entity_code,
-                "path": str(self.original_path),
-                "is_constant": entity_type in ("constant"),
-                "is_class": entity_type in ("class"),
-                "is_function": entity_type in {"function", "method"},
-            }
-        )
+        self.entities.append({
+            "name": name,
+            "full_name": full_name,
+            "type": entity_type,
+            "code": entity_code,
+            "path": str(self.original_path),
+            "is_constant": entity_type in ("constant"),
+            "is_class": entity_type in ("class"),
+            "is_function": entity_type in {"function", "method"},
+        })
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
         entity_type = "method" if self.scope_stack and self.scope_stack[-1].startswith("class_") else "function"
@@ -153,11 +151,7 @@ def is_python_file_no_extension(
     if path.suffix:
         return False
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(path).open(encoding="utf-8", errors="ignore") as f:
             first_lines = "".join(f.readlines(1024))
             if re.match(r"#!\s*/.*python", first_lines):
                 return True

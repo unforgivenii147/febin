@@ -5,9 +5,9 @@ from bs4 import BeautifulSoup
 
 
 def find_html_files(
-    root_dir: str = ".",
+    cwd: str = ".",
 ) -> list[Path]:
-    root_path = Path(root_dir).resolve()
+    root_path = Path(cwd).resolve()
     html_files = [file_path for file_path in root_path.rglob("*.html") if file_path.name != "template.html"]
     for file_path in root_path.rglob("*.htm"):
         html_files.append(file_path)
@@ -23,7 +23,7 @@ def extract_common_structure(
     script_tags = []
     for file_path in html_files:
         try:
-            with open(file_path, encoding="utf-8") as f:
+            with Path(file_path).open(encoding="utf-8") as f:
                 soup = BeautifulSoup(f.read(), "html.parser")
                 if soup.head:
                     meta_tags.extend(str(meta) for meta in soup.head.find_all("meta"))
@@ -51,7 +51,7 @@ def merge_html_content(
     merged_sections = []
     for file_path in html_files:
         try:
-            with open(file_path, encoding="utf-8") as f:
+            with Path(file_path).open(encoding="utf-8") as f:
                 soup = BeautifulSoup(f.read(), "html.parser")
                 content = soup.body.decode_contents() if soup.body else str(soup)
                 section_html = f"""
@@ -223,14 +223,12 @@ if __name__ == "__main__":
         import subprocess
         import sys
 
-        subprocess.check_call(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "beautifulsoup4",
-            ]
-        )
+        subprocess.check_call([
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "beautifulsoup4",
+        ])
         from bs4 import BeautifulSoup
     main()

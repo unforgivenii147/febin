@@ -7,6 +7,7 @@ Warns if repo size is bigger than 10MB.
 """
 
 import os
+import pathlib
 import subprocess
 import sys
 
@@ -100,7 +101,7 @@ def main():
         else:
             print(f"[ERROR] {e}")
             return
-    if os.path.exists(".gitmodules"):
+    if pathlib.Path(".gitmodules").exists():
         print("[INFO] Submodules found. Initialize and update? (y/n)")
         if input().lower() == "y":
             print("[INFO] Initializing and updating submodules...")

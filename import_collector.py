@@ -29,7 +29,7 @@ def is_python_file(path: pathlib.Path) -> bool:
         return True
     if path.is_file() and not path.suffix:
         try:
-            with open(path, encoding="utf-8") as f:
+            with pathlib.Path(path).open(encoding="utf-8") as f:
                 first_line = f.readline()
                 return "python" in first_line
         except Exception:
@@ -40,7 +40,7 @@ def is_python_file(path: pathlib.Path) -> bool:
 def get_imports_from_file(file_path):
     imports = set()
     try:
-        with open(file_path, encoding="utf-8") as f:
+        with pathlib.Path(file_path).open(encoding="utf-8") as f:
             tree = ast.parse(f.read(), filename=str(file_path))
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):

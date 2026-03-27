@@ -7,7 +7,7 @@ from rjsmin import jsmin
 
 
 def minify_assets_in_directory(
-    root_dir=".",
+    cwd=".",
 ) -> None:
     minified_count = 0
     errors_count = 0
@@ -15,7 +15,7 @@ def minify_assets_in_directory(
         foldername,
         _subfolders,
         filenames,
-    ) in os.walk(root_dir):
+    ) in os.walk(cwd):
         for filename in filenames:
             file_path = os.path.join(foldername, filename)
             minifier_func = None

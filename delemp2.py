@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import sys
+from pathlib import Path
 
 EXCLUDED_DIRS = {".git"}
 
@@ -31,21 +31,12 @@ def clean_file(
     collapse: bool,
 ) -> tuple[bool, int, str]:
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(path).open(encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()
         cleaned, removed = clean_lines(lines, collapse)
         if removed == 0:
             return False, 0, ""
-        with open(
-            path,
-            "w",
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(path).open("w", encoding="utf-8", errors="ignore") as f:
             f.writelines(cleaned)
         return True, removed, path.suffix.lower()
     except Exception:

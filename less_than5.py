@@ -5,6 +5,7 @@ Recursively processes all files starting from current directory.
 """
 
 import os
+import pathlib
 import shutil
 import time
 
@@ -22,7 +23,7 @@ def get_file_age(filepath):
 def move_recent_files(start_dir="."):
     """Move files created in last 5 minutes to '5min' subdirectory."""
     target_dir = os.path.join(start_dir, "5min")
-    os.makedirs(target_dir, exist_ok=True)
+    pathlib.Path(target_dir).mkdir(exist_ok=True, parents=True)
     moved_count = 0
     for root, dirs, files in os.walk(start_dir):
         if "5min" in dirs:
@@ -36,15 +37,12 @@ def move_recent_files(start_dir="."):
                         dest_dir = target_dir
                     else:
                         dest_dir = os.path.join(target_dir, rel_path)
-                        os.makedirs(
-                            dest_dir,
-                            exist_ok=True,
-                        )
+                        pathlib.Path(dest_dir).mkdir(exist_ok=True, parents=True)
                     dest_path = os.path.join(dest_dir, file)
-                    if os.path.exists(dest_path):
+                    if pathlib.Path(dest_path).exists():
                         base, ext = os.path.splitext(file)
                         counter = 1
-                        while os.path.exists(dest_path):
+                        while pathlib.Path(dest_path).exists():
                             new_filename = f"{base}_{counter}{ext}"
                             dest_path = os.path.join(
                                 dest_dir,
@@ -65,7 +63,7 @@ def move_recent_files(start_dir="."):
 def main():
     """Main function."""
     try:
-        start_dir = os.getcwd()
+        start_dir = pathlib.Path.cwd()
         print(f"Starting from directory: {start_dir}")
         print(f"Moving files created in last 5 minutes to '{os.path.join(start_dir, '5min')}'")
         print("-" * 60)

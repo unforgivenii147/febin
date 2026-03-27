@@ -1,16 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import base64
-from configparser import ConfigParser
-from email.parser import Parser
 import hashlib
 import operator
 import os
-from pathlib import Path
 import shutil
 import sys
 import sysconfig
 import zipfile
+from configparser import ConfigParser
+from email.parser import Parser
+from pathlib import Path
 
 
 def prefix_path():
@@ -149,7 +149,7 @@ def safe_move(src, dest) -> None:
 
 def compute_hash_and_size(path):
     h = hashlib.sha256()
-    with open(path, "rb") as f:
+    with Path(path).open("rb") as f:
         while True:
             chunk = f.read(8192)
             if not chunk:
@@ -183,19 +183,15 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
                                 for fn in files:
                                     s = Path(root) / fn
                                     rel = s.relative_to(base)
-                                    collected.append(
-                                        (
-                                            s,
-                                            Path(rel),
-                                        )
-                                    )
+                                    collected.append((
+                                        s,
+                                        Path(rel),
+                                    ))
                         else:
-                            collected.append(
-                                (
-                                    c,
-                                    Path(c.relative_to(base)),
-                                )
-                            )
+                            collected.append((
+                                c,
+                                Path(c.relative_to(base)),
+                            ))
         else:
             for rel in rec_list:
                 if not rel or rel.startswith(("..", "/")):
@@ -211,12 +207,10 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
                             for fn in files:
                                 s = Path(root) / fn
                                 relp = s.relative_to(base)
-                                collected.append(
-                                    (
-                                        s,
-                                        Path(relp),
-                                    )
-                                )
+                                collected.append((
+                                    s,
+                                    Path(relp),
+                                ))
                     else:
                         collected.append((src, Path(rel)))
                 else:
@@ -262,12 +256,10 @@ def collect_files_for_dist(distinfo_path, site_dirs, prefix):
                                     s = Path(root) / fn
                                     rel = s.relative_to(base)
                                     if rel not in added:
-                                        collected.append(
-                                            (
-                                                s,
-                                                rel,
-                                            )
-                                        )
+                                        collected.append((
+                                            s,
+                                            rel,
+                                        ))
                                         added.add(rel)
                         else:
                             rel = cand.relative_to(base)
@@ -376,7 +368,7 @@ def main() -> None:
     if not args.packages and not args.all:
         args.all = True
     prefix = prefix_path()
-    site_dirs = [Path(os.getcwd())]
+    site_dirs = [Path(Path.cwd())]
     if not site_dirs:
         print(
             "Error: no site-packages directory found under prefix",

@@ -17,13 +17,13 @@ def replace_in_file(path: str, old: str, new: str) -> None:
 
 
 def rename_path(path: str, old: str, new: str) -> str:
-    dirname = os.path.dirname(path)
-    basename = os.path.basename(path)
+    dirname = pathlib.Path(path).parent
+    basename = pathlib.Path(path).name
     if old not in basename:
         return path
     new_basename = basename.replace(old, new)
     new_path = os.path.join(dirname, new_basename)
-    if os.path.exists(new_path):
+    if pathlib.Path(new_path).exists():
         print(f"path by name {new_path} already exists\n rename it manually")
         return path
     try:

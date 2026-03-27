@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from multiprocessing import cpu_count
 from pathlib import Path
-import sys
 
-from tree_sitter import Language, Parser
 import tree_sitter_cpp
 import tree_sitter_python
 import tree_sitter_rust
+from tree_sitter import Language, Parser
 
 LANGUAGES = {
     ".py": tree_sitter_python.language(),
@@ -56,12 +56,10 @@ def _collect_python_docstrings(node, deletions):
         if first and first.type == "expression_statement":
             expr = first.child_by_field_name("expression")
             if expr and expr.type == "string":
-                deletions.append(
-                    (
-                        first.start_byte,
-                        first.end_byte,
-                    )
-                )
+                deletions.append((
+                    first.start_byte,
+                    first.end_byte,
+                ))
     if node.type in {
         "class_definition",
         "function_definition",
@@ -73,12 +71,10 @@ def _collect_python_docstrings(node, deletions):
             if first and first.type == "expression_statement":
                 expr = first.child_by_field_name("expression")
                 if expr and expr.type == "string":
-                    deletions.append(
-                        (
-                            first.start_byte,
-                            first.end_byte,
-                        )
-                    )
+                    deletions.append((
+                        first.start_byte,
+                        first.end_byte,
+                    ))
     for child in node.children:
         _collect_python_docstrings(child, deletions)
 
@@ -99,12 +95,10 @@ def process_file(path: Path) -> None:
                 text = source[node.start_byte : node.end_byte]
                 if ext == ".py" and text.lstrip().startswith(EXCLUDE_PREFIXES):
                     return
-                deletions.append(
-                    (
-                        node.start_byte,
-                        node.end_byte,
-                    )
-                )
+                deletions.append((
+                    node.start_byte,
+                    node.end_byte,
+                ))
             for child in node.children:
                 walk(child)
 

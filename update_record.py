@@ -7,8 +7,8 @@ Removes references to .pyc files and direct_url.json, and logs missing files.
 import base64
 import hashlib
 import logging
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Set up logging
 logging.basicConfig(
@@ -41,7 +41,7 @@ def calculate_file_hash(filepath: Path) -> str:
     """Calculate SHA256 hash of a file and return it in the format used in RECORD files."""
     sha256_hash = hashlib.sha256()
     try:
-        with open(filepath, "rb") as f:
+        with Path(filepath).open("rb") as f:
             # Read the file in chunks to handle large files
             for chunk in iter(lambda: f.read(4096), b""):
                 sha256_hash.update(chunk)
@@ -101,7 +101,7 @@ def update_record_file(record_path: Path, dist_info_dir: Path) -> bool:
         return False
     # Read the current RECORD file
     try:
-        with open(record_path, encoding="utf-8") as f:
+        with Path(record_path).open(encoding="utf-8") as f:
             lines = f.readlines()
     except Exception as e:
         logger.exception("Error reading %s: %s", record_path, e)
@@ -161,7 +161,7 @@ def update_record_self_hash(record_path: Path, dist_info_dir: Path):
     """Update the RECORD file's own hash entry."""
     try:
         # Read the current RECORD file
-        with open(record_path, encoding="utf-8") as f:
+        with Path(record_path).open(encoding="utf-8") as f:
             lines = f.readlines()
         # Calculate the new hash for the RECORD file itself
         record_hash = calculate_file_hash(record_path)
@@ -174,7 +174,7 @@ def update_record_self_hash(record_path: Path, dist_info_dir: Path):
                 record_relative = parts[0]
                 lines[-1] = f"{record_relative},{record_hash},{record_size}\n"
         # Write back the updated RECORD file
-        with open(record_path, "w", encoding="utf-8") as f:
+        with Path(record_path).open("w", encoding="utf-8") as f:
             f.writelines(lines)
         logger.debug("Updated self-hash for %s", record_path)
     except Exception as e:

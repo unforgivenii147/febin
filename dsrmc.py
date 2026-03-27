@@ -4,8 +4,8 @@ import os
 import pathlib
 import sys
 
-from tree_sitter import Node, Parser
 import tree_sitter_python
+from tree_sitter import Node, Parser
 
 _parser = None
 

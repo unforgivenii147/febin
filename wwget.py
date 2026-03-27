@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import os
+import pathlib
 import signal
 import sys
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 
@@ -38,23 +39,23 @@ def head_request(url: str) -> tuple[int, bool]:
 
 
 def init_files(path: str, size: int):
-    if not os.path.exists(path):
-        with open(path, "wb") as f:
+    if not pathlib.Path(path).exists():
+        with pathlib.Path(path).open("wb") as f:
             f.truncate(size)
 
 
 def load_meta(meta_path: str) -> dict:
-    if os.path.exists(meta_path):
-        with open(meta_path, encoding="utf-8") as f:
+    if pathlib.Path(meta_path).exists():
+        with pathlib.Path(meta_path).open(encoding="utf-8") as f:
             return json.load(f)
     return {}
 
 
 def save_meta(meta_path: str, meta: dict):
     tmp = meta_path + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
+    with pathlib.Path(tmp).open("w", encoding="utf-8") as f:
         json.dump(meta, f)
-    os.replace(tmp, meta_path)
+    pathlib.Path(tmp).replace(meta_path)
 
 
 def build_chunks(
@@ -88,7 +89,7 @@ def download_chunk(
                 timeout=15,
             ) as r:
                 r.raise_for_status()
-                with open(path, "r+b") as f:
+                with pathlib.Path(path).open("r+b") as f:
                     f.seek(downloaded)
                     for chunk in r.iter_content(1024 * 64):
                         if not chunk:
@@ -133,8 +134,8 @@ def download(url: str, output: str, workers: int = 4):
         print("\nPaused. Resume by re-running the script.")
         sys.exit(0)
     save_meta(meta_path, meta)
-    if os.path.getsize(output) == size:
-        os.remove(meta_path)
+    if pathlib.Path(output).stat().st_size == size:
+        pathlib.Path(meta_path).unlink()
         print("Download completed successfully.")
 
 

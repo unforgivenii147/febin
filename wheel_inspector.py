@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 """Inspect and validate generated .whl files."""
 
-from pathlib import Path
 import sys
 import zipfile
+from pathlib import Path
 
 
 class WheelInspector:

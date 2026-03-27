@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
+import pathlib
 import subprocess
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from tqdm import tqdm
 
@@ -25,7 +26,7 @@ def optimize_png(file_path):
 
 
 def main():
-    current_dir = os.getcwd()
+    current_dir = pathlib.Path.cwd()
     png_files = find_png_files(current_dir)
     if not png_files:
         print("No PNG files found in the current directory.")

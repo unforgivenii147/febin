@@ -2,10 +2,10 @@
 """Recursively find and report non-English files in current directory using pycld2."""
 
 import argparse
-from collections import Counter
 import os
-from pathlib import Path
 import sys
+from collections import Counter
+from pathlib import Path
 
 import pycld2
 
@@ -130,7 +130,7 @@ class LanguageDetector:
 
         # If unknown extension, try to detect by reading first few bytes
         try:
-            with open(filepath, "rb") as f:
+            with Path(filepath).open("rb") as f:
                 sample = f.read(1024)
                 if not sample:
                     return False
@@ -155,11 +155,7 @@ class LanguageDetector:
         """
         try:
             # Read file content
-            with open(
-                filepath,
-                encoding="utf-8",
-                errors="ignore",
-            ) as f:
+            with Path(filepath).open(encoding="utf-8", errors="ignore") as f:
                 content = f.read(self.max_bytes)
 
             # Skip if too short
@@ -288,25 +284,21 @@ class LanguageDetector:
                     # For English detection, also check reliability
                     if lang_code == "en" and not is_reliable and only_report_non_english:
                         # Unreliable English detection - might be mixed or non-English
-                        self.stats["non_english"].append(
-                            {
-                                "file": filepath,
-                                "language": lang_name,
-                                "code": lang_code,
-                                "reliable": is_reliable,
-                                "confidence": percent,
-                            }
-                        )
+                        self.stats["non_english"].append({
+                            "file": filepath,
+                            "language": lang_name,
+                            "code": lang_code,
+                            "reliable": is_reliable,
+                            "confidence": percent,
+                        })
                     elif lang_code != "en":
-                        self.stats["non_english"].append(
-                            {
-                                "file": filepath,
-                                "language": lang_name,
-                                "code": lang_code,
-                                "reliable": is_reliable,
-                                "confidence": percent,
-                            }
-                        )
+                        self.stats["non_english"].append({
+                            "file": filepath,
+                            "language": lang_name,
+                            "code": lang_code,
+                            "reliable": is_reliable,
+                            "confidence": percent,
+                        })
 
         print("\n" + "=" * 60)
         self.report_results(only_report_non_english)
@@ -426,7 +418,7 @@ def main():
         from contextlib import redirect_stdout
 
         with (
-            open(args.output, "w", encoding="utf-8") as f,
+            Path(args.output).open("w", encoding="utf-8") as f,
             redirect_stdout(f),
         ):
             detector.report_results(only_report_non_english=not args.all)

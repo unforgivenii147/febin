@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import sys
 import time
+from pathlib import Path
 
 from deep_translator import GoogleTranslator
 from tqdm import tqdm
@@ -26,7 +26,7 @@ def load_file(input_file):
     ]
     for encoding in encodings:
         try:
-            with open(input_file, encoding=encoding) as f:
+            with Path(input_file).open(encoding=encoding) as f:
                 return f.read()
         except (OSError, UnicodeDecodeError):
             continue
@@ -142,11 +142,11 @@ def main():
         sys.exit(1)
     input_file = sys.argv[1]
     source_lang = sys.argv[2] if len(sys.argv) > 2 else "auto"
-    if not os.path.exists(input_file):
+    if not Path(input_file).exists():
         print(f"[ERROR] File not found: {input_file}")
         sys.exit(1)
     output_file = get_output_filename(input_file)
-    if os.path.exists(output_file):
+    if Path(output_file).exists():
         print(f"[INFO] Output file already exists: {output_file}")
         print(f"[INFO] Skipping translation (delete {output_file} to re-translate)")
         sys.exit(0)

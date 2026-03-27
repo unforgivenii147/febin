@@ -18,7 +18,7 @@ def delete_multiline_string_from_files(search_string, directory=".") -> None:
     for dirpath, _, filenames in os.walk(directory):
         for filename in filenames:
             file_path = os.path.join(dirpath, filename)
-            if os.path.isfile(file_path) and os.path.splitext(file_path)[1] in EXT:
+            if pathlib.Path(file_path).is_file() and os.path.splitext(file_path)[1] in EXT:
                 try:
                     content = pathlib.Path(file_path).read_text(encoding="utf-8")
                     if search_string in content:
@@ -33,7 +33,7 @@ def read_string_to_delete(
     filename="/sdcard/todel.txt",
 ):
     try:
-        with open(filename, encoding="utf-8") as file:
+        with pathlib.Path(filename).open(encoding="utf-8") as file:
             return file.read()
     except Exception as e:
         print(f"Error reading the file {filename}: {e}")

@@ -6,16 +6,16 @@ Saves .whl files to ~/tmp/whl directory.
 """
 
 import base64
-from dataclasses import dataclass
-from datetime import datetime
 import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
 import sys
 import tempfile
 import zipfile
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
 
 
 @dataclass
@@ -149,10 +149,7 @@ class PackageDetector:
 
         if metadata_file.exists():
             try:
-                with open(
-                    metadata_file,
-                    encoding="utf-8",
-                ) as f:
+                with Path(metadata_file).open(encoding="utf-8") as f:
                     for line in f:
                         if ":" in line:
                             key, value = line.split(":", 1)
@@ -260,7 +257,7 @@ class WheelBuilder:
         """
         hasher = hashlib.new(algorithm)
 
-        with open(file_path, "rb") as f:
+        with Path(file_path).open("rb") as f:
             for chunk in iter(lambda: f.read(4096), b""):
                 hasher.update(chunk)
 
@@ -463,7 +460,7 @@ class VenvRepacker:
 
         # Setup site-packages directory
         if site_packages_dir is None:
-            site_packages_dir = os.getcwd()
+            site_packages_dir = Path.cwd()
 
         self.site_packages = Path(site_packages_dir).resolve()
 
@@ -514,14 +511,12 @@ class VenvRepacker:
         for item in self.site_packages.iterdir():
             if item.is_dir() and not item.name.startswith("."):
                 # Skip dist-info, egg-info, etc.
-                if not item.name.endswith(
-                    (
-                        ".dist-info",
-                        ".egg-info",
-                        ".egg",
-                        "__pycache__",
-                    )
-                ):
+                if not item.name.endswith((
+                    ".dist-info",
+                    ".egg-info",
+                    ".egg",
+                    "__pycache__",
+                )):
                     packages.add(item.name)
 
         self.log(f"Found {len(packages)} packages")
@@ -626,28 +621,24 @@ class VenvRepacker:
 
                 print(f"✓ {message}")
 
-                self.results.append(
-                    {
-                        "package": package_name,
-                        "version": package_info.version,
-                        "is_pure_python": package_info.is_pure_python,
-                        "wheel_filename": package_info.wheel_filename,
-                        "success": True,
-                    }
-                )
+                self.results.append({
+                    "package": package_name,
+                    "version": package_info.version,
+                    "is_pure_python": package_info.is_pure_python,
+                    "wheel_filename": package_info.wheel_filename,
+                    "success": True,
+                })
 
             else:
                 self.stats["failed_packages"] += 1
                 self.stats["total_packages"] += 1
                 print(f"✗ {message}")
 
-                self.results.append(
-                    {
-                        "package": package_name,
-                        "success": False,
-                        "error": message,
-                    }
-                )
+                self.results.append({
+                    "package": package_name,
+                    "success": False,
+                    "error": message,
+                })
 
         return self.stats
 
@@ -684,7 +675,7 @@ class VenvRepacker:
 
         try:
             report_path = self.output_dir / report_file
-            with open(report_path, "w", encoding="utf-8") as f:
+            with Path(report_path).open("w", encoding="utf-8") as f:
                 json.dump(report, f, indent=2)
             print(f"\n✓ Report saved: {report_path}")
         except Exception as e:

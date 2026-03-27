@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
-from pathlib import Path
 import subprocess
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 from sys import exit
 from time import perf_counter
 
@@ -29,8 +29,8 @@ def process_file(fp):
 def main():
     start = perf_counter()
     files = []
-    root_dir = str(os.getcwd())
-    for pth in walk_files(root_dir):
+    cwd = str(Path.cwd())
+    for pth in walk_files(cwd):
         path = Path(pth)
         if path.is_symlink():
             continue

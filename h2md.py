@@ -5,8 +5,8 @@ from pathlib import Path
 from markdownify import markdownify
 
 
-def convert_html_to_markdown(root_dir):
-    for root, _, files in os.walk(root_dir):
+def convert_html_to_markdown(cwd):
+    for root, _, files in os.walk(cwd):
         for file in files:
             if file.endswith(".html"):
                 html_file_path = os.path.join(root, file)
@@ -14,10 +14,7 @@ def convert_html_to_markdown(root_dir):
                     root,
                     f"{os.path.splitext(file)[0]}.md",
                 )
-                with open(
-                    html_file_path,
-                    encoding="utf-8",
-                ) as html_file:
+                with Path(html_file_path).open(encoding="utf-8") as html_file:
                     html_content = html_file.read()
                     md_content = markdownify(html_content)
                 Path(md_file_path).write_text(md_content, encoding="utf-8")
@@ -25,5 +22,5 @@ def convert_html_to_markdown(root_dir):
 
 
 if __name__ == "__main__":
-    current_dir = os.getcwd()
+    current_dir = Path.cwd()
     convert_html_to_markdown(current_dir)

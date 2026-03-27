@@ -9,7 +9,7 @@ def is_python_file(path: pathlib.Path) -> bool:
         return True
     if path.is_file() and not path.suffix:
         try:
-            with open(path, encoding="utf-8") as f:
+            with pathlib.Path(path).open(encoding="utf-8") as f:
                 first_line = f.readline()
                 return "python" in first_line
         except Exception:
@@ -20,7 +20,7 @@ def is_python_file(path: pathlib.Path) -> bool:
 def get_imports_from_file(file_path):
     imports = set()
     try:
-        with open(file_path, encoding="utf-8") as f:
+        with pathlib.Path(file_path).open(encoding="utf-8") as f:
             tree = ast.parse(f.read(), filename=str(file_path))
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
@@ -42,9 +42,9 @@ def main():
     for path in current_dir.rglob("*"):
         if is_python_file(path) and path.name != "importz.txt":
             all_imports.update(get_imports_from_file(path))
-    third_party = sorted(
-        [imp for imp in all_imports if imp not in std_libs and imp not in local_names and imp != "__future__"]
-    )
+    third_party = sorted([
+        imp for imp in all_imports if imp not in std_libs and imp not in local_names and imp != "__future__"
+    ])
     if third_party:
         output_file.write_text(
             "\n".join(third_party),

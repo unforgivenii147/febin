@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import shutil
 import sys
+from pathlib import Path
 
 from dh import format_size
 from termcolor import cprint
@@ -14,7 +14,8 @@ def clean_pyc_and_pycache():
     files_removed = 0
     for path in cwd.rglob("*.pyc"):
         pyfile_samedir = path.with_name(
-            path.name.replace(".cpython-312", "")
+            path.name
+            .replace(".cpython-312", "")
             .replace(".opt-1", "")
             .replace(".opt-2", "")
             .replace("-pytest-9.0.2", "")
@@ -23,7 +24,7 @@ def clean_pyc_and_pycache():
         if not pyfile_samedir.exists() and not pyfile_parentdir.exists():
             cprint(f"{pyfile_samedir} {pyfile_parentdir} does not exists so {path.name} is lonely pyc", "cyan")
             continue
-        if pyfile_parentdir.exists() or pyfilr_samedir.exists():
+        if pyfile_parentdir.exists() or pyfile_samedir.exists():
             sz = path.stat().st_size
             path.unlink()
             total_size += sz

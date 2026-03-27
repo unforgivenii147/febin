@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
-from multiprocessing import cpu_count
 import os
 import pathlib
 import tarfile
 import zipfile
+from multiprocessing import cpu_count
 
 import regex as re
 
@@ -110,7 +110,7 @@ def main() -> None:
         for urls in pool.imap_unordered(worker, files):
             if urls:
                 found_urls |= urls
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
+    with pathlib.Path(OUTPUT_FILE).open("w", encoding="utf-8") as out:
         out.writelines(url + "\n" for url in sorted(found_urls))
     print(f"\nExtracted {len(found_urls)} unique git URLs → {OUTPUT_FILE}")
 

@@ -3,7 +3,7 @@ import pathlib
 
 
 def main():
-    with open("/sdcard/colors", encoding="utf-8") as file:
+    with pathlib.Path("/sdcard/colors").open(encoding="utf-8") as file:
         colors = file.readlines()
     colors = [color.strip() for color in colors if color.strip()]
     colors = sorted(set(colors), reverse=True)

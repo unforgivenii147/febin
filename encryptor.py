@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import os
-from pathlib import Path
 import random
 import string
+from pathlib import Path
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
@@ -60,14 +60,14 @@ def main():
         key = random_key()
         print(f"Encryption key: {key}")
         action = encrypt_file
-        with open("key", "a", encoding="utf-8") as f:
+        with Path("key").open("a", encoding="utf-8") as f:
             f.write("\n")
             f.write(key)
     elif args.decrypt:
         if not args.key:
             msg = "Decryption requires --key"
             raise SystemExit(msg)
-        with open("key", encoding="utf-8") as f:
+        with Path("key").open(encoding="utf-8") as f:
             key = f.read().strip()
         action = decrypt_file
     else:

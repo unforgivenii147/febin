@@ -4,9 +4,9 @@ import os
 from dh import run_command
 from termcolor import cprint
 
-root_dir = "/data/data/com.termux/files/usr/lib/python3.12/site-packages"
+cwd = "/data/data/com.termux/files/usr/lib/python3.12/site-packages"
 
-for k in os.listdir(root_dir):
+for k in os.listdir(cwd):
     if k.endswith(".zip"):
         pkg = k.replace(".zip", "")
         cmd = f"uzp {pkg}"

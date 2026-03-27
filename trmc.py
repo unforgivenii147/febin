@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
+import sys
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
+import tree_sitter_python as tspython
 from dh import clean_blank_lines, format_size, get_files, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
-import tree_sitter_python as tspython
 
 
 class TSRemover:
@@ -22,21 +22,17 @@ class TSRemover:
 
         def walk(node):
             if node.type == "comment":
-                to_delete.append(
-                    (
-                        node.start_byte,
-                        node.end_byte,
-                    )
-                )
+                to_delete.append((
+                    node.start_byte,
+                    node.end_byte,
+                ))
             if node.type == "expression_statement" and len(node.children) == 1:
                 child = node.children[0]
                 if child.type == "string":
-                    to_delete.append(
-                        (
-                            node.start_byte,
-                            node.end_byte,
-                        )
-                    )
+                    to_delete.append((
+                        node.start_byte,
+                        node.end_byte,
+                    ))
             for child in node.children:
                 walk(child)
 
@@ -80,16 +76,16 @@ def process_file(fp):
 
 
 if __name__ == "__main__":
-    root_dir = Path.cwd()
-    before = get_size(root_dir)
+    cwd = Path.cwd()
+    before = get_size(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(root_dir, extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
     pool = Pool(8)
     for _ in pool.imap_unordered(process_file, files):
         pass
     pool.close()
     pool.join()
-    sres = before - get_size(root_dir)
+    sres = before - get_size(cwd)
     cprint(
         f"dir size reduced: {format_size(sres)}",
         "cyan",

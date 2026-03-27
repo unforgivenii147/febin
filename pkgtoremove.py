@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import operator
 import os
+import pathlib
 import subprocess
 
 import regex as re
@@ -25,10 +26,10 @@ def get_installed_packages():
 
 
 def get_bash_history():
-    history_file = os.path.expanduser("~/.bash_history")
-    if not os.path.exists(history_file):
+    history_file = pathlib.Path("~/.bash_history").expanduser()
+    if not pathlib.Path(history_file).exists():
         return []
-    with open(history_file, encoding="utf-8") as f:
+    with pathlib.Path(history_file).open(encoding="utf-8") as f:
         return f.read().splitlines()
 
 

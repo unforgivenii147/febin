@@ -20,10 +20,10 @@ def process_file(fp):
 
 
 def main():
-    root_dir = Path().cwd()
-    start_size = get_size(root_dir)
+    cwd = Path().cwd()
+    start_size = get_size(cwd)
     files = []
-    for pth in walk_files(root_dir):
+    for pth in walk_files(cwd):
         path = Path(pth)
         if path.is_file() and path.suffix in {
             ".c",
@@ -35,7 +35,7 @@ def main():
         pass
     pool.close()
     pool.join()
-    after = get_size(root_dir)
+    after = get_size(cwd)
     print(f"{format_size(abs(after - start_size))}")
 
 

@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from collections import defaultdict
 import json
 import os
-from pathlib import Path
 import shutil
+from collections import defaultdict
+from pathlib import Path
 
 import xxhash
 
@@ -16,7 +16,7 @@ READ_CHUNK = 1024 * 8
 
 def load_json(path):
     try:
-        with open(path, encoding="utf-8") as f:
+        with Path(path).open(encoding="utf-8") as f:
             return json.load(f)
     except Exception:
         return {}
@@ -24,7 +24,7 @@ def load_json(path):
 
 def save_json(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
+    with Path(path).open("w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
@@ -118,10 +118,7 @@ def dedupe(root: Path, dry_run=False, force=False):
                         print(f"warning: could not remove {p}: {e}")
                         continue
                 p.parent.mkdir(parents=True, exist_ok=True)
-                os.symlink(
-                    str(stored_path.resolve()),
-                    str(p),
-                )
+                Path(str(p)).symlink_to(str(stored_path.resolve()))
                 print(f"symlinked: {p} -> {stored_path.resolve()}")
             changed = True
         manifest[str(stored_path)] = {
@@ -153,7 +150,7 @@ def restore(dry_run=False):
                 continue
             if orig.is_symlink():
                 try:
-                    target = Path(os.readlink(orig))
+                    target = Path(Path(orig).readlink())
                 except Exception:
                     print(f"skipping {orig} (broken symlink)")
                     continue

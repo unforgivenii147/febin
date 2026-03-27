@@ -5,8 +5,8 @@ import operator
 import os
 import pathlib
 
-from tree_sitter import Language, Parser, Query, QueryCursor
 import tree_sitter_python as tspython
+from tree_sitter import Language, Parser, Query, QueryCursor
 
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
@@ -39,31 +39,25 @@ def strip_file(file_path):
             if tag == "comment":
                 comment_text = source_code[node.start_byte : node.end_byte]
                 if not should_preserve_comment(comment_text):
-                    modifications.append(
-                        (
-                            node.start_byte,
-                            node.end_byte,
-                            "",
-                        )
-                    )
+                    modifications.append((
+                        node.start_byte,
+                        node.end_byte,
+                        "",
+                    ))
             elif tag == "docstring":
                 parent = node.parent
                 if parent and parent.named_child_count == 1:
-                    modifications.append(
-                        (
-                            node.start_byte,
-                            node.end_byte,
-                            "pass",
-                        )
-                    )
+                    modifications.append((
+                        node.start_byte,
+                        node.end_byte,
+                        "pass",
+                    ))
                 else:
-                    modifications.append(
-                        (
-                            node.start_byte,
-                            node.end_byte,
-                            "",
-                        )
-                    )
+                    modifications.append((
+                        node.start_byte,
+                        node.end_byte,
+                        "",
+                    ))
         if not modifications:
             return
         modifications.sort(key=operator.itemgetter(0), reverse=True)

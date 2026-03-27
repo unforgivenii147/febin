@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-from collections import defaultdict
 import hashlib
 import json
 import os
+from collections import defaultdict
 from pathlib import Path
 
 from tqdm import tqdm
@@ -15,7 +15,7 @@ def hash_file(path: Path, chunk_size: int = 8192) -> str:
     try:
         get_size = path.stat().st_size
         with (
-            open(path, "rb") as f,
+            Path(path).open("rb") as f,
             tqdm(
                 total=get_size,
                 unit="B",
@@ -78,7 +78,7 @@ def print_duplicates(dups: dict) -> None:
 
 
 def export_to_json(dups: dict, output_path="duplicates.json") -> None:
-    with open(output_path, "w", encoding="utf-8") as f:
+    with Path(output_path).open("w", encoding="utf-8") as f:
         json.dump(dups, f, indent=2)
     print(f"📦 Results exported to {output_path}")
 

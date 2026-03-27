@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 
 def get_size_str(size_bytes):
@@ -13,8 +13,8 @@ def get_size_str(size_bytes):
     return f"{size_bytes:.1f}TB"
 
 
-def folderize_by_extension(root_dir):
-    root_path = Path(root_dir)
+def folderize_by_extension(cwd):
+    root_path = Path(cwd)
     extension_stats = {}
     for file_path in root_path.rglob("*"):
         if file_path.is_file():
@@ -73,7 +73,7 @@ def folderize_by_extension(root_dir):
 
 
 if __name__ == "__main__":
-    target_dir = os.getcwd()
+    target_dir = Path.cwd()
     print(f"Organizing files in: {target_dir}")
     created_dirs, stats = folderize_by_extension(target_dir)
     print(f"\nCreated {len(created_dirs)} extension folders.")

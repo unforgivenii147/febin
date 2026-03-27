@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
 import json
 import os
+import pathlib
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 from deep_translator import GoogleTranslator
 
@@ -15,14 +16,14 @@ CACHE_FILE = "translation_cache.json"
 
 
 def load_cache():
-    if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, encoding="utf-8") as f:
+    if pathlib.Path(CACHE_FILE).exists():
+        with pathlib.Path(CACHE_FILE).open(encoding="utf-8") as f:
             return json.load(f)
     return {}
 
 
 def save_cache(cache):
-    with open(CACHE_FILE, "w", encoding="utf-8") as f:
+    with pathlib.Path(CACHE_FILE).open("w", encoding="utf-8") as f:
         json.dump(cache, f, ensure_ascii=False, indent=2)
 
 
@@ -49,7 +50,7 @@ async def translate_async(word, executor, cache):
 
 
 async def main():
-    with open(INPUT_FILE, encoding="utf-8") as f:
+    with pathlib.Path(INPUT_FILE).open(encoding="utf-8") as f:
         words = [w.strip() for w in f if w.strip()]
     print(f"[INFO] Loaded {len(words)} Persian words")
     cache = load_cache()
@@ -65,7 +66,7 @@ async def main():
             print(f"{word} → {eng}")
         else:
             print(f"[FAIL] Could not translate: {word}")
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    with pathlib.Path(OUTPUT_FILE).open("w", encoding="utf-8") as f:
         json.dump(
             output,
             f,

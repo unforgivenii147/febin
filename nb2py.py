@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import nbformat
 
 INPUT = Path(sys.argv[1])
 OUTPUT = Path(INPUT).with_suffix(".py")
 nb = nbformat.read(INPUT, as_version=4)
-with open(OUTPUT, "w", encoding="utf-8") as out:
+with Path(OUTPUT).open("w", encoding="utf-8") as out:
     for cell in nb.cells:
         if cell.cell_type == "markdown":
             out.write('"""\n')

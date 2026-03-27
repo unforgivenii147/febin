@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-import sys
 
 import cairosvg
 from dh import format_size, get_files, get_size

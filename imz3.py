@@ -57,13 +57,13 @@ def is_local_module(base_path: Path, module: str) -> bool:
 
 
 def main():
-    root_dir = Path.cwd()
+    cwd = Path.cwd()
     importz = []
-    for file in get_files(root_dir, extensions=[".py"]):
-        with open(file, encoding="utf-8") as f:
+    for file in get_files(cwd, extensions=[".py"]):
+        with Path(file).open(encoding="utf-8") as f:
             contents = f.read()
             importz.append(extract_imports_from_py(contents))
-    with open("importz.txt", "w", encoding="utf-8") as fo:
+    with Path("importz.txt").open("w", encoding="utf-8") as fo:
         for im in importz:
             fo.writelines(str(k) + "\n" for k in im)
 

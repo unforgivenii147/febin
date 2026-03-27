@@ -8,11 +8,7 @@ OUTPUT_FILE = "found.txt"
 
 def is_probably_python(path: str) -> bool:
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with pathlib.Path(path).open(encoding="utf-8", errors="ignore") as f:
             head = f.read(2048)
         return "import " in head or "def " in head or "class " in head
     except Exception:
@@ -50,8 +46,8 @@ def find_files(root: str) -> list[str]:
 
 
 def main() -> None:
-    matches = find_files(os.getcwd())
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    matches = find_files(pathlib.Path.cwd())
+    with pathlib.Path(OUTPUT_FILE).open("w", encoding="utf-8") as f:
         f.writelines(path + "\n" for path in matches)
     print(f"Found {len(matches)} files with late imports.")
     print(f"Results saved to {OUTPUT_FILE}")

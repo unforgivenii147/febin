@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import string
+from pathlib import Path
 from sys import exit
 from time import perf_counter
 

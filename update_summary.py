@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 
 
 def find_md_files(directory="."):
@@ -18,7 +19,7 @@ def find_md_files(directory="."):
 def update_summary():
     md_files = find_md_files()
     md_files.sort()
-    with open("SUMMARY.md", encoding="utf-8") as f:
+    with pathlib.Path("SUMMARY.md").open(encoding="utf-8") as f:
         lines = f.readlines()
     header = []
     for line in lines:
@@ -31,7 +32,7 @@ def update_summary():
         title = os.path.splitext(md_file)[0].replace("_", " ").replace(os.sep, " ").title()
         entry = f"- [{title}](.{os.sep}{md_file})\n"
         new_entries.append(entry)
-    with open("SUMMARY.md", "w", encoding="utf-8") as f:
+    with pathlib.Path("SUMMARY.md").open("w", encoding="utf-8") as f:
         f.writelines(header)
         f.write("\n")
         f.writelines(new_entries)

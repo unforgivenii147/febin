@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from datetime import datetime
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from datetime import datetime
+from pathlib import Path
 
 
 def run(cmd) -> bool | None:
@@ -39,11 +39,7 @@ def find_python_scripts_without_extension():
                 continue
             path = os.path.join(root, f)
             try:
-                with open(
-                    path,
-                    encoding="utf-8",
-                    errors="ignore",
-                ) as file:
+                with Path(path).open(encoding="utf-8", errors="ignore") as file:
                     first_line = file.readline().strip()
                     if first_line.startswith("#!") and "python" in first_line.lower():
                         py_files.append(path)

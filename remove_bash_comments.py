@@ -7,9 +7,9 @@ Verifies syntax before committing changes.
 
 import argparse
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 try:
     from tree_sitter import Language, Parser
@@ -268,10 +268,7 @@ class BashCommentRemover:
                     else:
                         # Check for shebang
                         try:
-                            with open(
-                                filepath,
-                                encoding="utf-8",
-                            ) as f:
+                            with Path(filepath).open(encoding="utf-8") as f:
                                 first_line = f.readline()
                                 if first_line.startswith(("#!/bin/bash", "#!/usr/bin/env bash")):
                                     bash_files.append(filepath)

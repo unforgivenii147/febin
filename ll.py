@@ -5,12 +5,12 @@ from pathlib import Path
 from dh import format_size, get_size
 
 if __name__ == "__main__":
-    root_dir = Path.cwd()
+    cwd = Path.cwd()
     dirz = []
     otherz = []
 
     for path in sorted(
-        root_dir.glob("*"),
+        cwd.glob("*"),
         key=lambda e: e.stat().st_size,
     ):
         if path.is_dir():

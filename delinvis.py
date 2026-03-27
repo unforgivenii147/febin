@@ -52,10 +52,10 @@ def clean_file(path: str) -> None:
 
 def main():
     if len(sys.argv) != 2:
-        print(f"Usage: {os.path.basename(sys.argv[0])} <filename>")
+        print(f"Usage: {pathlib.Path(sys.argv[0]).name} <filename>")
         sys.exit(1)
     fname = sys.argv[1]
-    if not os.path.isfile(fname):
+    if not pathlib.Path(fname).is_file():
         print(f"Error: '{fname}' is not a file")
         sys.exit(1)
     clean_file(fname)

@@ -7,11 +7,11 @@ Deletes original archives after successful extraction and reports size change.
 """
 
 import argparse
-from pathlib import Path
 import sys
 import tarfile
 import tempfile
 import time
+from pathlib import Path
 
 import zstandard as zstd
 
@@ -29,9 +29,9 @@ def get_size(path):
 def extract_zst_file(archive_path, extract_path):
     """Extract a standalone .zst file."""
     output_path = extract_path / archive_path.stem  # Remove .zst extension
-    with open(archive_path, "rb") as compressed_file:
+    with Path(archive_path).open("rb") as compressed_file:
         dctx = zstd.ZstdDecompressor()
-        with open(output_path, "wb") as output_file:
+        with Path(output_path).open("wb") as output_file:
             dctx.copy_stream(compressed_file, output_file)
     return output_path
 
@@ -39,7 +39,7 @@ def extract_zst_file(archive_path, extract_path):
 def extract_tar_zst(archive_path, extract_path):
     """Extract tar.zst archive using zstandard library."""
     # Decompress zst to temporary tar file
-    with open(archive_path, "rb") as compressed_file:
+    with Path(archive_path).open("rb") as compressed_file:
         dctx = zstd.ZstdDecompressor()
         with tempfile.NamedTemporaryFile(suffix=".tar", delete=False) as temp_tar:
             dctx.copy_stream(compressed_file, temp_tar)

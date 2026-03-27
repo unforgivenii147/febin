@@ -8,16 +8,12 @@ from fastwalk import walk_files
 
 
 def is_python_file(path: str) -> bool:
-    if os.path.isdir(path):
+    if Path(path).is_dir():
         return False
     if path.suffix == ".py":
         return True
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(path).open(encoding="utf-8", errors="ignore") as f:
             first = f.readline().strip()
             if first.startswith("#!") and "python" in first:
                 return True
@@ -38,11 +34,7 @@ def is_python_file(path: str) -> bool:
 def remove_header(path) -> None:
     original = []
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with Path(path).open(encoding="utf-8", errors="ignore") as f:
             original = f.readlines()
     except Exception:
         return

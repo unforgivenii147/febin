@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 """Script to update author name, email, and GitHub URL in Python package configuration files."""
 
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 
 # Your information
 NEW_INFO = {

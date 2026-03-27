@@ -4,9 +4,9 @@ import pathlib
 import shutil
 import sys
 
-from bs4 import BeautifulSoup
 import markdown
 import regex as re
+from bs4 import BeautifulSoup
 
 
 def modify_classes(html_content):
@@ -48,11 +48,7 @@ def convert_latex_format(text):
 
 
 def read_markdown_file(file_path):
-    with open(
-        file_path,
-        encoding="utf-8",
-        errors="ignore",
-    ) as f:
+    with pathlib.Path(file_path).open(encoding="utf-8", errors="ignore") as f:
         return f.read()
 
 
@@ -62,7 +58,7 @@ def convert_markdown(md_path: str) -> str:
         raise ValueError(msg)
     markdown_text = read_markdown_file(md_path)
     markdown_text = convert_latex_format(markdown_text)
-    base_name = os.path.basename(md_path).replace(".md", "")
+    base_name = pathlib.Path(md_path).name.replace(".md", "")
     temp_html_path = os.path.join("/sdcard/tmp", f"{base_name}.html")
     final_output_path = md_path.replace(".md", ".html")
     html_content = markdown.markdown(

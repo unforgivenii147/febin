@@ -6,6 +6,7 @@ Minimal output - only reports removed packages.
 
 import csv
 import os
+import pathlib
 import site
 
 
@@ -16,7 +17,7 @@ def get_all_dist_info_dirs():
         *site.getsitepackages(),
         site.getusersitepackages(),
     ]:
-        if os.path.exists(site_dir):
+        if pathlib.Path(site_dir).exists():
             dist_info_dirs.extend(
                 os.path.join(site_dir, item) for item in os.listdir(site_dir) if item.endswith(".dist-info")
             )
@@ -25,10 +26,10 @@ def get_all_dist_info_dirs():
 
 def check_pure(dist_info_path):
     record_file = os.path.join(dist_info_path, "RECORD")
-    pkg_name = os.path.basename(dist_info_path).replace(".dist-info", "").split("-")[0].lower()
+    pkg_name = pathlib.Path(dist_info_path).name.replace(".dist-info", "").split("-")[0].lower()
     sum = 0
-    if os.path.exists(record_file):
-        with open(record_file, encoding="utf-8") as f:
+    if pathlib.Path(record_file).exists():
+        with pathlib.Path(record_file).open(encoding="utf-8") as f:
             reader = csv.reader(f)
             for row in reader:
                 if row[-1] and isinstance(int(row[-1]), int):
@@ -48,7 +49,7 @@ def get_pure():
         if ispure:
             print(ispure)
             purz.append(ispure)
-    with open("/sdcard/okpure", "w", encoding="utf-8") as f:
+    with pathlib.Path("/sdcard/okpure").open("w", encoding="utf-8") as f:
         f.writelines(f"{k}\n" for k in purz)
     print(len(purz))
 

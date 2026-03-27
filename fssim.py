@@ -6,8 +6,8 @@ import pathlib
 import shutil
 import sys
 
-from ppdeep import compare, hash_from_file
 import ssdeep
+from ppdeep import compare, hash_from_file
 
 try:
     from tabulate import tabulate
@@ -60,7 +60,7 @@ def group_similar_files(hashes, threshold):
                 visited.add(f2)
         if len(group) > 1:
             groups.append(group)
-    with open("similars.json", "w", encoding="utf-8") as f:
+    with pathlib.Path("similars.json").open("w", encoding="utf-8") as f:
         json.dump(matrx, f)
     print("similars.json created.")
     return groups

@@ -2,9 +2,9 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import regex as re
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
-import regex as re
 
 DIRECTORY = "."
 CHUNK_SIZE = 2000
@@ -13,7 +13,7 @@ non_english_pattern = re.compile(r"[^\x00-\x7F]")
 
 def is_text_file(path: Path) -> bool:
     try:
-        with open(path, "rb") as f:
+        with Path(path).open("rb") as f:
             chunk = f.read(2048)
         return b"\x00" not in chunk
     except:

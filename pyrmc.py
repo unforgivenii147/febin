@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
+import sys
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
+import tree_sitter_python
 from dh import format_size, get_size
 from termcolor import cprint
 from tree_sitter import Language, Parser
-import tree_sitter_python
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 parser = Parser()
@@ -61,12 +61,10 @@ def _collect_docstrings(node, source: bytes, deletions: list):
         if first and first.type == "expression_statement":
             string_node = first.child_by_field_name("expression")
             if string_node and string_node.type == "string":
-                deletions.append(
-                    (
-                        first.start_byte,
-                        first.end_byte,
-                    )
-                )
+                deletions.append((
+                    first.start_byte,
+                    first.end_byte,
+                ))
     if node.type in {
         "class_definition",
         "function_definition",
@@ -78,12 +76,10 @@ def _collect_docstrings(node, source: bytes, deletions: list):
             if first and first.type == "expression_statement":
                 string_node = first.child_by_field_name("expression")
                 if string_node and string_node.type == "string":
-                    deletions.append(
-                        (
-                            first.start_byte,
-                            first.end_byte,
-                        )
-                    )
+                    deletions.append((
+                        first.start_byte,
+                        first.end_byte,
+                    ))
     for child in node.children:
         _collect_docstrings(child, source, deletions)
 
@@ -100,12 +96,10 @@ def remove_comments_and_docstrings(
             if node.type == "comment":
                 text = source[node.start_byte : node.end_byte]
                 if not text.lstrip().startswith(EXCLUDE_PREFIXES):
-                    deletions.append(
-                        (
-                            node.start_byte,
-                            node.end_byte,
-                        )
-                    )
+                    deletions.append((
+                        node.start_byte,
+                        node.end_byte,
+                    ))
             for child in node.children:
                 walk_comments(child)
 
@@ -125,23 +119,23 @@ def remove_comments_and_docstrings(
         cprint(f"[FAIL] {path.name} -> {e}", "cyan")
 
 
-def get_files(root_dir, extensions=None) -> list[Path]:
+def get_files(cwd, extensions=None) -> list[Path]:
     if extensions is None:
         extensions = [".py"]
-    if root_dir.is_file() and root_dir.suffix == ".py":
+    if cwd.is_file() and cwd.suffix == ".py":
         return [root]
-    return [p for p in root_dir.rglob("*.py") if p.is_file()]
+    return [p for p in cwd.rglob("*.py") if p.is_file()]
 
 
 def main() -> None:
-    root_dir = Path.cwd()
-    files = get_files(root_dir, extensions=[".py"])
+    cwd = Path.cwd()
+    files = get_files(cwd, extensions=[".py"])
     if not files:
         sys.exit("No Python files found")
-    before = get_size(root_dir)
+    before = get_size(cwd)
     with Pool(8) as pool:
         pool.map(remove_comments_and_docstrings, files)
-    diffsize = before - get_size(root_dir)
+    diffsize = before - get_size(cwd)
     cprint(f"{format_size(diffsize)}", "cyan")
 
 

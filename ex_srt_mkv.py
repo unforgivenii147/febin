@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 import subprocess
 import sys
 
@@ -10,8 +11,8 @@ if len(sys.argv) != 2:
 input_file = sys.argv[1]
 output_dir = "subtitles"
 
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+if not pathlib.Path(output_dir).exists():
+    pathlib.Path(output_dir).mkdir(parents=True)
 command = f"ffmpeg -i {input_file} -map_metadata:s:0 {output_dir}/subtitles.srt"
 subprocess.run(command, check=False, shell=True)
 print("Subtitles extracted")

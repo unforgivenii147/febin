@@ -4,8 +4,8 @@ import multiprocessing
 import os
 import pathlib
 
-from rcssmin import cssmin
 import regex as re
+from rcssmin import cssmin
 
 
 def minify_html(html: str) -> str:
@@ -41,7 +41,7 @@ def collect_files() -> list:
         ".htm",
     )
     out = []
-    for base, _, files in os.walk(os.getcwd()):
+    for base, _, files in os.walk(pathlib.Path.cwd()):
         for name in files:
             path = os.path.join(base, name)
             lower = name.lower()

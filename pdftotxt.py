@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import pdfplumber
 
@@ -12,8 +12,8 @@ def process_file(fp):
         for page in pdf.pages:
             text = page.extract_text(encoding="utf-8")
             Path(fp).stem
-            if not os.path.exists(outdir):
-                os.mkdir(outdir)
+            if not Path(outdir).exists():
+                Path(outdir).mkdir()
             if i < 10:
                 txtfile = f"{outdir}/{Path(fp).stem}00{i!s}.txt"
             elif i < 100 and i >= 10:

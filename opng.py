@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import get_context
 import os
-from pathlib import Path
 import subprocess
+from multiprocessing import get_context
+from pathlib import Path
 
 from fastwalk import walk_files
 
@@ -28,7 +28,7 @@ def optimize_png(file_path):
 
 
 def main():
-    current_dir = os.getcwd()
+    current_dir = Path.cwd()
     png_files = find_png_files(current_dir)
     if not png_files:
         print("No PNG files found in the current directory.")

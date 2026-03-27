@@ -3,8 +3,8 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
-from tree_sitter import Language, Parser
 import tree_sitter_python as tsp
+from tree_sitter import Language, Parser
 
 parser = Parser()
 parser.language = Language(tsp.language())
@@ -46,14 +46,12 @@ def extract_functions_and_classes(src: bytes, tree):
                 prev_node = prev_node.prev_sibling
             if decorators:
                 node_text = "\n".join(reversed(decorators)) + "\n" + node_text
-            definitions.append(
-                {
-                    "type": node.type.replace("_definition", ""),
-                    "name": name,
-                    "text": node_text,
-                    "line": node.start_point.row + 1,
-                }
-            )
+            definitions.append({
+                "type": node.type.replace("_definition", ""),
+                "name": name,
+                "text": node_text,
+                "line": node.start_point.row + 1,
+            })
         for child in node.children:
             traverse(child)
 
@@ -126,9 +124,12 @@ for (
     content_parts.extend(("#" + "=" * 78, "# DEFINITIONS", "#" + "=" * 78, ""))
     # Add actual definitions
     for file_name, file_data in sorted(files_dict.items()):
-        content_parts.extend(
-            (f"\n# {'=' * 76}", f"# File: {file_name}", f"# Path: {file_data['path']}", f"# {'=' * 76}\n")
-        )
+        content_parts.extend((
+            f"\n# {'=' * 76}",
+            f"# File: {file_name}",
+            f"# Path: {file_data['path']}",
+            f"# {'=' * 76}\n",
+        ))
         # Group by type (classes first, then functions)
         classes = [d for d in file_data["definitions"] if d["type"] == "class"]
         functions = [d for d in file_data["definitions"] if d["type"] == "function"]

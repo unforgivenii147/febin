@@ -2,9 +2,9 @@
 import os
 from pathlib import Path
 
+import regex as re
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
-import regex as re
 
 DIRECTORY = "."
 non_english_pattern = re.compile(r"[^\x00-\x7F]")
@@ -38,7 +38,7 @@ def rename_files(directory):
                 name, ext = os.path.splitext(new_name)
                 new_path = path.with_name(f"{name}_{counter}{ext}")
                 counter += 1
-            os.rename(original_path, new_path)
+            Path(original_path).rename(new_path)
             print(f"Renamed file: {original_path.name} -> {new_path.name}")
         elif path.is_dir():
             original_path = path
@@ -48,7 +48,7 @@ def rename_files(directory):
             while new_path.exists():
                 new_path = Path(f"{original_path}_{counter}")
                 counter += 1
-            os.rename(original_path, new_path)
+            Path(original_path).rename(new_path)
             print(f"Renamed directory: {original_path.name} -> {new_path.name}")
 
 

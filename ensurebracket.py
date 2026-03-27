@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import pathlib
 import sys
 
 
@@ -9,7 +10,7 @@ def ensure_bracket(fn):
     close_braket_count = 0
     open_cbraket_count = 0
     close_cbraket_count = 0
-    with open(fn, encoding="utf-8") as f:
+    with pathlib.Path(fn).open(encoding="utf-8") as f:
         content = f.read()
         lc = len(content)
         for i in range(lc):

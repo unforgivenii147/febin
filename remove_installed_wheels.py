@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import pathlib
 import subprocess
 import zipfile
 
-VENV_PATH = os.path.expanduser("~/venv")
+VENV_PATH = pathlib.Path("~/venv").expanduser()
 
 
 def get_installed_version(pkg_name):
@@ -49,7 +50,7 @@ def get_wheel_package_info(wheel_file):
 
 def remove_wheel_file(wheel_file):
     try:
-        os.remove(wheel_file)
+        pathlib.Path(wheel_file).unlink()
         print(f"Removed: {wheel_file}")
     except Exception as e:
         print(f"Error removing {wheel_file}: {e}")
@@ -57,7 +58,7 @@ def remove_wheel_file(wheel_file):
 
 def main():
     whl_dir = "/sdcard/whl"
-    if not os.path.exists(whl_dir):
+    if not pathlib.Path(whl_dir).exists():
         print(f"Directory {whl_dir} does not exist.")
         return
     for file in os.listdir(whl_dir):

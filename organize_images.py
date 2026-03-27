@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -30,14 +30,12 @@ def get_image_features_cv2(image_path, size=(64, 64)):
             print(f"Histogram calculation error for {image_path}: {e}")
             return None
         img_flat = img_resized.flatten()
-        features = np.concatenate(
-            [
-                hist_h.flatten(),
-                hist_s.flatten(),
-                hist_v.flatten(),
-                img_flat,
-            ]
-        )
+        features = np.concatenate([
+            hist_h.flatten(),
+            hist_s.flatten(),
+            hist_v.flatten(),
+            img_flat,
+        ])
         norm = np.linalg.norm(features)
         if norm > 0:
             features /= norm
@@ -63,7 +61,7 @@ def get_all_images(directory):
             ext = Path(file).suffix.lower()
             if ext in image_extensions:
                 full_path = os.path.join(root, file)
-                if os.path.isfile(full_path) and os.access(full_path, os.R_OK):
+                if Path(full_path).is_file() and os.access(full_path, os.R_OK):
                     image_files.append(full_path)
     return image_files
 
@@ -156,18 +154,18 @@ def organize_photos(
         threshold,
     )
     output_base = os.path.join(source_dir, "organized_by_similarity")
-    os.makedirs(output_base, exist_ok=True)
+    Path(output_base).mkdir(exist_ok=True, parents=True)
     print("Organizing files...")
     for label in range(n_clusters):
         cluster_dir = os.path.join(output_base, f"group_{label + 1}")
-        os.makedirs(cluster_dir, exist_ok=True)
+        Path(cluster_dir).mkdir(exist_ok=True, parents=True)
     for path, label in zip(valid_paths, labels, strict=False):
         dest_dir = os.path.join(output_base, f"group_{label + 1}")
-        dest_path = os.path.join(dest_dir, os.path.basename(path))
+        dest_path = os.path.join(dest_dir, Path(path).name)
         counter = 1
         base_name = Path(dest_path).stem
         extension = Path(dest_path).suffix
-        while os.path.exists(dest_path):
+        while Path(dest_path).exists():
             dest_path = os.path.join(
                 dest_dir,
                 f"{base_name}_{counter}{extension}",

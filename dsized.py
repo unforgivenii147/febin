@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import os
-from pathlib import Path
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 MAX_DOWNLOAD_SIZE = 1 * 1024 * 1024
 
@@ -77,7 +77,7 @@ def main() -> None:
         help="Directory to download files smaller than 1MB",
     )
     args = parser.parse_args()
-    download_dir = Path(args.download) if args.download else Path(os.path.expanduser("~/Downloads"))
+    download_dir = Path(args.download) if args.download else Path(Path("~/Downloads").expanduser())
     download_dir.mkdir(parents=True, exist_ok=True)
     input_path = Path(args.input)
     if input_path.is_file():

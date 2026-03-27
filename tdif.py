@@ -3,8 +3,8 @@
 
 import argparse
 import difflib
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from textual.app import App, ComposeResult
 from textual.color import Color
@@ -169,11 +169,11 @@ class DiffViewerApp(App):
     def read_file(self, filepath: Path) -> list[str]:
         """Read a file and return its lines."""
         try:
-            with open(filepath, encoding="utf-8") as f:
+            with Path(filepath).open(encoding="utf-8") as f:
                 return f.readlines()
         except UnicodeDecodeError:
             try:
-                with open(filepath, encoding="latin-1") as f:
+                with Path(filepath).open(encoding="latin-1") as f:
                     return f.readlines()
             except Exception as e:
                 self.notify(
@@ -204,40 +204,32 @@ class DiffViewerApp(App):
             if line_type == " ":
                 left_line_num += 1
                 right_line_num += 1
-                self.left_lines.append(
-                    (
-                        content,
-                        line_type,
-                        left_line_num,
-                    )
-                )
-                self.right_lines.append(
-                    (
-                        content,
-                        line_type,
-                        right_line_num,
-                    )
-                )
+                self.left_lines.append((
+                    content,
+                    line_type,
+                    left_line_num,
+                ))
+                self.right_lines.append((
+                    content,
+                    line_type,
+                    right_line_num,
+                ))
             elif line_type == "-":
                 left_line_num += 1
-                self.left_lines.append(
-                    (
-                        content,
-                        line_type,
-                        left_line_num,
-                    )
-                )
+                self.left_lines.append((
+                    content,
+                    line_type,
+                    left_line_num,
+                ))
                 self.right_lines.append(("", " ", None))
             elif line_type == "+":
                 right_line_num += 1
                 self.left_lines.append(("", " ", None))
-                self.right_lines.append(
-                    (
-                        content,
-                        line_type,
-                        right_line_num,
-                    )
-                )
+                self.right_lines.append((
+                    content,
+                    line_type,
+                    right_line_num,
+                ))
             elif line_type == "?":
                 self.left_lines.append((content, line_type, None))
                 self.right_lines.append((content, line_type, None))

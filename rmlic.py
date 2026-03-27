@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
-from dh import format_size, get_nobinary, get_size
 import regex as re
+from dh import format_size, get_nobinary, get_size
 from termcolor import cprint
 
 LIC_FILE = Path("/sdcard/lic")
@@ -63,8 +63,8 @@ def main():
         print("No patterns found. Exiting.")
         return
     print()
-    root_dir = Path.cwd()
-    all_files = get_nobinary(root_dir)
+    cwd = Path.cwd()
+    all_files = get_nobinary(cwd)
     if not all_files:
         print("No files to process.")
         return

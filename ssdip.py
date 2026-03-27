@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from collections import defaultdict
 from pathlib import Path
-import sys
 
 import ssdeep
 
@@ -22,7 +22,7 @@ def find_fuzzy_duplicates(start_dir: Path = Path.cwd(), threshold: int = 70):
                 # Read a portion of the file for ssdeep, larger files benefit from more data
                 # ssdeep works best with files > 1KB. Adjust read_size as needed.
                 read_size = 1024 * 1024  # Read up to 1MB initially
-                with open(filepath, "rb") as f:
+                with Path(filepath).open("rb") as f:
                     data = f.read(read_size)
                     if len(data) > 50:  # ssdeep requires some minimum data
                         fuzzy_hash = ssdeep.hash(data)

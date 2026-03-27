@@ -3,13 +3,13 @@ from __future__ import annotations
 
 import argparse
 import base64
-from email.parser import Parser
 import hashlib
 import os
-from pathlib import Path
 import sys
 import sysconfig
 import zipfile
+from email.parser import Parser
+from pathlib import Path
 
 
 def prefix_path():
@@ -157,12 +157,10 @@ def collect_and_build(distinfo_path, prefix, wheel_out_path):
                 for root, _, files in os.walk(src):
                     for fn in files:
                         s_path = Path(root) / fn
-                        collected_files.append(
-                            (
-                                s_path,
-                                s_path.relative_to(base).as_posix(),
-                            )
-                        )
+                        collected_files.append((
+                            s_path,
+                            s_path.relative_to(base).as_posix(),
+                        ))
             else:
                 collected_files.append((src, rel))
         else:

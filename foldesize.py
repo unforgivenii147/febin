@@ -2,6 +2,7 @@
 import math
 import operator
 import os
+import pathlib
 import shutil
 
 
@@ -10,16 +11,14 @@ def get_all_files_in_root_only(root_path):
     try:
         for item in os.listdir(root_path):
             filepath = os.path.join(root_path, item)
-            if os.path.isfile(filepath) and not os.path.islink(filepath):
+            if pathlib.Path(filepath).is_file() and not pathlib.Path(filepath).is_symlink():
                 try:
-                    size = os.path.getsize(filepath)
-                    files_info.append(
-                        {
-                            "path": filepath,
-                            "name": item,
-                            "size": size,
-                        }
-                    )
+                    size = pathlib.Path(filepath).stat().st_size
+                    files_info.append({
+                        "path": filepath,
+                        "name": item,
+                        "size": size,
+                    })
                 except OSError as e:
                     print(f"Error accessing {filepath}: {e}")
     except Exception as e:
@@ -73,7 +72,7 @@ def organize_files_in_root(
     print("=" * 70)
     print("File Organization - Direct to Root Path (No Subdirectories)")
     print("=" * 70)
-    root_path = os.path.abspath(root_path)
+    root_path = pathlib.Path(root_path).resolve()
     print(f"\nRoot directory: {root_path}")
     print("Mode: Files will be moved into organized folders in root path")
     print("\n[1/5] Scanning files in root directory...")
@@ -140,7 +139,7 @@ def organize_files_in_root(
 
         folder_path = os.path.join(root_path, folder_name)
         try:
-            os.makedirs(folder_path, exist_ok=True)
+            pathlib.Path(folder_path).mkdir(exist_ok=True, parents=True)
             created_folders.append(folder_name)
             print(f"\n  Folder {idx}/{len(folders)}: {folder_name}")
             print(f"    Files: {len(folder_files)}")
@@ -151,7 +150,7 @@ def organize_files_in_root(
                 dst = os.path.join(folder_path, file_info["name"])
                 counter = 1
                 base_name, ext = os.path.splitext(file_info["name"])
-                while os.path.exists(dst):
+                while pathlib.Path(dst).exists():
                     dst = os.path.join(
                         folder_path,
                         f"{base_name}_{counter}{ext}",

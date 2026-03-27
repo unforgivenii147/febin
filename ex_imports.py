@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-import sys
 
+import tree_sitter_python as tsp
 from dh import get_files
 from tree_sitter import Language, Parser
-import tree_sitter_python as tsp
 
 OUTPUT_DIR = Path("output")
 parser = Parser()
@@ -27,10 +27,10 @@ def process_file(fp):
 def main():
     if not OUTPUT_DIR.exists():
         OUTPUT_DIR.mkdir()
-    root_dir = Path.cwd()
-    outfile = Path(f"output/{root_dir.name}_importz.py")
+    cwd = Path.cwd()
+    outfile = Path(f"output/{cwd.name}_importz.py")
     all_imports = []
-    files = get_files(root_dir, extensions=[".py"])
+    files = get_files(cwd, extensions=[".py"])
     results = []
     with ThreadPoolExecutor(max_workers=8) as ex:
         futures = [ex.submit(process_file, f) for f in files]

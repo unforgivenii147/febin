@@ -1,16 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
 import operator
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 from dh import unique_path
 from fastwalk import walk_files
 
 
-def get_all_files(root_dir):
+def get_all_files(cwd):
     files = []
-    for pth in walk_files(root_dir):
+    for pth in walk_files(cwd):
         path = Path(pth)
         if path.is_file():
             size = path.stat().st_size
@@ -57,7 +57,7 @@ def create_range_folders(base_dir, files, num_folders):
             folder_name = f"{format_size(min_size)}-{format_size(max_size)}"
             folder_ranges.append((min_size, max_size, folder_name))
             folder_path = os.path.join(base_dir, folder_name)
-            os.makedirs(folder_path, exist_ok=True)
+            Path(folder_path).mkdir(exist_ok=True, parents=True)
         start_idx = end_idx
     return folder_ranges
 
@@ -80,7 +80,7 @@ def distribute_files(files, folders, base_dir):
                 dest_folder = os.path.join(base_dir, folder_name)
                 dest_path = os.path.join(
                     dest_folder,
-                    os.path.basename(filepath),
+                    Path(filepath).name,
                 )
                 try:
                     dest_path = unique_path(dest_path)
@@ -92,7 +92,7 @@ def distribute_files(files, folders, base_dir):
                     print(f"Failed to move {filepath}: {e}")
                 break
         else:
-            print(f"No folder match for {os.path.basename(filepath)} ({size:,} bytes)")
+            print(f"No folder match for {Path(filepath).name} ({size:,} bytes)")
 
 
 #    print(f"\nMoved {moved_count}/{len(files)} files successfully.")

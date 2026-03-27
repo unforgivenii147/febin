@@ -6,8 +6,8 @@ Uses OpenAI API or local AST-based conversion with js2py library.
 
 import argparse
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import regex as re
 
@@ -20,15 +20,13 @@ def install_js2py():
         import subprocess
 
         try:
-            subprocess.check_call(
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "js2py",
-                ]
-            )
+            subprocess.check_call([
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "js2py",
+            ])
             print("✅ js2py installed successfully")
             return True
         except subprocess.CalledProcessError:

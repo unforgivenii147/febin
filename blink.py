@@ -6,8 +6,8 @@ pathlib = lazy_import("pathlib")
 sys = lazy_import("sys")
 
 if __name__ == "__main__":
-    root_dir = pathlib.Path.cwd()
-    files = list(root_dir.rglob("*"))
+    cwd = pathlib.Path.cwd()
+    files = list(cwd.rglob("*"))
     bcount = 0
     for path in files:
         if path.is_symlink() and not path.exists():

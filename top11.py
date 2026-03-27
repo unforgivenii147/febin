@@ -20,7 +20,7 @@ def main() -> None:
     sizez.sort(key=operator.itemgetter(1), reverse=True)
     top_files = sizez[:10]
     print("\n" + "=" * 60)
-    print(f"TOP 10 LARGEST FILES (in {os.getcwd()})")
+    print(f"TOP 10 LARGEST FILES (in {Path.cwd()})")
     print("=" * 60)
     if not top_files:
         print("No files found.")

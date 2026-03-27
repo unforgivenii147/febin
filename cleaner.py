@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from fastwalk import walk_files
 import regex as re
+from fastwalk import walk_files
 
 
 def clean_log(path):
@@ -36,7 +36,7 @@ def clean_log(path):
             cleaned_lines.append(cleaned_line)
         result = "".join(cleaned_lines)
         Path(path).write_text(result, encoding="utf-8")
-        print(f"✓ Cleaned (newlines preserved): {os.path.basename(path)}")
+        print(f"✓ Cleaned (newlines preserved): {Path(path).name}")
     except Exception as e:
         print(f"✗ Error: {e}", file=sys.stderr)
         sys.exit(1)

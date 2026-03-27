@@ -1,0 +1,23 @@
+total size: 6976312 bytes
+extensions:
+(no extension)
+   - .idx
+   - .json
+   - .md
+   - .pack
+   - .py
+   - .rev
+   - .sample
+   - .toml
+number of files: 2366
+number of folders: 270
+size by extension:
+  (no extension): 3432019 bytes
+  .pack: 1860372 bytes
+  .py: 1450450 bytes
+  .idx: 173540 bytes
+  .sample: 26365 bytes
+  .rev: 24488 bytes
+  .json: 7005 bytes
+  .toml: 2020 bytes
+  .md: 53 bytes

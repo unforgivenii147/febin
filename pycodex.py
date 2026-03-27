@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
 import json
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
 from pathlib import Path
 
-from bs4 import BeautifulSoup
 import regex as re
 import requests
+from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 

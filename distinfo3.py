@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
 from sys import exit
 
 from termcolor import cprint
@@ -25,9 +25,9 @@ def process_dir(dr):
 
 def main():
 
-    root_dir = "/data/data/com.termux/files/usr/lib/python3.12/site-packages"
-    for pth in os.listdir(root_dir):
-        path = Path(os.path.join(root_dir, pth))
+    cwd = "/data/data/com.termux/files/usr/lib/python3.12/site-packages"
+    for pth in os.listdir(cwd):
+        path = Path(os.path.join(cwd, pth))
 
         if path.is_dir() and len(os.listdir(path)) == 1:
             process_dir(path)

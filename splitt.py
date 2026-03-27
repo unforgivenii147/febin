@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def split_file_by_delimiter(fname, delim) -> None:
@@ -11,11 +11,11 @@ def split_file_by_delimiter(fname, delim) -> None:
     i = 0
     ext = path.suffix
     endl = "\n"
-    if not os.path.exists("output"):
-        os.mkdir("output")
+    if not Path("output").exists():
+        Path("output").mkdir()
     for part in content.split(delim):
         outfile = f"output/{basen + str(i) + ext}"
-        with open(outfile, "w", encoding="utf-8") as fo:
+        with Path(outfile).open("w", encoding="utf-8") as fo:
             fo.write(delim)
             fo.write(part)
             fo.write(endl)

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 
 def copy_lines_to_clipboard(filename: str, start_line: int | None = None, end_line: int | None = None):

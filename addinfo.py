@@ -6,25 +6,21 @@ import json
 import os
 import pathlib
 
-INFO_PATH = os.path.expanduser("~/isaac/.info.json")
+INFO_PATH = pathlib.Path("~/isaac/.info.json").expanduser()
 
 
 def load_user_info() -> dict:
-    with open(INFO_PATH, encoding="utf-8") as f:
+    with pathlib.Path(INFO_PATH).open(encoding="utf-8") as f:
         return json.load(f)
 
 
 def is_python_file(path: str) -> bool:
-    if os.path.isdir(path):
+    if pathlib.Path(path).is_dir():
         return False
     if path.endswith(".py"):
         return True
     try:
-        with open(
-            path,
-            encoding="utf-8",
-            errors="ignore",
-        ) as f:
+        with pathlib.Path(path).open(encoding="utf-8", errors="ignore") as f:
             first_line = f.readline().strip()
             if first_line.startswith("#!"):
                 return "python" in first_line
@@ -55,7 +51,7 @@ def file_already_has_header(
 
 
 def process_file(path: str, header: str) -> None:
-    with open(path, encoding="utf-8", errors="ignore") as f:
+    with pathlib.Path(path).open(encoding="utf-8", errors="ignore") as f:
         lines = f.readlines()
     if file_already_has_header("".join(lines)):
         return

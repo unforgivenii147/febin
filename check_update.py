@@ -8,9 +8,9 @@ import json
 import sys
 import time
 
+import requests
 from dh import get_installed_packages
 from packaging.version import InvalidVersion, Version
-import requests
 
 
 def check_package_on_pypi(package_name: str, current_version: str) -> str | None:
@@ -99,13 +99,11 @@ def main():
         status = compare_versions(current_version, latest_version)
         if status == "update":
             print(f"{progress} {package:<30} : 📦 update available from {current_version} to {latest_version}")
-            updates_found.append(
-                (
-                    package,
-                    current_version,
-                    latest_version,
-                )
-            )
+            updates_found.append((
+                package,
+                current_version,
+                latest_version,
+            ))
         elif status == "newer":
             print(
                 f"{progress} {package:<30} : ⚠️  current version ({current_version}) is newer than PyPI ({latest_version})"

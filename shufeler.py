@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
+import pathlib
 import random
 import secrets
 
@@ -10,7 +11,7 @@ def enhanced_shuffle(
     method="crypto",
     repeats=3,
 ):
-    with open(input_file, encoding="utf-8") as f:
+    with pathlib.Path(input_file).open(encoding="utf-8") as f:
         lines = f.readlines()
     original_count = len(lines)
     print(f"Read {original_count} lines from {input_file}")
@@ -25,7 +26,7 @@ def enhanced_shuffle(
         elif method == "weighted":
             weighted_shuffle(shuffled_lines)
     output_path = output_file or input_file
-    with open(output_path, "w", encoding="utf-8") as f:
+    with pathlib.Path(output_path).open("w", encoding="utf-8") as f:
         f.writelines(shuffled_lines)
     print(f"Shuffled {original_count} lines using method '{method}' with {repeats} passes")
     print(f"Output written to: {output_path}")
@@ -59,7 +60,7 @@ def weighted_shuffle(lst):
 
 
 def test_randomness(input_file):
-    with open(input_file, encoding="utf-8") as f:
+    with pathlib.Path(input_file).open(encoding="utf-8") as f:
         lines = [line.strip() for line in f.readlines()[:100]]
     original_order = lines.copy()
     for i in range(5):

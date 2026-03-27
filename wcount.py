@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from collections import deque
 import json
+import sys
+from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-import sys
 
 from dh import get_nobinary
 from loguru import logger
@@ -28,9 +28,9 @@ def process_file(fp):
 
 
 def main():
-    root_dir = Path.cwd()
+    cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_nobinary(root_dir)
+    files = [Path(f) for f in args] if args else get_nobinary(cwd)
     results = {}
     with Pool(8) as pool:
         pending = deque()
@@ -57,7 +57,7 @@ def main():
     word_sorted = {}
     for item in wsorted:
         word_sorted[item] = results.get(item)
-    with open(outfile, "w", encoding="utf-8") as fo:
+    with Path(outfile).open("w", encoding="utf-8") as fo:
         json.dump(word_sorted, fo, ensure_ascii=False, indent=2)
 
 

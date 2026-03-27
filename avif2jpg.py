@@ -4,6 +4,7 @@ from pathlib import Path
 
 from PIL import Image
 
+
 input_dir = "avif_images"
 output_dir = "jpg_images"
 Path(output_dir).mkdir(exist_ok=True, parents=True)

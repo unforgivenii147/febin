@@ -2,8 +2,8 @@
 """Simpler version - finds files in the same directory created on the same day as input file."""
 
 import os
-import pathlib
 import sys
+import pathlib
 from datetime import datetime
 
 

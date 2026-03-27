@@ -1,16 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-import operator
 import sys
+from pathlib import Path
+import operator
 from collections import deque
 from multiprocessing import Pool
-from pathlib import Path
 
+from dh import get_size, get_files, format_size
 import regex as re
-import tree_sitter_python as tspython
-from dh import format_size, get_files, get_size
 from termcolor import cprint
-from tree_sitter import Language, Parser
+from tree_sitter import Parser, Language
+import tree_sitter_python as tspython
+
 
 MAX_QUEUE = 16
 DOC_TH1 = '"""'

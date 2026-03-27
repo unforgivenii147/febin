@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
-import ast
 import os
-import sqlite3
-from pathlib import Path
+import ast
 from typing import Any
+from pathlib import Path
+import sqlite3
+import argparse
 
 import regex as re
+
 
 OUTPUT_DIR = Path("output")
 DB_PATH = Path("/sdcard/ext.db")

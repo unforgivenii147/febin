@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 import base64
+from typing import TYPE_CHECKING
 import hashlib
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import regex as re
+
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

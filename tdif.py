@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 """File Diff Viewer - A Textual-based application to show differences between two files."""
 
-import argparse
-import difflib
 import sys
+import difflib
 from pathlib import Path
+import argparse
 
 from textual.app import App, ComposeResult
 from textual.color import Color
+from textual.widgets import Label, Footer, Header, Static
 from textual.containers import Horizontal, ScrollableContainer
-from textual.widgets import Footer, Header, Label, Static
 
 
 class DiffLine(Static):

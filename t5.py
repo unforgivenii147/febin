@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-import ast
 import os
+import ast
 import sys
 from pathlib import Path
 
+from dh import get_size, format_size
+from tree_sitter import Query, Parser, Language, QueryCursor
 import tree_sitter_python as tspython
-from dh import format_size, get_size
-from tree_sitter import Language, Parser, Query, QueryCursor
+
 
 QUERY_STRING = """
 (comment) @comment

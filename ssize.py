@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import operator
 from pathlib import Path
+import operator
 
 
 def get_size(path: Path) -> int:

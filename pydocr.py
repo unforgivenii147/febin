@@ -1,16 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
-import ast
-import importlib
-import inspect
 import os
+import ast
 import sys
-from collections import deque
-from multiprocessing import get_context
+import inspect
 from pathlib import Path
 from textwrap import dedent
+import importlib
+from collections import deque
+from multiprocessing import get_context
 
 from dh import get_files, unique_path
 from loguru import logger
+
 
 BASE_DIR = Path("doc")
 

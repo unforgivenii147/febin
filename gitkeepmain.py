@@ -4,9 +4,9 @@ Deletes all commits except the last one and all branches except main/master.
 WARNING: This is a destructive operation! Use with caution.
 """
 
+import sys
 import shutil
 import subprocess
-import sys
 
 
 def run_git_command(cmd, check=True, capture_output=True):

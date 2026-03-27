@@ -2,6 +2,7 @@
 import os
 import pathlib
 
+
 TARGET_SHEBANG = "#!/data/data/com.termux/files/usr/bin/env python"
 
 

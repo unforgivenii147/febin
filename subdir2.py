@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import shutil
-import subprocess
 import sys
+import shutil
 from pathlib import Path
+import subprocess
 
 
 def safe_mkdir(base: Path) -> Path:

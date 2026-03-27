@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 import pytesseract
 
+
 SUPPORTED_EXT = {
     ".jpg",
     ".jpeg",

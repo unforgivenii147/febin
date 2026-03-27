@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-import importlib.metadata
-import importlib.util
-import numbers
 import sys
+import numbers
 from pathlib import Path
+import importlib.util
+import importlib.metadata
 
 from dh import STDLIB, get_files, get_installed_pkgs
 

@@ -7,13 +7,13 @@ Warns if repo size is bigger than 10MB.
 """
 
 import os
+import sys
 import pathlib
 import subprocess
-import sys
 
+from tqdm import tqdm
 import regex as re
 import requests
-from tqdm import tqdm
 
 
 def get_repo_size(repo_url):

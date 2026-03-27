@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import json
 import sys
+import json
 from pathlib import Path
 
 from dh import get_random_name

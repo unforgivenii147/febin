@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import get_context
 from pathlib import Path
+from multiprocessing import get_context
 
-from dh import format_size, get_pyfiles, get_size, run_command
+from dh import get_size, format_size, get_pyfiles, run_command
 from termcolor import cprint
 
 

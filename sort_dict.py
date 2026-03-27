@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
 import sys
+import pathlib
 
 
 def dict_val(line: str) -> str:

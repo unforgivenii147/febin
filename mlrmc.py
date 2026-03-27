@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import cpu_count
 from pathlib import Path
+from multiprocessing import cpu_count
 
+from tree_sitter import Parser, Language
 import tree_sitter_cpp
-import tree_sitter_python
 import tree_sitter_rust
-from tree_sitter import Language, Parser
+import tree_sitter_python
+
 
 LANGUAGES = {
     ".py": tree_sitter_python.language(),

@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+from time import perf_counter
+from pathlib import Path
 import subprocess
 from concurrent.futures import ProcessPoolExecutor
-from pathlib import Path
-from time import perf_counter
 
 import fastwalk
+
 
 FILE_EXTENSIONS = {
     ".c",

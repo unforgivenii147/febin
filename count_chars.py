@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 """count characters of input file."""
 
-import pathlib
 import sys
+import pathlib
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

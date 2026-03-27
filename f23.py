@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 import shutil
 from pathlib import Path
+import argparse
 
 import regex as re
+
 
 PRINT_PATTERN = re.compile(r"^\s*print\s+(?!\()(.+)$")
 PRINT_BARE_PATTERN = re.compile(r"^\s*print\s*$")

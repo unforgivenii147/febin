@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 from pathlib import Path
+import argparse
 
 
 def remove_ipynb_if_md_exists(root: Path, dry_run: bool = True):

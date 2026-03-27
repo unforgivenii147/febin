@@ -19,11 +19,12 @@ Result:
       images...
 """
 
-import argparse
 import shutil
 from pathlib import Path
+import argparse
 
 import regex as re
+
 
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
 IMPORT_RE = re.compile(

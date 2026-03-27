@@ -1,17 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 import sys
-from multiprocessing import get_context
 from pathlib import Path
+from multiprocessing import get_context
 
-from dh import (
-    SOURCE_CODE_EXT,
-    clean_blank_lines,
-    format_size,
-    get_nobinary,
-    get_size,
-    is_binary,
-)
+from dh import SOURCE_CODE_EXT, get_size, is_binary, format_size, get_nobinary, clean_blank_lines
 from termcolor import cprint
 
 

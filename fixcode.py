@@ -4,6 +4,7 @@ from pathlib import Path
 
 import regex as re
 
+
 INDENT = " " * 4
 DEF_CLASS = re.compile(r"^\s*(def|class)\s+")
 MAIN_GUARD = re.compile(r"""^\s*if\s+__name__\s*==\s*['"]__main__['"]\s*:""")

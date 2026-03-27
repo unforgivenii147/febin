@@ -1,6 +1,6 @@
-import argparse
 import os
 import pathlib
+import argparse
 
 import cv2
 import numpy as np

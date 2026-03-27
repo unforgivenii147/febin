@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
-import tree_sitter_cpp as tscpp
 from dh import run_command
 from termcolor import cprint
-from tree_sitter import Language, Parser
+from tree_sitter import Parser, Language
+import tree_sitter_cpp as tscpp
 
 
 class TSCppRemover:

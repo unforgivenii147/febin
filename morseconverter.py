@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
-import pathlib
 import sys
+import pathlib
+import argparse
+
 
 MORSE_CODE_DICT = {
     "A": ".-",

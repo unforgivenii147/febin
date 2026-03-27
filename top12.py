@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
-import heapq
 import os
+import heapq
+import pathlib
 
 
 def get_top_10_largest_files_optimized(directory="."):
@@ -16,7 +16,7 @@ def get_top_10_largest_files_optimized(directory="."):
               sorted by file size in descending order.
     """
     top_10 = []
-    for root, dirs, files in os.walk(directory):
+    for root, _dirs, files in os.walk(directory):
         for file in files:
             file_path = pathlib.Path(root) / file
             if file_path.is_file():

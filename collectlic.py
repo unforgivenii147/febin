@@ -2,6 +2,7 @@
 import os
 import pathlib
 
+
 EXCLUDE_DIRS = {".git"}
 OUTPUT_FILE = "/sdcard/all2.txt"
 

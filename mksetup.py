@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
-import shutil
 import sys
-import tempfile
-import zipfile
-from email.parser import Parser
+import shutil
 from pathlib import Path
+import zipfile
+import tempfile
+from email.parser import Parser
+
 
 EXT_SUFFIXES = (".so", ".pyd", ".dll")
 

@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 import os
 import shutil
-import sysconfig
 from pathlib import Path
+import argparse
+import sysconfig
 
 import regex as re
 from wheel.wheelfile import WheelFile

@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
+
 output_dir = Path("output")
 output_dir.mkdir(exist_ok=True)
 func_file = output_dir / "func.py"

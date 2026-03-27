@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 import importlib
 import subprocess
-import sys
 
 import pkg_resources
 

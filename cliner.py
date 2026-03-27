@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import mmap
-from multiprocessing import cpu_count
 from pathlib import Path
+from multiprocessing import cpu_count
 
 import regex as re
+
 
 LOG_EXT = ".log"
 MMAP_THRESHOLD = 5 * 1024 * 1024

@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 from pathlib import Path
+import argparse
 
 import regex as re
+
 
 PKG_NAME_RE = re.compile(
     r"""

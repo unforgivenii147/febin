@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import get_context
 from pathlib import Path
+from multiprocessing import get_context
 
-from dh import format_size, get_files, get_size, is_binary, run_command
+from dh import get_size, get_files, is_binary, format_size, run_command
 
 
 def process_file(fp):

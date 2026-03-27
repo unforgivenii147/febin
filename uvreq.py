@@ -5,8 +5,8 @@ extract python package name and version from lines that contain (name = ")
 save found pkgs in requirements.txt in current dir.
 """
 
-from pathlib import Path
 from sys import exit
+from pathlib import Path
 
 
 def process_file(fp):

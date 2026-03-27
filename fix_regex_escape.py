@@ -2,6 +2,7 @@
 import ast
 from pathlib import Path
 
+
 TARGET_FUNCS = {
     "compile",
     "search",

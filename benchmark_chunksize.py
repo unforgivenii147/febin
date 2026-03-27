@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import hashlib
-from time import perf_counter
 import os
+from time import perf_counter
+import hashlib
 from pathlib import Path
+import operator
 
 
 def hash_file_chunked(filepath, chunk_size):
@@ -49,5 +50,5 @@ if __name__ == "__main__":
                 results[cs] = 1
             else:
                 results[cs] += 1
-    sr = dict(sorted(results.items(), key=lambda x: x[1], reverse=True))
+    sr = dict(sorted(results.items(), key=operator.itemgetter(1), reverse=True))
     print(sr)

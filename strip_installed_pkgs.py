@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from importlib.metadata import distributions
 from pathlib import Path
+from importlib.metadata import distributions
 
 from dh import STDLIB
 

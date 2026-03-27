@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
-import subprocess
 import sys
+import pathlib
 import tempfile
+import subprocess
 
 
 def fold_content_pure(fname, width=45):

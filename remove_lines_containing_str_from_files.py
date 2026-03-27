@@ -2,7 +2,8 @@
 import sys
 from pathlib import Path
 
-from dh import format_size, get_nobinary, get_size
+from dh import get_size, format_size, get_nobinary
+
 
 STRTOFIND = [
     "dist-info",

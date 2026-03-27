@@ -2,8 +2,9 @@
 import os
 import pathlib
 
-import regex as re
 from dh import is_binary
+import regex as re
+
 
 LANG_EXTENSIONS = {
     "python": [".py", ".pyi"],

@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import get_context
-from pathlib import Path
 from sys import exit
 from time import perf_counter
+from pathlib import Path
+from multiprocessing import get_context
 
 from fastwalk import walk_files
+
 
 shebang = "#!/data/data/com.termux/files/usr/bin/python\n\n"
 

@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
 import sys
+import pathlib
 
 
 def alias_name(line: str) -> str:

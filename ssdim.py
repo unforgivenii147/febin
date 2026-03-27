@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-import csv
-import json
 import os
-import pathlib
-import shutil
+import csv
 import sys
+import json
+import shutil
+import pathlib
 
 import ssdeep
+
 
 try:
     from tabulate import tabulate

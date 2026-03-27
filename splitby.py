@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
 import sys
+import pathlib
 
 
 def split_file_by_delimiter(fname, delimiter) -> None:

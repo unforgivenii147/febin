@@ -5,9 +5,10 @@ Recursively processes all files starting from current directory.
 """
 
 import os
-import pathlib
-import shutil
 import time
+import shutil
+import pathlib
+
 
 TIME_THRESHOLD = 8 * 60
 

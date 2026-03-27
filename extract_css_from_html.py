@@ -1,47 +1,48 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import sys
-from multiprocessing import Pool
 from pathlib import Path
-from sys import exit
+from multiprocessing import get_context
 
+from dh import get_size, get_files, format_size, get_random_name
 from bs4 import BeautifulSoup
-from dh import format_size, get_files, get_random_name, get_size
 from termcolor import cprint
 
 
-def save_style(str1):
-    if not str1:
-        return None
-    fn = "css/"
-    if not Path("css").exists():
-        Path("css").mkdir()
-    fn = get_random_name(10)
-    fn += ".css"
-    if Path(fn).exists():
+def save_script(str1):
+    if not str1 or len(str(str1)) < 2:
+        return
+    fn = "js/"
+    fn += get_random_name(10)
+    fn += ".js"
+    path = Path(fn)
+    if path.exists():
         cprint(f"[{fn}] exists.", "red")
-        return False
-    if not Path(fn).exists():
-        Path(fn).write_text("\n".join(list(str1)), encoding="utf-8")
-        cprint(f"{[fn]} created.", "cyan")
-    return True
+        path = unique_path(path)
+    path.write_text("\n".join(list(str1)), encoding="utf-8")
+    cprint(f"{[fn]} created.", "cyan")
+    return
 
 
 def process_file(fp):
-    html_content = Path(fp).read_text(encoding="utf-8")
+    html_content = fp.read_text(encoding="utf-8")
     soup = BeautifulSoup(html_content, "html.parser")
-    styles = soup.find_all("style")
-    if styles:
+    scripts = soup.find_all("script")
+    if scripts:
         cprint(
-            f"{[fp.name]} : {len(styles)} styles found.",
-            "magenta",
+            f"{[fp.name]} : {len(scripts)} scripts found.",
+            "green",
         )
-        for style in styles:
-            save_style(style.contents)
+        for script in scripts:
+            save_script(script.contents)
     return True
 
 
 def main():
+    outpath = Path("js")
+    if not outpath.exists():
+        outpath.mkdir(exists_ok=True)
+
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = (
@@ -54,14 +55,14 @@ def main():
         )
     )
     before = get_size(cwd)
-    pool = Pool(8)
+    pool = get_context("spawn").Pool(8)
     for _ in pool.imap_unordered(process_file, files):
         pass
     pool.close()
     pool.join()
     diffsize = before - get_size(cwd)
-    print(f"{format_size(diffsize)}")
+    cprint(f"space change : {format_size(diffsize)}", "blue")
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import get_context
 from pathlib import Path
+from multiprocessing import get_context
 
-import regex as re
 from dh import get_files, unique_path
-from fontTools.ttLib import TTFont
+import regex as re
 from termcolor import cprint
+from fontTools.ttLib import TTFont
+
 
 MAX_QUEUE = 16
 

@@ -1,14 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
-import json
 import sys
+import json
+from pathlib import Path
 from collections import deque
 from multiprocessing import Pool
-from pathlib import Path
 
 from dh import get_nobinary
-from loguru import logger
 from toolz import compose, frequencies
-from toolz.curried import map
+from loguru import logger
+from toolz.curried import map as _map
+
 
 MAX_QUEUE = 16
 
@@ -21,7 +22,7 @@ def process_file(fp):
     if fp.is_symlink():
         logger.info(f"skipping symlink {fp.name}")
     logger.info(f"{fp.name}")
-    word_count = compose(frequencies, map(stem), str.split)
+    word_count = compose(frequencies, _map(stem), str.split)
     content = fp.read_text(encoding="utf-8")
     return word_count(content)
     #    logger.info(sorted(result))

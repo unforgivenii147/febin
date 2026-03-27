@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
 import shutil
+import pathlib
 import tarfile
-import tempfile
 import zipfile
+import tempfile
+
 
 TARGET_FILES = {"WHEEL"}
 PREFIX = "Tag: py2-none-any"

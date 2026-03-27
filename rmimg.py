@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
+from pathlib import Path
 from collections import deque
 from multiprocessing import get_context
-from pathlib import Path
 
+from dh import get_size, get_files, format_size
 from bs4 import BeautifulSoup
-from dh import format_size, get_files, get_size
 from termcolor import cprint
 
 

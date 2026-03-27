@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import os
+import sys
 from pathlib import Path
+import operator
 from collections import defaultdict
 
 
@@ -43,13 +44,13 @@ def write_summary(filename: Path) -> None:
         extensions,
         size_by_ext,
     ) = scan_directory()
-    with filename.open("w") as f:
+    with filename.open("w", encoding="utf-8") as f:
         f.write(f"total size: {total_size} bytes\n")
         f.write(f"extensions:\n{'\n   - '.join(sorted(extensions))}\n")
         f.write(f"number of files: {file_count}\n")
         f.write(f"number of folders: {folder_count}\n")
         f.write("size by extension:\n")
-        for ext, size in sorted(size_by_ext.items(), key=lambda x: x[1], reverse=True):
+        for ext, size in sorted(size_by_ext.items(), key=operator.itemgetter(1), reverse=True):
             f.write(f"  {ext}: {size} bytes\n")
 
 

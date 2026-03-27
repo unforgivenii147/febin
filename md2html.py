@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
-import shutil
 import sys
+import shutil
+import pathlib
 
-import markdown
-import regex as re
 from bs4 import BeautifulSoup
+import regex as re
+import markdown
 
 
 def modify_classes(html_content):

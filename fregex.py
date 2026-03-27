@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-import regex as re
 from tqdm import tqdm
+import regex as re
 
 
 def extract_regex_patterns(file_path):

@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+from sys import exit
 import shutil
 from pathlib import Path
-from sys import exit
 
 from dh import unique_path
 from fastwalk import walk_files
+
 
 OUT_PATH = Path("/data/data/com.termux/files/home/tmp/metadata")
 OUT_PATH.mkdir(parents=True, exist_ok=True)

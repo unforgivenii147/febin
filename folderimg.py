@@ -5,6 +5,7 @@ from pathlib import Path
 import dh
 from PIL import Image
 
+
 PHASH_W = 0.5
 DHASH_W = 0.3
 AHASH_W = 0.2

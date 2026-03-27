@@ -6,11 +6,11 @@ Description: Recursively checks files in a directory to detect mismatched file e
              Defaults to current directory if none is given.
 """
 
-import argparse
 import os
-import pathlib
-import subprocess
 import sys
+import pathlib
+import argparse
+import subprocess
 
 from dh import MIME2EXT
 

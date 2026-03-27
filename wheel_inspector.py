@@ -2,8 +2,9 @@
 """Inspect and validate generated .whl files."""
 
 import sys
-import zipfile
+import typing
 from pathlib import Path
+import zipfile
 
 
 class WheelInspector:
@@ -18,11 +19,13 @@ class WheelInspector:
         """
         self.verbose = verbose
 
+    @typing.override
     def log(self, message: str):
         """Log message."""
         if self.verbose:
             print(f"[INSPECT] {message}")
 
+    @typing.override
     def inspect_wheel(self, wheel_path: Path) -> dict:
         """
         Inspect a .whl file.
@@ -74,6 +77,7 @@ class WheelInspector:
         except Exception as e:
             return {"error": str(e)}
 
+    @typing.override
     def validate_wheel(self, wheel_path: Path) -> tuple[bool, list[str]]:
         """
         Validate a .whl file.
@@ -115,6 +119,7 @@ class WheelInspector:
 
         return len(issues) == 0, issues
 
+    @typing.override
     def inspect_directory(self, directory: Path) -> list[dict]:
         """
         Inspect all .whl files in a directory.
@@ -138,6 +143,7 @@ class WheelInspector:
 
         return results
 
+    @typing.override
     def print_inspection(self, wheel_path: Path):
         """Print detailed inspection of a wheel."""
         info = self.inspect_wheel(wheel_path)

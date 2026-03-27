@@ -1,24 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
-import hashlib
-import json
 import os
-import signal
 import sys
-import threading
-from concurrent.futures import ThreadPoolExecutor
+import json
+import signal
+import hashlib
 from pathlib import Path
+import threading
 from urllib.parse import unquote
+from concurrent.futures import ThreadPoolExecutor
 
 import requests
 from rich.console import Console
-from rich.progress import (
-    BarColumn,
-    DownloadColumn,
-    Progress,
-    TextColumn,
-    TimeRemainingColumn,
-    TransferSpeedColumn,
-)
+from rich.progress import Progress, BarColumn, TextColumn, DownloadColumn, TimeRemainingColumn, TransferSpeedColumn
+
 
 console = Console()
 

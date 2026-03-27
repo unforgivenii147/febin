@@ -4,10 +4,10 @@ Convert JavaScript code to Python using AI-powered translation.
 Uses OpenAI API or local AST-based conversion with js2py library.
 """
 
-import argparse
 import os
 import sys
 from pathlib import Path
+import argparse
 
 import regex as re
 

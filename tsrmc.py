@@ -1,13 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from multiprocessing import cpu_count
 from pathlib import Path
+from multiprocessing import cpu_count
 
-import tree_sitter_python as tspython
-from dh import format_size, get_size
+from dh import get_size, format_size
 from fastwalk import walk_files
 from termcolor import cprint
-from tree_sitter import Language, Parser, Query, QueryCursor
+from tree_sitter import Query, Parser, Language, QueryCursor
+import tree_sitter_python as tspython
+
 
 ts_remover = None
 

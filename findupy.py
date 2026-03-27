@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import hashlib
-import json
 import os
-from collections import defaultdict
+import json
+import hashlib
 from pathlib import Path
+from collections import defaultdict
 
 from tqdm import tqdm
+
 
 SKIPPED_PATHS = []
 

@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
 import sys
+import pathlib
+
 
 INVISIBLE_CHARS = {
     "\u200b",

@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 import sys
 from pathlib import Path
+import argparse
 
-import ffmpeg
 import regex as re
+import ffmpeg
+
 
 TIME_PATTERN = re.compile(r"^\d{2}:\d{2}:\d{2}$")
 

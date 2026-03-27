@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-import operator
 import os
 from pathlib import Path
+import operator
 
-from dh import format_size, get_files
+from dh import get_files, format_size
+
 
 ROOT_DIR = Path.cwd()
 

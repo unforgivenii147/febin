@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 
-import regex as re
-from deep_translator import GoogleTranslator
 from dh import is_text_file
+import regex as re
 from fastwalk import walk_files
+from deep_translator import GoogleTranslator
+
 
 DIRECTORY = "."
 CHUNK_SIZE = 2000

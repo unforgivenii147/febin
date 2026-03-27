@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 import os
-import pathlib
 import sys
+import pathlib
+import argparse
 
-import regex as re
 from dh import is_binary
+import regex as re
 
 
 def process_file(

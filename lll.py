@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import datetime
 from pathlib import Path
+import datetime
 
-from dh import format_size, get_size
+from dh import get_size, format_size
+
 
 EXCLUDED = {".mypy_cache", ".ruff_cache", ".git", "__pycache__"}
 

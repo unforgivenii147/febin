@@ -5,14 +5,15 @@ Supports processing individual files or recursively processing directories.
 Verifies syntax before committing changes.
 """
 
-import argparse
 import os
-import subprocess
 import sys
 from pathlib import Path
+import argparse
+import subprocess
+
 
 try:
-    from tree_sitter import Language, Parser
+    from tree_sitter import Parser, Language
 except ImportError:
     print("Error: tree-sitter not installed. Install with: pip install tree-sitter")
     sys.exit(1)
@@ -37,8 +38,8 @@ class BashCommentRemover:
             except ImportError:
                 # If not installed, try to build it from npm
                 print("Tree-sitter bash grammar not found. Attempting to install...")
-                import subprocess
                 import tempfile
+                import subprocess
 
                 with tempfile.TemporaryDirectory() as tmpdir:
                     # Install tree-sitter-bash via npm

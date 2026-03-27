@@ -5,6 +5,7 @@ from pathlib import Path
 import dh
 from PIL import Image
 
+
 IMAGE_EXTS = {
     ".jpg",
     ".jpeg",

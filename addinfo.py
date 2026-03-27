@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 """Insert author metadata header into python files (with or without extension)."""
 
-import datetime
-import json
 import os
+import json
 import pathlib
+import datetime
+
 
 INFO_PATH = pathlib.Path("~/isaac/.info.json").expanduser()
 

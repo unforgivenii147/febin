@@ -2,8 +2,8 @@
 import os
 import pathlib
 
-from rcssmin import cssmin
 from rjsmin import jsmin
+from rcssmin import cssmin
 
 
 def minify_assets_in_directory(

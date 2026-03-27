@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
-import argparse
-import base64
-import hashlib
 import os
 import sys
-import sysconfig
-import zipfile
-from email.parser import Parser
+import base64
+import hashlib
 from pathlib import Path
+import zipfile
+import argparse
+import sysconfig
+from email.parser import Parser
 
 
 def prefix_path():

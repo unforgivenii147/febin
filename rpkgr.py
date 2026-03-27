@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 import os
 import shutil
+from pathlib import Path
+import argparse
 import sysconfig
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import Path
 
 import regex as re
 from wheel.wheelfile import WheelFile

@@ -4,6 +4,7 @@ import os
 from dh import run_command
 from termcolor import cprint
 
+
 cwd = "/data/data/com.termux/files/usr/lib/python3.12/site-packages"
 
 for k in os.listdir(cwd):

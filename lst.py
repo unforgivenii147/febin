@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 """list content of current dir by time."""
 
-import datetime
 from pathlib import Path
+import datetime
 
-from dh import format_size, get_size
+from dh import get_size, format_size
 from termcolor import cprint
+
 
 if __name__ == "__main__":
     cwd = Path.cwd()

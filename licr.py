@@ -4,6 +4,7 @@ import pathlib
 
 import dh
 
+
 EXT = [".md", ".txt", ".rst"]
 
 

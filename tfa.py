@@ -4,6 +4,7 @@ import pathlib
 
 from deep_translator import GoogleTranslator
 
+
 INPUT_FILE = "words.txt"
 OUTPUT_FILE = "dic.json"
 

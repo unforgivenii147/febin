@@ -11,12 +11,12 @@ Includes:
 - defaults to recursive processing of "." when no args given.
 """
 
-import argparse
+import os
+import mmap
 import fnmatch
 import logging
-import mmap
-import os
 from pathlib import Path
+import argparse
 
 from dh import is_binary
 from tqdm import tqdm

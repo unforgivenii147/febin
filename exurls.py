@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 import os
-import pathlib
 import sys
+import pathlib
+import argparse
 from urllib.parse import urljoin, urlparse
 
-import requests
 from bs4 import BeautifulSoup
+import requests
 
 
 def extract_links(url: str):

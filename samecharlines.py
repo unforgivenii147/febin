@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
 import sys
+import pathlib
 
 
 def is_repeated_char_line(line: str) -> bool:

@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+import sys
 import shutil
 import string
-import sys
+import pathlib
 
 
 def find_unprintable_positions(text):

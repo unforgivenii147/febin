@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
-import shutil
 import sys
+import shutil
+import pathlib
 
 import ssdeep
 

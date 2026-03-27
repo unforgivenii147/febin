@@ -3,8 +3,9 @@ import os
 from pathlib import Path
 
 import regex as re
-from deep_translator import GoogleTranslator
 from fastwalk import walk_files
+from deep_translator import GoogleTranslator
+
 
 DIRECTORY = "."
 non_english_pattern = re.compile(r"[^\x00-\x7F]")

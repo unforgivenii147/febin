@@ -3,6 +3,7 @@ from pathlib import Path
 
 import regex as re
 
+
 REMOTE_PREFIXES = ("http://", "https://", "//")
 IMG_TAG_RE = re.compile(
     r'<img\b[^>]*\bsrc\s*=\s*["\']([^"\']+)["\'][^>]*>',

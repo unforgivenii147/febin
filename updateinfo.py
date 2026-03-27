@@ -5,6 +5,7 @@ import re
 import sys
 from pathlib import Path
 
+
 # Your information
 NEW_INFO = {
     "name": "Isaac Onagh",

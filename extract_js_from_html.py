@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import random
-import string
 import sys
+import string
+from pathlib import Path
 from collections import deque
 from multiprocessing import Pool
-from pathlib import Path
 
+from dh import get_size, get_files, format_size
 from bs4 import BeautifulSoup
-from dh import format_size, get_files, get_size
 from termcolor import cprint
+
 
 MAX_QUEUE = 16
 

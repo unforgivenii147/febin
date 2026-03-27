@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import multiprocessing as mp
 import os
-import pathlib
 import sys
+import pathlib
+import multiprocessing as mp
 
-import tree_sitter_python
 from tree_sitter import Node, Parser
+import tree_sitter_python
+
 
 _parser = None
 

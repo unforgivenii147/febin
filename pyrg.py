@@ -1,18 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
-import argparse
-import fnmatch
-import operator
 import os
-import pathlib
-import stat
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import stat
 from typing import TYPE_CHECKING
+import fnmatch
+import pathlib
+import argparse
+import operator
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-import regex as re
 from dh import is_binary
+import regex as re
+
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
-import csv
 import os
-import shutil
-import subprocess
+import csv
 import sys
-import tempfile
+import shutil
 from pathlib import Path
+import argparse
+import tempfile
+import subprocess
+
 
 try:
     from tqdm import tqdm
@@ -166,8 +167,9 @@ def repack_package(
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 if file_path.is_file():
                     shutil.copy2(file_path, dest)
-            except Exception:
-                pass
+            except Exception as e:
+                msg = f"error {e}"
+                raise Exception(msg) from e
         return False
     wheel_tag = get_wheel_tag(dist_dir)
     with tempfile.TemporaryDirectory() as temp_dir:

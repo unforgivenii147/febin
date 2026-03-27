@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import get_context
 from pathlib import Path
+from multiprocessing import get_context
 
+from dh import get_size, get_files, format_size, cleanup_blank_lines
+from tree_sitter import Parser, Language
 import tree_sitter_python
-from dh import cleanup_blank_lines, format_size, get_files, get_size
-from tree_sitter import Language, Parser
+
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import io
+from pathlib import Path
 import tarfile
 import zipfile
-from pathlib import Path
 
 
 def whl_to_tarxz(source_dir: str):

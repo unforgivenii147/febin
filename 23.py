@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import subprocess
 import sys
-from multiprocessing import Lock, Pool
 from pathlib import Path
+import subprocess
+from multiprocessing import Lock, Pool
 
 from fastwalk import walk_files
+
 
 print_lock = Lock()
 

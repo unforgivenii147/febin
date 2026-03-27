@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+from pathlib import Path
 import argparse
 import urllib.error
 import urllib.request
-from pathlib import Path
 
 
 def fetch_content_length(url: str) -> int | None:

@@ -4,11 +4,12 @@ Script to scan site-packages directories and update RECORD files with new hashes
 Removes references to .pyc files and direct_url.json, and logs missing files.
 """
 
+import sys
 import base64
 import hashlib
 import logging
-import sys
 from pathlib import Path
+
 
 # Set up logging
 logging.basicConfig(

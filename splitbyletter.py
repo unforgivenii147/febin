@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
-import string
 import sys
+import string
+import pathlib
 
 
 def main():

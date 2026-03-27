@@ -2,6 +2,7 @@
 import os
 import pathlib
 
+
 source_dir = pathlib.Path("~/bin").expanduser()
 for filename in os.listdir(source_dir):
     if filename.endswith(".py"):

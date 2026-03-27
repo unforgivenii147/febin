@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import hashlib
-import json
 import os
+import json
+import hashlib
 from pathlib import Path
 
 import ssdeep

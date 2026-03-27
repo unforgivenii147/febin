@@ -2,15 +2,16 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 import pathlib
 import tarfile
-import threading
 import zipfile
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import TYPE_CHECKING
+import threading
 from urllib.parse import urlparse, urlunparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import regex as re
+
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

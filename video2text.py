@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
 import sys
+import pathlib
 
 import cv2
-import pytesseract
 from PIL import Image
 from termcolor import cprint
+import pytesseract
+
 
 video = sys.argv[1]
 txtfile = pathlib.Path(video).with_suffix(".txt")

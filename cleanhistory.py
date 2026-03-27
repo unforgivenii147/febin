@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import pathlib
 
+
 if __name__ == "__main__":
     fn = "/data/data/com.termux/files/home/.bash_history"
     nl = []

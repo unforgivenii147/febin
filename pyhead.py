@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
 import sys
+import pathlib
+
 
 if __name__ == "__main__":
     try:

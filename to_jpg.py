@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
-import argparse
 from pathlib import Path
+import argparse
 
-from dh import format_size, get_size, is_image, unique_path
+from dh import get_size, is_image, format_size, unique_path
+
 
 try:
     import cv2

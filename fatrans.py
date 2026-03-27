@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
-import json
-import readline
 import sys
+import json
 from difflib import get_close_matches
 from pathlib import Path
+import argparse
+import readline
+
 
 DICT_FILE = "/sdcard/isaac/dic.json"
 

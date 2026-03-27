@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 
-import numpy as np
 from PIL import Image
+import numpy as np
 
 
 def get_ansi_color_code(r, g, b):

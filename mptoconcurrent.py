@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
 import shutil
+import pathlib
 from concurrent.futures import ThreadPoolExecutor
 
 import regex as re

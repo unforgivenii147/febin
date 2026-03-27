@@ -3,6 +3,7 @@ from pathlib import Path
 
 import regex as re
 
+
 HTML_EXTS = {".html", ".htm", ".svg", ".xml"}
 SKIP_TAGS = ("pre", "code")
 SKIP_OPEN_RE = re.compile(r"<\s*(pre|code)\b", re.IGNORECASE)

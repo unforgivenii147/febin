@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 
 import regex as re
 
+
 INPUT_FILE = Path("urls.txt")
 OUTPUT_FILE = Path("filtered_urls.txt")
 EXT_PATTERN = re.compile(r"\.(min\.)?(js|css)$", re.IGNORECASE)

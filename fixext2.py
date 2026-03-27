@@ -4,6 +4,7 @@ import pathlib
 
 import magic
 
+
 MIME_TO_EXT = {
     "text/html": "html",
     "application/json": "json",

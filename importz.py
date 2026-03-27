@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-import pathlib
 import sys
+import pathlib
 
 
 def is_python_file(path: pathlib.Path) -> bool:

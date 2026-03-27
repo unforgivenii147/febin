@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import get_context
 from pathlib import Path
+from multiprocessing import get_context
 
+from dh import get_size, get_files, format_size
+from tree_sitter import Query, Parser, Language, QueryCursor
 import tree_sitter_cpp as tscpp
-from dh import format_size, get_files, get_size
-from tree_sitter import Language, Parser, Query, QueryCursor
+
 
 ts_remover = None
 

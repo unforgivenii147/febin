@@ -1,21 +1,22 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
-import argparse
-import ast
-import contextlib
-import json
-import multiprocessing as mp
 import os
+import ast
 import sys
+import json
+from pathlib import Path
 import tarfile
 import zipfile
-from pathlib import Path
+import argparse
+import contextlib
+import multiprocessing as mp
 
+from dh import STDLIB, PKG_MAPPING
+from tqdm import tqdm
 import regex as re
 import xxhash
-from dh import PKG_MAPPING, STDLIB
-from tqdm import tqdm
+
 
 CACHE_FILE = ".reqcache.json"
 

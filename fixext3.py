@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import subprocess
 import json
-from pathlib import Path
 import shutil
+from pathlib import Path
+import subprocess
+
 
 FILE_TYPE_MAP = {
     "xz compressed data": ".xz",
@@ -100,7 +101,7 @@ def run_file_command(filepath: Path) -> str | None:
         )
         return result.stdout.strip()
     except FileNotFoundError:
-        print(f"Error: 'file' command not found. Please ensure it's installed and in your PATH.")
+        print("Error: 'file' command not found. Please ensure it's installed and in your PATH.")
         return None
     except subprocess.CalledProcessError as e:
         print(f"Error running 'file' command on {filepath}: {e}")
@@ -126,7 +127,7 @@ def get_current_extension(filepath: Path) -> str | None:
     return filepath.suffix.lower()
 
 
-def find_files_recursively(directory: Path, ignored_dirs: list[str] = None, follow_symlinks: bool = False):
+def find_files_recursively(directory: Path, ignored_dirs: list[str] | None = None, follow_symlinks: bool = False):
     if ignored_dirs is None:
         ignored_dirs = [".git", "__pycache__", "node_modules", ".venv", "venv"]
 
@@ -142,16 +143,16 @@ def find_files_recursively(directory: Path, ignored_dirs: list[str] = None, foll
 
 
 def detect_and_fix_mismatches(
-    start_directory: Path = Path("."),
+    start_directory: Path = Path(),
     similarity_threshold: int = 70,
     dry_run: bool = True,
 ):
-    print(f"--- Starting File Type Mismatch Detection ---")
+    print("--- Starting File Type Mismatch Detection ---")
     print(f"Scanning directory: {start_directory.resolve()}")
     if dry_run:
-        print(f"--- Running in DRY-RUN mode. No files will be renamed. ---")
+        print("--- Running in DRY-RUN mode. No files will be renamed. ---")
     else:
-        print(f"--- WARNING: Running in LIVE mode. Files WILL be renamed. Ensure you have backups! ---")
+        print("--- WARNING: Running in LIVE mode. Files WILL be renamed. Ensure you have backups! ---")
     mismatched_files_found = []
     rename_operations = []
 
@@ -160,7 +161,7 @@ def detect_and_fix_mismatches(
     for filepath in files_to_process:
         current_ext = get_current_extension(filepath)
 
-        if not current_ext or current_ext in [".log", ".tmp", ".bak"]:
+        if not current_ext or current_ext in {".log", ".tmp", ".bak"}:
             continue
 
         file_type_desc = run_file_command(filepath)
@@ -173,7 +174,7 @@ def detect_and_fix_mismatches(
             text_type in file_type_desc.lower()
             for text_type in ["ascii text", "utf-8 unicode text", "iso-8859 text", "plain text"]
         )
-        if is_generic_text and current_ext in [".txt", ".log", ".csv", ".md", ".ini", ".cfg", ".yml", ".yaml"]:
+        if is_generic_text and current_ext in {".txt", ".log", ".csv", ".md", ".ini", ".cfg", ".yml", ".yaml"}:
             continue
 
         if not detected_ext:
@@ -235,7 +236,7 @@ def detect_and_fix_mismatches(
 
 
 if __name__ == "__main__":
-    TARGET_DIR = Path(".")
+    TARGET_DIR = Path()
 
     DRY_RUN_MODE = False
     detect_and_fix_mismatches(start_directory=TARGET_DIR, dry_run=DRY_RUN_MODE)

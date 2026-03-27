@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 import csv
 import pathlib
+import argparse
 
 
 def sort_packages_by_size(filename: str):

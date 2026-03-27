@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-import asyncio
-import json
 import os
-import pathlib
+import json
 import time
+import asyncio
+import pathlib
 from concurrent.futures import ThreadPoolExecutor
 
 from deep_translator import GoogleTranslator
+
 
 INPUT_FILE = "words.txt"
 OUTPUT_FILE = "dic_async.json"

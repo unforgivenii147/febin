@@ -1,16 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 import json
 import logging
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
 from pathlib import Path
+import argparse
+from dataclasses import dataclass
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
+from bs4 import BeautifulSoup
 import regex as re
 import requests
-from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+
 
 logging.basicConfig(
     level=logging.INFO,

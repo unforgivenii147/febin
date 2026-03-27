@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-import ast
-import multiprocessing
-import operator
 import os
+import ast
 import pathlib
+import operator
+import multiprocessing
 
+from tree_sitter import Query, Parser, Language, QueryCursor
 import tree_sitter_python as tspython
-from tree_sitter import Language, Parser, Query, QueryCursor
+
 
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)

@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dh import BIN_EXT
 from tqdm import tqdm
 
+
 EXCLUDED_EXTENSIONS = BIN_EXT
 
 

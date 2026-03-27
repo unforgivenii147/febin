@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
 import sys
+import pathlib
 
 
 def samefile(path1: str, path2: str) -> bool:

@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 from sys import exit
+from pathlib import Path
 
 from dh import get_size
 from termcolor import cprint

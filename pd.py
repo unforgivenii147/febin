@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 import pathlib
+import argparse
 
 import requests
 from packaging import tags

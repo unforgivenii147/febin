@@ -2,10 +2,11 @@
 
 import subprocess
 
+from bs4 import BeautifulSoup
 import regex as re
 import requests
-from bs4 import BeautifulSoup
 from packaging.version import Version
+
 
 MIRROR_URL = "https://mirror-pypi.runflare.com"
 

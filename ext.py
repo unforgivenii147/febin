@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import ast
-import multiprocessing as mp
 import os
+import ast
 import pathlib
+import multiprocessing as mp
+
 
 OUTPUT_DIR = "output"
 EXCLUDE_DIRS = {

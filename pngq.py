@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import glob
+from pathlib import Path
 import subprocess
 from multiprocessing import get_context
-from pathlib import Path
+
 
 QUALITY_RANGE = "60-70"
 START_DIR = Path()

@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
-import subprocess
 from pathlib import Path
+import subprocess
+
 
 ERROR_DIR = Path("error")
 OK_DIR = Path("ok")

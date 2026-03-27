@@ -2,6 +2,7 @@
 import os
 import pathlib
 
+
 FONT_EXTENSIONS = (
     ".ttf",
     ".otf",

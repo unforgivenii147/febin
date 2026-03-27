@@ -1,13 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 """Recursively find and report non-English files in current directory using pycld2."""
 
-import argparse
 import os
 import sys
-from collections import Counter
 from pathlib import Path
+import argparse
+from collections import Counter
 
 import pycld2
+
 
 # Common binary and non-text file extensions to skip
 BINARY_EXTENSIONS = {

@@ -5,6 +5,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
+
 SUPPORTED_FORMATS = {
     ".png",
     ".bmp",

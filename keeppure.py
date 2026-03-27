@@ -4,10 +4,10 @@ Fast script to clean requirements.txt using multiprocessing
 Minimal output - only reports removed packages.
 """
 
-import csv
 import os
-import pathlib
+import csv
 import site
+import pathlib
 from multiprocessing import cpu_count
 
 

@@ -6,12 +6,12 @@ If no argument, recursively search current directory.
 Deletes original archives after successful extraction and reports size change.
 """
 
-import argparse
 import sys
-import tarfile
-import tempfile
 import time
 from pathlib import Path
+import tarfile
+import argparse
+import tempfile
 
 import zstd
 

@@ -1,13 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
+import os
+import sys
 import glob
 import logging
-import os
 import pathlib
-import sys
 from multiprocessing import cpu_count
 
+
 try:
-    from tree_sitter_languages import get_language, get_parser
+    from tree_sitter_languages import get_parser, get_language
 except ImportError:
     print(
         "Error: tree-sitter dependencies not installed.",

@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import sys
 import pathlib
 import subprocess
-import sys
+
 
 if len(sys.argv) != 2:
     print("Usage: python extract_subtitles.py <input_file>")

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 """Simple converter from .py to .ipynb."""
 
-import json
 import sys
+import json
 from pathlib import Path
 
 import nbformat as nbf

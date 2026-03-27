@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from multiprocessing import get_context
-from pathlib import Path
 from time import perf_counter
+from pathlib import Path
+from multiprocessing import get_context
 
-from fastwalk import walk_files
 from rcssmin import cssmin
+from fastwalk import walk_files
 
 
 def process_file(path) -> str:

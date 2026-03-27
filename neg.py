@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
+from pathlib import Path
 from collections import deque
 from multiprocessing import Pool
-from pathlib import Path
 
-import cv2 as cv
 from dh import get_files
+import cv2 as cv
+
 
 cwd = Path.cwd()
 

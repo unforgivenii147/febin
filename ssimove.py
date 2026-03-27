@@ -4,6 +4,7 @@ from pathlib import Path
 
 import ssdeep
 
+
 # --- Configuration ---
 # Directory to search for files (current directory by default)
 SEARCH_DIR = Path.cwd()

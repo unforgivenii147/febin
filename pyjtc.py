@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 import os
 import pathlib
+import argparse
 
 import regex as re
 

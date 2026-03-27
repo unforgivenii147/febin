@@ -1,13 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
-import subprocess
 import sys
+from pathlib import Path
+import subprocess
 from collections import deque
 from multiprocessing import Pool
-from pathlib import Path
 
-from dh import format_size, get_size
+from dh import get_size, format_size
 from fastwalk import walk_files
 from termcolor import cprint
+
 
 MAX_QUEUE = 16
 FILE_EXTENSIONS = {

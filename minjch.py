@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import json
-import multiprocessing
 import os
+import json
 import pathlib
+import multiprocessing
 
 import regex as re
 from rcssmin import cssmin

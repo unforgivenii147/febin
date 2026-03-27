@@ -1,13 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 import sys
-from multiprocessing import Pool
 from pathlib import Path
+from multiprocessing import Pool
 
-import tree_sitter_python
-from dh import format_size, get_size
+from dh import get_size, format_size
 from termcolor import cprint
-from tree_sitter import Language, Parser
+from tree_sitter import Parser, Language
+import tree_sitter_python
+
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 parser = Parser()

@@ -1,14 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 import sys
+from pathlib import Path
 from collections import deque
 from multiprocessing import get_context
-from pathlib import Path
 
-import astunparse
-import unidecode
-from dh import format_size, get_pyfiles, get_size, is_binary
+from dh import get_size, is_binary, format_size, get_pyfiles
 from termcolor import cprint
+import unidecode
+import astunparse
+
 
 MAX_QUEUE = 16
 

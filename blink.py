@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 from lazyloader import lazy_import
 
+
 os = lazy_import("os")
 pathlib = lazy_import("pathlib")
 sys = lazy_import("sys")

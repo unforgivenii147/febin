@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import operator
 import os
 import pathlib
+import operator
 import subprocess
 
 import regex as re

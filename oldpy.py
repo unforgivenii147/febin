@@ -2,6 +2,7 @@
 import os
 import mmap
 import pathlib
+from pathlib import Path
 import tokenize
 
 from dh import get_files
@@ -79,8 +80,8 @@ def process_file(filepath):
 
 
 def main() -> None:
-    cwd = Path.getcwd()
-    pool = Pool(8)
+    cwd = Path.cwd()
+    pool = get_context("spawn").Pool(8)
     for f in get_files(cwd, extensions=[".py"]):
         pool.apply_async(process_file, ((f),))
     pool.close()

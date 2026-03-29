@@ -1,71 +1,68 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import regex as re
 import sys
 from pathlib import Path
-from dh import get_pyfiles, get_size, format_size
-from multiprocessing import get_context
 from collections import deque
+from multiprocessing import get_context
+
+from dh import get_size, get_files, format_size
+import regex as re
 from termcolor import cprint
+
+
+MAINBLOCK = r'if __name__ == "__main__":'
+MAX_QUEUE = 16
+
+
 def process_file(filepath):
-    try:
-        with open(filepath, "r", encoding="utf-8") as f:
-            content_lines = f.readlines()
+    if filepath.is_symlink():
+        return
+    content = filepath.read_text(encoding="utf-8")
+    content_lines = content.splitlines()
+    if not MAINBLOCK in content:
+        print(f"{filepath.name} dont have main block")
 
 
-        main_block_found = False
-        for i, line in enumerate(content_lines):
-            if re.match(r'^\s*if\s+__name__\s*==\s*="__main__":', line):
+"""
 
-                if not line.startswith((" ", "\t")):
-                    main_block_found = True
-                    break
+        initial_indent = ""
+        lines_to_write = []
+
+        if content_lines and not content_lines[-1].endswith("\n"):
+            lines_to_write.append("\n")
+        lines_to_write.append(f"{initial_indent}if __name__ == '__main__':\n")
+
+        lines_to_write.append(f"{initial_indent}    # Placeholder for main execution logic\n")
+        lines_to_write.append(f"{initial_indent}    pass\n")
+        with open(filepath, "a", encoding="utf-8") as f:
+            f.writelines(lines_to_write)
+    else:
+        print(f"__main__ block already present in: {filepath.name}")
 
 
-                main_block_found = True
-                break
-        if not main_block_found:
-            print(f"{filepath} dont have main block")
-            return
+"""
 
 
-
-
-            initial_indent = ""
-            lines_to_write = []
-
-            if content_lines and not content_lines[-1].endswith("\n"):
-                lines_to_write.append("\n")
-            lines_to_write.append(f"{initial_indent}if __name__ == '__main__':\n")
-
-            lines_to_write.append(f"{initial_indent}    # Placeholder for main execution logic\n")
-            lines_to_write.append(f"{initial_indent}    pass\n")
-            with open(filepath, "a", encoding="utf-8") as f:
-                f.writelines(lines_to_write)
-        else:
-            print(f"__main__ block already present in: {filepath}")
-    except Exception as e:
-        print(f"Error processing {filepath}: {e}")
-def main() -> None:
+def main():
     cwd = Path.cwd()
     before = get_size(cwd)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_pyfiles(cwd)
-    if not files:
-        print("no files found")
-        return
+    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-    p = get_context("spawn").Pool(8)
-    for _ in p.imap_unordered(process_file, files):
-        pass
-    p.close()
-    p.join()
-    diffsize = before - get_size(cwd)
-    cprint(
-        f"{format_size(diffsize)}",
-        "cyan",
-    )
+
+    with get_context("spawn").Pool(8) as pool:
+        pending = deque()
+        for f in files:
+            pending.append(pool.apply_async(process_file, (f,)))
+            if len(pending) > MAX_QUEUE:
+                pending.popleft().get()
+        while pending:
+            pending.popleft().get()
+    diff_size = before - get_size(cwd)
+    cprint(f"space saved : {format_size(diff_size)}", "cyan")
+
+
 if __name__ == "__main__":
     main()

@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 import operator
 from collections import deque
-from multiprocessing import Pool
+from multiprocessing import get_context
 
 from dh import get_size, get_files, format_size
 import regex as re
@@ -248,7 +248,7 @@ def main():
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-    with Pool(8) as pool:
+    with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:
             pending.append(pool.apply_async(process_file, (f,)))

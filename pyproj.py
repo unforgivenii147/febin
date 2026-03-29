@@ -13,7 +13,16 @@ def create_python_project(pkg_name):
     pkg_dir.mkdir(parents=True, exist_ok=True)
 
     init_file = pkg_dir / "__init__.py"
-    init_file.touch()
+    init_content = """__version__ = "1.4.7"
+
+from importlib.metadata import PackageNotFoundError,version
+
+try:
+    __version__ = version(__name__)
+except PackageNotFoundError:
+    pass
+"""
+    init_file.write_text(init_content, encoding="utf-8")
 
     readme_file = current_dir / "README.md"
     readme_content = f"""# {pkg_name}
@@ -28,7 +37,7 @@ Usage
 import {pkg_name}
 ```
 """
-    readme_file.write_text(readme_content)
+    readme_file.write_text(readme_content, encoding="utf-8")
 
     pyproject_file = current_dir / "pyproject.toml"
     pyproject_content = f"""[build-system]
@@ -50,7 +59,7 @@ requires-python = ">=3.9"
 [tool.setuptools.packages.find]
 where = ["src"]
 """
-    pyproject_file.write_text(pyproject_content)
+    pyproject_file.write_text(pyproject_content, encoding="utf-8")
     setuppy_file = current_dir / "setup.py"
     setuppy_content = """from setuptools import setup
 setup()

@@ -21,31 +21,28 @@ def main() -> None:
     minutes = parse_minutes()
     ctm = {}
     cwd = Path.cwd()
-    max_path_string = 20
     cutoff = time.time() - (minutes * 60)
-    for path in cwd.glob("*"):
+    for path in cwd.rglob("*"):
         if ".git" in path.parts:
             continue
-        if path.is_symlink():
+        if path.is_dir():
             continue
         stats = path.stat()
         created = stats.st_ctime
         modified = stats.st_mtime
         changed = stats.st_ctime
         accessed = stats.st_atime
-        pathstr = str(path.name)
-        max_path_string = max(len(pathstr), 20)
         if created <= cutoff or modified >= cutoff or changed >= cutoff:
             ctm[path] = created
     ctmsorted = dict(sorted(ctm.items(), key=operator.itemgetter(1)))
     newct = {}
     for pth, ct in ctmsorted.items():
-        ctime = datetime.fromtimestamp(ct).strftime("%m-%d|%H:%M")
+        ctime = datetime.fromtimestamp(ct).strftime("%Y-%m-%d|%H:%M")
         newct[pth] = ctime
-        print(f"\033[05;96m{pth.name[:19]:<{max_path_string}} \033[05;93m{ctime}\033[0m")
-
-
-#        print(f"{pth.relative_to(cwd)} : {ctime}")
+        path_str = str(pth.relative_to(cwd))
+        # Determine maximum path length for alignment
+        max_path_len = max(len(path_str), 20)  # Minimum 20 characters
+        print(f"{path_str:<{max_path_len}} : {ctime}")  # Left align path, set width
 
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ if __name__ == "__main__":
             otherz.append(path)
 
     for f in otherz:
-        mtime = datetime.datetime.fromtimestamp(f.stat().st_mtime).strftime("%H:%M")
+        ctime = datetime.datetime.fromtimestamp(f.stat().st_ctime).strftime("%H:%M")
         if f.is_symlink():
             sz = " \033[05;95msymlink "
             print(f"\033[05;95m{f.name[:24]:25}\033[0m", end=" ")
@@ -44,10 +44,10 @@ if __name__ == "__main__":
 
             print(f"\033[05;92m{f.name[:24]:25}\033[0m", end=" ")
         print(f"\033[05;96m{sz}\033[0m", end=" ")
-        print(f"\033[05;93m{mtime}\033[0m")
+        print(f"\033[05;93m{ctime}\033[0m")
 
     for dr in dirz:
-        mtime = datetime.datetime.fromtimestamp(dr.stat().st_mtime).strftime("%H:%M")
+        ctime = datetime.datetime.fromtimestamp(dr.stat().st_ctime).strftime("%H:%M")
         sz = str(format_size(get_size(dr)))
         if len(sz) == 7:
             sz = "  " + sz
@@ -55,4 +55,4 @@ if __name__ == "__main__":
             sz = " " + sz
         print(f"\033[05;94m{dr.name[:24]:25}\033[0m", end=" ")
         print(f"\033[05;96m{sz}\033[0m", end=" ")
-        print(f"\033[05;93m{mtime}\033[0m")
+        print(f"\033[05;93m{ctime}\033[0m")

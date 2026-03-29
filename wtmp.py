@@ -17,6 +17,7 @@ ALLOWED_EXTENSIONS = {".tar.gz", ".whl", ".tar.xz", ".zip", ".tar.zst"}
 
 
 def copy_if_match(src_path) -> None:
+    src_path = Path(src_path)
     if ".tar" in src_path.suffixes:
         full_suffix = "".join(src_path.suffixes)
     if full_suffix in ALLOWED_EXTENSIONS:
@@ -52,7 +53,7 @@ class CopyEventHandler(FileSystemEventHandler):
 
 
 if __name__ == "__main__":
-    path = sys.argv[1] if len(sys.argv) > 1 else "/data/data/com.termux/files/usr/tmp"
+    path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("/data/data/com.termux/files/usr/tmp")
     startup_scan(path)
     event_handler = CopyEventHandler()
     observer = Observer()

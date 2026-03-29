@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 
 import magic
 
@@ -80,16 +80,18 @@ def detect_extension(path, mime_type):
 
 
 def safe_rename(src, dst):
-    if not pathlib.Path(dst).exists():
-        pathlib.Path(src).rename(dst)
+    dst = Path(dst)
+    src = Path(src)
+    if not dst.exists():
+        src.rename(dst)
         return dst
-    base, ext = os.path.splitext(dst)
+    base, ext = dst.stem, dst.suffix
     counter = 1
-    new_path = f"{base} ({counter}){ext}"
-    while pathlib.Path(new_path).exists():
+    new_path = Path(f"{base} ({counter}){ext}")
+    while new_path.exists():
         counter += 1
-        new_path = f"{base} ({counter}){ext}"
-    pathlib.Path(src).rename(new_path)
+        new_path = Path(f"{base} ({counter}){ext}")
+    src.rename(new_path)
     return new_path
 
 

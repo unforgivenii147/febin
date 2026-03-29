@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+from dh import get_filez
 
-
-def remove_empty_lines(filepath):
-    p = Path(filepath)
-    with p.open("r+", encoding="utf-8", errors="ignore") as f:
+def process_file(path):
+    with path.open("r+", encoding="utf-8", errors="ignore") as f:
         lines = (line for line in f if line.strip())
         content = "".join(lines)
         f.seek(0)
@@ -13,4 +12,12 @@ def remove_empty_lines(filepath):
         f.truncate()
 
 
-remove_empty_lines(sys.argv[1])
+if __name__ == "__main__":
+    cwd = Path.cwd()
+    args = sys.argv[1:]
+    files = [Path(p) for p in args] if args else get_nobinary(cwd)
+    if len(files)==1:
+        process_file(files[0])
+        sys.exit(0)
+    for f in files:
+        process_file(f)

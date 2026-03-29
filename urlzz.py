@@ -5,7 +5,7 @@ import tarfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from dh import BIN_EXT, TXT_EXT
+from dh import BIN_EXT, TXT_EXT,get_files
 import py7zr
 import regex as re
 
@@ -106,15 +106,14 @@ def extract_urls(filepath):
 
 
 if __name__ == "__main__":
-    file_paths = []
-    for root, dirs, files in os.walk("."):
-        dirs[:] = [d for d in dirs if not d.startswith(".")]
-        file_paths.extend(os.path.join(root, file) for file in files)
+    cwd= Path.cwd()
+    file_paths = get_files(cwd)
     all_urls = set()
     with ThreadPoolExecutor(8) as executor:
         futures = [executor.submit(extract_urls, fp) for fp in file_paths]
-    for future in as_completed(futures):
-        all_urls.update(future.result())
+        for future in as_completed(futures):
+            all_urls.update(future.result())
+
     with Path("urls.txt").open("w", encoding="utf-8") as f:
         f.writelines(url + "\n" for url in sorted(all_urls))
     print(f"Extracted {len(all_urls)} unique URLs to urls.txt")

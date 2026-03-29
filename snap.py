@@ -9,8 +9,8 @@ from termcolor import cprint
 import brotlicffi
 
 
-CHUNK_SIZE = 32768
-QUALITY = 11
+CHUNK_SIZE = 32 * 1024 * 1024
+QUALITY = 5
 N_JOBS = -1
 
 
@@ -19,13 +19,11 @@ def compress_chunk(data, quality=QUALITY):
 
 
 def parallel_compress(in_path, out_path):
-    try:
-        file_size = in_path.stat().st_size
-        if not file_size:
-            return False
-        chunk_count = (file_size + CHUNK_SIZE - 1) // CHUNK_SIZE
+    file_size = in_path.stat().st_size
+    chunk_count = (file_size + CHUNK_SIZE - 1) // CHUNK_SIZE
 
-        with out_path.open("wb", buffering=1024 * 1024) as fout, in_path.open("rb") as fin:
+    with out_path.open("wb", buffering=1024 * 1024) as fout:
+        with in_path.open("rb") as fin:
             mm = mmap.mmap(fin.fileno(), length=0, access=mmap.ACCESS_READ)
 
             chunks = [mm[i * CHUNK_SIZE : min((i + 1) * CHUNK_SIZE, file_size)] for i in range(chunk_count)]
@@ -38,9 +36,6 @@ def parallel_compress(in_path, out_path):
                 fout.write(len(block).to_bytes(4, "big"))
                 fout.write(block)
             mm.close()
-            return True
-    except OSError:
-        return False
 
 
 def process_file(fp):
@@ -49,27 +44,24 @@ def process_file(fp):
         return
     before = get_size(fp)
     outfile = Path(str(fp) + ".br")
-    if parallel_compress(fp, outfile):
-        fp.unlink()
-    else:
-        if outfile.exists():
-            outfile.unlink()
+    parallel_compress(fp, outfile)
+    fp.unlink()
     after = get_size(outfile)
-    ratio = (after / before) * 100
+    ratio = round(((before - after) / before) * 100, 3)
     cprint(f"{outfile.name}", "green", end=" | ")
-    cprint(f"{ratio:.3f}", "cyan")
+    cprint(f"{ratio}", "cyan")
     del before, after, ratio
     return
 
 
 def main():
-    cwd = Path.cwd()
-    before = get_size(cwd)
+    root_dir = Path.cwd()
+    before = get_size(root_dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(cwd, recursive=True)
+    files = [Path(arg) for arg in args] if args else get_files(root_dir, recursive=True)
     for f in files:
         process_file(f)
-    diff_size = before - get_size(cwd)
+    diff_size = before - get_size(root_dir)
     print(f"{format_size(diff_size)}")
 
 

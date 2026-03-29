@@ -2,47 +2,53 @@
 import sys
 import pathlib
 
+# !/data/data/com.termux/files/usr/bin/python
+from pathlib import Path
+import operator
+from collections import deque
+from multiprocessing import get_context
 
-def ensure_bracket(fn):
-    open_parantez_count = 0
-    close_parantez_count = 0
-    open_braket_count = 0
-    close_braket_count = 0
-    open_cbraket_count = 0
-    close_cbraket_count = 0
-    with pathlib.Path(fn).open(encoding="utf-8") as f:
-        content = f.read()
-        lc = len(content)
-        for i in range(lc):
-            if content[i] == "(":
-                open_parantez_count += 1
-            if content[i] == ")":
-                close_parantez_count += 1
-            if content[i] == "[":
-                open_braket_count += 1
-            if content[i] == "]":
-                close_braket_count += 1
-            if content[i] == "{":
-                open_cbraket_count += 1
-            if content[i] == "}":
-                close_cbraket_count += 1
-    print(f"open_parantez_count : {open_parantez_count}\nclose_parantez_count : {close_parantez_count}")
-    print(f"open_braket_count : {open_braket_count}\nclose_braket_count : {close_braket_count}")
-    print(f"open_cbraket_count : {open_cbraket_count}\nclose_cbraket_count : {close_cbraket_count}")
-    return bool(
-        open_parantez_count == close_parantez_count
-        and open_braket_count == close_braket_count
-        and open_cbraket_count == close_cbraket_count
-    )
+from dh import get_size, get_files, format_size
+from termcolor import cprint
+
+
+MAX_QUEUE = 16
+
+
+def process_file(fn):
+    text = ""
+    text = pathlib.Path(fn).read_text(encoding="utf-8")
+    stack = []
+    mapping = {")": "(", "]": "[", "}": "{"}
+
+    for char in text:
+        if char in mapping:
+            top_element = stack.pop() if stack else "#"  # Use '#' as a placeholder if stack is empty
+            if mapping[char] != top_element:
+                return False
+        elif char in {"(", "[", "{"}:
+            stack.append(char)
+    if not stack:
+        print(fn.name)
+    return not stack
 
 
 def main():
-    if len(sys.argv > 0):
-        filename = sys.argv[1]
-        if ensure_bracket(filename):
-            print("ok")
-        else:
-            print("error")
+    cwd = Path.cwd()
+    args = sys.argv[1:]
+    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
+    if len(files) == 1:
+        process_file(files[0])
+        sys.exit(0)
+
+    with get_context("spawn").Pool(8) as pool:
+        pending = deque()
+        for f in files:
+            pending.append(pool.apply_async(process_file, (f,)))
+            if len(pending) > MAX_QUEUE:
+                pending.popleft().get()
+        while pending:
+            pending.popleft().get()
 
 
 if __name__ == "__main__":

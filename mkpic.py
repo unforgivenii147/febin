@@ -9,7 +9,7 @@ from dh import get_size, get_files, format_size
 
 
 MAX_QUEUE = 16
-REMOVE_ORIG = False
+REMOVE_ORIG = True
 
 
 def process_file(fp):

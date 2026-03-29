@@ -14,17 +14,13 @@ def to_lowercase(path):
             new_path = item.with_name(new_name)
             if new_path != item and not new_path.exists():
                 item.rename(new_path)
-                print(f"[{item.name}] -> [{new_path.name}]")
-            else:
+            #                print(f"[{item.name}] -> [{new_path.name}]")
+            elif new_path.exists():
                 new_path = unique_path(new_path)
                 item.rename(new_path)
-                if "_1." in item.name:
-                    new_name = item.stem.replace("_1", "") + item.suffix
-                    new_path = item.with_name(new_name)
-                    item.rename(new_path)
 
 
 if __name__ == "__main__":
-    current_dir = Path.cwd()
-    print(f"Converting file and directory names to lowercase in: {current_dir}")
-    to_lowercase(current_dir)
+    cwd = Path.cwd()
+    print(f"Converting file and directory names to lowercase in: {cwd}")
+    to_lowercase(cwd)

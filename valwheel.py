@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import shutil
-import pathlib
+from pathlib import Path
 
 from packaging.tags import parse_tag
 from packaging.utils import canonicalize_name
@@ -39,16 +39,15 @@ def is_valid_wheel_name(filename):
 
 
 def main():
-    invalid_dir = "invalid_wheels"
-    pathlib.Path(invalid_dir).mkdir(exist_ok=True, parents=True)
-    for filename in os.listdir("."):
-        if filename.endswith(".whl"):
-            if not is_valid_wheel_name(filename):
-                print(f"Invalid wheel name: {filename}")
-                shutil.move(
-                    filename,
-                    os.path.join(invalid_dir, filename),
-                )
+    invalid_dir = Path("invalid_wheels")
+    invalid_dir.mkdir(exist_ok=True)
+    cwd = Path.cwd()
+    for path in cwd.iterdir():
+        if path.suffix == ".whl":
+            if not is_valid_wheel_name(path):
+                print(f"Invalid wheel name: {path}")
+                dest = invalid_dir / path.name
+                shutil.move(str(path), str(dest))
             else:
                 print(f"Valid wheel name: {filename}")
 

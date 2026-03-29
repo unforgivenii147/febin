@@ -1,9 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+from dh import get_nobinary
 
-
-EXCLUDED_DIRS = {".git"}
 
 
 def clean_lines(lines: list[str], collapse: bool) -> tuple[list[str], int]:
@@ -27,10 +26,11 @@ def clean_lines(lines: list[str], collapse: bool) -> tuple[list[str], int]:
     return cleaned, removed
 
 
-def clean_file(
+def process_file(
     path: Path,
     collapse: bool,
 ) -> tuple[bool, int, str]:
+    print(f"processing {path.name}")
     try:
         with Path(path).open(encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()
@@ -45,8 +45,11 @@ def clean_file(
 
 
 def main() -> None:
-    fn = Path(sys.argv[1])
-    clean_file(fn, collapse=False)
+    cwd = Path.cwd()
+    args = sys.argv[1:]
+    files = [Path(p) for p in args] if args else get_nobinary(cwd)
+    for f in files:
+        process_file(f, collapse=True)
 
 
 if __name__ == "__main__":

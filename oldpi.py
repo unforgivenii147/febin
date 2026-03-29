@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import mmap
-import pathlib
+from pathlib import Path
 import argparse
 import tokenize
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -16,8 +16,8 @@ OLD_PRINT_RE = re.compile(r"(?m)^[ \t]*print[ \t]+[^(\n]")
 
 
 def _open_source(filepath: str):
-    size = pathlib.Path(filepath).stat().st_size
-    f = pathlib.Path(filepath).open("rb")
+    size = Path(filepath).stat().st_size
+    f = Path(filepath).open("rb")
     if size > SIZE_THRESHOLD:
         return mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
     return f
@@ -25,7 +25,7 @@ def _open_source(filepath: str):
 
 def _read_text(filepath: str) -> str | None:
     try:
-        with pathlib.Path(filepath).open(encoding="utf-8", errors="ignore") as f:
+        with Path(filepath).open(encoding="utf-8", errors="ignore") as f:
             return f.read()
     except Exception:
         return None
@@ -72,7 +72,7 @@ def tokenizer_confirm(
 
 def autofix_file(filepath: str) -> bool:
     try:
-        with pathlib.Path(filepath).open(encoding="utf-8") as f:
+        with Path(filepath).open(encoding="utf-8") as f:
             lines = f.readlines()
         if any(l.strip() == "from rich import print" for l in lines):
             return False
@@ -87,7 +87,7 @@ def autofix_file(filepath: str) -> bool:
                 lines[i] = f"{indent}print({content})\n"
                 changed = True
         if changed:
-            with pathlib.Path(filepath).open("w", encoding="utf-8") as f:
+            with Path(filepath).open("w", encoding="utf-8") as f:
                 f.writelines(lines)
         return changed
     except Exception:

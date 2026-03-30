@@ -25,10 +25,9 @@ def check_package_on_pypi(package_name: str, current_version: str) -> str | None
             return data["info"]["version"]
             # Handle pre-releases if needed
             # You could add logic here to check for pre-releases if current version is pre-release
-        elif response.status_code == 404:
+        if response.status_code == 404:
             return None  # Package not found on PyPI
-        else:
-            return None
+        return None
     except requests.exceptions.RequestException as e:
         print(f"  ⚠️  Error checking {package_name}: {e}")
         return None
@@ -44,18 +43,16 @@ def compare_versions(current: str, latest: str) -> str:
         latest_v = Version(latest)
         if current_v < latest_v:
             return "update"
-        elif current_v > latest_v:
+        if current_v > latest_v:
             return "newer"  # Current is newer than latest (unusual)
-        else:
-            return "current"
+        return "current"
     except InvalidVersion:
         # If version parsing fails, do string comparison
         if current == latest:
             return "current"
-        elif current < latest:
+        if current < latest:
             return "update"
-        else:
-            return "newer"
+        return "newer"
 
 
 def is_venv() -> bool:

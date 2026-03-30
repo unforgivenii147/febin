@@ -3,9 +3,7 @@ import pathlib
 import subprocess
 
 
-def save_installed_packages(
-    output_file="installed.txt",
-):
+def save_installed_packages(output_file="installed.txt"):
     """
     Save the names of installed Debian packages to a text file.
     Package names are saved without their version numbers.

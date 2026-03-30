@@ -10,14 +10,12 @@ def normalize_repo_address(repo_arg: str) -> str:
         parts = repo_arg.rstrip("/").split("/")
         if len(parts) >= 5:
             return f"{parts[3]}/{parts[4]}"
-        else:
-            msg = "Invalid GitHub URL format."
-            raise ValueError(msg)
-    elif "/" in repo_arg:
-        return repo_arg
-    else:
-        msg = "Repo address must be URL or user/repo format."
+        msg = "Invalid GitHub URL format."
         raise ValueError(msg)
+    if "/" in repo_arg:
+        return repo_arg
+    msg = "Repo address must be URL or user/repo format."
+    raise ValueError(msg)
 
 
 def get_repo_size(repo: str) -> int:
@@ -26,12 +24,11 @@ def get_repo_size(repo: str) -> int:
     if response.status_code == 200:
         data = response.json()
         return data.get("size", 0)
-    elif response.status_code == 404:
+    if response.status_code == 404:
         msg = "Repository not found."
         raise ValueError(msg)
-    else:
-        msg = f"GitHub API error: {response.status_code}"
-        raise RuntimeError(msg)
+    msg = f"GitHub API error: {response.status_code}"
+    raise RuntimeError(msg)
 
 
 def get_branches(repo: str) -> list:
@@ -40,9 +37,8 @@ def get_branches(repo: str) -> list:
     if response.status_code == 200:
         data = response.json()
         return [branch["name"] for branch in data]
-    else:
-        msg = f"Failed to fetch branches: {response.status_code}"
-        raise RuntimeError(msg)
+    msg = f"Failed to fetch branches: {response.status_code}"
+    raise RuntimeError(msg)
 
 
 def get_branch_size(repo: str, branch: str) -> int:
@@ -52,9 +48,8 @@ def get_branch_size(repo: str, branch: str) -> int:
         data = response.json()
         size_bytes = sum(item.get("size", 0) for item in data.get("tree", []) if item["type"] == "blob")
         return size_bytes // 1024
-    else:
-        msg = f"Failed to fetch branch tree: {branch}, status {response.status_code}"
-        raise RuntimeError(msg)
+    msg = f"Failed to fetch branch tree: {branch}, status {response.status_code}"
+    raise RuntimeError(msg)
 
 
 def format_size(kb: int) -> str:

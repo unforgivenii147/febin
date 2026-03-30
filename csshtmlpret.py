@@ -155,9 +155,7 @@ def _props_grouper(props, pgs):
     return props
 
 
-def sort_properties(
-    css_unsorted_string: str,
-) -> str:
+def sort_properties(css_unsorted_string: str) -> str:
     css_pgs = _compile_props(CSS_PROPS_TEXT, grouped=bool(args.group))
     pattern = re.compile(
         r"(.*?{\r?\n?)(.*?)(}.*?)|(.*)",
@@ -389,9 +387,7 @@ def prefixer_extensioner(file_path: str) -> str:
     return os.path.join(dir_names, filenames + extension)
 
 
-def process_single_css_file(
-    css_file_path: str,
-) -> str:
+def process_single_css_file(css_file_path: str) -> str:
     global args
     original_css = pathlib.Path(css_file_path).read_text(encoding="utf-8-sig")
     pretty_css = css_prettify(original_css, args.justify, args.extraline)
@@ -403,9 +399,7 @@ def process_single_css_file(
     return pretty_css
 
 
-def process_single_html_file(
-    html_file_path: str,
-) -> str:
+def process_single_html_file(html_file_path: str) -> str:
     with pathlib.Path(html_file_path).open(encoding="utf-8-sig") as html_file:
         pretty_html = html_prettify(html_file.read(), args.extraline)
     html_file_path = prefixer_extensioner(html_file_path)

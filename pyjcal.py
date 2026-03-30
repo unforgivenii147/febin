@@ -125,9 +125,7 @@ class JalaliDate:
         j_d = j_day_no + 1
         return JalaliDate(j_y, j_m, int(j_d))
 
-    def to_gregorian(
-        self,
-    ) -> tuple[int, int, int]:
+    def to_gregorian(self) -> tuple[int, int, int]:
         jy = self.year
         jm = self.month
         jd = self.day
@@ -229,10 +227,9 @@ class JalaliDate:
     def days_in_month(self) -> int:
         if self.month <= 6:
             return 31
-        elif self.month <= 11:
+        if self.month <= 11:
             return 30
-        else:
-            return 30 if self.is_leap_year() else 29
+        return 30 if self.is_leap_year() else 29
 
     def days_in_year(self) -> int:
         return 366 if self.is_leap_year() else 365
@@ -254,9 +251,7 @@ class JalaliCalendar:
         self.year = year if year is not None else today.year
         self.month = month if month is not None else today.month
 
-    def get_month_calendar(
-        self,
-    ) -> list[list[int]]:
+    def get_month_calendar(self) -> list[list[int]]:
         first_day = JalaliDate(self.year, self.month, 1)
         first_weekday = first_day.weekday()
         days_in_month = first_day.days_in_month()
@@ -423,8 +418,7 @@ def jdate(fmt: str | None = None, language: str = "en") -> str:
         fmt = "%A %d %B %Y %H:%M:%S"
     if language == "fa":
         return JalaliDateFormatter.format_fa(jdate, now, fmt)
-    else:
-        return JalaliDateFormatter.format(jdate, now, fmt)
+    return JalaliDateFormatter.format(jdate, now, fmt)
 
 
 if __name__ == "__main__":

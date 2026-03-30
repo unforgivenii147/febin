@@ -26,10 +26,9 @@ def group_key(name: str):
     first = name[0]
     if first.isupper():
         return (0, name)
-    elif first.islower():
+    if first.islower():
         return (1, name)
-    else:
-        return (2, name)
+    return (2, name)
 
 
 def main() -> None:

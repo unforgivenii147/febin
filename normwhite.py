@@ -1,18 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
+from pathlib import Path
+
+import regex as re
 
 
 def normalize_white_space(input_path) -> None:
-    with pathlib.Path(input_path).open("r", encoding="utf-8", errors="replace") as f:
-        text = f.read()
+    text = Path(input_path).read_text(encoding="utf-8", errors="ignore")
     cleaned = re.sub(
         r"[\u00A0\u2000-\u200F\u2028\u2029\u202F\u205F\u3000\uFEFF]",
         " ",
         text,
     )
     cleaned = re.sub(r"[\u200B-\u200D\uFEFF]", "", cleaned)
-    with pathlib.Path(input_path).open("w", encoding="utf-8") as f:
-        f.write(cleaned)
+    Path(input_path).write_text(cleaned, encoding="utf-8")
 
 
 if __name__ == "__main__":

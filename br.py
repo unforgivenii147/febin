@@ -51,9 +51,8 @@ def process_file(fp):
     outfile = Path(str(fp) + ".br")
     if parallel_compress(fp, outfile):
         fp.unlink()
-    else:
-        if outfile.exists():
-            outfile.unlink()
+    elif outfile.exists():
+        outfile.unlink()
     after = get_size(outfile)
     ratio = (after / before) * 100
     cprint(f"{outfile.name}", "green", end=" | ")

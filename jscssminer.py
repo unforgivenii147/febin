@@ -6,9 +6,7 @@ from rjsmin import jsmin
 from rcssmin import cssmin
 
 
-def minify_assets_in_directory(
-    cwd=".",
-) -> None:
+def minify_assets_in_directory(cwd=".") -> None:
     minified_count = 0
     errors_count = 0
     for (

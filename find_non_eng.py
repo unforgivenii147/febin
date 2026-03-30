@@ -177,13 +177,12 @@ class LanguageDetector:
                     lang_code,
                     percent,
                 )
-            else:
-                return (
-                    False,
-                    "UNKNOWN",
-                    None,
-                    None,
-                )
+            return (
+                False,
+                "UNKNOWN",
+                None,
+                None,
+            )
         except pycld2.error as e:
             return (
                 False,

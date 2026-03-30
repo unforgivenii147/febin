@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import shutil
 from pathlib import Path
 import subprocess
@@ -27,9 +26,7 @@ def should_format(file_path: Path) -> bool:
     return all(not file_path.name.endswith(p) for p in EXCLUDE_PATTERNS)
 
 
-def get_files_to_format(
-    cwd: str = ".",
-) -> list[Path]:
+def get_files_to_format(cwd: str = ".") -> list[Path]:
     root = Path(cwd).resolve()
     files: list[Path] = []
     for path in root.rglob("*"):
@@ -51,9 +48,7 @@ def move_to_error_folder(file_path: Path) -> None:
     print(f"  ❌ Moved to error folder: {dest}")
 
 
-def format_file(
-    file_path: Path,
-) -> tuple[Path, bool, str | None]:
+def format_file(file_path: Path) -> tuple[Path, bool, str | None]:
     try:
         result = subprocess.run(
             [

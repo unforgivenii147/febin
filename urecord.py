@@ -4,10 +4,9 @@ Script to scan site-packages directories and update RECORD files by removing
 references to .pyc files and direct_url.json.
 """
 
-import os
 import csv
 import sys
-import pathlib
+from pathlib import Path
 import argparse
 
 
@@ -18,14 +17,14 @@ def find_site_packages():
     valid_paths = [p for p in site_packages if p is not None]
     if not valid_paths:
         user_site = site.getusersitepackages()
-        if user_site and pathlib.Path(user_site).exists():
+        if user_site and Path(user_site).exists():
             valid_paths = [user_site]
     return valid_paths
 
 
 def update_record_file(record_path):
     try:
-        with pathlib.Path(record_path).open(encoding="utf-8") as f:
+        with record_path.open(encoding="utf-8") as f:
             lines = list(csv.reader(f))
         original_count = len(lines)
         filtered_lines = []
@@ -46,7 +45,7 @@ def update_record_file(record_path):
             filtered_lines.append(row)
         if len(filtered_lines) == original_count:
             return False
-        with pathlib.Path(record_path).open("w", encoding="utf-8", newline="") as f:
+        with record_path.open("w", encoding="utf-8", newline="") as f:
             writer = csv.writer(f)
             writer.writerows(filtered_lines)
         print(f"  Updated: {record_path} (removed {original_count - len(filtered_lines)} entries)")
@@ -63,19 +62,16 @@ def scan_and_update(site_packages_dirs, dry_run=False):
     total_updated = 0
     total_files = 0
     for site_dir in site_packages_dirs:
-        if not pathlib.Path(site_dir).exists():
+        if not Path(site_dir).exists():
             print(f"Directory does not exist: {site_dir}")
             continue
         print(f"\nScanning: {site_dir}")
-        for root, _dirs, files in os.walk(site_dir):
-            if not root.endswith(".dist-info"):
-                continue
-            if "RECORD" in files:
-                record_path = os.path.join(root, "RECORD")
+        for path in Path(site_dir).rglob("*"):
+            if path.name == "RECORD":
                 total_files += 1
                 if dry_run:
                     try:
-                        with pathlib.Path(record_path).open(encoding="utf-8") as f:
+                        with path.open(encoding="utf-8") as f:
                             lines = list(csv.reader(f))
                         pyc_count = sum(1 for row in lines if row and row[0].endswith(".pyc"))
                         direct_url_count = sum(1 for row in lines if row and row[0] == "direct_url.json")
@@ -83,10 +79,10 @@ def scan_and_update(site_packages_dirs, dry_run=False):
                             total_updated += 1
                     except Exception as e:
                         print(
-                            f"  Error reading {record_path}: {e}",
+                            f"  Error reading {path}: {e}",
                             file=sys.stderr,
                         )
-                elif update_record_file(record_path):
+                elif update_record_file(path):
                     total_updated += 1
     return total_files, total_updated
 

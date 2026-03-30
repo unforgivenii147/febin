@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import stat
 from pathlib import Path
 
@@ -20,7 +19,7 @@ def normalize_permissions(homedir: str) -> None:
             if path.is_dir():
                 if current_perm != DIR_PERM:
                     Path(path).chmod(DIR_PERM)
-                    print(f"Set permissions for directory: {path} from {oct(current_perm)} to {oct(DIR_PERM)}")
+                    print(f"{path.name} {oct(current_perm)} : {oct(DIR_PERM)}")
             elif path.is_file():
                 if current_perm != FILE_PERM:
                     Path(path).chmod(FILE_PERM)

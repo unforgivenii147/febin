@@ -121,9 +121,9 @@ def process_archive(path):
     lower = path.lower()
     if lower.endswith((".zip", ".whl")):
         return process_zip(path)
-    elif lower.endswith((".tar.gz", ".tgz")):
+    if lower.endswith((".tar.gz", ".tgz")):
         return process_tar(path, "r:gz")
-    elif lower.endswith((".tar.xz", ".txz")):
+    if lower.endswith((".tar.xz", ".txz")):
         return process_tar(path, "r:xz")
     return set()
 
@@ -132,8 +132,7 @@ def worker(path):
     try:
         if path.lower().endswith(ARCHIVE_EXTENSIONS):
             return process_archive(path)
-        else:
-            return process_regular_file(path)
+        return process_regular_file(path)
     except Exception:
         return set()
 

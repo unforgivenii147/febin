@@ -98,9 +98,7 @@ def clean_text(text: str) -> str:
     return "\n".join(out)
 
 
-def ast_validate(
-    code: str,
-) -> tuple[bool, str | None]:
+def ast_validate(code: str) -> tuple[bool, str | None]:
     try:
         ast.parse(code)
         return True, None

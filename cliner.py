@@ -76,8 +76,7 @@ def clean_file_worker(file_path: Path) -> tuple:
         get_size = file_path.stat().st_size
         if get_size > MMAP_THRESHOLD:
             return clean_file_large(file_path)
-        else:
-            return clean_file_small(file_path)
+        return clean_file_small(file_path)
     except Exception as e:
         return (file_path, False, str(e))
 

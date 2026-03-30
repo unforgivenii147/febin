@@ -20,9 +20,7 @@ def run_pip_check() -> str:
     return result.stdout.strip()
 
 
-def parse_missing_packages(
-    pip_output: str,
-) -> list[str]:
+def parse_missing_packages(pip_output: str) -> list[str]:
     missing: set[str] = set()
     for line in pip_output.splitlines():
         match = MISSING_PATTERN.search(line)
@@ -41,9 +39,7 @@ def read_existing_requirements() -> set[str]:
     }
 
 
-def save_to_requirements(
-    packages: Iterable[str],
-) -> None:
+def save_to_requirements(packages: Iterable[str]) -> None:
     existing = read_existing_requirements()
     merged = sorted(existing | set(packages))
     REQUIREMENTS_FILE.write_text("\n".join(merged) + "\n", encoding="utf-8")

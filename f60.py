@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import sys
 import time
 from pathlib import Path
@@ -32,7 +31,6 @@ def main() -> None:
         created = stats.st_ctime
         modified = stats.st_mtime
         changed = stats.st_ctime
-        accessed = stats.st_atime
         pathstr = str(path.name)
         max_path_string = max(len(pathstr), 20)
         if created <= cutoff or modified >= cutoff or changed >= cutoff:
@@ -46,7 +44,6 @@ def main() -> None:
 
 
 #        print(f"{pth.relative_to(cwd)} : {ctime}")
-
 
 if __name__ == "__main__":
     main()

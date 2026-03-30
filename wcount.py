@@ -3,7 +3,7 @@ import sys
 import json
 from pathlib import Path
 from collections import deque
-from multiprocessing import Pool
+from multiprocessing import get_context
 
 from dh import get_nobinary
 from toolz import compose, frequencies
@@ -25,7 +25,6 @@ def process_file(fp):
     word_count = compose(frequencies, _map(stem), str.split)
     content = fp.read_text(encoding="utf-8")
     return word_count(content)
-    #    logger.info(sorted(result))
 
 
 def main():
@@ -33,7 +32,7 @@ def main():
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_nobinary(cwd)
     results = {}
-    with Pool(8) as pool:
+    with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:
             pending.append(pool.apply_async(process_file, (f,)))
@@ -61,9 +60,6 @@ def main():
     with Path(outfile).open("w", encoding="utf-8") as fo:
         json.dump(word_sorted, fo, ensure_ascii=False, indent=2)
 
-
-#        for v in results.keys():
-#            fo.write(f"{str(v)} : {str(results.get(v))}\n")
 
 if __name__ == "__main__":
     main()

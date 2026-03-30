@@ -35,11 +35,10 @@ def check_package_health(package_name):
                 status = line.split()[0]
                 if status.startswith("ii"):
                     return True, "OK"
-                else:
-                    return (
-                        False,
-                        f"Status: {status}",
-                    )
+                return (
+                    False,
+                    f"Status: {status}",
+                )
     except subprocess.CalledProcessError as e:
         return (
             False,

@@ -2,6 +2,7 @@
 import sys
 from pathlib import Path
 from collections import deque
+from multiprocessing import get_context
 
 from dh import get_size, get_files, format_size, run_command
 from termcolor import cprint
@@ -33,9 +34,8 @@ def process_file(fp):
                 "cyan",
             )
         return True
-    else:
-        cprint(f"[ERROR] {err}", "magenta")
-        return False
+    cprint(f"[ERROR] {err}", "magenta")
+    return False
 
 
 def main():
@@ -43,15 +43,10 @@ def main():
     cwd = Path.cwd()
     before = get_size(cwd)
     files = (
-        list(args)
-        if args
-        else get_files(
-            cwd,
-            recursive=True,
-            extensions=[".js", ".ts", ".mjs", ".jsx", ".tsx"],
-        )
+        [Path(p) for p in args] if args else get_files(cwd, extensions=[".js", ".ts", ".cjs", ".mjs", ".jsx", ".tsx"])
     )
-    with Pool(8) as p:
+
+    with get_context("spawn").Pool(8) as p:
         pending = deque()
         for f in files:
             pending.append(p.apply_async(process_file, ((f),)))

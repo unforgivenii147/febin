@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 CHUNK_SIZE = 524288
+MAX_BYTE_INDEX = 19
 
 
 class QuickXorHash:
@@ -18,7 +19,7 @@ class QuickXorHash:
             byte_index = shift // 8
             bit_index = shift % 8
             self._hash[byte_index] ^= (b << bit_index) & 0xFF
-            if bit_index > 0 and byte_index < 19:
+            if bit_index > 0 and byte_index < MAX_BYTE_INDEX:
                 self._hash[byte_index + 1] ^= (b >> (8 - bit_index)) & 0xFF
             self._length += 1
 

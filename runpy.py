@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+from collections import deque
 from multiprocessing import get_context
 
 from dh import get_size, format_size, get_pyfiles, run_command
@@ -27,11 +28,14 @@ def main() -> None:
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-    p = get_context("spawn").Pool(8)
-    for _ in p.imap_unordered(process_file, files):
-        pass
-    p.close()
-    p.join()
+    with get_context("spawn").Pool(8) as p:
+        pending = deque()
+        for f in files:
+            pending.append(p.apply_async(process_file, (f,)))
+            if len(pending) > 16:
+                pending.popleft().get()
+        while pending:
+            pending.popleft().get()
     diffsize = before - get_size(cwd)
     cprint(
         f"{format_size(diffsize)}",

@@ -4,12 +4,10 @@ import pathlib
 
 # !/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-import operator
 from collections import deque
 from multiprocessing import get_context
 
-from dh import get_size, get_files, format_size
-from termcolor import cprint
+from dh import get_files
 
 
 MAX_QUEUE = 16

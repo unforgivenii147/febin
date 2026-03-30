@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import sys
 import json
 import time
@@ -14,6 +13,8 @@ import requests
 CHUNK_SIZE = 5 * 1024 * 1024
 MAX_RETRIES = 5
 RETRY_DELAY = 2
+THREE = 3
+FOUR = 4
 
 
 class GracefulExit(Exception):
@@ -59,9 +60,7 @@ def save_meta(meta_path: str, meta: dict):
     pathlib.Path(tmp).replace(meta_path)
 
 
-def build_chunks(
-    size: int,
-) -> list[tuple[int, int]]:
+def build_chunks(size: int) -> list[tuple[int, int]]:
     chunks = []
     for i in range(0, size, CHUNK_SIZE):
         end = min(i + CHUNK_SIZE - 1, size - 1)
@@ -141,10 +140,10 @@ def download(url: str, output: str, workers: int = 4):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
+    if len(sys.argv) < THREE:
         print("Usage: python downloader.py <url> <output_file> [workers]")
         sys.exit(1)
     url = sys.argv[1]
     output = sys.argv[2]
-    workers = int(sys.argv[3]) if len(sys.argv) > 3 else 4
+    workers = int(sys.argv[3]) if len(sys.argv) > THREE else FOUR
     download(url, output, workers)

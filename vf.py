@@ -52,12 +52,9 @@ def cleanup_wheels(whl_dir: Path):
             # Delete older versions based on the date_part
             elif "-" in version:
                 date_part = version.split("-")[-1]
-                if package_name in latest_versions and latest_versions[package_name][0] != date_part:
-                    file_path.unlink()
-                    print(f"Deleted: {file_name}")
-                    deleted_files += 1
-                # Also delete if it's not the latest version we tracked (this condition is a bit redundant if the above logic is correct, but ensures cleanup)
-                elif package_name in latest_versions and latest_versions[package_name][2] != file_path:
+                if (package_name in latest_versions and latest_versions[package_name][0] != date_part) or (
+                    package_name in latest_versions and latest_versions[package_name][2] != file_path
+                ):
                     file_path.unlink()
                     print(f"Deleted: {file_name}")
                     deleted_files += 1

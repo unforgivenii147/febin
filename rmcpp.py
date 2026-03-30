@@ -105,9 +105,8 @@ def process_file(path):
             path,
             comments,
         )
-    else:
-        print(f"[NO CHANGE] {path.name}")
-        return ("nochange", path, 0)
+    print(f"[NO CHANGE] {path.name}")
+    return ("nochange", path, 0)
 
 
 if __name__ == "__main__":

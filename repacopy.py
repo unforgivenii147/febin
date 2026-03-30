@@ -20,9 +20,7 @@ class PackageRepacker:
         self.output_base.mkdir(parents=True, exist_ok=True)
         self.found_site_packages: list[Path] = []
 
-    def find_site_packages_dirs(
-        self,
-    ) -> list[Path]:
+    def find_site_packages_dirs(self) -> list[Path]:
         site_packages_dirs = []
         search_paths = [
             Path.cwd(),

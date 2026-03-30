@@ -20,7 +20,8 @@ def process_file(path):
 
         with jsonpath.open("w") as f:
             data = xmltodict.parse(xml_content)
-            json.dump(data, f, indent=4)
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        path.unlink()
     except OSError as e:
         print(f"error {e}")
 

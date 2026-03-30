@@ -82,9 +82,8 @@ def check_for_updates(package_name, mirror_url="https://mirror-pypi.runflare.com
     if latest_version > installed_version:
         print(f"Update available for {package_name}: {installed_version} -> {latest_version}")
         return True
-    else:
-        print(f"{package_name} is up to date: {installed_version}")
-        return False
+    print(f"{package_name} is up to date: {installed_version}")
+    return False
 
 
 if __name__ == "__main__":

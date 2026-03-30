@@ -12,9 +12,7 @@ from email.parser import Parser
 EXT_SUFFIXES = (".so", ".pyd", ".dll")
 
 
-def read_entry_points(
-    root: Path,
-) -> dict[str, list[str]]:
+def read_entry_points(root: Path) -> dict[str, list[str]]:
     dist_info = next(root.glob("*.dist-info"), None)
     if not dist_info:
         return {}

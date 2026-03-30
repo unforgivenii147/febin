@@ -59,14 +59,12 @@ def validate_with_treesitter(parser, code: str) -> bool:
     return not tree.root_node.has_error
 
 
-def validate_with_clang(
-    file_path: Path,
-) -> tuple[bool, str]:
+def validate_with_clang(file_path: Path) -> tuple[bool, str]:
     cmd = f"clang++ -std=c++20 -fsyntax-only {file_path!s}"
     ret, txt, err = run_command(cmd)
     if ret != 0:
         return False, err
-    elif ret == 0:
+    if ret == 0:
         return True, txt
     return None
 

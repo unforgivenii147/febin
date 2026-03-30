@@ -21,9 +21,7 @@ def iter_files(root: Path) -> list[Path]:
     return files
 
 
-def ctime_if_recent(
-    path: Path,
-) -> tuple[float, Path] | None:
+def ctime_if_recent(path: Path) -> tuple[float, Path] | None:
     try:
         ctime = path.stat().st_ctime
         if NOW - ctime <= SECONDS_24H:

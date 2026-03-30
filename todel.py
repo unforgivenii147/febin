@@ -29,9 +29,7 @@ def delete_multiline_string_from_files(search_string, directory=".") -> None:
                     print(f"Error processing file {file_path}: {e}")
 
 
-def read_string_to_delete(
-    filename="/sdcard/todel.txt",
-):
+def read_string_to_delete(filename="/sdcard/todel.txt"):
     try:
         with pathlib.Path(filename).open(encoding="utf-8") as file:
             return file.read()

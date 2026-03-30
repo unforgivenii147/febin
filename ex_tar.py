@@ -217,67 +217,66 @@ def main():
             print(f"DRY RUN: Would extract {target_path.name}")
         return 0 if success else 1
     # Directory mode (recursive search)
-    else:
-        if not args.quiet:
-            print(f"Recursively scanning {target_path} for archives...")
-        archives = find_archives(target_path)
-        if not archives:
-            print("No supported archives found.")
-            return 0
-        if not args.quiet:
-            print(f"Found {len(archives)} archives to process")
-            # Show breakdown by type
-            zst_count = sum(1 for a in archives if a.suffix == ".zst" and not a.name.endswith(".tar.zst"))
-            tar_zst_count = sum(1 for a in archives if a.name.endswith(".tar.zst"))
-            tar_xz_count = sum(1 for a in archives if a.name.endswith(".tar.xz"))
-            if zst_count:
-                print(f"  - Standalone .zst: {zst_count}")
-            if tar_zst_count:
-                print(f"  - .tar.zst: {tar_zst_count}")
-            if tar_xz_count:
-                print(f"  - .tar.xz: {tar_xz_count}")
-        # Calculate initial size
-        before = get_dir_size(target_path)
-        processed_count = 0
-        failed_count = 0
-        total_archive_size = 0
-        total_extracted_size = 0
-        # Process each archive
-        for archive in archives:
-            success, arch_size, ext_size = process_archive(
-                archive,
-                args.dry_run,
-                args.keep_original,
-                args.quiet,
-            )
-            if success:
-                processed_count += 1
-                total_archive_size += arch_size
-                total_extracted_size += ext_size
-            else:
-                failed_count += 1
-        # Calculate final size and show summary
-        if not args.dry_run:
-            after = get_dir_size(target_path)
-            size_change = after - before
-            size_change_mb = size_change / (1024 * 1024)
-            print(f"\n{'=' * 50}")
-            print("Summary:")
-            print(f"  Processed: {processed_count} archives")
-            if failed_count > 0:
-                print(f"  Failed: {failed_count} archives")
-            print(f"  Initial directory size: {before / (1024 * 1024):.2f} MB")
-            print(f"  Final directory size:   {after / (1024 * 1024):.2f} MB")
-            print(f"  Size change:            {size_change_mb:+.2f} MB")
-            if total_archive_size > 0:
-                compression_ratio = total_extracted_size / total_archive_size
-                print(f"  Average compression ratio: {compression_ratio:.2f}:1")
-                print(f"  Space saved by compression: {total_archive_size / (1024 * 1024):.2f} MB")
-        else:
-            print(f"\n{'=' * 50}")
-            print("DRY RUN SUMMARY:")
-            print(f"  Would process: {len(archives)} archives")
+    if not args.quiet:
+        print(f"Recursively scanning {target_path} for archives...")
+    archives = find_archives(target_path)
+    if not archives:
+        print("No supported archives found.")
         return 0
+    if not args.quiet:
+        print(f"Found {len(archives)} archives to process")
+        # Show breakdown by type
+        zst_count = sum(1 for a in archives if a.suffix == ".zst" and not a.name.endswith(".tar.zst"))
+        tar_zst_count = sum(1 for a in archives if a.name.endswith(".tar.zst"))
+        tar_xz_count = sum(1 for a in archives if a.name.endswith(".tar.xz"))
+        if zst_count:
+            print(f"  - Standalone .zst: {zst_count}")
+        if tar_zst_count:
+            print(f"  - .tar.zst: {tar_zst_count}")
+        if tar_xz_count:
+            print(f"  - .tar.xz: {tar_xz_count}")
+    # Calculate initial size
+    before = get_dir_size(target_path)
+    processed_count = 0
+    failed_count = 0
+    total_archive_size = 0
+    total_extracted_size = 0
+    # Process each archive
+    for archive in archives:
+        success, arch_size, ext_size = process_archive(
+            archive,
+            args.dry_run,
+            args.keep_original,
+            args.quiet,
+        )
+        if success:
+            processed_count += 1
+            total_archive_size += arch_size
+            total_extracted_size += ext_size
+        else:
+            failed_count += 1
+    # Calculate final size and show summary
+    if not args.dry_run:
+        after = get_dir_size(target_path)
+        size_change = after - before
+        size_change_mb = size_change / (1024 * 1024)
+        print(f"\n{'=' * 50}")
+        print("Summary:")
+        print(f"  Processed: {processed_count} archives")
+        if failed_count > 0:
+            print(f"  Failed: {failed_count} archives")
+        print(f"  Initial directory size: {before / (1024 * 1024):.2f} MB")
+        print(f"  Final directory size:   {after / (1024 * 1024):.2f} MB")
+        print(f"  Size change:            {size_change_mb:+.2f} MB")
+        if total_archive_size > 0:
+            compression_ratio = total_extracted_size / total_archive_size
+            print(f"  Average compression ratio: {compression_ratio:.2f}:1")
+            print(f"  Space saved by compression: {total_archive_size / (1024 * 1024):.2f} MB")
+    else:
+        print(f"\n{'=' * 50}")
+        print("DRY RUN SUMMARY:")
+        print(f"  Would process: {len(archives)} archives")
+    return 0
 
 
 if __name__ == "__main__":

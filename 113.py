@@ -115,11 +115,10 @@ def compress_file(file_path: Path, delete_delay: float = 0.5) -> bool:
             logger.info(f"✓ Compressed: {file_path.name}")
             logger.info(f"  {original_size} → {compressed_size} bytes ({reduction:.1f}% reduction)")
             return True
-        else:
-            logger.warning(f"Compressed but couldn't delete original: {file_path}")
-            # Return True because compression was successful, even if deletion failed.
-            # The user might want to handle the leftover original file.
-            return True
+        logger.warning(f"Compressed but couldn't delete original: {file_path}")
+        # Return True because compression was successful, even if deletion failed.
+        # The user might want to handle the leftover original file.
+        return True
     except lzma.LZMAError as e:
         logger.error(f"LZMA error compressing {file_path}: {e}")
         if compressed_path.exists():

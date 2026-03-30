@@ -28,29 +28,28 @@ def unzip_file(archive: Path, target_dir: Path) -> bool:
             with tarfile.open(archive, "r:gz") as tar:
                 tar.extractall(target_dir, filter="data")
             return True
-        elif archive_lower.endswith((".tar.bz2", ".tbz2")):
+        if archive_lower.endswith((".tar.bz2", ".tbz2")):
             with tarfile.open(archive, "r:bz2") as tar:
                 tar.extractall(target_dir)
             return True
-        elif archive_lower.endswith((".tar.xz", ".txz")):
+        if archive_lower.endswith((".tar.xz", ".txz")):
             with tarfile.open(archive, "r:xz") as tar:
                 tar.extractall(target_dir)
             return True
-        elif archive_lower.endswith(".tar"):
+        if archive_lower.endswith(".tar"):
             with tarfile.open(archive, "r:") as tar:
                 tar.extractall(target_dir)
             return True
-        elif archive.suffix == ".whl" or archive_lower.endswith(".zip"):
+        if archive.suffix == ".whl" or archive_lower.endswith(".zip"):
             with zipfile.ZipFile(archive, "r") as zip_ref:
                 zip_ref.extractall(target_dir)
             return True
-        else:
-            try:
-                with py7zr.SevenZipFile(archive, mode="r") as sz:
-                    sz.extractall(target_dir)
-                return True
-            except py7zr.exceptions.Bad7zFile:
-                return False
+        try:
+            with py7zr.SevenZipFile(archive, mode="r") as sz:
+                sz.extractall(target_dir)
+            return True
+        except py7zr.exceptions.Bad7zFile:
+            return False
     except (
         tarfile.TarError,
         zipfile.BadZipFile,

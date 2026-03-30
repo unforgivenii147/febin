@@ -21,8 +21,7 @@ def process_file(path) -> None:
             path.write_text(content, encoding="utf-8")
             print(f"{path.name} updated.")
             return
-        else:
-            return
+        return
     except Exception:
         pass
 

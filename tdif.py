@@ -42,14 +42,13 @@ class DiffLine(Static):
         safe_text = self.raw_text.replace("[", "[]")
         if self.line_type == " ":
             return f"{prefix}  {safe_text}"
-        elif self.line_type == "-":
+        if self.line_type == "-":
             return f"{prefix} - {safe_text}"
-        elif self.line_type == "+":
+        if self.line_type == "+":
             return f"{prefix} + {safe_text}"
-        elif self.line_type == "?":
+        if self.line_type == "?":
             return f"{prefix} ? {safe_text}"
-        else:
-            return f"{prefix}   {safe_text}"
+        return f"{prefix}   {safe_text}"
 
     def _apply_styling(self):
         """Apply styling based on line type."""

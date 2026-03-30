@@ -47,12 +47,11 @@ def create_range_folders(base_dir, files, num_folders):
             def format_size(size):
                 if size < 1000:
                     return f"{size}B"
-                elif size < 1_000_000:
+                if size < 1_000_000:
                     return f"{size // 1000}k"
-                elif size < 1_000_000_000:
+                if size < 1_000_000_000:
                     return f"{size // 1_000_000}M"
-                else:
-                    return f"{size // 1_000_000_000}G"
+                return f"{size // 1_000_000_000}G"
 
             folder_name = f"{format_size(min_size)}-{format_size(max_size)}"
             folder_ranges.append((min_size, max_size, folder_name))

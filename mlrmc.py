@@ -121,9 +121,7 @@ def process_file(path: Path) -> None:
         print(f"[FAIL] {path} -> {e}")
 
 
-def collect_supported_files(
-    root: Path,
-) -> list[Path]:
+def collect_supported_files(root: Path) -> list[Path]:
     if root.is_file():
         return [root] if root.suffix.lower() in LANGUAGES else []
     return [p for p in root.rglob("*") if p.is_file() and p.suffix.lower() in LANGUAGES]

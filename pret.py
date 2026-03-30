@@ -41,9 +41,8 @@ def process_file(file_path):
                 "cyan",
             )
         return True
-    else:
-        cprint(f"[ERROR] {file_path.name}", "red")
-        return False
+    cprint(f"[ERROR] {file_path.name}", "red")
+    return False
 
 
 def main() -> None:

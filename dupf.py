@@ -24,7 +24,7 @@ def find_duplicates():
     cwd = Path.cwd()
     files_by_hash = defaultdict(list)
     duplicate_count = 0
-    ptp = [path for path in cwd.rglob("*") if path.is_file() and not should_skip(path)]
+    ptp = [path for path in cwd.rglob("*") if path.is_file() and not path.is_symlink() and not should_skip(path)]
     files_by_size = {}
     for p in ptp:
         try:

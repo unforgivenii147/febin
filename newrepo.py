@@ -32,10 +32,9 @@ class GitHubRepoCreator:
             if token:
                 print("✅ GitHub token loaded successfully")
                 return token
-            else:
-                print("❌ GITHUB_TOKEN not found in .env file")
-                print("Please add: GITHUB_TOKEN=your_token_here")
-                sys.exit(1)
+            print("❌ GITHUB_TOKEN not found in .env file")
+            print("Please add: GITHUB_TOKEN=your_token_here")
+            sys.exit(1)
         else:
             print(f"❌ .env file not found at {self.env_file}")
             print("Please create ~/.env with: GITHUB_TOKEN=your_token_here")

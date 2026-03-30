@@ -34,8 +34,7 @@ def check_package(name) -> tuple:
         info = resp.json()
         if has_native_wheels(info):
             return (name, "native")
-        else:
-            return (name, "pure")
+        return (name, "pure")
     except Exception:
         return (name, "not_found")
 

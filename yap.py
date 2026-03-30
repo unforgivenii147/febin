@@ -2,7 +2,6 @@
 import sys
 from pathlib import Path
 import argparse
-import contextlib
 from collections import deque
 from multiprocessing import get_context
 
@@ -35,12 +34,14 @@ def format_single_file(file_path: Path, args) -> bool:
         if args.black:
             import black
 
-            with contextlib.suppress(black.report.NothingChanged):
-                code = black.format_str(
-                    original_code,
-                    mode=black.Mode(line_length=120),
-                )
-                file_path.write_text(code, encoding="utf-8")
+            mode = black.Mode(
+                line_length=120,
+                is_pyi=False,
+                is_ipynb=False,
+                skip_source_first_line=True,
+                preview=False,
+            )
+            black.format_file_in_place(file_path, fast=False, mode=mode)
 
         elif args.autopep:
             import autopep8

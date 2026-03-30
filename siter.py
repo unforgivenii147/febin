@@ -131,9 +131,7 @@ class WheelBuilder:
                     pass
         return data_files
 
-    def _get_wheel_tags(
-        self,
-    ) -> tuple[str, str, str, bool]:
+    def _get_wheel_tags(self) -> tuple[str, str, str, bool]:
         try:
             from packaging.tags import sys_tags
 
@@ -430,9 +428,8 @@ Examples:
             if builder.build_wheel(dist_info):
                 built += 1
         return 0 if built > 0 else 1
-    else:
-        built = builder.build_all()
-        return 0 if built > 0 else 1
+    built = builder.build_all()
+    return 0 if built > 0 else 1
 
 
 if __name__ == "__main__":

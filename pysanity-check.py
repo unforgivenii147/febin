@@ -11,9 +11,7 @@ def get_installed_python_packages() -> list[tuple[str, str]]:
     return [(d.project_name, d.version) for d in pkg_resources.working_set]
 
 
-def check_package_importable(
-    package_name: str,
-) -> tuple[bool, str]:
+def check_package_importable(package_name: str) -> tuple[bool, str]:
     try:
         importlib.import_module(package_name)
         return True, "OK"

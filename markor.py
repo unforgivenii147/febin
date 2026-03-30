@@ -50,8 +50,7 @@ class GUIFramework:
                     break
                 lines.append(line)
             return "\n".join(lines) if lines else None
-        else:
-            return input("Input: ").strip() or None
+        return input("Input: ").strip() or None
 
     def show_file_picker(self, initial_path: str | None = None) -> str | None:
         if initial_path is None:
@@ -81,9 +80,7 @@ class GUIFramework:
 
 class DocumentFormat(ABC):
     @abstractmethod
-    def get_syntax_highlight_rules(
-        self,
-    ) -> dict[str, str]:
+    def get_syntax_highlight_rules(self) -> dict[str, str]:
         pass
 
     @abstractmethod
@@ -96,9 +93,7 @@ class DocumentFormat(ABC):
 
 
 class MarkdownFormat(DocumentFormat):
-    def get_syntax_highlight_rules(
-        self,
-    ) -> dict[str, str]:
+    def get_syntax_highlight_rules(self) -> dict[str, str]:
         return {
             "heading1": r"^# .*$",
             "heading2": r"^## .*$",
@@ -135,9 +130,7 @@ class MarkdownFormat(DocumentFormat):
 class TodoFormat(DocumentFormat):
     """todo.txt format support."""
 
-    def get_syntax_highlight_rules(
-        self,
-    ) -> dict[str, str]:
+    def get_syntax_highlight_rules(self) -> dict[str, str]:
         """Get todo.txt syntax highlighting rules."""
         return {
             "completed": r"^\(x\) .*$",
@@ -200,15 +193,12 @@ class Document:
         self.format_handler = self._get_format_handler()
         self._load()
 
-    def _get_format_handler(
-        self,
-    ) -> DocumentFormat:
+    def _get_format_handler(self) -> DocumentFormat:
         if self.format_type == "markdown":
             return MarkdownFormat()
-        elif self.format_type == "todo":
+        if self.format_type == "todo":
             return TodoFormat()
-        else:
-            return MarkdownFormat()
+        return MarkdownFormat()
 
     def _load(self):
         if self.file_path.exists():

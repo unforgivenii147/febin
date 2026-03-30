@@ -25,10 +25,9 @@ def ask_user_for_rename(old_name, new_name):
         )
         if response in {"y", "yes"}:
             return True
-        elif response in {"n", "no"}:
+        if response in {"n", "no"}:
             return False
-        else:
-            print("Please enter 'y' or 'n'")
+        print("Please enter 'y' or 'n'")
 
 
 def remove_string_from_names(

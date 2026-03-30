@@ -1,14 +1,37 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import shutil
 from pathlib import Path
 
+import regex as re
 from packaging.tags import parse_tag
 from packaging.utils import canonicalize_name
 from packaging.version import Version
 
 
-def is_valid_wheel_name(filename):
+WHEEL_PATTERN = re.compile(
+    r"^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])"
+    r"-"
+    r"([^-]+)"
+    r"-"
+    r"(\d[^-]*)"
+    r"-"
+    r"([^-]+)"
+    r"-"
+    r"([^-]+)"
+    r"-"
+    r"([^-]+)"
+    r"\.whl$",
+    re.IGNORECASE,
+)
+
+
+def is_valid2(path):
+    filename = path.name
+    return WHEEL_PATTERN.match(filename) is not None
+
+
+def is_valid(path):
+    filename = path.name
     try:
         basename = filename[:-4]
         parts = basename.split("-")
@@ -42,14 +65,13 @@ def main():
     invalid_dir = Path("invalid_wheels")
     invalid_dir.mkdir(exist_ok=True)
     cwd = Path.cwd()
-    for path in cwd.iterdir():
-        if path.suffix == ".whl":
-            if not is_valid_wheel_name(path):
-                print(f"Invalid wheel name: {path}")
-                dest = invalid_dir / path.name
-                shutil.move(str(path), str(dest))
-            else:
-                print(f"Valid wheel name: {filename}")
+    for path in cwd.glob("*.whl"):
+        if not is_valid(path) or not is_valid2(path):
+            print(f"Invalid wheel name: {path}")
+            dest = invalid_dir / path.name
+            shutil.move(str(path), str(dest))
+        else:
+            print(f"Valid wheel name: {path.name}")
 
 
 if __name__ == "__main__":

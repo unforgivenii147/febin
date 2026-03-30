@@ -1,12 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import sys
 from pathlib import Path
 from collections import deque
 from multiprocessing import get_context
 
 from dh import get_size, get_files, format_size
-import regex as re
 from termcolor import cprint
 
 
@@ -18,8 +16,8 @@ def process_file(filepath):
     if filepath.is_symlink():
         return
     content = filepath.read_text(encoding="utf-8")
-    content_lines = content.splitlines()
-    if not MAINBLOCK in content:
+    content.splitlines()
+    if MAINBLOCK not in content:
         print(f"{filepath.name} dont have main block")
 
 

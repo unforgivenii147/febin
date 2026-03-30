@@ -78,9 +78,9 @@ def process_archive(path):
     lower = path.lower()
     if lower.endswith((".zip", ".whl")):
         return process_zip(path)
-    elif lower.endswith((".tar.gz", ".tgz")):
+    if lower.endswith((".tar.gz", ".tgz")):
         return process_tar(path, "r:gz")
-    elif lower.endswith((".tar.xz", ".txz")):
+    if lower.endswith((".tar.xz", ".txz")):
         return process_tar(path, "r:xz")
     return set()
 

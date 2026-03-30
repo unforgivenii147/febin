@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 from pathlib import Path
 import tempfile
 import subprocess
@@ -40,14 +39,13 @@ def clean_single_svg(in_file, svgcleaner_path=SVGCPATH):
                 after_size,
                 size_change,
             )
-        else:
-            return (
-                False,
-                in_file,
-                before_size,
-                after_size,
-                size_change,
-            )
+        return (
+            False,
+            in_file,
+            before_size,
+            after_size,
+            size_change,
+        )
     except subprocess.CalledProcessError as e:
         return (
             False,

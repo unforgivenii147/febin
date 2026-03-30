@@ -99,13 +99,12 @@ def extract_with_system_xz(xz_path, remove_original=False):
                 output_path,
                 None,
             )
-        else:
-            return (
-                False,
-                xz_path,
-                None,
-                f"System xz command failed with code {result}",
-            )
+        return (
+            False,
+            xz_path,
+            None,
+            f"System xz command failed with code {result}",
+        )
     except Exception as e:
         return (
             False,
@@ -127,8 +126,7 @@ def process_file(args):
     file_path, use_system, remove_original = args
     if use_system:
         return extract_with_system_xz(file_path, remove_original)
-    else:
-        return extract_with_lzma(file_path, remove_original)
+    return extract_with_lzma(file_path, remove_original)
 
 
 def main():

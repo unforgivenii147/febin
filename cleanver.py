@@ -3,9 +3,7 @@ import pathlib
 import subprocess
 
 
-def create_unpinned_requirements(
-    output_file="req.txt",
-):
+def create_unpinned_requirements(output_file="req.txt"):
     try:
         result = subprocess.run(
             ["pip", "freeze"],

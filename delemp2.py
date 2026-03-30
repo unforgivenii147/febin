@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dh import get_nobinary
 
+from dh import get_nobinary
 
 
 def clean_lines(lines: list[str], collapse: bool) -> tuple[list[str], int]:

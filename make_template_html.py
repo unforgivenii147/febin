@@ -4,9 +4,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 
-def find_html_files(
-    cwd: str = ".",
-) -> list[Path]:
+def find_html_files(cwd: str = ".") -> list[Path]:
     root_path = Path(cwd).resolve()
     html_files = [file_path for file_path in root_path.rglob("*.html") if file_path.name != "template.html"]
     for file_path in root_path.rglob("*.htm"):
@@ -14,9 +12,7 @@ def find_html_files(
     return sorted(html_files)
 
 
-def extract_common_structure(
-    html_files: list[Path],
-) -> dict:
+def extract_common_structure(html_files: list[Path]) -> dict:
     body_classes = []
     meta_tags = []
     link_tags = []
@@ -45,9 +41,7 @@ def extract_common_structure(
     }
 
 
-def merge_html_content(
-    html_files: list[Path],
-) -> str:
+def merge_html_content(html_files: list[Path]) -> str:
     merged_sections = []
     for file_path in html_files:
         try:

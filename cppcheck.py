@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-import subprocess
 from collections import deque
 from multiprocessing import get_context
 

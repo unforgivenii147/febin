@@ -22,15 +22,11 @@ def _get_comments_symbol(text: Str, symbol: Str) -> list[Str]:
     return comments
 
 
-def _get_comments_simplequot(
-    text: Str,
-) -> list[str]:
+def _get_comments_simplequot(text: Str) -> list[str]:
     return _get_comments_symbol(text=text, symbol="'")
 
 
-def _get_comments_doublequot(
-    text: str,
-) -> list[str]:
+def _get_comments_doublequot(text: str) -> list[str]:
     return _get_comments_symbol(text=text, symbol='"')
 
 

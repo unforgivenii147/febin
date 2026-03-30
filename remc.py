@@ -64,9 +64,7 @@ def rm_ast(content: str) -> tuple[str, int]:
     return "\n".join(lines), len(ranges)
 
 
-def find_docstring_ranges(
-    node,
-) -> list[tuple[int, int]]:
+def find_docstring_ranges(node) -> list[tuple[int, int]]:
     ranges: list[tuple[int, int]] = []
     for child in ast.walk(node):
         if (
@@ -83,12 +81,16 @@ def find_docstring_ranges(
             and isinstance(child.body[0], ast.Expr)
         ):
             value = child.body[0].value
-            if isinstance(value, ast.Constant) and isinstance(value.value, str):
-                if child.body[0].lineno and child.body[0].end_lineno:
-                    ranges.append((
-                        child.body[0].lineno,
-                        child.body[0].end_lineno,
-                    ))
+            if (
+                isinstance(value, ast.Constant)
+                and isinstance(value.value, str)
+                and child.body[0].lineno
+                and child.body[0].end_lineno
+            ):
+                ranges.append((
+                    child.body[0].lineno,
+                    child.body[0].end_lineno,
+                ))
     return ranges
 
 

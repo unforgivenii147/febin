@@ -53,9 +53,7 @@ def find_html_files(directory: Path, recursive: bool = True) -> list[Path]:
     return sorted(html_files)
 
 
-def process_file_wrapper(
-    args: tuple,
-) -> tuple[Path, bool]:
+def process_file_wrapper(args: tuple) -> tuple[Path, bool]:
     html_file, executable = args
     return convert_html_to_md(html_file, executable)
 

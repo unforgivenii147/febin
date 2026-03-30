@@ -124,8 +124,7 @@ class LineSorter(LineProcessor):
                 key=str.lower,
                 reverse=reverse,
             )
-        else:
-            return sorted(lines, reverse=reverse)
+        return sorted(lines, reverse=reverse)
 
     def sort_with_temp_files(
         self,
@@ -193,9 +192,8 @@ class LineDeduplicator(LineProcessor):
                     seen.add(line)
                     unique.append(line)
             return unique
-        else:
-            self.log(f"Deduplicating {len(lines)} lines")
-            return list(dict.fromkeys(lines))
+        self.log(f"Deduplicating {len(lines)} lines")
+        return list(dict.fromkeys(lines))
 
     def deduplicate_generator(self, lines: Generator[str, None, None]) -> Generator[str, None, None]:
         seen = set()

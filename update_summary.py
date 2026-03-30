@@ -1,26 +1,21 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import pathlib
+from pathlib import Path
 
 
-def find_md_files(directory="."):
+def find_md_files():
+    cwd = Path.cwd()
     md_files = []
-    for root, _, files in os.walk(directory):
-        for file in files:
-            if file.endswith(".md") and file != "SUMMARY.md":
-                rel_path = os.path.relpath(
-                    os.path.join(root, file),
-                    start=directory,
-                )
-                md_files.append(rel_path)
+    for path in cwd.rglob("*.md"):
+        rel_path = path.relative_to(cwd)
+        md_files.append(rel_path)
     return md_files
 
 
 def update_summary():
     md_files = find_md_files()
     md_files.sort()
-    with pathlib.Path("SUMMARY.md").open(encoding="utf-8") as f:
-        lines = f.readlines()
+    summarymd = Path("SUMMARY.md")
+    lines = summarymd.read_text(encoding="utf-8").splitlines()
     header = []
     for line in lines:
         if line.strip() and not line.strip().startswith("- ["):
@@ -29,10 +24,10 @@ def update_summary():
             break
     new_entries = []
     for md_file in md_files:
-        title = os.path.splitext(md_file)[0].replace("_", " ").replace(os.sep, " ").title()
-        entry = f"- [{title}](.{os.sep}{md_file})\n"
+        title = md_file.stem.replace("_", " ").replace("/", " ").title()
+        entry = f"- [{title}](./{md_file})\n"
         new_entries.append(entry)
-    with pathlib.Path("SUMMARY.md").open("w", encoding="utf-8") as f:
+    with summarymd.open("w", encoding="utf-8") as f:
         f.writelines(header)
         f.write("\n")
         f.writelines(new_entries)

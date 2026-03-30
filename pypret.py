@@ -31,9 +31,7 @@ def beautify_code_file(file_path, beautify_function, asset_type) -> bool | None:
         return False
 
 
-def beautify_files_in_directory(
-    cwd=".",
-) -> None:
+def beautify_files_in_directory(cwd=".") -> None:
     processed_count = 0
     errors_count = 0
     beautifier_map = {

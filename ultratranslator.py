@@ -7,6 +7,7 @@ import tempfile
 import tokenize
 from multiprocessing import get_context
 
+from dh import DOC_TH1, DOC_TH2
 import regex as re
 from fastwalk import walk_files
 from deep_translator import GoogleTranslator
@@ -52,9 +53,7 @@ def safe_overwrite(filepath: Path, content: str) -> None:
     shutil.move(tmp_path, filepath)
 
 
-def extract_docstrings(
-    tree: ast.AST,
-) -> dict[int, str]:
+def extract_docstrings(tree: ast.AST) -> dict[int, str]:
     docstrings = {}
     for node in ast.walk(tree):
         if isinstance(
@@ -72,7 +71,7 @@ def extract_docstrings(
     return docstrings
 
 
-def translate_python_file(source: str, filepath: Path) -> str:
+def translate_python_file(source: str) -> str:
     print("  Analyzing Python structure...")
     tree = ast.parse(source)
     docstrings = extract_docstrings(tree)
@@ -103,7 +102,7 @@ def translate_python_file(source: str, filepath: Path) -> str:
                 try:
                     print(f"  Translating string: {stripped[:50]}...")
                     translated = translate_text(stripped)
-                    if tok_str.startswith(('"""', "'''")):
+                    if tok_str.startswith((DOC_TH1, DOC_TH2)):
                         quote_char = tok_str[:3]
                         tok_str = f"{quote_char}{translated}{quote_char}"
                     else:

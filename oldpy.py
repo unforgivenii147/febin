@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import mmap
 import pathlib
 from pathlib import Path
@@ -42,9 +41,7 @@ def regex_flag(filepath: str) -> bool:
     return bool(OLD_PRINT_RE.search(text))
 
 
-def tokenizer_confirm(
-    filepath: str,
-) -> str | None:
+def tokenizer_confirm(filepath: str) -> str | None:
     try:
         src = _open_source(filepath)
         tokens = list(tokenize.tokenize(src.readline))

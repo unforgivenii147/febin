@@ -201,19 +201,18 @@ class GitHubRepoManager:
             if current_url == self.repo_url:
                 print("✓ Remote 'origin' already configured correctly")
                 return
-            else:
-                print(f"Updating remote URL from {current_url} to {self.repo_url}")
-                self._run_command(
-                    [
-                        "git",
-                        "remote",
-                        "set-url",
-                        "origin",
-                        self.repo_url,
-                    ],
-                    capture_output=True,
-                )
-                return
+            print(f"Updating remote URL from {current_url} to {self.repo_url}")
+            self._run_command(
+                [
+                    "git",
+                    "remote",
+                    "set-url",
+                    "origin",
+                    self.repo_url,
+                ],
+                capture_output=True,
+            )
+            return
         returncode, _, stderr = self._run_command(
             [
                 "git",
@@ -290,7 +289,7 @@ class GitHubRepoManager:
             if choice == "1":
                 print("✓ Using existing repository")
                 return True
-            elif choice == "2":
+            if choice == "2":
                 self.repo_name = input("Enter new repository name: ").strip()
                 if not self.repo_name:
                     print("Error: Repository name cannot be empty.")
@@ -298,7 +297,7 @@ class GitHubRepoManager:
                 self.repo_url = f"https://github.com/{self.github_username}/{self.repo_name}.git"
                 print(f"✓ New repository name set:  {self.repo_name}")
                 return False
-            elif choice == "3":
+            if choice == "3":
                 print("Exiting...")
                 sys.exit(0)
             else:

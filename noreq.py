@@ -13,9 +13,7 @@ LOG_FILE = "/sdcard/reqdist.txt"
 removed_lines_accumulator = []
 
 
-def clean_text(
-    text: str,
-) -> tuple[str, list[str]]:
+def clean_text(text: str) -> tuple[str, list[str]]:
     lines = text.splitlines()
     cleaned = []
     removed = []

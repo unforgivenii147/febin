@@ -146,9 +146,7 @@ def extract_entities_from_content(content: str, path: Path) -> list[dict[str, An
         return []
 
 
-def is_python_file_no_extension(
-    path: Path,
-) -> bool:
+def is_python_file_no_extension(path: Path) -> bool:
     if path.suffix:
         return False
     try:
@@ -163,9 +161,7 @@ def is_python_file_no_extension(
     return False
 
 
-def process_single_file(
-    path: Path,
-) -> list[dict[str, Any]]:
+def process_single_file(path: Path) -> list[dict[str, Any]]:
     try:
         if path.suffix == ".py" or is_python_file_no_extension(path):
             content = path.read_text(encoding="utf-8", errors="ignore")
@@ -176,9 +172,7 @@ def process_single_file(
         return []
 
 
-def process_archive(
-    path: Path,
-) -> list[dict[str, Any]]:
+def process_archive(path: Path) -> list[dict[str, Any]]:
     entities = []
     if path.suffix == ".zst":
         try:
@@ -254,9 +248,7 @@ def process_archive(
     return entities
 
 
-def worker_process(
-    path_str: str,
-) -> list[dict[str, Any]]:
+def worker_process(path_str: str) -> list[dict[str, Any]]:
     path = Path(path_str)
     if path.name.endswith(ARCHIVE_EXTENSIONS):
         return process_archive(path)

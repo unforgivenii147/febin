@@ -122,12 +122,11 @@ class PackageDetector:
 
         if system == "linux":
             return f"linux_{machine}"
-        elif system == "darwin":
+        if system == "darwin":
             return f"macosx_10_9_{machine}"
-        elif system == "windows":
+        if system == "windows":
             return f"win_{machine}"
-        else:
-            return f"{system}_{machine}"
+        return f"{system}_{machine}"
 
     def read_dist_info(self, dist_info_dir: Path) -> dict[str, str]:
         """

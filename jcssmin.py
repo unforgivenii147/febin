@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 from time import perf_counter
 from pathlib import Path
 from multiprocessing import get_context
@@ -17,9 +16,8 @@ def process_file(path) -> str:
             return f"SKIP (unknown type) → {path}"
         if len(minified) == len(content):
             return f"[NO CHANGE] {path.name}"
-        else:
-            Path(path).write_text(minified, encoding="utf-8")
-            return f"[OK] {path.name}"
+        Path(path).write_text(minified, encoding="utf-8")
+        return f"[OK] {path.name}"
     except Exception as e:
         return f"[ERROR] ({path}): {e}"
 

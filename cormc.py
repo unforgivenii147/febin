@@ -167,9 +167,7 @@ class CommentRemover:
             return False
 
 
-def find_python_files(
-    cwd: str = ".",
-) -> list[str]:
+def find_python_files(cwd: str = ".") -> list[str]:
     python_files = []
     for py_file in glob.glob(
         os.path.join(cwd, "**", "*.py"),

@@ -41,14 +41,13 @@ def calculate_optimal_files_per_folder(total_files, target_folders=None):
         return math.ceil(total_files / target_folders)
     if total_files <= 100:
         return 10
-    elif total_files <= 500:
+    if total_files <= 500:
         return 25
-    elif total_files <= 1000:
+    if total_files <= 1000:
         return 50
-    elif total_files <= 5000:
+    if total_files <= 5000:
         return 100
-    else:
-        return 200
+    return 200
 
 
 def analyze_size_distribution(files_info):

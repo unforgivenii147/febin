@@ -41,17 +41,14 @@ def update_setup_py(file_path: Path) -> bool:
             file_path.write_text(content, encoding="utf-8")
             print(f"✅ Updated {file_path}")
             return True
-        else:
-            print(f"No changes needed in {file_path}")
-            return False
+        print(f"No changes needed in {file_path}")
+        return False
     except Exception as e:
         print(f"❌ Error updating {file_path}: {e}")
         return False
 
 
-def update_pyproject_toml(
-    file_path: Path,
-) -> bool:
+def update_pyproject_toml(file_path: Path) -> bool:
     """Update pyproject.toml file with new author info and GitHub URL."""
     try:
         content = file_path.read_text(encoding="utf-8")
@@ -96,9 +93,8 @@ def update_pyproject_toml(
             file_path.write_text(content, encoding="utf-8")
             print(f"✅ Updated {file_path}")
             return True
-        else:
-            print(f"ℹ️  No changes needed in {file_path}")
-            return False
+        print(f"ℹ️  No changes needed in {file_path}")
+        return False
     except Exception as e:
         print(f"❌ Error updating {file_path}: {e}")
         return False
@@ -135,9 +131,8 @@ def update_setup_cfg(file_path: Path) -> bool:
             file_path.write_text(content, encoding="utf-8")
             print(f"✅ Updated {file_path}")
             return True
-        else:
-            print(f"ℹ️  No changes needed in {file_path}")
-            return False
+        print(f"ℹ️  No changes needed in {file_path}")
+        return False
     except Exception as e:
         print(f"❌ Error updating {file_path}: {e}")
         return False

@@ -13,8 +13,7 @@ def get_file_creation_time(filepath):
         stat = os.stat(filepath)
         if sys.platform == "win32":
             return datetime.fromtimestamp(stat.st_ctime)
-        else:
-            return datetime.fromtimestamp(stat.st_mtime)
+        return datetime.fromtimestamp(stat.st_mtime)
     except Exception as e:
         print(f"Error: {e}")
         return None

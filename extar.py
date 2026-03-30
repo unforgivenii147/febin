@@ -173,51 +173,50 @@ def main():
                 print(f"  Compression ratio: {ext_size / arch_size:.2f}:1")
             print(f"  Directory size change: {size_change_mb:+.2f} MB")
         return 0 if success else 1
-    else:
-        if not args.quiet:
-            print(f"Scanning {target_path} for archives...")
-        archives = find_archives(target_path)
-        if not archives:
-            print("No supported archives found.")
-            return 0
-        if not args.quiet:
-            print(f"Found {len(archives)} archives")
-        before = get_dir_size(target_path)
-        processed_count = 0
-        failed_count = 0
-        total_archive_size = 0
-        total_extracted_size = 0
-        for archive in archives:
-            success, arch_size, ext_size = process_archive(
-                archive,
-                args.dry_run,
-                args.quiet,
-            )
-            if success:
-                processed_count += 1
-                total_archive_size += arch_size
-                total_extracted_size += ext_size
-            else:
-                failed_count += 1
-        if not args.dry_run:
-            after = get_dir_size(target_path)
-            size_change = after - before
-            size_change_mb = size_change / (1024 * 1024)
-            print(f"\n{'=' * 50}")
-            print("Summary:")
-            print(f"  Processed: {processed_count} archives")
-            if failed_count > 0:
-                print(f"  Failed: {failed_count} archives")
-            print(f"  Initial size: {before / (1024 * 1024):.2f} MB")
-            print(f"  Final size:   {after / (1024 * 1024):.2f} MB")
-            print(f"  Size change:  {size_change_mb:+.2f} MB")
-            if total_archive_size > 0:
-                compression_ratio = total_extracted_size / total_archive_size
-                print(f"  Compression ratio: {compression_ratio:.2f}:1")
-        else:
-            print(f"\n{'=' * 50}")
-            print(f"DRY RUN: Would process {len(archives)} archives")
+    if not args.quiet:
+        print(f"Scanning {target_path} for archives...")
+    archives = find_archives(target_path)
+    if not archives:
+        print("No supported archives found.")
         return 0
+    if not args.quiet:
+        print(f"Found {len(archives)} archives")
+    before = get_dir_size(target_path)
+    processed_count = 0
+    failed_count = 0
+    total_archive_size = 0
+    total_extracted_size = 0
+    for archive in archives:
+        success, arch_size, ext_size = process_archive(
+            archive,
+            args.dry_run,
+            args.quiet,
+        )
+        if success:
+            processed_count += 1
+            total_archive_size += arch_size
+            total_extracted_size += ext_size
+        else:
+            failed_count += 1
+    if not args.dry_run:
+        after = get_dir_size(target_path)
+        size_change = after - before
+        size_change_mb = size_change / (1024 * 1024)
+        print(f"\n{'=' * 50}")
+        print("Summary:")
+        print(f"  Processed: {processed_count} archives")
+        if failed_count > 0:
+            print(f"  Failed: {failed_count} archives")
+        print(f"  Initial size: {before / (1024 * 1024):.2f} MB")
+        print(f"  Final size:   {after / (1024 * 1024):.2f} MB")
+        print(f"  Size change:  {size_change_mb:+.2f} MB")
+        if total_archive_size > 0:
+            compression_ratio = total_extracted_size / total_archive_size
+            print(f"  Compression ratio: {compression_ratio:.2f}:1")
+    else:
+        print(f"\n{'=' * 50}")
+        print(f"DRY RUN: Would process {len(archives)} archives")
+    return 0
 
 
 if __name__ == "__main__":

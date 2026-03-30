@@ -27,10 +27,9 @@ def analyze_image(path, dark_threshold=50, ratio_threshold=0.6):
 
         if dark_ratio > ratio_threshold:
             return "Mostly Dark", dark_ratio
-        elif dark_ratio < (1 - ratio_threshold):
+        if dark_ratio < (1 - ratio_threshold):
             return "Mostly Bright", dark_ratio
-        else:
-            return "Mixed", dark_ratio
+        return "Mixed", dark_ratio
 
 
 if __name__ == "__main__":

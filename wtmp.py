@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import sys
 import time
 import shutil
@@ -18,13 +17,14 @@ ALLOWED_EXTENSIONS = {".tar.gz", ".whl", ".tar.xz", ".zip", ".tar.zst"}
 
 def copy_if_match(src_path) -> None:
     src_path = Path(src_path)
+    full_suffix: str = ""
     if ".tar" in src_path.suffixes:
         full_suffix = "".join(src_path.suffixes)
     if full_suffix in ALLOWED_EXTENSIONS:
         try:
             dest = DEST_DIR / src_path.name
             shutil.copy2(str(src_path), str(dest))
-            print(f"{src_path.name} -> {dest.parent.name / dest.name}")
+            print(f"{src_path.name} -> {dest.parent.name!s} / {dest.name}")
         except Exception as e:
             print(f"Failed to copy {src_path.name}: {e}")
 
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     startup_scan(path)
     event_handler = CopyEventHandler()
     observer = Observer()
-    observer.schedule(event_handler, path, recursive=True)
+    observer.schedule(event_handler, str(path), recursive=True)
     observer.start()
     try:
         while True:

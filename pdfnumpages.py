@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 from sys import exit
 from time import perf_counter
 from pathlib import Path

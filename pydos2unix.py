@@ -11,7 +11,6 @@ Includes:
 - defaults to recursive processing of "." when no args given.
 """
 
-import os
 import mmap
 import fnmatch
 import logging

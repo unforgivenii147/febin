@@ -45,9 +45,7 @@ def build_header(info: dict) -> str:
     return f"# Author : {info.get('name', '')}\n# Email  : {info.get('email', '')}\n# Time   : {timestamp}\n\n\n"
 
 
-def file_already_has_header(
-    contents: str,
-) -> bool:
+def file_already_has_header(contents: str) -> bool:
     return "# Author :" in contents.split("\n")[:5]
 
 

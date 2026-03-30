@@ -4,7 +4,6 @@ import mmap
 from pathlib import Path
 
 from dh import get_size, get_files, format_size
-from joblib import Parallel, delayed
 from termcolor import cprint
 import brotlicffi
 
@@ -54,10 +53,9 @@ def process_file(fp):
     outfile = Path(str(fp).replace(".br", ""))
     if parallel_decompress(fp, outfile):
         fp.unlink()
-    else:
-        if outfile.exists():
-            outfile.unlink()
-            return
+    elif outfile.exists():
+        outfile.unlink()
+        return
     after = get_size(outfile)
     ratio = round(((after - before) / after) * 100, 3)
     cprint(f"{outfile.name}", "green", end=" | ")

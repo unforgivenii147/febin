@@ -1,11 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-open uv.lock file
-extract python package name and version from lines that contain (name = ")
-save found pkgs in requirements.txt in current dir.
-"""
 
-from sys import exit
+from sys import exit as _exit
 from pathlib import Path
 
 
@@ -27,4 +22,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    _exit(main())

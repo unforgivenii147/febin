@@ -44,9 +44,7 @@ def collect_nodes_to_remove(source_bytes: bytes, node: Node) -> list[Node]:
     return to_remove
 
 
-def process_file(
-    filepath: str,
-) -> tuple[str, bool]:
+def process_file(filepath: str) -> tuple[str, bool]:
     global _parser
     try:
         source_bytes = pathlib.Path(filepath).read_bytes()

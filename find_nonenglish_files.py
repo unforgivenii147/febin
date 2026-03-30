@@ -14,9 +14,7 @@ ENGLISH_LANGUAGES = {"en", "en_US", "en_GB"}
 MAX_FILE_SIZE = 1024 * 1024  # 1MB
 
 
-def detect_language(
-    text: str,
-) -> tuple[str | None, float]:
+def detect_language(text: str) -> tuple[str | None, float]:
     """
     Detect language of text using pycld2.
     Returns (language_code, confidence) or (None, 0) if detection fails.
@@ -46,9 +44,7 @@ def is_likely_english(text: str, threshold: float = 70.0) -> bool:
     return lang in ENGLISH_LANGUAGES and confidence >= threshold
 
 
-def read_file_safely(
-    filepath: Path,
-) -> str | None:
+def read_file_safely(filepath: Path) -> str | None:
     """Read file content safely, handling encoding issues."""
     try:
         # Try UTF-8 first

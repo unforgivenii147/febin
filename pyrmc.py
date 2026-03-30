@@ -85,9 +85,7 @@ def _collect_docstrings(node, source: bytes, deletions: list):
         _collect_docstrings(child, source, deletions)
 
 
-def remove_comments_and_docstrings(
-    path: Path,
-) -> None:
+def remove_comments_and_docstrings(path: Path) -> None:
     try:
         source = path.read_bytes()
         tree = parser.parse(source)

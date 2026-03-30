@@ -138,9 +138,7 @@ def process_py_file_content(code: str, path_hint: str | None = None) -> dict[str
     return {k: sorted(v) for k, v in d.items()}
 
 
-def process_py_file(
-    path: Path,
-) -> dict[str, list[str]]:
+def process_py_file(path: Path) -> dict[str, list[str]]:
     try:
         text = path.read_text(encoding="utf-8", errors="ignore")
     except Exception:
@@ -153,9 +151,7 @@ def process_py_file(
     return process_py_file_content(text, str(path))
 
 
-def process_noext_python_script(
-    path: Path,
-) -> dict[str, list[str]]:
+def process_noext_python_script(path: Path) -> dict[str, list[str]]:
     try:
         with Path(path).open(encoding="utf-8", errors="ignore") as f:
             first = f.readline()
@@ -177,9 +173,7 @@ def process_noext_python_script(
     return process_py_file_content(code, str(path))
 
 
-def process_ipynb(
-    path: Path,
-) -> dict[str, list[str]]:
+def process_ipynb(path: Path) -> dict[str, list[str]]:
     out = {
         "imports": [],
         "star_modules": [],
@@ -210,9 +204,7 @@ def process_ipynb(
     return out
 
 
-def process_zip_file(
-    path: Path,
-) -> dict[str, list[str]]:
+def process_zip_file(path: Path) -> dict[str, list[str]]:
     imports = set()
     stars = set()
     dyn = set()
@@ -243,9 +235,7 @@ def process_zip_file(
     }
 
 
-def process_tar_file(
-    path: Path,
-) -> dict[str, list[str]]:
+def process_tar_file(path: Path) -> dict[str, list[str]]:
     imports = set()
     stars = set()
     dyn = set()
@@ -283,9 +273,7 @@ def process_tar_file(
     }
 
 
-def process_raw(
-    path: str,
-) -> dict[str, list[str]]:
+def process_raw(path: str) -> dict[str, list[str]]:
     p = Path(path)
     name = str(p).lower()
     if p.suffix == ".py":
@@ -306,9 +294,7 @@ def process_raw(
     }
 
 
-def build_project_module_map(
-    sources: list[str],
-) -> dict[str, list[str]]:
+def build_project_module_map(sources: list[str]) -> dict[str, list[str]]:
     mapping: dict[str, list[str]] = {}
     for fp in sources:
         p = Path(fp)
@@ -418,9 +404,7 @@ def resolve_packages(
     return out
 
 
-def scan_sources(
-    ignore_dirs: set[str],
-) -> list[str]:
+def scan_sources(ignore_dirs: set[str]) -> list[str]:
     out = []
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in ignore_dirs]

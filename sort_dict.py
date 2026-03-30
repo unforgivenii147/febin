@@ -8,12 +8,11 @@ def dict_val(line: str) -> str:
         out = line.split(":", 1)[1].strip()
         print(out)
         return out
-    elif "=" in line:
+    if "=" in line:
         out = line.split("=", 1)[1].strip()
         print(out)
         return out
-    else:
-        return line
+    return line
 
 
 def main():

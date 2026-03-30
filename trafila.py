@@ -21,9 +21,8 @@ def convert_to_md(html_file: Path):
             md_file.write_text(markdown, encoding="utf-8")
             print(f"✓ Converted: {html_file.name} -> {md_file.name}")
             return (md_file, True)
-        else:
-            print(f"✗ No content extracted from {html_file.name}")
-            return (html_file, False)
+        print(f"✗ No content extracted from {html_file.name}")
+        return (html_file, False)
     except Exception as e:
         print(f"✗ Error: {e}")
         return (html_file, False)

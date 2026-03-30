@@ -18,8 +18,7 @@ class RegexCommentRemover:
             s = match.group(0)
             if s.startswith("/"):
                 return " " if "\n" not in s else "\n" * s.count("\n")
-            else:
-                return s
+            return s
 
         result = re.sub(self.pattern, replacer, source)
         comment_count = source.count("//") + source.count("/*")

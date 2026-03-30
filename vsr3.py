@@ -16,18 +16,14 @@ except ImportError:
     sys.exit(1)
 
 
-def find_dist_info_dirs(
-    site_packages: Path,
-) -> list[Path]:
+def find_dist_info_dirs(site_packages: Path) -> list[Path]:
     dist_dirs = []
     dist_dirs.extend(site_packages.glob("*.dist-info"))
     dist_dirs.extend(site_packages.glob("*.egg-info"))
     return sorted(dist_dirs)
 
 
-def get_package_name_version(
-    dist_dir: Path,
-) -> tuple:
+def get_package_name_version(dist_dir: Path) -> tuple:
     name = dist_dir.name
     if name.endswith(".dist-info"):
         name = name[:-10]
@@ -61,9 +57,7 @@ def read_record_file(dist_dir: Path, site_packages: Path) -> tuple[list[Path], s
     return existing_files, missing_files
 
 
-def get_wheel_tag(
-    dist_dir: Path,
-) -> str | None:
+def get_wheel_tag(dist_dir: Path) -> str | None:
     wheel_file = dist_dir / "WHEEL"
     if not wheel_file.exists():
         return None
@@ -127,20 +121,19 @@ def create_wheel(
         )
         if result.returncode == 0:
             return True
-        else:
-            import zipfile
+        import zipfile
 
-            with zipfile.ZipFile(
-                wheel_file,
-                "w",
-                zipfile.ZIP_DEFLATED,
-            ) as whl:
-                for root, _dirs, files in os.walk(temp_dir):
-                    for file in files:
-                        file_path = Path(root) / file
-                        arcname = file_path.relative_to(temp_dir)
-                        whl.write(file_path, arcname)
-            return True
+        with zipfile.ZipFile(
+            wheel_file,
+            "w",
+            zipfile.ZIP_DEFLATED,
+        ) as whl:
+            for root, _dirs, files in os.walk(temp_dir):
+                for file in files:
+                    file_path = Path(root) / file
+                    arcname = file_path.relative_to(temp_dir)
+                    whl.write(file_path, arcname)
+        return True
     except Exception as e:
         print(f"Error creating wheel: {e}")
         return False

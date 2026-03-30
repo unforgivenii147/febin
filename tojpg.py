@@ -81,9 +81,8 @@ def convert_to_jpg(file_path: str) -> bool:
             path.unlink()
             print(f"Successfully converted '{path.name}' to jpg.")
             return True
-        else:
-            print(f"Failed to write '{output_path.name}'")
-            return False
+        print(f"Failed to write '{output_path.name}'")
+        return False
     except Exception as e:
         print(f"Error converting '{path.name}': {e}")
         return False

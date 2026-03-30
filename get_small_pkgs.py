@@ -37,8 +37,7 @@ def check_pure(dist_info_path):
     if sum < 1024 * 1024:
         #        print(f"{pkg_name} : {sum}")
         return pkg_name
-    else:
-        return None
+    return None
 
 
 def get_pure():

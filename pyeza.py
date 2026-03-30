@@ -46,9 +46,7 @@ def detect_icon(name: str, mode: int) -> str:
     return "📄"
 
 
-def get_git_status_for_dir(
-    path: str,
-) -> dict[str, dict[str, str]]:
+def get_git_status_for_dir(path: str) -> dict[str, dict[str, str]]:
     try:
         p = subprocess.run(
             [

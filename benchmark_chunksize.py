@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 from time import perf_counter
 import hashlib
 from pathlib import Path
@@ -46,7 +45,7 @@ if __name__ == "__main__":
             continue
         if path.is_file():
             cs = benchmark_chunk_sizes(path)
-            if cs not in results.keys():
+            if cs not in results:
                 results[cs] = 1
             else:
                 results[cs] += 1

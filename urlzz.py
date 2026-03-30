@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 from pathlib import Path
 import tarfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from dh import BIN_EXT, TXT_EXT,get_files
+from dh import BIN_EXT, TXT_EXT, get_files
 import py7zr
 import regex as re
 
@@ -22,9 +21,8 @@ def extract_urls_from_text(content):
 def extract_urls_from_file(filepath):
     urls = set()
     try:
-        with Path(filepath).open(encoding="utf-8", errors="ignore") as f:
-            content = f.read()
-            urls.update(extract_urls_from_text(content))
+        content = filepath.read_text(encoding="utf-8", errors="ignore")
+        urls.update(extract_urls_from_text(content))
     except Exception as e:
         print(f"Failed to read {filepath}: {e}")
     return urls
@@ -39,14 +37,8 @@ def extract_urls_from_tar(filepath):
                 if member.isfile():
                     f = tar.extractfile(member)
                     if f:
-                        try:
-                            content = f.read().decode(
-                                "utf-8",
-                                errors="ignore",
-                            )
-                            urls.update(extract_urls_from_text(content))
-                        except:
-                            pass
+                        content = f.read().decode("utf-8", errors="ignore")
+                        urls.update(extract_urls_from_text(content))
     except Exception as e:
         print(f"Failed to read tar {filepath}: {e}")
     return urls
@@ -91,22 +83,22 @@ def extract_urls(filepath):
     path = Path(filepath)
     if path.suffix in EXT:
         return extract_urls_from_file(filepath)
-    elif path.suffix in {".zip", ".whl"}:
+    if path.suffix in {".zip", ".whl"}:
         return extract_urls_from_zip(filepath)
-    elif path.suffix.startswith(".tar") or path.suffix in {
+    if path.suffix.startswith(".tar") or path.suffix in {
         ".tar.gz",
         ".tar.xz",
         ".tar.zst",
         ".tar.7z",
     }:
         return extract_urls_from_tar(filepath)
-    elif path.suffix == ".7z":
+    if path.suffix == ".7z":
         return extract_urls_from_7z(filepath)
     return set()
 
 
 if __name__ == "__main__":
-    cwd= Path.cwd()
+    cwd = Path.cwd()
     file_paths = get_files(cwd)
     all_urls = set()
     with ThreadPoolExecutor(8) as executor:

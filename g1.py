@@ -6,7 +6,6 @@ Supports both HTTPS and SSH URLs.
 Warns if repo size is bigger than 10MB.
 """
 
-import os
 import sys
 import pathlib
 import subprocess

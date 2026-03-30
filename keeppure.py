@@ -55,9 +55,7 @@ def get_binary_packages_parallel():
     return {pkg for pkg in results if pkg}
 
 
-def clean_requirements_txt(
-    requirements_file="requirements.txt",
-):
+def clean_requirements_txt(requirements_file="requirements.txt"):
     """Fast cleanup of requirements.txt - minimal output."""
     if not pathlib.Path(requirements_file).exists():
         print(f"Error: {requirements_file} not found")

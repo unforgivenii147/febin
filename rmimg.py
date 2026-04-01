@@ -14,10 +14,8 @@ def process_file(file_path: Path) -> None:
     try:
         file_path.read_text(encoding="utf-8")
         soup = BeautifulSoup(html, "html.parser")
-
         for img in soup.find_all("img"):
             img.decompose()
-
         for tag in soup.find_all(style=True):
             style = tag["style"]
             new_style = "; ".join(s for s in style.split(";") if "background-image" not in s).strip()
@@ -25,7 +23,6 @@ def process_file(file_path: Path) -> None:
                 tag["style"] = new_style
             else:
                 del tag["style"]
-
         clean_html = str(soup)
         file_path.write_text(clean_html, encoding="utf-8")
         after = get_size(file_path)
@@ -67,7 +64,6 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-
     diff_size = before - get_size(cwd)
     print(f"space saved : {format_size(diff_size)}")
 

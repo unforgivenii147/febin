@@ -86,24 +86,24 @@ class EntityExtractor(ast.NodeVisitor):
         super().generic_visit(node)
 
 
-"""
-# --- Core AST Visitor for Entity Extraction ---
 class EntityExtractor(ast.NodeVisitor):
-    def __init__(self, source_content: str, original_path: Path):
+    def __init__(self, source_content: str, original_path: Path) -> None:
         self.entities = []
         self.source_lines = source_content.splitlines(keepends=True)
         self.original_path = original_path
         self.scope_stack = []
+
     def _get_source_slice(self, node: ast.AST) -> str:
         start_line = node.lineno - 1
         end_line = node.end_lineno or node.lineno
         code_slice = self.source_lines[start_line:end_line]
         if node.col_offset is not None:
-            code_slice[0] = code_slice[0][node.col_offset:]
+            code_slice[0] = code_slice[0][node.col_offset :]
         if node.end_col_offset is not None and node.end_col_offset > 0:
             last_line = code_slice[-1]
-            code_slice[-1] = last_line[:node.end_col_offset]
+            code_slice[-1] = last_line[: node.end_col_offset]
         return "".join(code_slice)
+
     def _extract_and_save(self, node: ast.AST, entity_type: str, name: str):
         entity_code = self._get_source_slice(node)
         scope_prefix = "_".join(self.scope_stack)
@@ -116,34 +116,37 @@ class EntityExtractor(ast.NodeVisitor):
             "path": str(self.original_path),
             "is_constant": entity_type == "constant",
             "is_class": entity_type == "class",
-            "is_function": entity_type in ("function", "method"),
+            "is_function": entity_type in {"function", "method"},
         })
+
     def visit_FunctionDef(self, node: ast.FunctionDef):
         entity_type = "method" if self.scope_stack and self.scope_stack[-1].startswith("class_") else "function"
         self._extract_and_save(node, entity_type, node.name)
         self.scope_stack.append(f"func_{node.name}")
         self.generic_visit(node)
         self.scope_stack.pop()
+
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
         entity_type = "method" if self.scope_stack and self.scope_stack[-1].startswith("class_") else "function"
         self._extract_and_save(node, entity_type, node.name)
         self.scope_stack.append(f"async_func_{node.name}")
         self.generic_visit(node)
         self.scope_stack.pop()
+
     def visit_ClassDef(self, node: ast.ClassDef):
         self._extract_and_save(node, "class", node.name)
         self.scope_stack.append(f"class_{node.name}")
         self.generic_visit(node)
         self.scope_stack.pop()
+
     def visit_Assign(self, node: ast.Assign):
-        if not self.scope_stack:
-            if len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
-                target_name = node.targets[0].id
-                if re.match(r"^[A-Z_][A-Z0-9_]*$", target_name):
-                    self._extract_and_save(node, "constant", target_name)
+        if not self.scope_stack and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            target_name = node.targets[0].id
+            if re.match(r"^[A-Z_][A-Z0-9_]*$", target_name):
+                self._extract_and_save(node, "constant", target_name)
+
     def generic_visit(self, node: ast.AST):
         super().generic_visit(node)
-"""
 
 
 def create_database():

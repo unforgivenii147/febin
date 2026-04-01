@@ -9,7 +9,6 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python count_chars_of_input_file.py <input_file>")
         sys.exit(1)
-
     path = Path(sys.argv[1])
     if path.is_symlink() or is_binary(path):
         sys.exit(0)

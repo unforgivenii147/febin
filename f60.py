@@ -43,7 +43,5 @@ def main() -> None:
         print(f"\033[05;96m{pth.name[:19]:<{max_path_string}} \033[05;93m{ctime}\033[0m")
 
 
-#        print(f"{pth.relative_to(cwd)} : {ctime}")
-
 if __name__ == "__main__":
     main()

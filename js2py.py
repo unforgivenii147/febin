@@ -1,9 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Convert JavaScript code to Python using AI-powered translation.
-Uses OpenAI API or local AST-based conversion with js2py library.
-"""
-
 import os
 import sys
 from pathlib import Path

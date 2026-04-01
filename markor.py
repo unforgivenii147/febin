@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 from abc import ABC, abstractmethod
 import sys
 from typing import Any
@@ -128,10 +127,7 @@ class MarkdownFormat(DocumentFormat):
 
 
 class TodoFormat(DocumentFormat):
-    """todo.txt format support."""
-
     def get_syntax_highlight_rules(self) -> dict[str, str]:
-        """Get todo.txt syntax highlighting rules."""
         return {
             "completed": r"^\(x\) .*$",
             "incomplete": r"^\(\) .*$",
@@ -144,7 +140,6 @@ class TodoFormat(DocumentFormat):
         }
 
     def get_preview(self, content: str) -> str:
-        """Generate todo.txt preview."""
         lines = content.split("\n")
         preview = []
         for line in lines:
@@ -161,7 +156,6 @@ class TodoFormat(DocumentFormat):
         return "\n".join(preview)
 
     def get_format_actions(self) -> list[str]:
-        """Get todo.txt quick actions."""
         return [
             "Insert Task",
             "Toggle Completion",
@@ -179,13 +173,6 @@ class Document:
         file_path: str,
         format_type: str = "markdown",
     ) -> None:
-        """
-        Initialize Document.
-
-        Args:
-            file_path: Path to document file
-            format_type: Document format ('markdown', 'todo', 'text', 'json').
-        """
         self.file_path = Path(file_path)
         self.format_type = format_type
         self.content = ""

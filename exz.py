@@ -135,10 +135,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s                     # Extract all .xz files in current directory
-  %(prog)s /path/to/dir         # Extract all .xz files in specific directory
-  %(prog)s --remove             # Remove original .xz files after extraction
-  %(prog)s --system --workers 4 # Use system xz with 4 worker processes
+  %(prog)s
+  %(prog)s /path/to/dir
+  %(prog)s --remove
+  %(prog)s --system --workers 4
         """,
     )
     parser.add_argument(

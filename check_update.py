@@ -1,9 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Script to check for package updates by querying PyPI directly.
-Shows results in real-time as each package is checked.
-"""
-
 import sys
 import json
 import time
@@ -14,7 +9,6 @@ from packaging.version import Version, InvalidVersion
 
 
 def check_package_on_pypi(package_name: str, current_version: str) -> str | None:
-    """Check the latest version of a package on PyPI."""
     try:
         # Add delay to be nice to PyPI
         time.sleep(0.1)
@@ -37,7 +31,6 @@ def check_package_on_pypi(package_name: str, current_version: str) -> str | None
 
 
 def compare_versions(current: str, latest: str) -> str:
-    """Compare two version strings."""
     try:
         current_v = Version(current)
         latest_v = Version(latest)
@@ -56,12 +49,10 @@ def compare_versions(current: str, latest: str) -> str:
 
 
 def is_venv() -> bool:
-    """Check if running in a virtual environment."""
     return hasattr(sys, "real_prefix") or (hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix)
 
 
 def main():
-    """Main function to check packages one by one."""
     # Check if running in virtual environment
     if not is_venv():
         print("⚠️  Warning: Not running in a virtual environment!")

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
 import time
-import pathlib
+from pathlib import Path
 from threading import Lock
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -27,14 +27,14 @@ def translate_word(word):
 
 
 def load_words(input_file):
-    with pathlib.Path(input_file).open(encoding="utf-8") as f:
+    with Path(input_file).open(encoding="utf-8") as f:
         return [w.strip() for w in f if w.strip()]
 
 
 def load_existing_results(output_file):
-    if pathlib.Path(output_file).exists():
+    if Path(output_file).exists():
         try:
-            with pathlib.Path(output_file).open(encoding="utf-8") as f:
+            with Path(output_file).open(encoding="utf-8") as f:
                 data = json.load(f)
                 if isinstance(data, dict):
                     return data
@@ -45,14 +45,14 @@ def load_existing_results(output_file):
 
 def save_results_atomic(results, output_file):
     tmp = output_file + ".tmp"
-    with pathlib.Path(tmp).open("w", encoding="utf-8") as f:
+    with Path(tmp).open("w", encoding="utf-8") as f:
         json.dump(
             results,
             f,
             ensure_ascii=False,
             indent=2,
         )
-    pathlib.Path(tmp).replace(output_file)
+    Path(tmp).replace(output_file)
 
 
 def main():

@@ -1,13 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-from lazyloader import lazy_import
+import sys
+from pathlib import Path
 
-
-os = lazy_import("os")
-pathlib = lazy_import("pathlib")
-sys = lazy_import("sys")
 
 if __name__ == "__main__":
-    cwd = pathlib.Path.cwd()
+    cwd = Path.cwd()
     files = list(cwd.rglob("*"))
     bcount = 0
     for path in files:
@@ -15,7 +12,7 @@ if __name__ == "__main__":
             try:
                 path.unlink()
                 bcount += 1
-                print(f"{os.path.relpath(path)}")
+                print(f"{path.relative_to(cwd)}")
             except Exception as e:
                 print(f"Error deleting {path}: {e}")
     if not bcount:

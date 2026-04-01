@@ -41,7 +41,6 @@ def main():
     outpath = Path("js")
     if not outpath.exists():
         outpath.mkdir(exists_ok=True)
-
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = (

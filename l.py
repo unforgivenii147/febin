@@ -6,10 +6,8 @@ from dh import get_size, format_size
 
 
 EXCLUDED = {".mypy_cache", ".ruff_cache", ".git", "__pycache__"}
-
 if __name__ == "__main__":
     cwd = Path.cwd()
-
     for path in sorted(
         cwd.rglob("*"),
         key=lambda e: e.stat().st_mtime,
@@ -36,7 +34,6 @@ if __name__ == "__main__":
                     sz = "  " + sz
                 case 8:
                     sz = " " + sz
-
         if path.is_symlink():
             print(f"\033[05;95m{path.name[:24]:25}\033[0m", end=" ")
         else:

@@ -11,7 +11,6 @@ import regex as re
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
-
 OUTPUT_DIR = Path("extracted_base64")
 DATA_URL_RE = re.compile(
     r"\"data:(.*)+;base64,(?P<data>[A-Za-z0-9+/=\n\r]+)\"",
@@ -31,7 +30,7 @@ def content_hash(data: bytes) -> str:
 def extract_from_html(html: str) -> Iterable[tuple[str, bytes]]:
     for match in DATA_URL_RE.finditer(html):
         print(match.group("data"))
-        #        mime = match.group("mime")
+
         raw_data = match.group("data")
         try:
             decoded = decode_base64(raw_data)
@@ -59,9 +58,6 @@ def main() -> None:
             extract_from_html(html)
         except Exception:
             continue
-
-
-"""
         for mime, data in extract_from_html(html):
             digest = content_hash(data)
             if digest in seen_hashes:
@@ -69,6 +65,7 @@ def main() -> None:
             seen_hashes.add(digest)
             save_asset(mime, data)
             extracted_count += 1
-"""
+
+
 if __name__ == "__main__":
     main()

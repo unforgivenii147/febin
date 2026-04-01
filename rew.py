@@ -38,7 +38,6 @@ def site_packages_paths(prefix):
         if c not in seen and c.exists():
             seen.append(c)
             out.append(c)
-
     return out
 
 

@@ -2,16 +2,11 @@
 import ast
 import sys
 from pathlib import Path
-from collections import deque
-from multiprocessing import get_context
 
-from dh import get_size, is_binary, format_size, get_pyfiles
+from dh import mpf, get_size, is_binary, format_size, get_pyfiles
 from termcolor import cprint
 import unidecode
 import astunparse
-
-
-MAX_QUEUE = 16
 
 
 def process_file(fn: Path) -> bool:
@@ -45,15 +40,8 @@ def main() -> None:
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-    results = []
-    with get_context("spawn").Pool(8) as pool:
-        pending = deque()
-        for f in files:
-            pending.append(pool.apply_async(process_file, (f,)))
-            if len(pending) > MAX_QUEUE:
-                results.append(pending.popleft().get())
-        while pending:
-            results.append(pending.popleft().get())
+    _ = mpf(process_file, files)
+
     diffsize = before - get_size(cwd)
     print(f"space change: {format_size(diffsize)}")
 

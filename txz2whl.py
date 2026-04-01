@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from pathlib import Path
 import tarfile
 import zipfile
@@ -47,7 +48,6 @@ def main():
             extensions=[".tar.xz", ".xz"],
         )
     )
-
     for f in files:
         tar_xz_to_whl(f)
 

@@ -32,14 +32,12 @@ def main() -> None:
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".jpg", ".png"])
-
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
     p = get_context("spawn").Pool(4)
     for _ in p.imap_unordered(process_file, files):
         pass
-
     p.close()
     p.join()
 

@@ -33,20 +33,16 @@ def find_duplicates():
         except OSError as e:
             print(f"Error getting size for {p}: {e}")
             continue
-
     paths_to_hash = []
     for size, paths in files_by_size.items():
         if len(paths) > 1:
             paths_to_hash.extend(paths)
-
     with ThreadPoolExecutor(max_workers=8) as executor:
         future_to_path = {executor.submit(get_hash_file, path): path for path in paths_to_hash}
-
         for future in as_completed(future_to_path):
             hash_result, path = future.result()
-            if hash_result is not None:  # Only process if hashing was successful
+            if hash_result is not None:
                 files_by_hash.setdefault(hash_result, []).append(path)
-
     for (
         hash,
         paths,

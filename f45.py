@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-import pathlib
+from pathlib import Path
 import tempfile
 import subprocess
 
 
 def fold_content_pure(fname, width=45):
     content = ""
-    content = pathlib.Path(fname).read_text(encoding="utf-8", errors="ignore")
+    content = Path(fname).read_text(encoding="utf-8", errors="ignore")
     lines = content.splitlines()
     folded_lines = []
     for line in lines:
@@ -16,20 +16,20 @@ def fold_content_pure(fname, width=45):
             line = line[width:]
         if line:
             folded_lines.append(line)
-    with pathlib.Path(fname).open("w", encoding="utf-8") as fo:
+    with Path(fname).open("w", encoding="utf-8") as fo:
         for line in folded_lines:
             fo.write(line + "\n")
     print(f"{fname} updated.")
 
 
 def fold_file_inplace(filename):
-    if not pathlib.Path(filename).exists():
+    if not Path(filename).exists():
         print(
             f"Error: File '{filename}' not found.",
             file=sys.stderr,
         )
         sys.exit(1)
-    original_content = pathlib.Path(filename).read_text(encoding="utf-8")
+    original_content = Path(filename).read_text(encoding="utf-8")
     with tempfile.NamedTemporaryFile(
         mode="w+",
         suffix=".tmp",
@@ -57,10 +57,10 @@ def fold_file_inplace(filename):
                 f"Error running fold: {result.stderr}",
                 file=sys.stderr,
             )
-            pathlib.Path(temp_filename).unlink()
+            Path(temp_filename).unlink()
             sys.exit(1)
-        pathlib.Path(filename).write_text(result.stdout, encoding="utf-8")
-    pathlib.Path(temp_filename).unlink()
+        Path(filename).write_text(result.stdout, encoding="utf-8")
+    Path(temp_filename).unlink()
     print(f"Successfully folded '{filename}' in place.")
 
 

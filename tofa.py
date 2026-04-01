@@ -26,8 +26,7 @@ def load_file(input_file):
     ]
     for encoding in encodings:
         try:
-            with Path(input_file).open(encoding=encoding) as f:
-                return f.read()
+            return Path(input_file).read_text(encoding=encoding)
         except (OSError, UnicodeDecodeError):
             continue
     msg = f"Could not read file {input_file} with any encoding"
@@ -135,7 +134,7 @@ def main():
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} <input_file> [source_language]")
         print("\nExamples:")
-        print(f"  {dys.argv[0]} document.txt")
+        print(f"  {sys.argv[0]} document.txt")
         print(f"  {sys.argv[0]} file.txt de")
         print(f"  {sys.argv[0]}document.txt en")
         print("\nSupported languages:  auto, en ,fa , fr, de, es, it, pt, ru, zh, ja, ko, ar, etc.")

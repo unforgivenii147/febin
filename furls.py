@@ -3,7 +3,7 @@ import io
 import os
 import sys
 from time import perf_counter
-import pathlib
+from pathlib import Path
 import tarfile
 import zipfile
 import argparse
@@ -105,7 +105,7 @@ def open_tar_from_zst_path(path):
     if zstd is None:
         return None, None
     temp = tempfile.TemporaryFile()
-    with pathlib.Path(path).open("rb") as fh:
+    with Path(path).open("rb") as fh:
         dctx = zstd.ZstdDecompressor()
         reader = dctx.stream_reader(fh)
         try:
@@ -344,7 +344,7 @@ def process_path(
     recursion_limit=999,
 ):
     try:
-        size = pathlib.Path(path).stat().st_size
+        size = Path(path).stat().st_size
     except Exception:
         return
     if size > max_bytes and not is_archive_name(path):
@@ -393,7 +393,7 @@ def process_path(
         if lname.endswith(".tar.zst"):
             if zstd is None:
                 try:
-                    with pathlib.Path(path).open("rb") as fh:
+                    with Path(path).open("rb") as fh:
                         b = fh.read(max_bytes + 1)
                         found.update(
                             scan_bytes_for_urls(
@@ -424,7 +424,7 @@ def process_path(
                 with contextlib.suppress(Exception):
                     tmpf.close()
             return
-        with pathlib.Path(path).open("rb") as fh:
+        with Path(path).open("rb") as fh:
             b = fh.read(max_bytes + 1)
             found.update(
                 scan_bytes_for_urls(
@@ -491,15 +491,15 @@ def main():
         print("no url found")
         sys.exit(0)
     try:
-        if pathlib.Path(args.output).exists():
+        if Path(args.output).exists():
             print("urls.txt exists. appending new urls")
-            with pathlib.Path(args.output).open("a", encoding="utf-8") as out:
+            with Path(args.output).open("a", encoding="utf-8") as out:
                 out.write("\n\n")
                 for u in sorted_urls:
                     if is_valid_url(u):
                         out.write(u + "\n")
         else:
-            with pathlib.Path(args.output).open("w", encoding="utf-8") as out:
+            with Path(args.output).open("w", encoding="utf-8") as out:
                 for u in sorted_urls:
                     if is_valid_url(u):
                         out.write(u + "\n")

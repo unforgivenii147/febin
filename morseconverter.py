@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-import pathlib
+from pathlib import Path
 import argparse
 
 
@@ -69,9 +69,9 @@ def morse_to_text(morse):
 
 def encrypt_file(input_filename, output_filename) -> None:
     try:
-        content = pathlib.Path(input_filename).read_text(encoding="utf-8")
+        content = Path(input_filename).read_text(encoding="utf-8")
         morse_content = text_to_morse(content)
-        pathlib.Path(output_filename).write_text(morse_content, encoding="utf-8")
+        Path(output_filename).write_text(morse_content, encoding="utf-8")
     except FileNotFoundError:
         sys.exit(1)
     except Exception:
@@ -80,9 +80,9 @@ def encrypt_file(input_filename, output_filename) -> None:
 
 def decrypt_file(input_filename, output_filename) -> None:
     try:
-        morse_content = pathlib.Path(input_filename).read_text(encoding="utf-8")
+        morse_content = Path(input_filename).read_text(encoding="utf-8")
         text_content = morse_to_text(morse_content)
-        pathlib.Path(output_filename).write_text(text_content, encoding="utf-8")
+        Path(output_filename).write_text(text_content, encoding="utf-8")
     except FileNotFoundError:
         sys.exit(1)
     except Exception:

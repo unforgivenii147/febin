@@ -2,7 +2,7 @@
 import os
 import sys
 from time import sleep
-import pathlib
+from pathlib import Path
 from argparse import ArgumentParser
 from datetime import datetime
 import itertools
@@ -350,7 +350,7 @@ def walk2list(
         followlinks=followlinks,
     )
     return [
-        pathlib.Path(os.path.join(r, f)).resolve()
+        Path(os.path.join(r, f)).resolve()
         for r, d, fs in oswalk
         for f in fs
         if not f.startswith(() if showhidden else ".") and not f.endswith(omit) and f.endswith(target)
@@ -381,29 +381,29 @@ def process_multiple_files(file_path):
 
 def prefixer_extensioner(file_path: str) -> str:
     extension = os.path.splitext(file_path)[1].lower()
-    filenames = os.path.splitext(pathlib.Path(file_path).name)[0]
+    filenames = os.path.splitext(Path(file_path).name)[0]
     filenames = args.prefix + filenames if args.prefix else filenames
-    dir_names = pathlib.Path(file_path).parent
+    dir_names = Path(file_path).parent
     return os.path.join(dir_names, filenames + extension)
 
 
 def process_single_css_file(css_file_path: str) -> str:
     global args
-    original_css = pathlib.Path(css_file_path).read_text(encoding="utf-8-sig")
+    original_css = Path(css_file_path).read_text(encoding="utf-8-sig")
     pretty_css = css_prettify(original_css, args.justify, args.extraline)
     if args.timestamp:
         taim = f"/* {datetime.now().replace(microsecond=0).isoformat(' ')} */ "
         pretty_css = taim + pretty_css
     min_css_file_path = prefixer_extensioner(css_file_path)
-    pathlib.Path(min_css_file_path).write_text(pretty_css, encoding="utf-8")
+    Path(min_css_file_path).write_text(pretty_css, encoding="utf-8")
     return pretty_css
 
 
 def process_single_html_file(html_file_path: str) -> str:
-    with pathlib.Path(html_file_path).open(encoding="utf-8-sig") as html_file:
+    with Path(html_file_path).open(encoding="utf-8-sig") as html_file:
         pretty_html = html_prettify(html_file.read(), args.extraline)
     html_file_path = prefixer_extensioner(html_file_path)
-    pathlib.Path(html_file_path).write_text(pretty_html, encoding="utf-8")
+    Path(html_file_path).write_text(pretty_html, encoding="utf-8")
     return pretty_html
 
 
@@ -483,15 +483,15 @@ def main():
     global log
     if args.before and getoutput:
         print(getoutput(str(args.before)))
-    if pathlib.Path(args.fullpath).is_file() and args.fullpath.endswith((".css", ".scss")):
+    if Path(args.fullpath).is_file() and args.fullpath.endswith((".css", ".scss")):
         print("Target is a CSS / SCSS File.")
         list_of_files = str(args.fullpath)
         process_single_css_file(args.fullpath)
-    elif pathlib.Path(args.fullpath).is_file() and args.fullpath.endswith((".htm", ".html")):
+    elif Path(args.fullpath).is_file() and args.fullpath.endswith((".htm", ".html")):
         print("Target is a HTML File.")
         list_of_files = str(args.fullpath)
         process_single_html_file(args.fullpath)
-    elif pathlib.Path(args.fullpath).is_dir():
+    elif Path(args.fullpath).is_dir():
         print("Target is a Folder with CSS / SCSS, HTML, JS.")
         print("Processing a whole Folder may take some time...")
         list_of_files = walk2list(

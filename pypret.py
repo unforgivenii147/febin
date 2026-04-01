@@ -1,16 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import json
-import pathlib
+from pathlib import Path
 
 import jsbeautifier
 
 
 def beautify_json_file(file_path) -> bool | None:
     try:
-        with pathlib.Path(file_path).open(encoding="utf-8") as f:
+        with Path(file_path).open(encoding="utf-8") as f:
             data = json.load(f)
-        with pathlib.Path(file_path).open("w", encoding="utf-8") as f:
+        with Path(file_path).open("w", encoding="utf-8") as f:
             json.dump(data, f, indent=4)
         return True
     except json.JSONDecodeError:
@@ -21,11 +21,11 @@ def beautify_json_file(file_path) -> bool | None:
 
 def beautify_code_file(file_path, beautify_function, asset_type) -> bool | None:
     try:
-        original_content = pathlib.Path(file_path).read_text(encoding="utf-8")
+        original_content = Path(file_path).read_text(encoding="utf-8")
         options = jsbeautifier.default_options()
         options.indent_size = 4
         beautified_content = beautify_function(original_content, options)
-        pathlib.Path(file_path).write_text(beautified_content, encoding="utf-8")
+        Path(file_path).write_text(beautified_content, encoding="utf-8")
         return True
     except Exception:
         return False
@@ -70,4 +70,4 @@ def beautify_files_in_directory(cwd=".") -> None:
 
 
 if __name__ == "__main__":
-    beautify_files_in_directory(pathlib.Path.cwd())
+    beautify_files_in_directory(Path.cwd())

@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 import operator
 
 import regex as re
@@ -8,7 +8,6 @@ from packaging.version import Version
 
 
 wheel_pattern = re.compile(r"^(?P<name>.+)-(?P<version>\d+(\.\d+)+).*\.metadata$")
-
 files = [f for f in os.listdir(".") if (f.endswith((".metadata", ".whl")))]
 print(f"{len(files)} files found.")
 packages = {}
@@ -26,5 +25,5 @@ for name, versions in packages.items():
     latest = versions[0]
     old = versions[1:]
     for _v, filename in old:
-        pathlib.Path(filename).unlink()
+        Path(filename).unlink()
         print(f"{filename} removed")

@@ -42,13 +42,10 @@ def main() -> None:
         p.apply_async(clean_file, (f,))
     pool.close()
     pool.join()
-
     esz = get_size(root)
     diffsize = isz - esz
     print(f"space freed : {format_size(diffsize)}")
 
-
-# (".zip",".whl",".tar.gz",".tgz",".tar",)
 
 if __name__ == "__main__":
     main()

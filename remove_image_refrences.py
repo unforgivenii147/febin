@@ -12,7 +12,6 @@ IMG_TAG_RE = re.compile(
 
 
 def remove_remote_html_images(text: str) -> str:
-
     def repl(match):
         src = match.group(1)
         if src.startswith(REMOTE_PREFIXES):
@@ -32,7 +31,6 @@ RST_IMG_RE = re.compile(
 
 
 def remove_remote_md_images(text: str) -> str:
-
     def inline_repl(match):
         url = match.group(1)
         if url.startswith(REMOTE_PREFIXES):
@@ -64,7 +62,6 @@ def remove_remote_md_images(text: str) -> str:
 
 
 def remove_remote_rst_images(text: str) -> str:
-    """Remove RST image directives with remote URLs."""
     return RST_IMG_RE.sub("", text)
 
 

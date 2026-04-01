@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
+from pathlib import Path
 import operator
 import subprocess
 
@@ -25,10 +25,10 @@ def get_installed_packages():
 
 
 def get_bash_history():
-    history_file = pathlib.Path("~/.bash_history").expanduser()
-    if not pathlib.Path(history_file).exists():
+    history_file = Path("~/.bash_history").expanduser()
+    if not Path(history_file).exists():
         return []
-    with pathlib.Path(history_file).open(encoding="utf-8") as f:
+    with Path(history_file).open(encoding="utf-8") as f:
         return f.read().splitlines()
 
 

@@ -1,16 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""Production-grade dos2unix utility.
-Includes:
-- mmap fast-path conversions
-- safe fallback temp-file conversion
-- binary detection
-- recursive scanning
-- parallel processing
-- tqdm progress bar
-- error logging to ~/tmp/pydos2unix.log
-- defaults to recursive processing of "." when no args given.
-"""
-
 import mmap
 import fnmatch
 import logging

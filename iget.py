@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import math
-import pathlib
+from pathlib import Path
 import threading
 
 import requests
@@ -29,8 +29,8 @@ class MultiPartDownloader:
         return self.get_size
 
     def check_existing_file(self):
-        if pathlib.Path(self.output_path).exists():
-            self.existing_size = pathlib.Path(self.output_path).stat().st_size
+        if Path(self.output_path).exists():
+            self.existing_size = Path(self.output_path).stat().st_size
             return self.existing_size
         return 0
 
@@ -41,7 +41,7 @@ class MultiPartDownloader:
         }
         response = requests.get(self.url, headers=headers, stream=True)
         chunk_size = 1024 * 1024
-        with pathlib.Path(self.output_path).open("r+b") as f:
+        with Path(self.output_path).open("r+b") as f:
             f.seek(start)
             for chunk in response.iter_content(chunk_size=chunk_size):
                 if chunk:

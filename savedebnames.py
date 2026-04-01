@@ -1,13 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
+from pathlib import Path
 import subprocess
 
 
 def save_installed_packages(output_file="installed.txt"):
-    """
-    Save the names of installed Debian packages to a text file.
-    Package names are saved without their version numbers.
-    """
     try:
         result = subprocess.run(
             [
@@ -21,7 +17,7 @@ def save_installed_packages(output_file="installed.txt"):
             check=True,
         )
         installed_packages = result.stdout.splitlines()
-        pathlib.Path(output_file).write_text("\n".join(installed_packages), encoding="utf-8")
+        Path(output_file).write_text("\n".join(installed_packages), encoding="utf-8")
         print(f"Installed package names saved to '{output_file}'")
     except FileNotFoundError:
         print("Error: dpkg-query command not found. Are you running this script on a Debian-based system?")

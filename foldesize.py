@@ -2,7 +2,7 @@
 import os
 import math
 import shutil
-import pathlib
+from pathlib import Path
 import operator
 
 
@@ -11,9 +11,9 @@ def get_all_files_in_root_only(root_path):
     try:
         for item in os.listdir(root_path):
             filepath = os.path.join(root_path, item)
-            if pathlib.Path(filepath).is_file() and not pathlib.Path(filepath).is_symlink():
+            if Path(filepath).is_file() and not Path(filepath).is_symlink():
                 try:
-                    size = pathlib.Path(filepath).stat().st_size
+                    size = Path(filepath).stat().st_size
                     files_info.append({
                         "path": filepath,
                         "name": item,
@@ -65,13 +65,13 @@ def analyze_size_distribution(files_info):
 
 def organize_files_in_root(
     root_path=".",
-    target_folders=None,
+    target_folders=4,
     max_get_size_mb=None,
 ):
     print("=" * 70)
     print("File Organization - Direct to Root Path (No Subdirectories)")
     print("=" * 70)
-    root_path = pathlib.Path(root_path).resolve()
+    root_path = Path(root_path).resolve()
     print(f"\nRoot directory: {root_path}")
     print("Mode: Files will be moved into organized folders in root path")
     print("\n[1/5] Scanning files in root directory...")
@@ -103,7 +103,7 @@ def organize_files_in_root(
             current_size += file_info["size"]
         if current_folder:
             folders.append(current_folder)
-        files_per_folder = None
+        files_per_folder = 500
     else:
         files_per_folder = calculate_optimal_files_per_folder(stats["count"], target_folders)
         num_folders = math.ceil(stats["count"] / files_per_folder)
@@ -117,6 +117,7 @@ def organize_files_in_root(
             folders.append(files_info[start_idx:end_idx])
     print("\nOrganization Plan:")
     print(f"  Number of folders to create: {len(folders)}")
+    files_per_folder = 500
     if files_per_folder:
         print(f"  Files per folder: ~{files_per_folder}")
     if max_get_size_mb:
@@ -132,13 +133,11 @@ def organize_files_in_root(
         min_size = folder_files[0]["size"]
         max_size = folder_files[-1]["size"]
         total_size = sum(f["size"] for f in folder_files)
-
         folder_name = f"{convert_size(min_size)}-{convert_size(max_size)}"
         folder_name = "".join(c for c in folder_name if c not in r'<>:"/\|?*')
-
         folder_path = os.path.join(root_path, folder_name)
         try:
-            pathlib.Path(folder_path).mkdir(exist_ok=True, parents=True)
+            Path(folder_path).mkdir(exist_ok=True, parents=True)
             created_folders.append(folder_name)
             print(f"\n  Folder {idx}/{len(folders)}: {folder_name}")
             print(f"    Files: {len(folder_files)}")
@@ -149,7 +148,7 @@ def organize_files_in_root(
                 dst = os.path.join(folder_path, file_info["name"])
                 counter = 1
                 base_name, ext = os.path.splitext(file_info["name"])
-                while pathlib.Path(dst).exists():
+                while Path(dst).exists():
                     dst = os.path.join(
                         folder_path,
                         f"{base_name}_{counter}{ext}",

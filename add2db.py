@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 import sqlite3
 
 
 def get_current_folder_name():
-    return pathlib.Path(pathlib.Path.cwd()).name
+    return Path(Path.cwd()).name
 
 
 def get_user_folder_name(default_name):
@@ -44,7 +44,7 @@ def read_file_contents(filepath):
         ]
         for encoding in encodings:
             try:
-                with pathlib.Path(filepath).open(encoding=encoding) as f:
+                with Path(filepath).open(encoding=encoding) as f:
                     return f.read(1024 * 1024)
             except (
                 UnicodeDecodeError,
@@ -59,12 +59,12 @@ def read_file_contents(filepath):
 
 
 def get_files_in_current_dir():
-    current_dir = pathlib.Path.cwd()
+    current_dir = Path.cwd()
     files = []
     try:
         for item in os.listdir(current_dir):
             item_path = os.path.join(current_dir, item)
-            if pathlib.Path(item_path).is_file():
+            if Path(item_path).is_file():
                 print(f"  Reading: {item}")
                 contents = read_file_contents(item_path)
                 files.append({
@@ -102,7 +102,7 @@ def main():
             folder_name = default_name + "_new"
             print(f"Using '{folder_name}' as default")
     create_folder_table(cursor, folder_name)
-    print(f"\nScanning current directory: {pathlib.Path.cwd()}")
+    print(f"\nScanning current directory: {Path.cwd()}")
     print("Reading file contents (limited to 1MB per file)...")
     files = get_files_in_current_dir()
     if not files:

@@ -2,28 +2,28 @@
 import os
 import sys
 import shutil
-import pathlib
+from pathlib import Path
 
 
 def replace_in_file(path: str, old: str, new: str) -> None:
     try:
-        text = pathlib.Path(path).read_text(encoding="utf-8", errors="ignore")
+        text = Path(path).read_text(encoding="utf-8", errors="ignore")
     except (UnicodeDecodeError, PermissionError):
         return
     if old not in text:
         return
     new_text = text.replace(old, new)
-    pathlib.Path(path).write_text(new_text, encoding="utf-8")
+    Path(path).write_text(new_text, encoding="utf-8")
 
 
 def rename_path(path: str, old: str, new: str) -> str:
-    dirname = pathlib.Path(path).parent
-    basename = pathlib.Path(path).name
+    dirname = Path(path).parent
+    basename = Path(path).name
     if old not in basename:
         return path
     new_basename = basename.replace(old, new)
     new_path = os.path.join(dirname, new_basename)
-    if pathlib.Path(new_path).exists():
+    if Path(new_path).exists():
         print(f"path by name {new_path} already exists\n rename it manually")
         return path
     try:

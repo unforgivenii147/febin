@@ -7,7 +7,6 @@ from dh import move_file
 
 
 MAX_QUEUE = 16
-
 cwd = Path.cwd()
 ok_dir = Path(f"{cwd}/OK")
 err_dir = Path(f"{cwd}/ERROR")
@@ -35,10 +34,7 @@ def main():
     files = [Path(f) for f in args] if args else [Path(p) for p in cwd.glob("*.py")]
     for f in files:
         process_file(f)
-
-
-"""
-    with get_context('spawn').Pool(8) as pool:
+    with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:
             pending.append(pool.apply_async(process_file, (f,)))
@@ -47,7 +43,6 @@ def main():
         while pending:
             pending.popleft().get()
 
-"""
 
 if __name__ == "__main__":
     sys.exit(main())

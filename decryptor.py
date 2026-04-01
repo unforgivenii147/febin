@@ -3,7 +3,7 @@ import os
 import glob
 import random
 import string
-import pathlib
+from pathlib import Path
 import argparse
 
 from cryptography.hazmat.backends import default_backend
@@ -27,16 +27,16 @@ def encrypt_file(file_path, key):
         backend=backend,
     )
     encryptor = cipher.encryptor()
-    data = pathlib.Path(file_path).read_bytes()
+    data = Path(file_path).read_bytes()
     padder = padding.PKCS7(128).padder()
     padded_data = padder.update(data) + padder.finalize()
     encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
-    pathlib.Path(file_path).write_bytes(iv + encrypted_data)
+    Path(file_path).write_bytes(iv + encrypted_data)
 
 
 def decrypt_file(file_path, key):
     backend = default_backend()
-    raw = pathlib.Path(file_path).read_bytes()
+    raw = Path(file_path).read_bytes()
     iv = raw[:AES_BLOCK_SIZE]
     ciphertext = raw[AES_BLOCK_SIZE:]
     cipher = Cipher(
@@ -48,7 +48,7 @@ def decrypt_file(file_path, key):
     padded_data = decryptor.update(ciphertext) + decryptor.finalize()
     unpadder = padding.PKCS7(128).unpadder()
     data = unpadder.update(padded_data) + unpadder.finalize()
-    pathlib.Path(file_path).write_bytes(data)
+    Path(file_path).write_bytes(data)
 
 
 def main():
@@ -71,7 +71,7 @@ def main():
         msg = "Specify --encrypt or --decrypt"
         raise SystemExit(msg)
     for file_path in glob.glob("*"):
-        if pathlib.Path(file_path).is_file():
+        if Path(file_path).is_file():
             print(f"Processing {file_path}...")
             action(file_path, key)
 

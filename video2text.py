@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-import pathlib
+from pathlib import Path
 
 import cv2
 from PIL import Image
@@ -9,11 +9,10 @@ import pytesseract
 
 
 video = sys.argv[1]
-txtfile = pathlib.Path(video).with_suffix(".txt")
+txtfile = Path(video).with_suffix(".txt")
 
 
 def process_frame(frame_id, frame):
-
     frame = cv2.resize(
         frame,
         None,

@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 
 import regex as re
 
 
 def resolve_imports(content, current_dir):
-    folder_name = pathlib.Path(current_dir).name
+    folder_name = Path(current_dir).name
     content = re.sub(
         r"from \. import ([a-zA-Z0-9_]+)",
         f"from {folder_name} import \\1",
@@ -25,14 +25,14 @@ def resolve_imports(content, current_dir):
 
 
 def merge_python_files():
-    current_dir = pathlib.Path.cwd()
-    folder_name = pathlib.Path(current_dir).name
+    current_dir = Path.cwd()
+    folder_name = Path(current_dir).name
     output_filename = f"{folder_name}.py"
     py_files = [f for f in os.listdir(current_dir) if f.endswith(".py") and f != output_filename]
     py_files.sort()
-    with pathlib.Path(output_filename).open("w", encoding="utf-8") as outfile:
+    with Path(output_filename).open("w", encoding="utf-8") as outfile:
         for py_file in py_files:
-            with pathlib.Path(py_file).open(encoding="utf-8") as infile:
+            with Path(py_file).open(encoding="utf-8") as infile:
                 content = infile.read()
                 content = resolve_imports(content, current_dir)
                 outfile.write(f"\n\n# --- {py_file} ---\n\n")

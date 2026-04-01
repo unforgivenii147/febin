@@ -33,7 +33,6 @@ def find_dups(cwd):
                 key=lambda x: x.stat().st_mtime,
                 reverse=True,
             )
-
             for dup_found in paths:
                 print(os.path.relpath(dup_found))
             for filetodel in paths[1:]:

@@ -3,14 +3,14 @@ import io
 import os
 import sys
 import base64
-import pathlib
+from pathlib import Path
 import sqlite3
 
 import py7zr
 
 
 def get_current_folder_name():
-    return pathlib.Path(pathlib.Path.cwd()).name
+    return Path(Path.cwd()).name
 
 
 def get_user_folder_name(default_name):
@@ -43,18 +43,16 @@ def create_folder_table(cursor, folder_name):
 
 
 def compress_data(data_bytes):
-    """Compress data using 7z and return as base64 string."""
     if not data_bytes:
         return None
     try:
-        # Create in-memory buffer for the archive
         buffer = io.BytesIO()
-        # Create 7z archive with the data
+
         with py7zr.SevenZipFile(buffer, "w") as archive:
             archive.writestr("content", data_bytes)
-        # Get compressed data
+
         compressed_data = buffer.getvalue()
-        # Encode as base64 for safe storage in SQLite
+
         return base64.b64encode(compressed_data).decode("ascii")
     except Exception as e:
         print(f"    Compression error: {e!s}")
@@ -69,14 +67,14 @@ def read_file_contents(filepath):
             "cp1252",
             "iso-8859-1",
         ]
-        get_size = pathlib.Path(filepath).stat().st_size
-        # For very large files, warn but still try to read
-        if get_size > 10 * 1024 * 1024:  # 10MB
+        get_size = Path(filepath).stat().st_size
+
+        if get_size > 10 * 1024 * 1024:
             print(f"    Warning: Large file ({get_size / 1024 / 1024:.1f}MB), may take time to compress")
-        # First try to read as text
+
         for encoding in encodings:
             try:
-                with pathlib.Path(filepath).open(encoding=encoding) as f:
+                with Path(filepath).open(encoding=encoding) as f:
                     content = f.read()
                     return {
                         "content": content,
@@ -93,8 +91,8 @@ def read_file_contents(filepath):
                 UnicodeError,
             ):
                 continue
-        # If text reading fails, read as binary
-        with pathlib.Path(filepath).open("rb") as f:
+
+        with Path(filepath).open("rb") as f:
             content = f.read()
             return {
                 "content": content,
@@ -118,19 +116,18 @@ def read_file_contents(filepath):
 
 
 def get_files_in_current_dir():
-    current_dir = pathlib.Path.cwd()
+    current_dir = Path.cwd()
     files = []
     try:
         for item in sorted(os.listdir(current_dir)):
             item_path = os.path.join(current_dir, item)
-            if pathlib.Path(item_path).is_file():
-                get_size = pathlib.Path(item_path).stat().st_size
+            if Path(item_path).is_file():
+                get_size = Path(item_path).stat().st_size
                 size_str = f"{get_size / 1024:.1f}KB" if get_size < 1024 * 1024 else f"{get_size / 1024 / 1024:.1f}MB"
                 print(f"  Processing: {item} ({size_str})")
                 file_data = read_file_contents(item_path)
-                # Store text content directly, compress binary content
+
                 if file_data["is_binary"]:
-                    # Compress binary content
                     compressed = compress_data(file_data["content"])
                     if compressed:
                         files.append({
@@ -144,7 +141,6 @@ def get_files_in_current_dir():
                             f"    ✓ Compressed {file_data['original_size'] / 1024:.1f}KB to {len(compressed) / 1024:.1f}KB"
                         )
                     else:
-                        # Fallback to storing as text representation if compression fails
                         files.append({
                             "filename": item,
                             "contents": "[Binary file - compression failed]",
@@ -153,7 +149,6 @@ def get_files_in_current_dir():
                             "compressed_size": 0,
                         })
                 else:
-                    # Store text files uncompressed (they're already efficient)
                     files.append({
                         "filename": item,
                         "contents": file_data["content"],
@@ -185,7 +180,7 @@ def insert_files(cursor, folder_name, files):
 
 
 def main():
-    # Check if py7zr is installed
+
     try:
         pass
     except ImportError:
@@ -193,7 +188,7 @@ def main():
         print("Install it with: pip install py7zr")
         sys.exit(1)
     db_path = "/sdcard/pkgs.db"
-    # Check permissions
+
     if not os.access("/sdcard/", os.W_OK):
         print("Error: Cannot write to /sdcard/. Make sure you have proper permissions.")
         print("On Android, you might need to:")
@@ -204,25 +199,24 @@ def main():
     folder_name = get_user_folder_name(default_name)
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    # Check if folder already exists
+
     while folder_exists_in_db(cursor, folder_name):
         print(f"Folder name '{folder_name}' already exists in database!")
         folder_name = input("Please enter a different name: ").strip()
         if not folder_name:
             folder_name = default_name + "_new"
             print(f"Using '{folder_name}' as default")
-    # Create table with compression support
+
     create_folder_table(cursor, folder_name)
-    print(f"\nScanning current directory: {pathlib.Path.cwd()}")
+    print(f"\nScanning current directory: {Path.cwd()}")
     print("Reading and compressing file contents...")
     files = get_files_in_current_dir()
     if not files:
         print("No files found in current directory!")
     else:
-        # Insert files into database
         insert_files(cursor, folder_name, files)
         conn.commit()
-        # Calculate statistics
+
         total_original = sum(f.get("original_size", 0) for f in files)
         total_compressed = sum(f.get("compressed_size", 0) for f in files)
         print(f"\n✅ Successfully added {len(files)} files to table '{folder_name}'")

@@ -30,11 +30,8 @@ def copy_if_match(src_path) -> None:
 
 
 def startup_scan(path) -> None:
-
     patterns = ["*.tar.gz", "*.zip", "*.tar.xz", ".tar.zst", ".tar.bz2"]
-
     matching_files = [f for pattern in patterns for f in path.rglob(pattern)]
-
     matching_files = list(set(matching_files))
     for file_path in matching_files:
         copy_if_match(file_path)

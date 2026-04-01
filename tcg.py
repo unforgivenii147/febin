@@ -6,7 +6,6 @@ import subprocess
 
 TERMUX_PYTHON = "#!/data/data/com.termux/files/usr/bin/python\n"
 TERMUX_BASH = "#!/data/data/com.termux/files/usr/bin/bash\n"
-
 cwd = Path.cwd()
 homebin = Path.home() / "bin"
 homebin2 = Path.home() / "bashbin"
@@ -62,9 +61,7 @@ def main():
     if lines[0].startswith("#!") and lines[1].startswith("#!"):
         lines.pop(1)
         content = "\n".join(lines)
-
     out_file.write_text(content, encoding="utf-8")
-
     if cwd in {homebin, homebin2}:
         out_file.chmod(0o755)
         create_symlink(out_file)

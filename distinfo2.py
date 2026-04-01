@@ -54,11 +54,6 @@ def process_lic(fp):
         shutil.rmtree(lic_dir)
         print(f"{lic_dir} removed.")
 
-    #    for f in NOT_ALLOWED:
-    #        nf = Path(f"{fp}/{f}")
-    #        if nf.exists():
-    #            nf.unlink()
-    #            print(f"{nf} removed")
     rett = []
     for f in ALLOWED:
         nf = Path(f"{fp}/{f}")

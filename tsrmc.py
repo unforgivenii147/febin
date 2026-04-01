@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 from pathlib import Path
-from multiprocessing import cpu_count
+from multiprocessing import get_context
 
-from dh import get_size, format_size
+from dh import get_size, format_size, clean_blank_lines
 from fastwalk import walk_files
 from termcolor import cprint
 from tree_sitter import Query, Parser, Language, QueryCursor
@@ -77,27 +77,12 @@ class TSRemover:
             print("resulted code is not valid")
             return source_bytes, 0, 0
         cleaned = new_source.decode("utf-8")
-        cleaned = self._cleanup_blank_lines(cleaned)
+        cleaned = clean_blank_lines(cleaned)
         return (
             cleaned,
             comment_count,
             docstring_count,
         )
-
-    @staticmethod
-    def _cleanup_blank_lines(text: str) -> str:
-        lines = text.splitlines()
-        cleaned = []
-        blank_streak = 0
-        for line in lines:
-            if line.strip() == "":
-                blank_streak += 1
-                if blank_streak <= 2:
-                    cleaned.append("")
-            else:
-                blank_streak = 0
-                cleaned.append(line.rstrip())
-        return "\n".join(cleaned) + "\n"
 
 
 def ts_remover_initializer():
@@ -162,8 +147,8 @@ if __name__ == "__main__":
     files = [Path(p) for p in walk_files(dir_path) if Path(p).is_file() and Path(p).suffix == ".py"]
     before = get_size(dir_path)
     results = []
-    nproc = min(cpu_count() or 1, 8)
-    with Pool(
+    nproc = 8
+    with get_context("spawn").Pool(
         processes=nproc,
         initializer=ts_remover_initializer,
     ) as pool:

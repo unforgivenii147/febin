@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""count characters of input file."""
-
 import sys
-import pathlib
+from pathlib import Path
 
 
 if __name__ == "__main__":
@@ -11,7 +9,7 @@ if __name__ == "__main__":
         sys.exit(1)
     input_file = sys.argv[1]
     try:
-        with pathlib.Path(input_file).open(encoding="utf-8") as file:
+        with Path(input_file).open(encoding="utf-8") as file:
             content = file.read()
             char_count = len(content)
             print(f"Number of characters in '{input_file}': {char_count}")

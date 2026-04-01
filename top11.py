@@ -58,4 +58,3 @@ def alternative_version_with_details() -> None:
 
 if __name__ == "__main__":
     main()
-#    alternative_version_with_details()

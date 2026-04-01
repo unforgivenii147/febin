@@ -2,7 +2,7 @@
 import os
 import re
 import urllib
-import pathlib
+from pathlib import Path
 import argparse
 
 import pypdf
@@ -60,10 +60,10 @@ def check_title(
     if node.is_root():
         return True
     source_file = os.path.join(prefix_path, node.source_file)
-    if not pathlib.Path(source_file).exists():
+    if not Path(source_file).exists():
         print(f"File {source_file} does not exist")
         return False
-    with pathlib.Path(source_file).open(encoding="utf-8") as f:
+    with Path(source_file).open(encoding="utf-8") as f:
         lines = f.readlines()
     for idx, line in enumerate(lines):
         if line.startswith("# "):
@@ -77,7 +77,7 @@ def check_title(
     if not all_matched and overwrite:
         lines.insert(0, f"# {node.title}\n")
         print(f"[Info] Overwrite title as {node.title} in {node.source_file}")
-        with pathlib.Path(source_file).open("w", encoding="utf-8") as f:
+        with Path(source_file).open("w", encoding="utf-8") as f:
             f.writelines(lines)
         all_matched = True
     return all_matched
@@ -167,28 +167,28 @@ def main():
     print("args.pdf_path: ", args.pdf_path)
     print("args.summary_path: ", args.summary_path)
     print("args.output_path: ", args.output_path)
-    if not pathlib.Path(args.html_path).exists():
+    if not Path(args.html_path).exists():
         msg = f"{args.html_path} does not exist"
         raise FileNotFoundError(msg)
-    if not pathlib.Path(args.pdf_path).exists():
+    if not Path(args.pdf_path).exists():
         msg = f"{args.pdf_path} does not exist"
         raise FileNotFoundError(msg)
-    if not pathlib.Path(args.summary_path).exists():
+    if not Path(args.summary_path).exists():
         msg = f"{args.summary_path} does not exist"
         raise FileNotFoundError(msg)
     reader = pypdf.PdfReader(args.pdf_path)
     writer = pypdf.PdfWriter()
     writer.append(reader)
-    md_text = pathlib.Path(args.summary_path).read_text(encoding="utf-8")
+    md_text = Path(args.summary_path).read_text(encoding="utf-8")
     section_root = parse_section_tree(md_text)
     html_root = None
-    with pathlib.Path(args.html_path).open(encoding="utf8") as f:
+    with Path(args.html_path).open(encoding="utf8") as f:
         data = f.read()
         html_root = lxml.html.fromstring(data)
     if html_root is None:
         raise ("[ERROR] html_root is None")
     add_outline(html_root, reader, writer, section_root)
-    with pathlib.Path(args.output_path).open("wb") as f:
+    with Path(args.output_path).open("wb") as f:
         writer.write(f)
         print(f"[INFO] Write to {args.output_path}")
 

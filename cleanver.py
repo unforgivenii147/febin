@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
+from pathlib import Path
 import subprocess
 
 
@@ -17,7 +17,7 @@ def create_unpinned_requirements(output_file="req.txt"):
                 continue
             pkg = line.split("==")[0].split(">=")[0].split("<=")[0].split("~=")[0].split(" @ ")[0]
             package_names.append(pkg.strip())
-        pathlib.Path(output_file).write_text("\n".join(package_names) + "\n", encoding="utf-8")
+        Path(output_file).write_text("\n".join(package_names) + "\n", encoding="utf-8")
         print(f"Successfully saved {len(package_names)} package names to {output_file}.")
     except subprocess.CalledProcessError as e:
         print(f"Error running pip freeze: {e}")

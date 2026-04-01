@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 import subprocess
 from multiprocessing import cpu_count
 
@@ -9,7 +9,7 @@ from rich.progress import Progress
 
 def optimize_png(file_path):
     try:
-        original_size = pathlib.Path(file_path).stat().st_size
+        original_size = Path(file_path).stat().st_size
         subprocess.run(
             [
                 "oxipng",
@@ -25,7 +25,7 @@ def optimize_png(file_path):
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        optimized_size = pathlib.Path(file_path).stat().st_size
+        optimized_size = Path(file_path).stat().st_size
         return original_size - optimized_size
     except subprocess.CalledProcessError:
         return 0
@@ -39,7 +39,7 @@ def find_png_files(directory):
 
 
 def main():
-    current_dir = pathlib.Path.cwd()
+    current_dir = Path.cwd()
     png_files = find_png_files(current_dir)
     if not png_files:
         print("No PNG files found in the current directory or subdirectories.")

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
-from dh import run_command
+from dh import run_command, clean_blank_lines
 from termcolor import cprint
 from tree_sitter import Parser, Language
 import tree_sitter_cpp as tscpp
@@ -26,7 +26,7 @@ class TSCppRemover:
             new_source = new_source[:start] + new_source[end:]
             removed += 1
         cleaned = new_source.decode("utf-8")
-        cleaned = self._cleanup_blank_lines(cleaned)
+        cleaned = clean_blank_lines(cleaned)
         return cleaned, removed
 
     def _collect_comments(self, node, to_delete, source_bytes):
@@ -37,21 +37,6 @@ class TSCppRemover:
             to_delete.append((node.start_byte, node.end_byte))
         for child in node.children:
             self._collect_comments(child, to_delete, source_bytes)
-
-    @staticmethod
-    def _cleanup_blank_lines(text: str) -> str:
-        lines = text.splitlines()
-        cleaned = []
-        blank_streak = 0
-        for line in lines:
-            if line.strip() == "":
-                blank_streak += 1
-                if blank_streak <= 2:
-                    cleaned.append("")
-            else:
-                blank_streak = 0
-                cleaned.append(line.rstrip())
-        return "\n".join(cleaned) + "\n"
 
 
 def validate_with_treesitter(parser, code: str) -> bool:

@@ -28,7 +28,7 @@ def merge_json_files(files):
             continue
         try:
             merged = mergedict(merged, load_json_object(path))
-        #            merged.update(load_json_object(path))
+
         except Exception as e:
             print(f"Warning: {path}: {e}")
     return merged

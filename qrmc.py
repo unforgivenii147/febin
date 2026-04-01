@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import ast
-import pathlib
+from pathlib import Path
 import operator
 import multiprocessing
 
@@ -31,7 +31,7 @@ def should_preserve_comment(content):
 
 def strip_file(file_path):
     try:
-        source_code = pathlib.Path(file_path).read_text(encoding="utf-8")
+        source_code = Path(file_path).read_text(encoding="utf-8")
         source_bytes = bytes(source_code, "utf8")
         tree = parser.parse(source_bytes)
         captures = cursor.captures(tree.root_node)
@@ -71,7 +71,7 @@ def strip_file(file_path):
             working_code = working_code[:start] + replacement + working_code[end:]
         try:
             ast.parse(working_code)
-            pathlib.Path(file_path).write_text(working_code, encoding="utf-8")
+            Path(file_path).write_text(working_code, encoding="utf-8")
         except SyntaxError:
             pass
     except Exception as e:

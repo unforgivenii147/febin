@@ -19,17 +19,13 @@ def hash_file_chunked(filepath, chunk_size):
 def benchmark_chunk_sizes(filepath):
     chunk_sizes = [2**i for i in range(10, 30)]
     results = {}
-
     for chunk_size in chunk_sizes:
         start_time = perf_counter()
         hash_file_chunked(filepath, chunk_size)
         end_time = perf_counter()
         results[chunk_size] = end_time - start_time
-
     best_chunk_size = min(results, key=results.get)
-
     best_time = results[best_chunk_size]
-
     print(f"File: {filepath.name} : ", end=" ")
     print(f"{best_chunk_size}, Time: {best_time}")
     return best_chunk_size

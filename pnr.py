@@ -301,7 +301,7 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python pnr.py -r "old_string"              # Remove "old_string" from names
+  python pnr.py -r "old_string"
         """,
     )
     group = parser.add_mutually_exclusive_group(required=True)

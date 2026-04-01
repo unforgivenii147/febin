@@ -2,7 +2,7 @@
 import os
 import sys
 import shutil
-import pathlib
+from pathlib import Path
 
 import ssdeep
 
@@ -20,7 +20,7 @@ def compute_hashes(files):
     hashes = {}
     for f in files:
         try:
-            with pathlib.Path(f).open("rb") as fh:
+            with Path(f).open("rb") as fh:
                 data = fh.read()
                 hashes[f] = ssdeep.hash(data)
         except Exception as e:
@@ -50,10 +50,10 @@ def group_similar_files(hashes, threshold):
 
 
 def copy_groups(groups, output_dir="output"):
-    pathlib.Path(output_dir).mkdir(exist_ok=True, parents=True)
+    Path(output_dir).mkdir(exist_ok=True, parents=True)
     for idx, group in enumerate(groups, start=1):
         group_dir = os.path.join(output_dir, f"group_{idx}")
-        pathlib.Path(group_dir).mkdir(exist_ok=True, parents=True)
+        Path(group_dir).mkdir(exist_ok=True, parents=True)
         for f in group:
             try:
                 shutil.move(f, group_dir)

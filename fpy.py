@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 from io import StringIO
 import sys
-import pathlib
+from pathlib import Path
 import tokenize
 
 import regex as re
@@ -56,13 +56,13 @@ if __name__ == "__main__":
         sys.exit(1)
     fname = sys.argv[1]
     try:
-        with pathlib.Path(fname).open(encoding="utf-8") as f:
+        with Path(fname).open(encoding="utf-8") as f:
             lines = f.readlines()
         filtered = [
             line for line in lines if is_python_like(line) or looks_like_python(line) or is_probably_python(line)
         ]
         print(filtered)
-        with pathlib.Path("out.py").open("w", encoding="utf-8") as f:
+        with Path("out.py").open("w", encoding="utf-8") as f:
             for l in filtered:
                 f.write(l)
                 f.write("\n")

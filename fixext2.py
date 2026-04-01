@@ -69,7 +69,7 @@ def detect_extension(path, mime_type):
         return MIME_TO_EXT[mime_type]
     if mime_type == "text/plain":
         try:
-            with pathlib.Path(path).open(encoding="utf-8", errors="ignore") as f:
+            with Path(path).open(encoding="utf-8", errors="ignore") as f:
                 sample = f.read(4096)
             guessed = detect_text_based_extension(sample)
             if guessed:
@@ -100,7 +100,7 @@ def correct_file_extension(root="."):
     for dirpath, _, filenames in os.walk(root):
         for name in filenames:
             path = os.path.join(dirpath, name)
-            if pathlib.Path(path).is_symlink():
+            if Path(path).is_symlink():
                 continue
             try:
                 mime_type = mime.from_file(path)
@@ -120,7 +120,7 @@ def correct_file_extension(root="."):
             print(f"Renaming: {name}  →  {new_name}")
             final_path = safe_rename(path, new_path)
             if final_path != new_path:
-                print(f" ⚠  Collision detected. Saved as: {pathlib.Path(final_path).name}")
+                print(f" ⚠  Collision detected. Saved as: {Path(final_path).name}")
 
 
 if __name__ == "__main__":

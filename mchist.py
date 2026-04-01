@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
+from pathlib import Path
 
 
 input_file = "/data/data/com.termux/files/home/.local/share/mc/history"
 output_file = "/data/data/com.termux/files/home/.bash_history"
 cmdline_section = []
-with pathlib.Path(input_file).open(encoding="utf-8") as file:
+with Path(input_file).open(encoding="utf-8") as file:
     lines = file.readlines()
     capture = False
     for line in lines:
@@ -19,5 +19,5 @@ with pathlib.Path(input_file).open(encoding="utf-8") as file:
             cleaned_line = line.split("=", 1)[-1].strip()
             cmdline_section.append(cleaned_line)
 soniq = list(set(cmdline_section))
-with pathlib.Path(output_file).open("a", encoding="utf-8") as file:
+with Path(output_file).open("a", encoding="utf-8") as file:
     file.writelines(cmd + "\n" for cmd in soniq)

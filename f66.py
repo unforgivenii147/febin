@@ -38,9 +38,9 @@ def main() -> None:
         ctime = datetime.fromtimestamp(ct).strftime("%Y-%m-%d|%H:%M")
         newct[pth] = ctime
         path_str = str(pth.relative_to(cwd))
-        # Determine maximum path length for alignment
-        max_path_len = max(len(path_str), 20)  # Minimum 20 characters
-        print(f"{path_str:<{max_path_len}} : {ctime}")  # Left align path, set width
+
+        max_path_len = max(len(path_str), 20)
+        print(f"{path_str:<{max_path_len}} : {ctime}")
 
 
 if __name__ == "__main__":

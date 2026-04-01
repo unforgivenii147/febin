@@ -109,14 +109,11 @@ def run_file_command(filepath: Path) -> str | None:
 
 
 def get_file_extension_from_type(file_type_description: str) -> str | None:
-
     normalized_description = file_type_description.lower().strip()
-
     if normalized_description.endswith(","):
         normalized_description = normalized_description[:-1].strip()
     if normalized_description.endswith("."):
         normalized_description = normalized_description[:-1].strip()
-
     return FILE_TYPE_MAP.get(normalized_description)
 
 
@@ -127,14 +124,11 @@ def get_current_extension(filepath: Path) -> str | None:
 def find_files_recursively(directory: Path, ignored_dirs: list[str] | None = None, follow_symlinks: bool = False):
     if ignored_dirs is None:
         ignored_dirs = [".git", "__pycache__", "node_modules", ".venv", "venv"]
-
     for item in directory.rglob("*"):
         if item.is_dir() and any(ignored_dir == item.name for ignored_dir in ignored_dirs):
             continue
-
         if item.is_symlink() and not follow_symlinks:
             continue
-
         if item.is_file():
             yield item
 
@@ -152,31 +146,24 @@ def detect_and_fix_mismatches(
         print("--- WARNING: Running in LIVE mode. Files WILL be renamed. Ensure you have backups! ---")
     mismatched_files_found = []
     rename_operations = []
-
     files_to_process = list(find_files_recursively(start_directory))
     print(f"Found {len(files_to_process)} files to analyze.")
     for filepath in files_to_process:
         current_ext = get_current_extension(filepath)
-
         if not current_ext or current_ext in {".log", ".tmp", ".bak"}:
             continue
-
         file_type_desc = run_file_command(filepath)
         if not file_type_desc:
             continue
-
         detected_ext = get_file_extension_from_type(file_type_desc)
-
         is_generic_text = any(
             text_type in file_type_desc.lower()
             for text_type in ["ascii text", "utf-8 unicode text", "iso-8859 text", "plain text"]
         )
         if is_generic_text and current_ext in {".txt", ".log", ".csv", ".md", ".ini", ".cfg", ".yml", ".yaml"}:
             continue
-
         if not detected_ext:
             continue
-
         if detected_ext.lower() != current_ext.lower():
             mismatched_files_found.append({
                 "filepath": filepath,
@@ -185,7 +172,6 @@ def detect_and_fix_mismatches(
                 "detected_extension": detected_ext,
             })
             new_filepath = filepath.with_suffix(detected_ext)
-
             if new_filepath.exists():
                 print(f"  SKIP RENAME: Target file '{new_filepath}' already exists. Cannot rename '{filepath}'.")
             else:
@@ -197,7 +183,6 @@ def detect_and_fix_mismatches(
                 print(
                     f"  MISMATCH FOUND: '{filepath}' detected as '{file_type_desc}' (suggested extension: {detected_ext})."
                 )
-
     print("\n--- Analysis Complete ---")
     if not mismatched_files_found:
         print("No file extension mismatches detected.")
@@ -234,6 +219,5 @@ def detect_and_fix_mismatches(
 
 if __name__ == "__main__":
     TARGET_DIR = Path()
-
     DRY_RUN_MODE = False
     detect_and_fix_mismatches(start_directory=TARGET_DIR, dry_run=DRY_RUN_MODE)

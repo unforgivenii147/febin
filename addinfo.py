@@ -1,27 +1,25 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""Insert author metadata header into python files (with or without extension)."""
-
 import os
 import json
-import pathlib
+from pathlib import Path
 import datetime
 
 
-INFO_PATH = pathlib.Path("~/isaac/.info.json").expanduser()
+INFO_PATH = Path("~/isaac/.info.json").expanduser()
 
 
 def load_user_info() -> dict:
-    with pathlib.Path(INFO_PATH).open(encoding="utf-8") as f:
+    with Path(INFO_PATH).open(encoding="utf-8") as f:
         return json.load(f)
 
 
 def is_python_file(path: str) -> bool:
-    if pathlib.Path(path).is_dir():
+    if Path(path).is_dir():
         return False
     if path.endswith(".py"):
         return True
     try:
-        with pathlib.Path(path).open(encoding="utf-8", errors="ignore") as f:
+        with Path(path).open(encoding="utf-8", errors="ignore") as f:
             first_line = f.readline().strip()
             if first_line.startswith("#!"):
                 return "python" in first_line
@@ -50,7 +48,7 @@ def file_already_has_header(contents: str) -> bool:
 
 
 def process_file(path: str, header: str) -> None:
-    with pathlib.Path(path).open(encoding="utf-8", errors="ignore") as f:
+    with Path(path).open(encoding="utf-8", errors="ignore") as f:
         lines = f.readlines()
     if file_already_has_header("".join(lines)):
         return
@@ -58,7 +56,7 @@ def process_file(path: str, header: str) -> None:
         new_contents = lines[0] + header + "".join(lines[1:])
     else:
         new_contents = header + "".join(lines)
-    pathlib.Path(path).write_text(new_contents, encoding="utf-8")
+    Path(path).write_text(new_contents, encoding="utf-8")
 
 
 def main() -> None:

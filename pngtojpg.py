@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 
 from PIL import Image
 
@@ -13,7 +13,7 @@ for root, _dirs, files in os.walk("."):
             try:
                 img = Image.open(png_path).convert("RGB")
                 img.save(jpg_path, "JPEG")
-                pathlib.Path(png_path).unlink()
+                Path(png_path).unlink()
                 print(f"Converted and deleted: {png_path} -> {jpg_path}")
             except Exception as e:
                 print(f"Failed to convert {png_path}: {e}")

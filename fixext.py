@@ -1,15 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-File: file_type_checker.py
-Description: Recursively checks files in a directory to detect mismatched file extensions using Linux `file` command.
-             Optionally auto-fixes mismatched extensions with -a / --auto-fix.
-             Defaults to current directory if none is given.
-"""
-
 import os
 import sys
-import pathlib
-import argparse
+from pathlib import Path
 import subprocess
 
 from dh import MIME2EXT
@@ -40,15 +32,16 @@ def get_file_mime(file_path):
 def safe_rename(old_path, new_path):
     base, ext = os.path.splitext(new_path)
     counter = 1
-    while pathlib.Path(new_path).exists():
+    while Path(new_path).exists():
         new_path = f"{base}_{counter}{ext}"
         counter += 1
-    pathlib.Path(old_path).rename(new_path)
+    Path(old_path).rename(new_path)
     return new_path
 
 
-def check_files(directory, auto_fix=False):
+def check_files(directory):
     mismatched_files = []
+
     for root, _, files in os.walk(directory):
         for name in files:
             file_path = os.path.join(root, name)
@@ -61,11 +54,12 @@ def check_files(directory, auto_fix=False):
                 expected_exts = MIME2EXT.get(mime, [])
                 if expected_exts and ext not in expected_exts:
                     new_path = None
-                    if auto_fix:
-                        new_ext = expected_exts[0]
-                        new_name = os.path.splitext(name)[0] + new_ext
-                        new_path = os.path.join(root, new_name)
-                        new_path = safe_rename(file_path, new_path)
+                    new_ext = expected_exts[0]
+                    if new_ext == ".txt":
+                        new_ext = filetype.guess(file_path)
+                    new_name = os.path.splitext(name)[0] + new_ext
+                    new_path = os.path.join(root, new_name)
+                    new_path = safe_rename(file_path, new_path)
                     mismatched_files.append((
                         file_path,
                         ext,
@@ -76,37 +70,21 @@ def check_files(directory, auto_fix=False):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Check and optionally fix mismatched file extensions.")
-    parser.add_argument(
-        "directory",
-        nargs="*",
-        default=pathlib.Path.cwd(),
-        help="Directory to scan (defaults to current directory)",
-    )
-    parser.add_argument(
-        "-a",
-        "--auto-fix",
-        default=True,
-        action="store_true",
-        help="Automatically fix mismatched extensions",
-    )
-    args = parser.parse_args()
-    if not pathlib.Path(args.directory).is_dir():
-        print(f"Error: {args.directory} is not a valid directory")
-        sys.exit(1)
-    mismatches = check_files(args.directory, auto_fix=args.auto_fix)
+    cwd = Path.cwd()
+
+    mismatches = check_files(cwd)
     if mismatches:
         print("Files with mismatched extensions:")
         for (
             file_path,
-            ext,
+            _ext,
             mime,
             new_path,
         ) in mismatches:
             if new_path:
-                print(f"{file_path} -> extension: {ext}, detected: {mime} [Renamed to {new_path}]")
+                print(f"\033[5m;93m{file_path} {mime} \033[5m;96m{new_path}]\033[0m")
             else:
-                print(f"{file_path} -> extension: {ext}, detected: {mime}")
+                print(f"{file_path} -> \033[5m;94mdetected: {mime}\033[0m")
     else:
         print("All file extensions match their detected types.")
 

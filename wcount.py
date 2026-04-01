@@ -50,7 +50,6 @@ def main():
                     results[x] = result.get(x)
                 else:
                     results[x] += result.get(x)
-
     outfile = Path("word_count.json")
     wsorted = [results.get(key) for key in results]
     wsorted = sorted(wsorted, reverse=True)

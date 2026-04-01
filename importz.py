@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 import sys
-import pathlib
+from pathlib import Path
 
 
-def is_python_file(path: pathlib.Path) -> bool:
+def is_python_file(path: Path) -> bool:
     if path.suffix == ".py":
         return True
     if path.is_file() and not path.suffix:
         try:
-            with pathlib.Path(path).open(encoding="utf-8") as f:
+            with Path(path).open(encoding="utf-8") as f:
                 first_line = f.readline()
                 return "python" in first_line
         except Exception:
@@ -20,7 +20,7 @@ def is_python_file(path: pathlib.Path) -> bool:
 def get_imports_from_file(file_path):
     imports = set()
     try:
-        with pathlib.Path(file_path).open(encoding="utf-8") as f:
+        with Path(file_path).open(encoding="utf-8") as f:
             tree = ast.parse(f.read(), filename=str(file_path))
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
@@ -33,7 +33,7 @@ def get_imports_from_file(file_path):
 
 
 def main():
-    current_dir = pathlib.Path()
+    current_dir = Path()
     output_file = current_dir / "importz.txt"
     all_imports = set()
     local_names = {p.stem for p in current_dir.glob("*.py")}

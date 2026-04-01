@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-import pathlib
-
-# !/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 from collections import deque
 from multiprocessing import get_context
@@ -15,13 +12,12 @@ MAX_QUEUE = 16
 
 def process_file(fn):
     text = ""
-    text = pathlib.Path(fn).read_text(encoding="utf-8")
+    text = Path(fn).read_text(encoding="utf-8")
     stack = []
     mapping = {")": "(", "]": "[", "}": "{"}
-
     for char in text:
         if char in mapping:
-            top_element = stack.pop() if stack else "#"  # Use '#' as a placeholder if stack is empty
+            top_element = stack.pop() if stack else "#"
             if mapping[char] != top_element:
                 return False
         elif char in {"(", "[", "{"}:
@@ -38,7 +34,6 @@ def main():
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-
     with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:

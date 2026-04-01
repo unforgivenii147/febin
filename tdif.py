@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""File Diff Viewer - A Textual-based application to show differences between two files."""
-
 import sys
+from typing import ClassVar
 import difflib
 from pathlib import Path
 import argparse
@@ -13,22 +12,12 @@ from textual.containers import Horizontal, ScrollableContainer
 
 
 class DiffLine(Static):
-    """A widget representing a single line in the diff."""
-
     def __init__(
         self,
         text: str,
         line_type: str,
         line_num: int | None = None,
     ) -> None:
-        """
-        Initialize a diff line.
-
-        Args:
-            text: The line content
-            line_type: Type of line (' ', '-', '+', or '?')
-            line_num: Optional line number.
-        """
         self.raw_text = text
         self.line_type = line_type
         self.line_num = line_num
@@ -37,7 +26,6 @@ class DiffLine(Static):
         self._apply_styling()
 
     def _create_display_text(self) -> str:
-        """Create the display text with proper formatting."""
         prefix = f"{self.line_num:4d}" if self.line_num is not None else "    "
         safe_text = self.raw_text.replace("[", "[]")
         if self.line_type == " ":
@@ -51,7 +39,6 @@ class DiffLine(Static):
         return f"{prefix}   {safe_text}"
 
     def _apply_styling(self):
-        """Apply styling based on line type."""
         if self.line_type == " ":
             self.styles.background = Color(30, 30, 30)
             self.styles.color = Color(200, 200, 200)
@@ -67,26 +54,16 @@ class DiffLine(Static):
 
 
 class DiffPanel(ScrollableContainer):
-    """A panel that displays one side of the diff."""
-
     def __init__(
         self,
         title: str,
         lines: list[tuple[str, str, int]],
     ) -> None:
-        """
-        Initialize a diff panel.
-
-        Args:
-            title: Panel title
-            lines: List of (text, line_type, line_num) tuples.
-        """
         super().__init__()
         self.panel_title = title
         self.lines = lines
 
     def compose(self) -> ComposeResult:
-        """Create child widgets."""
         yield Label(
             f"[bold]{self.panel_title}[/bold]",
             classes="panel-title",
@@ -99,14 +76,11 @@ class DiffPanel(ScrollableContainer):
             yield DiffLine(text, line_type, line_num)
 
     def on_mount(self) -> None:
-        """Set up the panel when mounted."""
         self.can_focus = True
         self.can_focus_children = True
 
 
 class DiffViewerApp(App):
-    """A Textual app to show differences between two files."""
-
     CSS = """
     Screen {
         background: $surface;
@@ -143,7 +117,7 @@ class DiffViewerApp(App):
         background: $primary-darken-1;
     }
     """
-    BINDINGS = [
+    BINDINGS: ClassVar = [
         ("q", "quit", "Quit"),
         (
             "f1",
@@ -156,7 +130,6 @@ class DiffViewerApp(App):
     ]
 
     def __init__(self, file1: str, file2: str) -> None:
-        """Initialize the app with two file paths."""
         super().__init__()
         self.file1 = Path(file1)
         self.file2 = Path(file2)
@@ -166,7 +139,6 @@ class DiffViewerApp(App):
         self.search_results = []
 
     def read_file(self, filepath: Path) -> list[str]:
-        """Read a file and return its lines."""
         try:
             with Path(filepath).open(encoding="utf-8") as f:
                 return f.readlines()
@@ -188,7 +160,6 @@ class DiffViewerApp(App):
             return []
 
     def compute_diff(self) -> None:
-        """Compute the diff between the two files."""
         lines1 = self.read_file(self.file1)
         lines2 = self.read_file(self.file2)
         lines1 = [line.rstrip("\n") for line in lines1]
@@ -234,7 +205,6 @@ class DiffViewerApp(App):
                 self.right_lines.append((content, line_type, None))
 
     def compose(self) -> ComposeResult:
-        """Create child widgets."""
         yield Header()
         self.compute_diff()
         with Horizontal():
@@ -245,13 +215,11 @@ class DiffViewerApp(App):
         yield Footer()
 
     def on_mount(self) -> None:
-        """Set up the app when mounted."""
         panels = self.query(DiffPanel)
         if panels:
             panels.first().focus()
 
     def action_toggle_panel(self) -> None:
-        """Toggle focus between the two panels."""
         current = self.focused
         if current and isinstance(current, DiffPanel):
             panels = list(self.query(DiffPanel))
@@ -266,8 +234,6 @@ class DiffViewerApp(App):
                 panels.first().focus()
 
     def action_search(self) -> None:
-        """Search for text in the diff."""
-
         def on_input(submitted_text: str) -> None:
             if submitted_text:
                 self.search_term = submitted_text
@@ -281,7 +247,6 @@ class DiffViewerApp(App):
         )
 
     def highlight_search_results(self) -> None:
-        """Highlight search results in both panels."""
         if not self.search_term:
             return
         for line in self.query(DiffLine):
@@ -291,12 +256,10 @@ class DiffViewerApp(App):
                 line.styles.background = Color(70, 70, 150)
 
     def action_next_search(self) -> None:
-        """Go to next search result."""
         self.notify("Next search result (feature not fully implemented)")
 
 
 def main():
-    """Main entry point."""
     parser = argparse.ArgumentParser(
         description="Compare two files and show their differences",
         formatter_class=argparse.RawDescriptionHelpFormatter,

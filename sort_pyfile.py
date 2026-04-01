@@ -11,12 +11,10 @@ def sort_python_script(file_path: Path):
     except SyntaxError as e:
         print(f"Error parsing Python code in {file_path}: {e}")
         return
-
     constants = []
     classes = []
     functions = []
     other_nodes = []
-
     for node in tree.body:
         if isinstance(node, ast.Assign):
             is_constant = True
@@ -34,13 +32,9 @@ def sort_python_script(file_path: Path):
             functions.append(node)
         else:
             other_nodes.append(node)
-
     constants.sort(key=lambda node: node.targets[0].id if node.targets else "")
-
     classes.sort(key=lambda node: node.name)
-
     functions.sort(key=lambda node: node.name)
-
     imports = []
     misc_nodes = []
     for node in other_nodes:
@@ -48,11 +42,8 @@ def sort_python_script(file_path: Path):
             imports.append(node)
         else:
             misc_nodes.append(node)
-
     new_body = imports + misc_nodes + constants + classes + functions
-
     new_tree = ast.Module(body=new_body, type_ignores=[])
-
     try:
         import astunparse
 
@@ -68,7 +59,6 @@ def sort_python_script(file_path: Path):
     except Exception as e:
         print(f"Error converting AST back to code: {e}")
         return
-
     try:
         with file_path.open("w", encoding="utf-8") as f:
             f.write(sorted_code)

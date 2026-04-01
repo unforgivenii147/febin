@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 from datetime import UTC, datetime, timedelta
 
 import regex as re
@@ -54,17 +54,17 @@ def extract_th18_links(description):
 def create_html(channel_name, base_data):
     date_str = datetime.now().strftime("%d-%m-%Y")
     dir_name = f"output/{date_str}_{channel_name}"
-    pathlib.Path(dir_name).mkdir(exist_ok=True, parents=True)
+    Path(dir_name).mkdir(exist_ok=True, parents=True)
     file_path = os.path.join(dir_name, "bases.html")
     html_content = f"""
     <html>
     <head>
         <title>{channel_name} TH18 Bases</title>
         <style>
-            body {{ font-family: sans-serif; padding: 20px; background: #f4f4f4; }}
+            body {{ font-family: sans-serif; padding: 20px; background:
             .card {{ background: white; margin-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}
-            a {{ color: #1a73e8; text-decoration: none; font-weight: bold; }}
-            .vid-ref {{ font-size: 0.9em; color: #555; }}
+            a {{ color:
+            .vid-ref {{ font-size: 0.9em; color:
         </style>
     </head>
     <body>
@@ -81,7 +81,7 @@ def create_html(channel_name, base_data):
             html_content += f'<li><a href="{link}">Get Base Layout</a></li>'
         html_content += "</ul></div>"
     html_content += "</body></html>"
-    pathlib.Path(file_path).write_text(html_content, encoding="utf-8")
+    Path(file_path).write_text(html_content, encoding="utf-8")
     print(f"Generated: {file_path}")
 
 

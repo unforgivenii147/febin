@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import sys
 from pathlib import Path
 
@@ -38,11 +37,8 @@ def translate_file(filepath):
         translated_chunk = translate_text(chunk)
         translated_chunks.append(translated_chunk)
     translated_content = "\n\n".join(translated_chunks)
-    new_filepath = os.path.join(
-        Path(filepath).parent,
-        f"translated_{Path(filepath).name}",
-    )
-    Path(new_filepath).write_text(translated_content, encoding="utf-8")
+    new_filepath = Path(filepath).parent / f"translated_{Path(filepath).name}"
+    new_filepath.write_text(translated_content, encoding="utf-8")
     print(f"saved as {new_filepath}")
 
 

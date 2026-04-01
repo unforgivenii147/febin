@@ -6,7 +6,7 @@ import sys
 import stat
 from typing import TYPE_CHECKING
 import fnmatch
-import pathlib
+from pathlib import Path
 import argparse
 import operator
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -17,7 +17,6 @@ import regex as re
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
-
 IGNORED_DIRS = {
     ".git",
     ".hg",
@@ -44,7 +43,7 @@ def colorize(
 
 
 def matches_any_glob(path: str, patterns: Iterable[str]) -> bool:
-    basename = pathlib.Path(path).name
+    basename = Path(path).name
     return any(fnmatch.fnmatch(path, p) or fnmatch.fnmatch(basename, p) for p in patterns)
 
 
@@ -59,7 +58,7 @@ def collect_files(
     include_globs = include_globs or []
     exclude_globs = exclude_globs or []
     for root in roots:
-        if pathlib.Path(root).is_file():
+        if Path(root).is_file():
             yield root
             continue
         for (
@@ -110,7 +109,7 @@ def search_file_text_mode(
 ]:
     matches = []
     try:
-        with pathlib.Path(path).open(encoding="utf-8", errors="replace") as fh:
+        with Path(path).open(encoding="utf-8", errors="replace") as fh:
             for lineno, raw_line in enumerate(fh, start=1):
                 line = raw_line.rstrip("\n")
                 spans: list[tuple[int, int]] = []

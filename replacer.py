@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import sys
-import pathlib
+from pathlib import Path
 import argparse
 
 from dh import is_binary
@@ -14,9 +14,8 @@ def process_file(
     replace_text=None,
     dry_run=False,
 ):
-    """Process a single file and perform replacement/removal."""
     try:
-        content = pathlib.Path(file_path).read_text(encoding="utf-8")
+        content = Path(file_path).read_text(encoding="utf-8")
         replacement = replace_text if replace_text is not None else ""
         escaped_search = re.escape(search_text)
         pattern = re.compile(escaped_search)
@@ -37,7 +36,7 @@ def process_file(
                     print(f"  ... and {len(matches) - 3} more matches")
             else:
                 new_content = pattern.sub(replacement, content)
-                pathlib.Path(file_path).write_text(new_content, encoding="utf-8")
+                Path(file_path).write_text(new_content, encoding="utf-8")
                 print(f"Updated: {file_path}")
             return True
         return False
@@ -61,7 +60,6 @@ def replace_in_files(
     target_file=None,
     dry_run=False,
 ):
-    """Main function to process files."""
     exclude_dirs = {
         ".git",
         "build",
@@ -72,7 +70,7 @@ def replace_in_files(
     files_processed = 0
     files_changed = 0
     if target_file:
-        if pathlib.Path(target_file).is_file() and not pathlib.Path(target_file).is_symlink():
+        if Path(target_file).is_file() and not Path(target_file).is_symlink():
             print(f"Processing file: {target_file}")
             if process_file(
                 target_file,
@@ -92,7 +90,7 @@ def replace_in_files(
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         for filename in files:
             file_path = os.path.join(root, filename)
-            if pathlib.Path(file_path).is_symlink() or is_binary(file_path):
+            if Path(file_path).is_symlink() or is_binary(file_path):
                 continue
             files_processed += 1
             if process_file(

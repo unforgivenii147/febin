@@ -32,7 +32,7 @@ def extract_css_base64(css_path: Path, out_dir: Path):
         mime = match.group("mime")
         raw = match.group("data").replace("\n", "").strip()
         binary = base64.b64decode(raw)
-        sha = hashlib.sha1(binary).hexdigest()[:12]
+        sha = hashlib.sha256(binary).hexdigest()[:12]
         if sha not in seen:
             ext = ext_from_mime(mime)
             fname = f"asset-{sha}{ext}"

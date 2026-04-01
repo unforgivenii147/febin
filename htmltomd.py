@@ -86,11 +86,11 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s                          # Process current directory recursively
-  %(prog)s -r                       # Explicit recursive flag
-  %(prog)s file.html                # Process single file
-  %(prog)s /path/to/directory       # Process directory recursively
-  %(prog)s --no-recursive           # Process directory non-recursively
+  %(prog)s
+  %(prog)s -r
+  %(prog)s file.html
+  %(prog)s /path/to/directory
+  %(prog)s --no-recursive
         """,
     )
     parser.add_argument(

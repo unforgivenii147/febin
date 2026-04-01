@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import ast
-import pathlib
+from pathlib import Path
 import multiprocessing as mp
 
 
@@ -18,7 +18,7 @@ def is_python_script(path: str) -> bool:
     if path.endswith(".py"):
         return True
     try:
-        with pathlib.Path(path).open(encoding="utf-8", errors="ignore") as f:
+        with Path(path).open(encoding="utf-8", errors="ignore") as f:
             line = f.readline()
         return line.startswith("#!") and "python" in line.lower()
     except Exception:
@@ -57,7 +57,7 @@ def extract_from_file(
     dict[str, str],
 ]:
     try:
-        source = pathlib.Path(path).read_text(encoding="utf-8", errors="ignore")
+        source = Path(path).read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(source)
     except Exception:
         return path, {}, {}, {}, {}, {}
@@ -108,12 +108,12 @@ def extract_from_file(
 
 
 def write_output(path: str, data: dict[str, str]) -> None:
-    with pathlib.Path(path).open("w", encoding="utf-8") as f:
+    with Path(path).open("w", encoding="utf-8") as f:
         f.writelines(src.rstrip() + "\n\n" for _name, src in sorted(data.items()))
 
 
 def main():
-    pathlib.Path(OUTPUT_DIR).mkdir(exist_ok=True, parents=True)
+    Path(OUTPUT_DIR).mkdir(exist_ok=True, parents=True)
     files = discover_python_files()
     if not files:
         print("No Python files found.")

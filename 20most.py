@@ -24,7 +24,6 @@ def main():
     args = sys.argv[1:]
     cwd = Path.cwd()
     files = [Path(arg) for arg in args] if args else get_nobinary(cwd)
-
     with Pool(8) as pool:
         pending = deque()
         for f in files:

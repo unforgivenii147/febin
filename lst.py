@@ -1,6 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""list content of current dir by time."""
-
 from pathlib import Path
 import datetime
 
@@ -10,7 +8,6 @@ from termcolor import cprint
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-
     for path in sorted(
         cwd.glob("*"),
         key=lambda e: e.stat().st_mtime,
@@ -33,7 +30,6 @@ if __name__ == "__main__":
                     sz = "  " + sz
                 case 8:
                     sz = " " + sz
-
         cprint(f"{path.name[:24]:25}", "blue", end=" ")
         cprint(f"{sz}", "cyan", end=" ")
         cprint(f"{mtime}", "yellow")

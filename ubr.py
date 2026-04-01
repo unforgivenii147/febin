@@ -27,17 +27,14 @@ def parallel_decompress(in_path, out_path):
             while offset < file_size:
                 block_size_bytes = mm[offset : offset + 4]
                 if len(block_size_bytes) != 4:
-                    break  # Handle potential EOF
+                    break
                 block_size = int.from_bytes(block_size_bytes, "big")
                 offset += 4
-
                 block_data_start = offset
                 block_data_end = offset + block_size
                 block_data = mm[block_data_start:block_data_end]
-
                 decompressed_data = decompress_chunk(block_data)
                 fout.write(decompressed_data)
-
                 offset += block_size
             mm.close()
             return True
@@ -51,6 +48,14 @@ def process_file(fp):
         return
     before = get_size(fp)
     outfile = Path(str(fp).replace(".br", ""))
+    try:
+        data = fp.read_bytes()
+        decompressed_data = brotlicffi.decompress(data)
+        outfile.write_bytes(decompressed_data)
+        print("it worked")
+        return
+    except:
+        pass
     if parallel_decompress(fp, outfile):
         fp.unlink()
     elif outfile.exists():

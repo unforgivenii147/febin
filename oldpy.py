@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 import mmap
-import pathlib
 from pathlib import Path
 import tokenize
 
@@ -13,8 +12,8 @@ OLD_PRINT_RE = re.compile(r"(?m)^[ \t]*print[ \t]+[^(\n]")
 
 
 def _open_source(filepath: str):
-    size = pathlib.Path(filepath).stat().st_size
-    f = pathlib.Path(filepath).open("rb")
+    size = Path(filepath).stat().st_size
+    f = Path(filepath).open("rb")
     if size > SIZE_THRESHOLD:
         return mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
     return f
@@ -22,7 +21,7 @@ def _open_source(filepath: str):
 
 def _read_text(filepath: str) -> str | None:
     try:
-        with pathlib.Path(filepath).open(encoding="utf-8", errors="ignore") as f:
+        with Path(filepath).open(encoding="utf-8", errors="ignore") as f:
             return f.read()
     except Exception:
         return None

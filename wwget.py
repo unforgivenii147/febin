@@ -3,7 +3,7 @@ import sys
 import json
 import time
 import signal
-import pathlib
+from pathlib import Path
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -41,23 +41,23 @@ def head_request(url: str) -> tuple[int, bool]:
 
 
 def init_files(path: str, size: int):
-    if not pathlib.Path(path).exists():
-        with pathlib.Path(path).open("wb") as f:
+    if not Path(path).exists():
+        with Path(path).open("wb") as f:
             f.truncate(size)
 
 
 def load_meta(meta_path: str) -> dict:
-    if pathlib.Path(meta_path).exists():
-        with pathlib.Path(meta_path).open(encoding="utf-8") as f:
+    if Path(meta_path).exists():
+        with Path(meta_path).open(encoding="utf-8") as f:
             return json.load(f)
     return {}
 
 
 def save_meta(meta_path: str, meta: dict):
     tmp = meta_path + ".tmp"
-    with pathlib.Path(tmp).open("w", encoding="utf-8") as f:
+    with Path(tmp).open("w", encoding="utf-8") as f:
         json.dump(meta, f)
-    pathlib.Path(tmp).replace(meta_path)
+    Path(tmp).replace(meta_path)
 
 
 def build_chunks(size: int) -> list[tuple[int, int]]:
@@ -89,7 +89,7 @@ def download_chunk(
                 timeout=15,
             ) as r:
                 r.raise_for_status()
-                with pathlib.Path(path).open("r+b") as f:
+                with Path(path).open("r+b") as f:
                     f.seek(downloaded)
                     for chunk in r.iter_content(1024 * 64):
                         if not chunk:
@@ -134,8 +134,8 @@ def download(url: str, output: str, workers: int = 4):
         print("\nPaused. Resume by re-running the script.")
         sys.exit(0)
     save_meta(meta_path, meta)
-    if pathlib.Path(output).stat().st_size == size:
-        pathlib.Path(meta_path).unlink()
+    if Path(output).stat().st_size == size:
+        Path(meta_path).unlink()
         print("Download completed successfully.")
 
 

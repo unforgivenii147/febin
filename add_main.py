@@ -43,20 +43,15 @@ def add_main_block_if_missing(filepath: Path):
     try:
         original_content = filepath.read_text(encoding="utf-8")
         content_lines = original_content.splitlines()
-
         if MAINBLOCK_INDICATOR in original_content:
             return
         print(f"Adding __main__ block to: '{filepath.name}'")
-
         lines_to_add = ["", MAINBLOCK_INDICATOR, "    # Placeholder for main execution logic", "    pass", ""]
-
         new_content_lines = content_lines[:]
-
         if new_content_lines and not new_content_lines[-1].endswith("\n"):
             new_content_lines.append("")
         new_content_lines.extend(lines_to_add)
         new_content = "\n".join(new_content_lines)
-
         Path(filepath).write_text(new_content, encoding="utf-8")
     except UnicodeDecodeError:
         print(f"Skipping '{filepath.name}' due to encoding issues (expected UTF-8).")
@@ -87,11 +82,9 @@ def main():
     if not files_to_process:
         print("No Python files found to process.")
         sys.exit(0)
-
     if len(files_to_process) == 1:
         add_main_block_if_missing(files_to_process[0])
         sys.exit(0)
-
     try:
         from multiprocessing import get_context
 
@@ -110,7 +103,6 @@ def main():
             add_main_block_if_missing(f)
     final_directory_size = get_size(cwd)
     space_saved = initial_directory_size - final_directory_size
-
     try:
         from termcolor import cprint
 

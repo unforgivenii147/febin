@@ -25,7 +25,6 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
             temp_path = Path(temp_file.name)
             temp_file.write(data)
             temp_file.flush()
-
         temp_path.rename(final_path)
         logger.debug(f"Atomically written to: {final_path}")
         return True
@@ -87,7 +86,6 @@ def compress_file(file_path: Path) -> bool:
 def calculate_directory_size(path: Path = Path()) -> tuple[int, int]:
     total_size = 0
     file_count = 0
-
     for file_path in path.rglob("*"):
         if file_path.is_file() and not file_path.is_symlink():
             if any(part.startswith(".") for part in file_path.parts):
@@ -103,7 +101,6 @@ def calculate_directory_size(path: Path = Path()) -> tuple[int, int]:
 
 def scan_files(directory: Path) -> list[Path]:
     logger.info(f"Scanning directory: {directory}")
-
     return [
         file_path
         for file_path in directory.rglob("*")

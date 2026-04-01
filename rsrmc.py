@@ -2,7 +2,7 @@
 import sys
 from pathlib import Path
 
-from dh import get_size, format_size
+from dh import get_size, format_size, clean_blank_lines
 from termcolor import cprint
 from tree_sitter import Parser, Language
 import tree_sitter_rust
@@ -11,21 +11,6 @@ import tree_sitter_rust
 EXCLUDE_PREFIXES = (b"#!/",)
 parser = Parser()
 parser.language = Language(tree_sitter_rust.language())
-
-
-def _cleanup_blank_lines(text: str) -> str:
-    lines = text.splitlines()
-    cleaned = []
-    blank_streak = 0
-    for line in lines:
-        if line.strip() == "":
-            blank_streak += 1
-            if blank_streak <= 2:
-                cleaned.append("")
-        else:
-            blank_streak = 0
-            cleaned.append(line.rstrip())
-    return "\n".join(cleaned) + "\n"
 
 
 def process_file(path: Path) -> None:
@@ -54,7 +39,7 @@ def process_file(path: Path) -> None:
         for start, end in sorted(deletions, reverse=True):
             del cleaned[start:end]
         cleaned_text = cleaned.decode("utf-8")
-        cleaned_text = _cleanup_blank_lines(cleaned_text)
+        cleaned_text = clean_blank_lines(cleaned_text)
         cleaned = cleaned_text.encode("utf-8")
         parser.parse(cleaned)
         path.write_bytes(cleaned)

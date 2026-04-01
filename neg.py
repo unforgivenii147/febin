@@ -13,7 +13,6 @@ cwd = Path.cwd()
 
 def process_file(fp):
     img = cv.imread(str(fp))
-
     if img is None:
         return
     img = 255 - img
@@ -35,7 +34,6 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-
     print("done.")
 
 

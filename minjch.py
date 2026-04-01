@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import json
-import pathlib
+from pathlib import Path
 import multiprocessing
 
 import regex as re
@@ -17,7 +17,7 @@ def minify_html(html: str) -> str:
 def process_file(path: str) -> str:
     try:
         ext = os.path.splitext(path)[1].lower()
-        content = pathlib.Path(path).read_text(encoding="utf-8")
+        content = Path(path).read_text(encoding="utf-8")
         if ext == ".css":
             content = cssmin(content)
         elif ext == ".json":
@@ -27,7 +27,7 @@ def process_file(path: str) -> str:
             content = minify_html(content)
         else:
             return f"SKIP → {path}"
-        pathlib.Path(path).write_text(content, encoding="utf-8")
+        Path(path).write_text(content, encoding="utf-8")
         return f"OK → {path}"
     except Exception as e:
         return f"ERR ({path}): {e}"
@@ -41,7 +41,7 @@ def collect_files() -> list:
         ".htm",
     )
     out = []
-    for base, _, files in os.walk(pathlib.Path.cwd()):
+    for base, _, files in os.walk(Path.cwd()):
         for name in files:
             path = os.path.join(base, name)
             lower = name.lower()

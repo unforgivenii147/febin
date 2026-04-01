@@ -18,12 +18,10 @@ VALID = {
 
 
 def get_node_text(src: bytes, node):
-    """Extract text for a node safely."""
     return src[node.start_byte : node.end_byte].decode()
 
 
 def get_node_name(node):
-    """Extract the name of a function or class definition."""
     for child in node.children:
         if child.type == "identifier":
             return child.text.decode() if hasattr(child, "text") else None
@@ -31,7 +29,6 @@ def get_node_name(node):
 
 
 def extract_functions_and_classes(src: bytes, tree):
-    """Extract function and class definitions from a parsed tree with their names."""
     root = tree.root_node
     definitions = []
 
@@ -61,7 +58,6 @@ def extract_functions_and_classes(src: bytes, tree):
 
 
 def get_relative_path(file_path: Path, base_path: Path) -> Path:
-    """Get the relative path of a file."""
     try:
         return file_path.relative_to(base_path)
     except ValueError:

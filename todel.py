@@ -1,41 +1,24 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import pathlib
+import gc
+from pathlib import Path
+
+from dh import get_nobinary
 
 
-def delete_multiline_string_from_files(search_string, directory=".") -> None:
-    EXT = [
-        ".txt",
-        ".py",
-        ".md",
-        ".pyx",
-        ".pyi",
-        ".c",
-        ".h",
-        ".cpp",
-        ".hpp",
-    ]
-    for dirpath, _, filenames in os.walk(directory):
-        for filename in filenames:
-            file_path = os.path.join(dirpath, filename)
-            if pathlib.Path(file_path).is_file() and os.path.splitext(file_path)[1] in EXT:
-                try:
-                    content = pathlib.Path(file_path).read_text(encoding="utf-8")
-                    if search_string in content:
-                        new_content = content.replace(search_string, "")
-                        pathlib.Path(file_path).write_text(new_content, encoding="utf-8")
-                        print(f"Deleted string from {file_path}")
-                except Exception as e:
-                    print(f"Error processing file {file_path}: {e}")
+def delete_multiline_string_from_files(search_string) -> None:
+    cwd = Path.cwd()
+    files = get_nobinary(cwd)
+    for path in files:
+        content = path.read_text(encoding="utf-8")
+        if search_string in content:
+            new_content = content.replace(search_string, "")
+        path.write_text(new_content, encoding="utf-8")
+    gc.collect()
 
 
-def read_string_to_delete(filename="/sdcard/todel.txt"):
-    try:
-        with pathlib.Path(filename).open(encoding="utf-8") as file:
-            return file.read()
-    except Exception as e:
-        print(f"Error reading the file {filename}: {e}")
-        return None
+def read_string_to_delete(filename="/sdcard/lic"):
+    path = Path(filename)
+    return path.read_text(encoding="utf-8")
 
 
 if __name__ == "__main__":

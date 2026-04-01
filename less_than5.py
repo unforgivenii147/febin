@@ -1,20 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Move files created less than 5 minutes ago to a subdirectory called '5min'
-Recursively processes all files starting from current directory.
-"""
-
 import os
 import time
 import shutil
-import pathlib
+from pathlib import Path
 
 
 TIME_THRESHOLD = 8 * 60
 
 
 def get_file_age(filepath):
-    """Get file age in seconds."""
     current_time = time.time()
     file_stat = os.stat(filepath)
     file_creation_time = file_stat.st_ctime
@@ -22,9 +16,8 @@ def get_file_age(filepath):
 
 
 def move_recent_files(start_dir="."):
-    """Move files created in last 5 minutes to '5min' subdirectory."""
     target_dir = os.path.join(start_dir, "5min")
-    pathlib.Path(target_dir).mkdir(exist_ok=True, parents=True)
+    Path(target_dir).mkdir(exist_ok=True, parents=True)
     moved_count = 0
     for root, dirs, files in os.walk(start_dir):
         if "5min" in dirs:
@@ -38,12 +31,12 @@ def move_recent_files(start_dir="."):
                         dest_dir = target_dir
                     else:
                         dest_dir = os.path.join(target_dir, rel_path)
-                        pathlib.Path(dest_dir).mkdir(exist_ok=True, parents=True)
+                        Path(dest_dir).mkdir(exist_ok=True, parents=True)
                     dest_path = os.path.join(dest_dir, file)
-                    if pathlib.Path(dest_path).exists():
+                    if Path(dest_path).exists():
                         base, ext = os.path.splitext(file)
                         counter = 1
-                        while pathlib.Path(dest_path).exists():
+                        while Path(dest_path).exists():
                             new_filename = f"{base}_{counter}{ext}"
                             dest_path = os.path.join(
                                 dest_dir,
@@ -62,9 +55,8 @@ def move_recent_files(start_dir="."):
 
 
 def main():
-    """Main function."""
     try:
-        start_dir = pathlib.Path.cwd()
+        start_dir = Path.cwd()
         print(f"Starting from directory: {start_dir}")
         print(f"Moving files created in last 5 minutes to '{os.path.join(start_dir, '5min')}'")
         print("-" * 60)

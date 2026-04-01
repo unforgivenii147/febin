@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 import tarfile
 import zipfile
 import contextlib
@@ -34,7 +34,7 @@ def extract_git_urls_from_bytes(data: bytes):
 
 def process_regular_file(path):
     try:
-        data = pathlib.Path(path).read_bytes()
+        data = Path(path).read_bytes()
         return extract_git_urls_from_bytes(data)
     except Exception:
         return set()
@@ -111,7 +111,7 @@ def main() -> None:
         for urls in pool.imap_unordered(worker, files):
             if urls:
                 found_urls |= urls
-    with pathlib.Path(OUTPUT_FILE).open("w", encoding="utf-8") as out:
+    with Path(OUTPUT_FILE).open("w", encoding="utf-8") as out:
         out.writelines(url + "\n" for url in sorted(found_urls))
     print(f"\nExtracted {len(found_urls)} unique git URLs → {OUTPUT_FILE}")
 

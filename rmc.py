@@ -1,22 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
+import gc
 import ast
 import sys
 from pathlib import Path
 import operator
-from collections import deque
-from multiprocessing import get_context
 
-from dh import get_size, get_files, format_size
-import regex as re
+from dh import DOC_TH1, DOC_TH2, mpf, get_size, format_size, get_pyfiles, clean_blank_lines
 from termcolor import cprint
 from tree_sitter import Parser, Language
 import tree_sitter_python as tspython
 
 
 MAX_QUEUE = 16
-DOC_TH1 = '"""'
-DOC_TH2 = "'''"
-
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
 PRESERVED: dict = {
@@ -24,50 +19,6 @@ PRESERVED: dict = {
     "# type",
     "# fmt",
 }
-
-
-def rm_doc(content: str) -> tuple[str, int]:
-    removed_count = 0
-    lines = content.split("\n")
-    result_lines = []
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-        if DOC_TH1 in line or DOC_TH2 in line:
-            delimiter = DOC_TH1 if DOC_TH1 in line else DOC_TH2
-            count = line.count(delimiter)
-            if count >= 2:
-                first = line.find(delimiter)
-                second = line.find(delimiter, first + 3)
-                before = line[:first].rstrip()
-                if before.endswith(":") or before.strip() == "":
-                    result_lines.append(line[:first] + line[second + 3 :])
-                    removed_count += 1
-                    i += 1
-                    continue
-            before = line[: line.find(delimiter)].rstrip()
-            if before.endswith(":") or before.strip() == "" or "=" not in before:
-                removed_count += 1
-                if before:
-                    result_lines.append(before)
-                j = i + 1
-                while j < len(lines):
-                    if delimiter in lines[j]:
-                        after = lines[j][lines[j].find(delimiter) + 3 :].strip()
-                        if after:
-                            result_lines.append(after)
-                        i = j + 1
-                        break
-                    j += 1
-                else:
-                    i = j
-            else:
-                result_lines.append(line)
-                i += 1
-        else:
-            result_lines.append(line)
-            i += 1
-    return "\n".join(result_lines), removed_count
 
 
 def preprocess(orig):
@@ -87,13 +38,13 @@ def preprocess(orig):
             continue
         if not line.startswith("#"):
             cleaned.append(line)
-
     code = "\n".join(cleaned)
     try:
         _ = ast.parse(code)
-        del cleaned
+        gc.collect()
         return code
     except:
+        gc.collect()
         return orig
 
 
@@ -146,10 +97,10 @@ def strip_code(source_code):
             replacement,
         ) in modifications:
             working_code = working_code[:start] + replacement + working_code[end:]
-        del tree
+        gc.collect()
         return working_code
     except:
-        del tree
+        gc.collect()
         return source_code
 
 
@@ -157,11 +108,12 @@ def rm_ast(content: str) -> tuple[str, int]:
     try:
         tree = ast.parse(content)
     except SyntaxError:
-        return rm_doc(content)
+        return content
     lines = content.split("\n")
     ranges = find_docstring_ranges(tree)
     for start, end in sorted(ranges, reverse=True):
         del lines[start - 1 : end]
+        gc.collect()
     return "\n".join(lines), len(ranges)
 
 
@@ -192,72 +144,69 @@ def find_docstring_ranges(node) -> list[tuple[int, int]]:
                     child.body[0].lineno,
                     child.body[0].end_lineno,
                 ))
+    gc.collect()
     return ranges
 
 
-def cleanup_blank_lines(content: str) -> str:
-    content = re.sub(r"\n\n+", "\n", content)
-    return "\n".join(line.rstrip() for line in content.split("\n"))
-
-
-def process_file(file_path: Path) -> None:
+def process_file(file_path: Path) -> bool:
     before = get_size(file_path)
     try:
         original = file_path.read_text(encoding="utf-8")
+        if DOC_TH1 not in original and DOC_TH2 not in original and "#" not in original:
+            return True
+
         code = preprocess(original)
         try:
             modified, removed = rm_ast(code)
         except:
-            modified, _removed = rm_doc(code)
-
+            modified, _removed = 0, 0, code
         try:
             finalcode = strip_code(modified)
-            finalcode = cleanup_blank_lines(finalcode)
-            ast.parse(finalcode)
+            finalcode = clean_blank_lines(finalcode)
+            _ = ast.parse(finalcode)
             file_path.write_text(finalcode, encoding="utf-8")
-            after = get_size(file_path)
+            diffsize = before - get_size(file_path)
             print(f"{file_path.name}", end=" ")
             cprint(
-                f"{format_size(before - after)}",
+                f"{format_size(diffsize)}",
                 "blue",
             )
-            return
+            gc.collect()
+            return True
         except:
             try:
-                ast.parse(modified)
-                finalcode = cleanup_blank_lines(modified)
+                _ = ast.parse(modified)
+                finalcode = clean_blank_lines(modified)
                 file_path.write_text(finalcode, encoding="utf-8")
-                after = get_size(file_path)
+                diffsize = before - get_size(file_path)
                 print(f"{file_path.name}", end=" ")
                 cprint(
-                    f"{format_size(before - after)}",
+                    f"{fsz(diffsize)}",
                     "blue",
                 )
-                return
-            except:
-                return
-
+                gc.collect()
+                return True
+            except Exceptions as e:
+                msg = f"error : {e}"
+                print(msg)
+                gc.collect()
+                return False
     except Exception as exc:
         print(f"✗ Error processing {file_path}: {exc}")
-        return
+        gc.collect()
+        return False
 
 
 def main():
     cwd = Path.cwd()
     before = get_size(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
-    if len(files) == 1:
+    files = [Path(f) for f in args] if args else get_pyfiles(cwd)
+    numfiles = len(files)
+    if numfiles == 1:
         process_file(files[0])
         sys.exit(0)
-    with get_context("spawn").Pool(8) as pool:
-        pending = deque()
-        for f in files:
-            pending.append(pool.apply_async(process_file, (f,)))
-            if len(pending) > MAX_QUEUE:
-                pending.popleft().get()
-        while pending:
-            pending.popleft().get()
+    _ = mpf(process_file, files)
     diff_size = before - get_size(cwd)
     print(f"space saved : {format_size(diff_size)}")
 

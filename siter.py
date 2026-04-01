@@ -346,13 +346,13 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Build wheels from current environment
+
   %(prog)s
-  # Build from specific site-packages
+
   %(prog)s --site-packages /path/to/venv/lib/python3.11/site-packages
-  # Custom output directory
+
   %(prog)s --output ./wheels
-  # Build single package
+
   %(prog)s --package requests
         """,
     )

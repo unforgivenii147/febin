@@ -15,7 +15,6 @@ def clean_record_file(record_path: Path):
 
 def remove_pyc_entries():
     site_packages = Path(sysconfig.get_paths()["purelib"])
-
     for dist_info in site_packages.glob("*.dist-info"):
         record = dist_info / "RECORD"
         if record.exists():

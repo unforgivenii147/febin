@@ -5,20 +5,10 @@ import subprocess
 
 
 def copy_lines_to_clipboard(filename: str, start_line: int, end_line: int | None = None):
-    """
-    Reads specified lines from a file and copies them to the Termux clipboard.
-
-    Args:
-        filename: The path to the input file.
-        start_line: The starting line number (1-based index).
-        end_line: The ending line number (1-based index). If None, reads to the end of the file.
-    """
     input_file = Path(filename)
-
     if not input_file.is_file():
         print(f"Error: File not found at '{filename}'", file=sys.stderr)
         sys.exit(1)
-
     try:
         with input_file.open("r", encoding="utf-8") as f:
             lines = f.readlines()
@@ -28,20 +18,16 @@ def copy_lines_to_clipboard(filename: str, start_line: int, end_line: int | None
     except Exception as e:
         print(f"An unexpected error occurred while reading the file: {e}", file=sys.stderr)
         sys.exit(1)
-
     total_lines = len(lines)
 
-    # Adjust start_line to be 0-based index
     start_index = start_line - 1
 
-    # Determine the end_index
     end_index = total_lines if end_line is None else end_line
 
-    # Validate line numbers
     if not (0 <= start_index < total_lines):
         print(f"Error: Start line ({start_line}) is out of bounds. File has {total_lines} lines.", file=sys.stderr)
         sys.exit(1)
-    if not (0 <= end_index <= total_lines):  # end_index can be equal to total_lines to include the last line
+    if not (0 <= end_index <= total_lines):
         print(
             f"Error: End line ({end_line if end_line is not None else 'end of file'}) is out of bounds. File has {total_lines} lines.",
             file=sys.stderr,
@@ -54,17 +40,13 @@ def copy_lines_to_clipboard(filename: str, start_line: int, end_line: int | None
         )
         sys.exit(1)
 
-    # Extract the lines
     selected_lines = lines[start_index:end_index]
     content_to_copy = "".join(selected_lines)
-
     if not content_to_copy:
         print("No content selected to copy.", file=sys.stderr)
         sys.exit(0)
 
-    # Copy to clipboard using termux-clipboard-set
     try:
-        # We need to pass the content to termux-clipboard-set via stdin
         process = subprocess.Popen(["termux-clipboard-set"], stdin=subprocess.PIPE, text=True, stderr=subprocess.PIPE)
         _stdout, stderr = process.communicate(input=content_to_copy)
         if process.returncode != 0:
@@ -91,14 +73,12 @@ def main():
             file=sys.stderr,
         )
         sys.exit(1)
-
     filename = sys.argv[1]
     try:
         start_line = int(sys.argv[2])
     except ValueError:
         print("Error: <start_line> must be an integer.", file=sys.stderr)
         sys.exit(1)
-
     end_line = None
     if len(sys.argv) == 4:
         try:
@@ -106,7 +86,6 @@ def main():
         except ValueError:
             print("Error: <end_line> must be an integer.", file=sys.stderr)
             sys.exit(1)
-
     copy_lines_to_clipboard(filename, start_line, end_line)
 
 

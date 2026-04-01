@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
-from dh import get_nobinary,is_binary
+
+from dh import is_binary, get_nobinary
+
 
 def unicode_unescape(text: str) -> str:
     return bytes(text, "utf-8").decode("unicode_escape")
@@ -18,18 +19,18 @@ def process_file(path: Path) -> None:
 
 
 def main() -> None:
-    args=sys.argv[1:]
-    cwd=Path.cwd()
-    files=[]
+    args = sys.argv[1:]
+    cwd = Path.cwd()
+    files = []
     if args:
         for arg in args:
-            p=Path(arg)
+            p = Path(arg)
             if p.is_file() and not is_binary(p):
                 files.append(p)
             if p.is_dir():
                 files.extend(get_nobinary(p))
     else:
-        files=get_nobinary(cwd)
+        files = get_nobinary(cwd)
     for f in files:
         process_file(f)
 

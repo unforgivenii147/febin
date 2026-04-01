@@ -1,18 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 
 
 TARGET_SHEBANG = "#!/data/data/com.termux/files/usr/bin/env python"
 
 
 def is_python_file(filepath):
-    if pathlib.Path(filepath).stat().st_size == 0 or filepath.endswith("__init__.py"):
+    if Path(filepath).stat().st_size == 0 or filepath.endswith("__init__.py"):
         return False
     if filepath.endswith(".py"):
         return True
     try:
-        with pathlib.Path(filepath).open(encoding="utf-8") as f:
+        with Path(filepath).open(encoding="utf-8") as f:
             first_line = f.readline().strip()
             if first_line.startswith("#!") and "python" in first_line:
                 return True
@@ -29,7 +29,7 @@ def is_python_file(filepath):
 
 
 def process_file(filepath):
-    with pathlib.Path(filepath).open("r+", encoding="utf-8") as f:
+    with Path(filepath).open("r+", encoding="utf-8") as f:
         lines = f.readlines()
         if not lines:
             return
@@ -55,18 +55,18 @@ def process_file(filepath):
         f.truncate()
         print(f"{os.path.relpath(filepath)} updated.")
     if "bin" in filepath.split(os.sep):
-        pathlib.Path(filepath).chmod(0o755)
+        Path(filepath).chmod(0o755)
 
 
 def traverse_directory(directory):
     for root, _, files in os.walk(directory):
         for filename in files:
             filepath = os.path.join(root, filename)
-            if pathlib.Path(filepath).is_symlink():
+            if Path(filepath).is_symlink():
                 continue
             if is_python_file(filepath):
                 process_file(filepath)
 
 
 if __name__ == "__main__":
-    traverse_directory(pathlib.Path.cwd())
+    traverse_directory(Path.cwd())

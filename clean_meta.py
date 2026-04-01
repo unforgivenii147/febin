@@ -9,7 +9,6 @@ import regex as re
 
 
 MAX_QUEUE = 16
-
 image_re = re.compile(
     r"((.*)+ image::(.*)+)|((.*)+:target:(.*)+)|((.*)+:alt:(.*)+)",
     re.I,
@@ -41,7 +40,6 @@ def main():
     cwd = Path.cwd()
     before = get_size(cwd)
     args = sys.argv[1:]
-
     files = (
         [Path(f) for f in args]
         if args
@@ -54,7 +52,6 @@ def main():
     metafiles = list(cwd.rglob("METADATA"))
     if metafiles:
         files.extend(metafiles)
-
     with Pool(8) as pool:
         pending = deque()
         for f in files:

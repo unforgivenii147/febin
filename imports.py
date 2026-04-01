@@ -77,7 +77,6 @@ def main():
         print(line)
         if "Not Installed" in ver:
             results.append(f"{mod}=={ver}")
-
     Path(output_file).write_text("\n".join(results), encoding="utf-8")
     cleaned = []
     with Path(output_file).open(encoding="utf-8") as fin:

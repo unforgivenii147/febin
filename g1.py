@@ -1,13 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Clone a GitHub repository with options:
---depth 1 --single-branch --branch main
-Supports both HTTPS and SSH URLs.
-Warns if repo size is bigger than 10MB.
-"""
-
 import sys
-import pathlib
+from pathlib import Path
 import subprocess
 
 from tqdm import tqdm
@@ -16,7 +9,6 @@ import requests
 
 
 def get_repo_size(repo_url):
-    """Get repository size in MB using GitHub API."""
     if not repo_url.startswith(("http://", "https://", "git@")):
         repo_url = f"https://github.com/{repo_url}"
     if repo_url.startswith("git@"):
@@ -36,7 +28,6 @@ def get_repo_size(repo_url):
 
 
 def clone_repo(repo, branch="main"):
-    """Clone repository with detailed progress output."""
     print(f"[INFO] Cloning repository: {repo} (branch: {branch})")
     cmd = [
         "git",
@@ -100,7 +91,7 @@ def main():
         else:
             print(f"[ERROR] {e}")
             return
-    if pathlib.Path(".gitmodules").exists():
+    if Path(".gitmodules").exists():
         print("[INFO] Submodules found. Initialize and update? (y/n)")
         if input().lower() == "y":
             print("[INFO] Initializing and updating submodules...")

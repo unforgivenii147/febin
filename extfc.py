@@ -18,12 +18,10 @@ VALID = {
 
 
 def get_node_text(src: bytes, node):
-    """Extract text for a node safely."""
     return src[node.start_byte : node.end_byte].decode()
 
 
 def extract_functions_and_classes(src: bytes, tree):
-    """Extract function and class definitions from a parsed tree."""
     root = tree.root_node
     definitions = []
 
@@ -50,7 +48,6 @@ def extract_functions_and_classes(src: bytes, tree):
 
 
 def get_relative_path(file_path: Path, base_path: Path) -> Path:
-    """Get the relative path of a file, handling cases where it might be relative to different roots."""
     try:
         return file_path.relative_to(base_path)
     except ValueError:
@@ -58,7 +55,6 @@ def get_relative_path(file_path: Path, base_path: Path) -> Path:
 
 
 def extract_docstring(src: bytes, node):
-    """Extract docstring if present."""
     if node.children and node.children[0].type == "string":
         return get_node_text(src, node.children[0])
     return None
@@ -70,7 +66,6 @@ def format_definition_with_metadata(
     line_num: int,
     docstring: str | None = None,
 ):
-    """Format a definition with metadata comments."""
     lines = [f"# From: {file_name}:{line_num}"]
     if docstring:
         lines.append(f"# Docstring: {docstring[:50]}{'...' if len(docstring) > 50 else ''}")

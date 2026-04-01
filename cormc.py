@@ -3,7 +3,7 @@ import os
 import sys
 import glob
 import logging
-import pathlib
+from pathlib import Path
 from multiprocessing import cpu_count
 
 
@@ -52,7 +52,7 @@ class CommentRemover:
 
     def parse_file(self, filepath: str) -> tuple[str, list[dict]] | None:
         try:
-            source_code = pathlib.Path(filepath).read_text(encoding="utf-8", errors="replace")
+            source_code = Path(filepath).read_text(encoding="utf-8", errors="replace")
         except Exception as e:
             logger.exception("Failed to read %s: %s", filepath, e)
             return None
@@ -159,7 +159,7 @@ class CommentRemover:
                 return False
             source_code, tree = parsed
             cleaned_code = self.remove_comments_and_docstrings(source_code, tree)
-            pathlib.Path(filepath).write_text(cleaned_code, encoding="utf-8")
+            Path(filepath).write_text(cleaned_code, encoding="utf-8")
             logger.info("Processed: %s", filepath)
             return True
         except Exception as e:
@@ -231,7 +231,7 @@ def main():
     args = parser.parse_args()
     if args.verbose:
         logger.setLevel(logging.DEBUG)
-    if not pathlib.Path(args.directory).is_dir():
+    if not Path(args.directory).is_dir():
         logger.error(f"Directory not found: {args.directory}")
         sys.exit(1)
     python_files = find_python_files(args.directory)

@@ -197,7 +197,7 @@ def main():
     args = parser.parse_args()
     if not args.all and not args.packages:
         parser.error("Specify package names or use -a/--all")
-    """    # Setup directories
+    """
     site_packages = (
         Path(sys.prefix)
         / 'lib'
@@ -205,7 +205,7 @@ def main():
         / 'site-packages'
     )
     if not site_packages.exists():
-        # Try alternative location
+
         site_packages = Path(sys.prefix) / 'Lib' / 'site-packages'
     """
     site_packages = Path.cwd()

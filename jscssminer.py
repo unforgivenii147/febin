@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 
 from rjsmin import jsmin
 from rcssmin import cssmin
@@ -24,14 +24,14 @@ def minify_assets_in_directory(cwd=".") -> None:
             else:
                 continue
             try:
-                print(f"processing ...{pathlib.Path(file_path).name}")
-                original_content = pathlib.Path(file_path).read_text(encoding="utf-8")
+                print(f"processing ...{Path(file_path).name}")
+                original_content = Path(file_path).read_text(encoding="utf-8")
                 minified_content = minifier_func(original_content)
-                pathlib.Path(file_path).write_text(minified_content, encoding="utf-8")
+                Path(file_path).write_text(minified_content, encoding="utf-8")
                 minified_count += 1
             except Exception:
                 errors_count += 1
 
 
 if __name__ == "__main__":
-    minify_assets_in_directory(pathlib.Path.cwd())
+    minify_assets_in_directory(Path.cwd())

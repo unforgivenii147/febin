@@ -1,5 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+import os
 from pathlib import Path
+from collections import Counter
 
 
 def is_text_file(file_path, text_extensions):

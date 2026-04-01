@@ -17,13 +17,11 @@ VALID = {
 
 
 def extract_file(src: bytes, tree):
-    """Extract import statements from a parsed tree."""
     root = tree.root_node
     return [src[node.start_byte : node.end_byte].decode() for node in root.children if node.type in VALID]
 
 
 def get_relative_path(file_path: Path, base_path: Path) -> Path:
-    """Get the relative path of a file, handling cases where it might be relative to different roots."""
     try:
         return file_path.relative_to(base_path)
     except ValueError:

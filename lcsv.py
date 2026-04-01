@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import csv
-import pathlib
+from pathlib import Path
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from tqdm import tqdm
 
 
-binf = pathlib.Path("/sdcard/bin").open(encoding="utf-8")
+binf = Path("/sdcard/bin").open(encoding="utf-8")
 EXCLUDED_EXTENSIONS = [line.strip() for line in binf]
 binf.close()
 
@@ -16,7 +16,7 @@ binf.close()
 def process_file(filepath):
     counter = Counter()
     try:
-        with pathlib.Path(filepath).open(encoding="utf-8", errors="ignore") as f:
+        with Path(filepath).open(encoding="utf-8", errors="ignore") as f:
             for line in f:
                 line = line.strip()
                 if line:
@@ -28,7 +28,7 @@ def process_file(filepath):
 
 def collect_files_by_extension():
     ext_map = {}
-    for root, _, filenames in os.walk(pathlib.Path.cwd()):
+    for root, _, filenames in os.walk(Path.cwd()):
         for fname in filenames:
             if fname.startswith("."):
                 continue
@@ -55,7 +55,7 @@ def collect_lines_for_extension(ext, files):
         ):
             global_counter.update(future.result())
     output_file = f"{ext}.csv"
-    with pathlib.Path(output_file).open("w", newline="", encoding="utf-8") as csvfile:
+    with Path(output_file).open("w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["number_of_appearance", "line"])
         for (

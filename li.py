@@ -2,7 +2,7 @@
 import os
 import sys
 import stat
-import pathlib
+from pathlib import Path
 import operator
 
 
@@ -38,8 +38,8 @@ def get_dir_size(path):
         for f in files:
             try:
                 fp = os.path.join(root, f)
-                if pathlib.Path(fp).is_file():
-                    total += pathlib.Path(fp).stat().st_size
+                if Path(fp).is_file():
+                    total += Path(fp).stat().st_size
             except Exception:
                 pass
     return total
@@ -51,11 +51,11 @@ def list_dir(path="."):
     for entry in entries:
         full_path = os.path.join(path, entry)
         try:
-            if pathlib.Path(full_path).is_dir():
+            if Path(full_path).is_dir():
                 size = get_dir_size(full_path)
                 color = BLUE
             else:
-                size = pathlib.Path(full_path).stat().st_size
+                size = Path(full_path).stat().st_size
                 mode = os.stat(full_path).st_mode
                 ext = os.path.splitext(entry)[1].lower()
                 if ext in COMPRESSED_EXTS:

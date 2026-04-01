@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 import tarfile
 import zipfile
 import subprocess
@@ -41,12 +41,12 @@ def use_strings(path):
 
 def process_regular_file(path):
     try:
-        with pathlib.Path(path).open("rb") as f:
+        with Path(path).open("rb") as f:
             header = f.read(2048)
         if b"\x00" in header:
             text = use_strings(path)
             return extract_git_urls_from_text(text)
-        with pathlib.Path(path).open(encoding="utf-8", errors="ignore") as f:
+        with Path(path).open(encoding="utf-8", errors="ignore") as f:
             return extract_git_urls_from_text(f.read())
     except Exception:
         return set()
@@ -152,7 +152,7 @@ def main() -> None:
         for urls in pool.imap_unordered(worker, files):
             if urls:
                 found |= urls
-    with pathlib.Path(OUTPUT_FILE).open("a", encoding="utf-8") as fp:
+    with Path(OUTPUT_FILE).open("a", encoding="utf-8") as fp:
         fp.write("\n")
         fp.writelines(url + "\n" for url in sorted(found))
     print(f"\nExtracted {len(found)} unique git URLs → {OUTPUT_FILE}")

@@ -51,7 +51,6 @@ def calculate_xorhash(path: Path) -> tuple[str, Path]:
 def find_dups_optimized(root: Path):
     file_hashes = {}
     paths_to_process = []
-
     for path in root.rglob("*"):
         try:
             if not path.is_symlink() and path.is_file():
@@ -69,26 +68,22 @@ def find_dups_optimized(root: Path):
         except OSError as e:
             print(f"Error getting size for {path}: {e}")
             continue
-
     paths_to_hash = []
     for paths in files_by_size.values():
         if len(paths) > 1:
             paths_to_hash.extend(paths)
-
     with ThreadPoolExecutor(max_workers=8) as executor:
         future_to_path = {executor.submit(calculate_xorhash, path): path for path in paths_to_hash}
         for future in as_completed(future_to_path):
             hash_result, path = future.result()
             if hash_result is not None:
                 file_hashes.setdefault(hash_result, []).append(path)
-
     return {h: paths for h, paths in file_hashes.items() if len(paths) > 1}
 
 
 if __name__ == "__main__":
     cwd = Path.cwd()
     print(f"Scanning directory: {cwd}")
-
     dupes = find_dups_optimized(cwd)
     if not dupes:
         print("No duplicate files found.")

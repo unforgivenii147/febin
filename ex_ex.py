@@ -44,5 +44,4 @@ for (
     out_file.parent.mkdir(parents=True, exist_ok=True)
     content = "\n\n".join(imports_list)
     out_file.write_text(content)
-
 print(f"\n✨ Done! Processed {len(folder_imports)} folder(s)")

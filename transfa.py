@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import sys
 from pathlib import Path
 
@@ -12,7 +11,7 @@ def translate_file(fname: str):
     with Path(fpath).open("r", encoding="utf-8") as infile:
         linez = infile.readlines()
     outf = str(fpath.name) + "_eng" + str(fpath.suffix)
-    outpath = os.path.join(fpath.parent, outf)
+    outpath = fpath.parent / outf
     with Path(outpath).open("a", encoding="utf-8") as f:
         for line in linez:
             if line.strip():

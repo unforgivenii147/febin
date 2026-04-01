@@ -8,7 +8,6 @@ SVGCPATH = "/data/data/com.termux/files/home/.cargo/bin/svgcleaner"
 
 
 def clean_single_svg(in_file, svgcleaner_path=SVGCPATH):
-    """Clean a single SVG file and return size change."""
     if not Path(in_file).exists():
         msg = f"Input file not found: {in_file}"
         raise FileNotFoundError(msg)
@@ -68,12 +67,10 @@ def clean_single_svg(in_file, svgcleaner_path=SVGCPATH):
 
 
 def find_svg_files(cwd):
-    """Find all SVG files in a directory recursively."""
     return [str(f) for f in Path(cwd).rglob("*.svg")]
 
 
 def clean_svg_dir(cwd, svgcleaner_path="svgcleaner"):
-    """Clean all SVG files in a directory and show size changes."""
     svg_files = find_svg_files(cwd)
     if not svg_files:
         print("No SVG files found.")

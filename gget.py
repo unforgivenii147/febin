@@ -14,9 +14,7 @@ from rich.progress import Progress, BarColumn, TextColumn, DownloadColumn, TimeR
 
 
 console = Console()
-
-# --- Configuration ---
-CHUNK_SIZE = 1024 * 1024 * 5  # 5MB chunks
+CHUNK_SIZE = 1024 * 1024 * 5
 MAX_WORKERS = 4
 STATE_SUFFIX = ".progress"
 
@@ -48,28 +46,21 @@ class Downloader:
         )
         resp.raise_for_status()
         self.file_size = int(resp.headers.get("content-length", 0))
-
         if not self.filename:
             cd = resp.headers.get("Content-Disposition")
             if cd and "filename=" in cd:
                 self.filename = cd.split("filename=")[1].strip(' "')
             else:
                 self.filename = unquote(self.url.split("/")[-1]) or "downloaded_file"
-
         self.state_file = Path(f"{self.filename}{STATE_SUFFIX}")
 
     def _verify_integrity(self):
-        """Calculate SHA-256 hash of the final file."""
         sha256_hash = hashlib.sha256()
         console.print("\n[bold cyan]Verifying file integrity...[/]")
-
         with Path(self.filename).open("rb") as f:
-            # Read in 1MB chunks to be memory efficient
             for byte_block in iter(lambda: f.read(1024 * 1024), b""):
                 sha256_hash.update(byte_block)
-
         calculated_hash = sha256_hash.hexdigest()
-
         if self.expected_hash:
             if calculated_hash.lower() == self.expected_hash.lower():
                 console.print("[bold green]✅ Integrity Verified: Hashes match![/]")
@@ -134,11 +125,9 @@ class Downloader:
     def start(self):
         self._get_info()
         self._load_state()
-
         if not Path(self.filename).exists():
             with Path(self.filename).open("wb") as f:
                 f.truncate(self.file_size)
-
         chunks = [
             (
                 i,
@@ -149,17 +138,14 @@ class Downloader:
             )
             for i in range(0, self.file_size, CHUNK_SIZE)
         ]
-
         self.progress_data["total_chunks"] = len(chunks)
         pending_chunks = [
             (idx, s, e) for idx, (s, e) in enumerate(chunks) if idx not in self.progress_data["downloaded_chunks"]
         ]
-
         if not pending_chunks:
             console.print(f"[bold green]✔ {self.filename} is already finished![/]")
             self._verify_integrity()
             return
-
         with Progress(
             TextColumn("[bold blue]{task.fields[filename]}"),
             BarColumn(),
@@ -175,12 +161,10 @@ class Downloader:
                 total=self.file_size,
                 completed=len(self.progress_data["downloaded_chunks"]) * CHUNK_SIZE,
             )
-
             signal.signal(
                 signal.SIGINT,
                 lambda s, f: self.stop_event.set(),
             )
-
             with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
                 futures = [
                     executor.submit(
@@ -197,7 +181,6 @@ class Downloader:
                     if self.stop_event.is_set():
                         break
                     f.result()
-
         if not self.stop_event.is_set():
             self.state_file.unlink(missing_ok=True)
             console.print(f"\n[bold green]Download Complete: {self.filename}[/]")
@@ -211,10 +194,8 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         console.print("[bold red]Usage:[/] python downloader.py <URL> [output_name] [expected_sha256]")
         sys.exit(1)
-
     url_arg = sys.argv[1]
     out_arg = sys.argv[2] if len(sys.argv) > 2 else None
     hash_arg = sys.argv[3] if len(sys.argv) > 3 else None
-
     dl = Downloader(url_arg, out_arg, hash_arg)
     dl.start()

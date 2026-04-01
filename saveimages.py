@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 import argparse
 from urllib.parse import urljoin
 
@@ -12,8 +12,8 @@ def download_image(url, output_dir):
     try:
         response = requests.get(url, stream=True)
         response.raise_for_status()
-        filename = os.path.join(output_dir, pathlib.Path(url).name)
-        with pathlib.Path(filename).open("wb") as f:
+        filename = os.path.join(output_dir, Path(url).name)
+        with Path(filename).open("wb") as f:
             f.writelines(response.iter_content(1024))
         print(f"Downloaded: {filename}")
     except Exception as e:
@@ -26,8 +26,8 @@ def extract_images_from_url(url, output_dir):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
         img_tags = soup.find_all("img")
-        if not pathlib.Path(output_dir).exists():
-            pathlib.Path(output_dir).mkdir(parents=True)
+        if not Path(output_dir).exists():
+            Path(output_dir).mkdir(parents=True)
         for img in img_tags:
             img_url = img.get("src")
             if img_url:

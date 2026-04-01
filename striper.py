@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 from sys import argv
-import pathlib
+from pathlib import Path
 
 
 def remove_spaces_from_file(fname) -> None:
     try:
-        with pathlib.Path(fname).open(encoding="utf-8") as file:
+        with Path(fname).open(encoding="utf-8") as file:
             lines = file.readlines()
             cleaned_lines = [line.lstrip().strip().rstrip() for line in lines]
-        with pathlib.Path(fname).open("w", encoding="utf-8") as file:
+        with Path(fname).open("w", encoding="utf-8") as file:
             for k in cleaned_lines:
                 file.writelines(k + "\n")
         print(f"{fname} cleaned.")

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
 import time
-import pathlib
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from deep_translator import GoogleTranslator
@@ -23,7 +23,7 @@ def translate_word(word):
 
 
 def main():
-    with pathlib.Path(INPUT_FILE).open(encoding="utf-8") as f:
+    with Path(INPUT_FILE).open(encoding="utf-8") as f:
         words = [w.strip() for w in f if w.strip()]
     print(f"[INFO] Loaded {len(words)} Persian words")
     results = {}
@@ -41,7 +41,7 @@ def main():
                     print(f"[FAIL] Could not translate: {persian_word}")
             except Exception as e:
                 print(f"[ERROR] Unexpected error for '{persian_word}': {e}")
-    with pathlib.Path(OUTPUT_FILE).open("w", encoding="utf-8") as f:
+    with Path(OUTPUT_FILE).open("w", encoding="utf-8") as f:
         json.dump(
             results,
             f,

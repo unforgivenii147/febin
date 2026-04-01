@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 import argparse
 
 import regex as re
@@ -46,10 +46,10 @@ def process_file(filepath, inplace=False, keep_strings=False):
     }:
         print(f"Unsupported file type: {ext}")
         return
-    content = pathlib.Path(filepath).read_text(encoding="utf-8")
+    content = Path(filepath).read_text(encoding="utf-8")
     cleaned = remove_comments_and_strings(content, ext, keep_strings)
     if inplace:
-        pathlib.Path(filepath).write_text(cleaned, encoding="utf-8")
+        Path(filepath).write_text(cleaned, encoding="utf-8")
         print(f"File {filepath} cleaned and saved in-place.")
     else:
         print(f"--- Cleaned {filepath} ---\n{cleaned}\n")

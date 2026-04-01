@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
-import pathlib
+from pathlib import Path
 
 from deep_translator import GoogleTranslator
 
@@ -19,7 +19,7 @@ def translate_word(word):
 
 def main():
     translations = {}
-    with pathlib.Path(INPUT_FILE).open(encoding="utf-8") as f:
+    with Path(INPUT_FILE).open(encoding="utf-8") as f:
         words = [line.strip() for line in f if line.strip()]
     print(f"Loaded {len(words)} Persian words")
     for w in words:
@@ -27,7 +27,7 @@ def main():
         if eng:
             translations[w] = eng
             print(f"{w} → {eng}")
-    with pathlib.Path(OUTPUT_FILE).open("w", encoding="utf-8") as f:
+    with Path(OUTPUT_FILE).open("w", encoding="utf-8") as f:
         json.dump(
             translations,
             f,

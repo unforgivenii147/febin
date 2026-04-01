@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import sys
-import pathlib
+from pathlib import Path
 import argparse
 from urllib.parse import urljoin, urlparse
 
@@ -38,7 +38,7 @@ def split_internal_external(base_url, links):
 
 def save_links(out_dir, name, links):
     path = os.path.join(out_dir, name)
-    with pathlib.Path(path).open("w", encoding="utf-8") as f:
+    with Path(path).open("w", encoding="utf-8") as f:
         f.writelines(link + "\n" for link in links)
 
 
@@ -59,7 +59,7 @@ def main():
             file=sys.stderr,
         )
         sys.exit(1)
-    pathlib.Path(args.out).mkdir(exist_ok=True, parents=True)
+    Path(args.out).mkdir(exist_ok=True, parents=True)
     try:
         links = extract_links(url)
     except Exception as e:

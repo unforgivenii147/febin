@@ -32,7 +32,6 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-
     diff_size = before - get_size(cwd)
     print(f"{format_size(diff_size)}")
 

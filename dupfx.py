@@ -19,9 +19,7 @@ def calculate_file_hash(filepath):
     if not Path(filepath).exists():
         print(f"Error: File not found at {filepath}")
         return None
-
     c_filepath = ffi.new("char[]", filepath.encode("utf-8"))
-
     c_hash_ptr = hasher_lib.hash_file_c(c_filepath)
     if c_hash_ptr == ffi.NULL:
         print(f"Error: C function returned NULL for file: {filepath}")
@@ -37,6 +35,7 @@ if __name__ == "__main__":
     files = get_files(cwd)
     f_by_h = {}
     size_groups = defaultdict(list)
+    removed = 0
     for f in files:
         if f.is_file() and not f.is_symlink():
             try:
@@ -44,19 +43,21 @@ if __name__ == "__main__":
                 size_groups[size].append(f)
             except OSError as e:
                 print(f"Error accessing {f}: {e}")
-
     files_to_hash = []
     for size, files in size_groups.items():
         if len(files) > 1:
             files_to_hash.extend(files)
-
     for filepath in files_to_hash:
         h = calculate_file_hash(str(filepath))
         f_by_h.setdefault(h, []).append(filepath)
-
     for _h, paths in f_by_h.items():
         if len(paths) > 1:
             print(f"dups with hash :{_h}\n")
             for path in paths[1:]:
                 print(f"{path} removed")
                 path.unlink()
+                removed += 1
+    if removed:
+        print(f"{removed} files removed.")
+    else:
+        print("no dups found")

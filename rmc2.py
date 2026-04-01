@@ -3,19 +3,17 @@ import sys
 from pathlib import Path
 from multiprocessing import get_context
 
-from dh import get_size, get_files, format_size, cleanup_blank_lines
+from dh import get_size, get_files, format_size, clean_blank_lines
 from tree_sitter import Parser, Language
 import tree_sitter_python
 
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
-
 parser = Parser()
 parser.language = Language(tree_sitter_python.language())
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
-
     def first_named_child(block):
         for child in block.children:
             if child.is_named:
@@ -72,7 +70,7 @@ def process_file(path: Path) -> None:
         for start, end in sorted(deletions, reverse=True):
             del cleaned[start:end]
         cleaned_text = cleaned.decode("utf-8")
-        cleaned_text = cleanup_blank_lines(cleaned_text)
+        cleaned_text = clean_blank_lines(cleaned_text)
         cleaned = cleaned_text.encode("utf-8")
         parser.parse(cleaned)
         path.write_bytes(cleaned)
@@ -82,12 +80,10 @@ def process_file(path: Path) -> None:
 
 
 def main() -> None:
-
     cwd = Path.cwd()
     before = get_size(cwd)
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".py"])
-
     with get_context("spawn").Pool(8) as pool:
         pool.map(process_file, files)
     diffsize = before - get_size(cwd)

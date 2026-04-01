@@ -1,10 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Remove comments from bash files using tree-sitter.
-Supports processing individual files or recursively processing directories.
-Verifies syntax before committing changes.
-"""
-
 import os
 import sys
 from pathlib import Path
@@ -28,7 +22,6 @@ class BashCommentRemover:
             sys.exit(1)
 
     def _setup_parser(self) -> Parser | None:
-        """Setup tree-sitter parser with bash grammar."""
         try:
             # Try to import bash language directly (if installed)
             try:
@@ -84,10 +77,6 @@ class BashCommentRemover:
             return None
 
     def remove_comments(self, content: str) -> tuple[str, bool]:
-        """
-        Remove comments from bash script content.
-        Returns (modified_content, was_modified).
-        """
         try:
             tree = self.parser.parse(bytes(content, "utf8"))
             root_node = tree.root_node
@@ -143,7 +132,6 @@ class BashCommentRemover:
             return content, False
 
     def validate_syntax(self, content: str) -> bool:
-        """Validate bash script syntax using tree-sitter or shfmt."""
         # Try using tree-sitter first
         try:
             tree = self.parser.parse(bytes(content, "utf8"))
@@ -184,10 +172,6 @@ class BashCommentRemover:
         filepath: Path,
         dry_run: bool = False,
     ) -> tuple[bool, int, int]:
-        """
-        Process a single bash file.
-        Returns (success, original_size, new_size).
-        """
         try:
             # Read file
             original_content = Path(filepath).read_text(encoding="utf-8")
@@ -241,10 +225,6 @@ class BashCommentRemover:
         recursive: bool = False,
         dry_run: bool = False,
     ) -> tuple[int, int, int]:
-        """
-        Process a file or directory.
-        Returns (success_count, total_original_size, total_new_size).
-        """
         success_count = 0
         total_original = 0
         total_new = 0

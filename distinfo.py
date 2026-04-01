@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import site
-import pathlib
+from pathlib import Path
 import contextlib
 from collections import defaultdict
 
@@ -29,7 +29,7 @@ def parse_pkg_info(dirname):
 def find_multiple_versions() -> None:
     pkg_versions = defaultdict(set)
     for sp_dir in get_site_packages_dirs():
-        if not pathlib.Path(sp_dir).is_dir():
+        if not Path(sp_dir).is_dir():
             continue
         for entry in os.listdir(sp_dir):
             if entry.endswith((".dist-info", ".egg-info")):

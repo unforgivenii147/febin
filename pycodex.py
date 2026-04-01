@@ -35,7 +35,6 @@ class HTTPSession:
         retry_strategy = Retry(
             total=max_retries,
             backoff_factor=1,
-            #            status_forcelist=[429][500][502][503][504],
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         self.session.mount("http://", adapter)

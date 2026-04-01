@@ -6,6 +6,7 @@ from pathlib import Path
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+from dh import DOC_TH1, DOC_TH2, get_pyfiles
 import regex as re
 from deep_translator import GoogleTranslator
 
@@ -16,10 +17,6 @@ CHUNK_SIZE = 5000
 TARGET_LANG = "en"
 SRC_LANG = "auto"
 _thread_local = threading.local()
-
-
-def get_size(filepath):
-    return Path(filepath).stat().st_size
 
 
 def get_translator():
@@ -105,7 +102,7 @@ def process_file(filepath):
                 for lookback in range(3):
                     possible = doc_start - lookback
                     if possible >= 0 and (
-                        lines[possible].lstrip().startswith('"""') or lines[possible].lstrip().startswith("'''")
+                        lines[possible].lstrip().startswith(DOC_TH1) or lines[possible].lstrip().startswith(DOC_TH2)
                     ):
                         docstring_line = possible
                         break
@@ -113,7 +110,7 @@ def process_file(filepath):
                     continue
                 doc_lines = []
                 line_idx = docstring_line
-                quote_type = '"""' if lines[line_idx].lstrip().startswith('"""') else "'''"
+                quote_type = DOC_TH1 if lines[line_idx].lstrip().startswith(DOC_TH1) else DOC_TH2
                 while True:
                     doc_lines.append(lines[line_idx])
                     if lines[line_idx].rstrip().endswith(quote_type) and line_idx != docstring_line:
@@ -148,19 +145,9 @@ def process_file(filepath):
     print(f"Translated: {filepath}")
 
 
-def find_py_files(root="."):
-    files = []
-    for dirpath, _, filenames in os.walk(root):
-        files.extend(
-            os.path.join(dirpath, fname)
-            for fname in filenames
-            if fname.endswith(PYTHON_EXT) and get_size(os.path.join(dirpath, fname)) != 0
-        )
-    return files
-
-
 def main():
-    py_files = find_py_files(".")
+    cwd = Path.cwd()
+    py_files = get_pyfiles(cwd)
     if not py_files:
         print("No Python files found.")
         return

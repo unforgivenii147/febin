@@ -13,7 +13,6 @@ MAX_QUEUE = 16
 
 
 def process_file(fp) -> None:
-
     before = get_size(fp)
     src = fp.read_text(encoding="utf-8")
     pattern = re.compile(r"<!--[\s\S]*?-->", re.MULTILINE)

@@ -30,19 +30,18 @@ def format_single_file(file_path: Path, args) -> bool:
 
             code = isort.code(original_code)
             file_path.write_text(code, encoding="utf-8")
-
         if args.black:
             import black
 
-            mode = black.Mode(
-                line_length=120,
-                is_pyi=False,
-                is_ipynb=False,
-                skip_source_first_line=True,
-                preview=False,
+            code = black.format_str(
+                original_code,
+                mode=black.Mode(
+                    target_versions={black.TargetVersion.PY311, black.TargetVersion.PY311},
+                    line_length=120,
+                ),
             )
-            black.format_file_in_place(file_path, fast=False, mode=mode)
 
+            file_path.write_text(code, encoding="utf-8")
         elif args.autopep:
             import autopep8
 
@@ -121,7 +120,6 @@ def main() -> None:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-
     diffsize = before - get_size(cwd)
     cprint(f"{format_size(diffsize)}", "cyan")
 

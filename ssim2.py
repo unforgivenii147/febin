@@ -4,7 +4,7 @@ import csv
 import sys
 import json
 import shutil
-import pathlib
+from pathlib import Path
 
 import ssdeep
 
@@ -37,7 +37,7 @@ def compute_hashes(files):
     hashes = {}
     for f in files:
         try:
-            with pathlib.Path(f).open("rb") as fh:
+            with Path(f).open("rb") as fh:
                 data = fh.read()
                 hashes[f] = ssdeep.hash(data)
         except Exception as e:
@@ -65,17 +65,17 @@ def group_similar_files(hashes, threshold):
                 visited.add(f2)
         if len(group) > 1:
             groups.append(group)
-    with pathlib.Path("similars.json").open("w", encoding="utf-8") as f:
+    with Path("similars.json").open("w", encoding="utf-8") as f:
         json.dump(matrx, f)
     print("similars.json created.")
     return groups
 
 
 def copy_groups(groups, output_dir="output") -> None:
-    pathlib.Path(output_dir).mkdir(exist_ok=True, parents=True)
+    Path(output_dir).mkdir(exist_ok=True, parents=True)
     for idx, group in enumerate(groups, start=1):
         group_dir = os.path.join(output_dir, f"group_{idx}")
-        pathlib.Path(group_dir).mkdir(exist_ok=True, parents=True)
+        Path(group_dir).mkdir(exist_ok=True, parents=True)
         for f in group:
             try:
                 shutil.move(f, group_dir)
@@ -84,10 +84,10 @@ def copy_groups(groups, output_dir="output") -> None:
 
 
 def write_report(groups, format="csv", output_dir="output") -> None:
-    pathlib.Path(output_dir).mkdir(exist_ok=True, parents=True)
+    Path(output_dir).mkdir(exist_ok=True, parents=True)
     if format == "csv":
         report_file = os.path.join(output_dir, "similar_report.csv")
-        with pathlib.Path(report_file).open("w", encoding="utf-8", newline="") as csvfile:
+        with Path(report_file).open("w", encoding="utf-8", newline="") as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(["Group", "File"])
             for idx, group in enumerate(groups, start=1):
@@ -97,7 +97,7 @@ def write_report(groups, format="csv", output_dir="output") -> None:
     elif format == "json":
         report_file = os.path.join(output_dir, "similar_report.json")
         data = {f"group_{idx}": group for idx, group in enumerate(groups, start=1)}
-        with pathlib.Path(report_file).open("w", encoding="utf-8") as jf:
+        with Path(report_file).open("w", encoding="utf-8") as jf:
             json.dump(data, jf, indent=2)
         print(f"JSON report written to {report_file}")
 
@@ -118,11 +118,11 @@ def write_matrix(
     output_dir="output",
     pretty=False,
 ) -> None:
-    pathlib.Path(output_dir).mkdir(exist_ok=True, parents=True)
+    Path(output_dir).mkdir(exist_ok=True, parents=True)
     files = list(hashes.keys())
     matrix_file = os.path.join(output_dir, "similarity_matrix.csv")
     table = [["File", *files]]
-    with pathlib.Path(matrix_file).open("w", encoding="utf-8", newline="") as csvfile:
+    with Path(matrix_file).open("w", encoding="utf-8", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["File", *files])
         for f1 in files:

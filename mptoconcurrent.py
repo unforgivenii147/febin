@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import shutil
-import pathlib
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 
 import regex as re
@@ -22,7 +22,7 @@ def backup_file(file_path):
 
 def replace_multiprocessing(file_path):
     try:
-        content = pathlib.Path(file_path).read_text(encoding="utf-8")
+        content = Path(file_path).read_text(encoding="utf-8")
         if "import multiprocessing" not in content and "from multiprocessing" not in content:
             return False, file_path, "No mp"
         backup_file(file_path)
@@ -53,7 +53,7 @@ def replace_multiprocessing(file_path):
             "ProcessPoolExecutor",
             content,
         )
-        pathlib.Path(file_path).write_text(content, encoding="utf-8")
+        Path(file_path).write_text(content, encoding="utf-8")
         return (
             True,
             file_path,
@@ -68,7 +68,7 @@ def replace_multiprocessing(file_path):
 
 
 def main():
-    current_dir = pathlib.Path.cwd()
+    current_dir = Path.cwd()
     py_files = find_py_files(current_dir)
     if not py_files:
         print("No Python files found in the current directory.")

@@ -12,11 +12,9 @@ def detect_version(file_path) -> None:
     except Exception as e:
         print(f"Error reading file: {e}")
         return
-
     py2_score = 0
     py3_score = 0
     reasons = []
-
     try:
         tree = ast.parse(source)
         py3_score += 1
@@ -24,15 +22,12 @@ def detect_version(file_path) -> None:
     except SyntaxError:
         print(f"{file_path.name}\nConfidence: High\nReason: Syntax error when parsed with Python 3.")
         return
-
     if "print " in source and "print(" not in source:
         py2_score += 2
         reasons.append("Uses print statement without parentheses (Python 2 style).")
-
     if "__future__" in source and "print_function" in source:
         py3_score += 2
         reasons.append("Uses 'from __future__ import print_function' (Python 3 compatibility).")
-
     for node in ast.walk(tree):
         if isinstance(node, (ast.AsyncFunctionDef, ast.Await)):
             py3_score += 3
@@ -45,7 +40,6 @@ def detect_version(file_path) -> None:
                 if hasattr(arg, "annotation") and arg.annotation is not None:
                     py3_score += 2
                     reasons.append("Uses function argument annotations (Python 3 feature).")
-
     if py2_score > py3_score:
         version = "2"
         confidence = "High" if py2_score - py3_score > 2 else "Medium"
@@ -59,9 +53,6 @@ def detect_version(file_path) -> None:
     if version == "2":
         print(f"{file_path.name} : {version}\nConfidence: {confidence}\nReason(s):")
 
-
-#    for reason in reasons:
-#        print(f"- {reason}")
 
 if __name__ == "__main__":
     args = sys.argv[1:]

@@ -45,7 +45,6 @@ def main():
     files = (
         [Path(p) for p in args] if args else get_files(cwd, extensions=[".js", ".ts", ".cjs", ".mjs", ".jsx", ".tsx"])
     )
-
     with get_context("spawn").Pool(8) as p:
         pending = deque()
         for f in files:

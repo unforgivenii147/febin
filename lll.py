@@ -6,10 +6,8 @@ from dh import get_size, format_size
 
 
 EXCLUDED = {".mypy_cache", ".ruff_cache", ".git", "__pycache__"}
-
 if __name__ == "__main__":
     cwd = Path.cwd()
-
     for path in sorted(
         cwd.rglob("*"),
         key=lambda e: e.stat().st_mtime,

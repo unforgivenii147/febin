@@ -11,7 +11,6 @@ import tree_sitter_python as tsp
 OUTPUT_DIR = Path("output")
 parser = Parser()
 parser.language = Language(tsp.language())
-
 VALID = {
     "import_statement",
     "import_from_statement",

@@ -10,20 +10,18 @@ def run_2to3(file_path) -> None:
     if not file_path.is_file():
         print(f"File not found: {file_path.name}")
         return
-
     try:
         subprocess.run(
             [
                 "2to3",
-                "-w",  # Write changes to file
-                "-n",  # No backup
+                "-w",
+                "-n",
                 "-f",
-                "all",  # Apply all fixers
+                "all",
                 file_path,
             ],
             check=True,
         )
-
     except subprocess.CalledProcessError as e:
         print(f"Error running 2to3: {e}")
 

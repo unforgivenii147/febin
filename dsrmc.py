@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import sys
-import pathlib
+from pathlib import Path
 import multiprocessing as mp
 
 from tree_sitter import Node, Parser
@@ -47,7 +47,7 @@ def collect_nodes_to_remove(source_bytes: bytes, node: Node) -> list[Node]:
 def process_file(filepath: str) -> tuple[str, bool]:
     global _parser
     try:
-        source_bytes = pathlib.Path(filepath).read_bytes()
+        source_bytes = Path(filepath).read_bytes()
         tree = _parser.parse(source_bytes)
         root = tree.root_node
         to_delete = collect_nodes_to_remove(source_bytes, root)
@@ -60,7 +60,7 @@ def process_file(filepath: str) -> tuple[str, bool]:
         new_source = bytearray(source_bytes)
         for node in to_delete:
             del new_source[node.start_byte : node.end_byte]
-        pathlib.Path(filepath).write_bytes(new_source)
+        Path(filepath).write_bytes(new_source)
         return filepath, True
     except Exception as e:
         print(

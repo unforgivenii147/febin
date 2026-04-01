@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-import pathlib
+from pathlib import Path
 from multiprocessing import Queue, Process, cpu_count
 
 import cv2
@@ -10,7 +10,7 @@ import pytesseract
 
 
 video = sys.argv[1]
-txtfile = pathlib.Path(video).with_suffix(".txt")
+txtfile = Path(video).with_suffix(".txt")
 
 
 def ocr_worker(q_in: Queue, q_out: Queue):
@@ -61,7 +61,7 @@ def main():
         if not ret:
             break
         frame_id += 1
-        #        if frame_id % 2 == 0:
+
         q_in.put((frame_id, frame))
         sent += 1
     for _ in workers:

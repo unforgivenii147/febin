@@ -7,7 +7,6 @@ import pkg_resources
 
 
 def get_installed_python_packages() -> list[tuple[str, str]]:
-    """Return a list of installed Python packages and their versions."""
     return [(d.project_name, d.version) for d in pkg_resources.working_set]
 
 

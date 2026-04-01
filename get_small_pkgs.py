@@ -1,23 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Fast script to clean requirements.txt using multiprocessing
-Minimal output - only reports removed packages.
-"""
-
 import os
 import csv
 import site
-import pathlib
+from pathlib import Path
 
 
 def get_all_dist_info_dirs():
-    """Quickly find all dist-info directories."""
     dist_info_dirs = []
     for site_dir in [
         *site.getsitepackages(),
         site.getusersitepackages(),
     ]:
-        if pathlib.Path(site_dir).exists():
+        if Path(site_dir).exists():
             dist_info_dirs.extend(
                 os.path.join(site_dir, item) for item in os.listdir(site_dir) if item.endswith(".dist-info")
             )
@@ -26,16 +20,15 @@ def get_all_dist_info_dirs():
 
 def check_pure(dist_info_path):
     record_file = os.path.join(dist_info_path, "RECORD")
-    pkg_name = pathlib.Path(dist_info_path).name.replace(".dist-info", "").split("-")[0].lower()
+    pkg_name = Path(dist_info_path).name.replace(".dist-info", "").split("-")[0].lower()
     sum = 0
-    if pathlib.Path(record_file).exists():
-        with pathlib.Path(record_file).open(encoding="utf-8") as f:
+    if Path(record_file).exists():
+        with Path(record_file).open(encoding="utf-8") as f:
             reader = csv.reader(f)
             for row in reader:
                 if row[-1] and isinstance(int(row[-1]), int):
                     sum += int(row[-1])
     if sum < 1024 * 1024:
-        #        print(f"{pkg_name} : {sum}")
         return pkg_name
     return None
 
@@ -48,7 +41,7 @@ def get_pure():
         if ispure:
             print(ispure)
             purz.append(ispure)
-    with pathlib.Path("/sdcard/okpure").open("w", encoding="utf-8") as f:
+    with Path("/sdcard/okpure").open("w", encoding="utf-8") as f:
         f.writelines(f"{k}\n" for k in purz)
     print(len(purz))
 

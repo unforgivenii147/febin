@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 
 
 FONT_EXTENSIONS = (
@@ -36,7 +36,7 @@ def generate_html(font_files):
         "<h1>Font Preview</h1>",
     ]
     for font_path in font_files:
-        font_name = pathlib.Path(font_path).name
+        font_name = Path(font_path).name
         html.extend((
             "<div class='font-preview'>",
             "<style>",
@@ -57,7 +57,7 @@ def main() -> None:
     if not fonts:
         return
     html_content = generate_html(fonts)
-    pathlib.Path(OUTPUT_HTML).write_text(html_content, encoding="utf-8")
+    Path(OUTPUT_HTML).write_text(html_content, encoding="utf-8")
     print("font-preview.html created.")
 
 

@@ -15,7 +15,6 @@ import regex as re
 
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
-
 ARCHIVE_EXTENSIONS = (
     ".whl",
     ".zip",

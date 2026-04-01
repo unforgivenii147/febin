@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-import pathlib
+from pathlib import Path
 
 
 if __name__ == "__main__":
@@ -11,10 +11,10 @@ if __name__ == "__main__":
     llen = int(str(sys.argv[2]).strip()) if len(sys.argv) == 3 else 10
     lines = []
     try:
-        with pathlib.Path(fname).open(encoding="utf-8") as f:
+        with Path(fname).open(encoding="utf-8") as f:
             lines = f.readlines()
         filtered = [line for line in lines if len(line.strip()) >= llen]
-        with pathlib.Path(fname).open("w", encoding="utf-8") as f:
+        with Path(fname).open("w", encoding="utf-8") as f:
             f.writelines(filtered)
     except FileNotFoundError:
         print(f"Error: File '{fname}' not found.")

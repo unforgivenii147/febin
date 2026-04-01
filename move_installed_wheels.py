@@ -53,7 +53,7 @@ def normalize(name: str) -> str:
 
 
 def main():
-    #    ensure_venv()
+
     if not WHL_DIR.exists():
         print(f"Directory not found: {WHL_DIR}")
         return

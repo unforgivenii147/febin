@@ -85,7 +85,6 @@ def main() -> None:
         sys.exit(0)
     all_count = len(cfiles)
     cprint(f"{all_count} files found...", "cyan")
-
     with Pool(8) as pool:
         pending = deque()
         for f in cfiles:

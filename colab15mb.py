@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import site
-import pathlib
+from pathlib import Path
 import tarfile
 
 from google.colab import files
@@ -12,8 +12,8 @@ def get_size(path):
     for root, _dirs, files in os.walk(path):
         for f in files:
             fp = os.path.join(root, f)
-            if pathlib.Path(fp).is_file():
-                total += pathlib.Path(fp).stat().st_size
+            if Path(fp).is_file():
+                total += Path(fp).stat().st_size
     return total
 
 
@@ -23,7 +23,7 @@ def compress_small_site_packages(max_size_mb=15):
     with tarfile.open(output_file, "w:gz") as tar:
         for item in os.listdir(site_packages_dir):
             item_path = os.path.join(site_packages_dir, item)
-            if pathlib.Path(item_path).is_dir():
+            if Path(item_path).is_dir():
                 get_size_mb = get_size(item_path) / (1024 * 1024)
                 if get_size_mb <= max_size_mb:
                     print(f"Including folder {item} ({get_size_mb:.2f} MB)")
@@ -43,8 +43,8 @@ def compress_small_site_packages(max_size_mb=15):
                                     full_path,
                                     arcname=arcname,
                                 )
-            elif pathlib.Path(item_path).is_file():
-                get_size_mb = pathlib.Path(item_path).stat().st_size / (1024 * 1024)
+            elif Path(item_path).is_file():
+                get_size_mb = Path(item_path).stat().st_size / (1024 * 1024)
                 if get_size_mb <= max_size_mb and not item.endswith(".pyc"):
                     print(f"Including file {item} ({get_size_mb:.2f} MB)")
                     arcname = os.path.relpath(

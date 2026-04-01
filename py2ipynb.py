@@ -1,9 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Convert a Python script to a Jupyter notebook.
-Usage: python py2ipynb.py input.py [output.ipynb].
-"""
-
 import json
 from pathlib import Path
 import argparse
@@ -12,60 +7,54 @@ import nbformat as nbf
 
 
 def py_to_ipynb(input_file, output_file=None):
-    """
-    Convert a Python file to a Jupyter notebook.
 
-    Args:
-        input_file (str): Path to input .py file
-        output_file (str, optional): Path to output .ipynb file.
-    """
-    # Check if input file exists
     if not Path(input_file).exists():
         print(f"Error: File '{input_file}' not found.")
         return False
-    # Read the Python file
+
     code = Path(input_file).read_text(encoding="utf-8")
-    # Create a new notebook
+
     nb = nbf.v4.new_notebook()
-    # Split code into cells (separate by double newlines or function/class definitions)
+
     cells = []
     current_cell = []
     lines = code.split("\n")
     i = 0
     while i < len(lines):
         line = lines[i]
-        # Check for potential cell breaks
-        if i > 0 and (
-            # Function or class definition
-            line.startswith(("def ", "class "))
-            or ((line.startswith(("import ", "from "))) and not current_cell[-1].startswith(("import ", "from ")))
-            or (
-                line.strip() == ""
-                and current_cell
-                and i + 1 < len(lines)
-                and lines[i + 1].strip()
-                and not lines[i + 1].startswith((" ", "\t"))
+
+        if (
+            i > 0
+            and (
+                line.startswith(("def ", "class "))
+                or ((line.startswith(("import ", "from "))) and not current_cell[-1].startswith(("import ", "from ")))
+                or (
+                    line.strip() == ""
+                    and current_cell
+                    and i + 1 < len(lines)
+                    and lines[i + 1].strip()
+                    and not lines[i + 1].startswith((" ", "\t"))
+                )
             )
+            and current_cell
         ):
-            # Create a cell from accumulated lines
-            if current_cell:
-                cell_code = "\n".join(current_cell).strip()
-                if cell_code:
-                    cells.append(nbf.v4.new_code_cell(cell_code))
-                current_cell = []
+            cell_code = "\n".join(current_cell).strip()
+            if cell_code:
+                cells.append(nbf.v4.new_code_cell(cell_code))
+            current_cell = []
         current_cell.append(line.rstrip())
         i += 1
-    # Add the last cell
+
     if current_cell:
         cell_code = "\n".join(current_cell).strip()
         if cell_code:
             cells.append(nbf.v4.new_code_cell(cell_code))
-    # Add cells to notebook
+
     nb["cells"] = cells
-    # Set default output filename if not provided
+
     if output_file is None:
         output_file = Path(input_file).stem + ".ipynb"
-    # Write the notebook
+
     with Path(output_file).open("w", encoding="utf-8") as f:
         json.dump(nb, f, indent=1, ensure_ascii=False)
     print(f"Successfully converted '{input_file}' to '{output_file}'")
@@ -87,9 +76,8 @@ def main():
         help="Don't split code into multiple cells (one cell only)",
     )
     args = parser.parse_args()
-    # Override splitting behavior if requested
+
     if args.no_split:
-        # Simple conversion - everything in one cell
         code = Path(args.input).read_text(encoding="utf-8")
         nb = nbf.v4.new_notebook()
         nb["cells"] = [nbf.v4.new_code_cell(code)]
@@ -103,7 +91,6 @@ def main():
             )
         print(f"Successfully converted '{args.input}' to '{output_file}' (single cell)")
     else:
-        # Use the smart splitting conversion
         py_to_ipynb(args.input, args.output)
 
 

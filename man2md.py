@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import sys
-import pathlib
+from pathlib import Path
 
 import regex as re
 
 
 def read_man_file(filename):
     try:
-        with pathlib.Path(filename).open(encoding="utf-8", errors="ignore") as f:
+        with Path(filename).open(encoding="utf-8", errors="ignore") as f:
             return f.read()
     except FileNotFoundError:
         sys.exit(f"Error: file {filename} not found")
@@ -127,7 +127,7 @@ def main():
     markdown = man_to_markdown(raw)
     base, _ = os.path.splitext(filename)
     outname = base + ".md"
-    pathlib.Path(outname).write_text(markdown, encoding="utf-8")
+    Path(outname).write_text(markdown, encoding="utf-8")
     print(f"Converted {filename} → {outname}")
 
 

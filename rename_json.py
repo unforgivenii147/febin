@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import json
-import pathlib
+from pathlib import Path
 
 
 def rename_pypi_metadata_files():
     files = [f for f in os.listdir(".") if f.endswith(".json")]
     for filename in files:
         try:
-            with pathlib.Path(filename).open(encoding="utf-8") as f:
+            with Path(filename).open(encoding="utf-8") as f:
                 data = json.load(f)
             pkg_name = None
             if "info" in data and "name" in data["info"]:
@@ -20,7 +20,7 @@ def rename_pypi_metadata_files():
                 if filename == new_name:
                     print(f"Skipping: {filename} is already correctly named.")
                     continue
-                pathlib.Path(filename).rename(new_name)
+                Path(filename).rename(new_name)
                 print(f"Renamed: {filename} -> {new_name}")
             else:
                 print(f"Warning: Could not find package name in {filename}")

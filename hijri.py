@@ -11,5 +11,4 @@ def get_current_ymd():
 
 
 y, m, d = get_current_ymd()
-
 print_persian(f"{georgian_to_hijri(y, m, d)}")

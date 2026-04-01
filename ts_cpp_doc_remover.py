@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
+from dh import clean_blank_lines
 from termcolor import cprint
 from tree_sitter import Parser, Language
 import tree_sitter_cpp as tscpp
@@ -30,22 +31,7 @@ class TSCppRemover:
         for start, end in sorted(to_delete, reverse=True):
             new_source = new_source[:start] + new_source[end:]
         cleaned = new_source.decode("utf-8")
-        return self._cleanup_blank_lines(cleaned)
-
-    @staticmethod
-    def _cleanup_blank_lines(text: str) -> str:
-        lines = text.splitlines()
-        cleaned = []
-        blank_streak = 0
-        for line in lines:
-            if line.strip() == "":
-                blank_streak += 1
-                if blank_streak <= 2:
-                    cleaned.append("")
-            else:
-                blank_streak = 0
-                cleaned.append(line.rstrip())
-        return "\n".join(cleaned) + "\n"
+        return clean_blank_lines(cleaned)
 
 
 def process_file(fp):

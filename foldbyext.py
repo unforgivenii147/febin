@@ -4,7 +4,6 @@ from pathlib import Path
 
 
 def get_size_str(size_bytes):
-    """Convert bytes to human readable format."""
     for unit in ["B", "KB", "MB", "GB"]:
         if size_bytes < 1024.0:
             return f"{size_bytes:.1f}{unit}"

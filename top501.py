@@ -3,7 +3,7 @@ import os
 import time
 from pathlib import Path
 from collections import Counter
-from multiprocessing import cpu_count
+from multiprocessing import get_context
 
 
 def is_text_file(file_path, text_extensions):
@@ -35,7 +35,7 @@ def collect_top_lines(directory, text_extensions, top_n=500):
             continue
         print(f"Found {len(file_paths)} {ext} files. Processing in parallel...")
         start_time = time.time()
-        with Pool(cpu_count()) as pool:
+        with get_context("spawn").Pool(8) as pool:
             results = pool.starmap(
                 process_file,
                 [(file_path, {ext}) for file_path in file_paths],

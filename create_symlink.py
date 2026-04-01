@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 
 
-source_dir = pathlib.Path("~/bin").expanduser()
+source_dir = Path("~/bin").expanduser()
 for filename in os.listdir(source_dir):
     if filename.endswith(".py"):
         src_file = os.path.join(source_dir, filename)
         link_name = os.path.join(source_dir, filename[:-3])
         try:
-            pathlib.Path(link_name).symlink_to(src_file)
+            Path(link_name).symlink_to(src_file)
             print(f"Created symlink: {link_name} -> {src_file}")
         except FileExistsError:
             print(f"Symlink already exists: {link_name}")

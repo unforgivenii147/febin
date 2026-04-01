@@ -29,9 +29,7 @@ def clean_pyc_and_pycache():
             path.unlink()
             total_size += sz
             files_removed += 1
-
     d2r = [dirp for dirp in cwd.rglob("__pycache__") if dirp.is_dir()]
-
     for d in d2r:
         if d.exists():
             try:
@@ -43,7 +41,6 @@ def clean_pyc_and_pycache():
                     dits_temoved += 1
                 except:
                     print(f"ertor removing {d}")
-
     if not files_removed and not dirs_removed:
         print("nothing found")
         sys.exit(0)

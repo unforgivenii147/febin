@@ -1,11 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Script to extract .zst, .tar.zst, and .tar.xz archives.
-If a filename is provided, process only that file.
-If no argument, recursively search current directory.
-Deletes original archives after successful extraction and reports size change.
-"""
-
 import sys
 import time
 from pathlib import Path
@@ -17,12 +10,10 @@ import zstd
 
 
 def get_dir_size(path):
-    """Calculate total size of directory in bytes."""
     return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
 
 
 def extract_zst_file(archive_path, extract_path):
-    """Extract a standalone .zst file."""
     output_path = extract_path / archive_path.stem
     with Path(archive_path).open("rb") as compressed_file:
         dctx = zstd.ZstdDecompressor()
@@ -32,7 +23,6 @@ def extract_zst_file(archive_path, extract_path):
 
 
 def extract_tar_zst(archive_path, extract_path):
-    """Extract tar.zst archive using zstandard library."""
     with Path(archive_path).open("rb") as compressed_file:
         dctx = zstd.ZstdDecompressor()
         with tempfile.NamedTemporaryFile(suffix=".tar", delete=False) as temp_tar:
@@ -49,16 +39,11 @@ def extract_tar_zst(archive_path, extract_path):
 
 
 def extract_tar_xz(archive_path, extract_path):
-    """Extract tar.xz archive."""
     with tarfile.open(archive_path, "r:xz") as tar:
         tar.extractall(path=extract_path, filter="data")
 
 
 def process_archive(archive_path, dry_run=False, quiet=False):
-    """
-    Process a single archive: extract it and delete original if successful.
-    Returns tuple (success, archive_size, extracted_size).
-    """
     if not archive_path.exists():
         if not quiet:
             print(f"Error: File {archive_path} does not exist")
@@ -108,7 +93,6 @@ def process_archive(archive_path, dry_run=False, quiet=False):
 
 
 def find_archives(directory):
-    """Find all supported archives in directory recursively."""
     directory = Path(directory).resolve()
     archives = [zst_file for zst_file in directory.rglob("*.zst") if not zst_file.name.endswith(".tar.zst")]
     archives.extend(directory.rglob("*.tar.zst"))

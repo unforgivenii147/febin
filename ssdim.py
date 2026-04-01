@@ -4,7 +4,7 @@ import csv
 import sys
 import json
 import shutil
-import pathlib
+from pathlib import Path
 
 import ssdeep
 
@@ -15,7 +15,6 @@ try:
     USE_TABULATE = True
 except ImportError:
     USE_TABULATE = False
-
 try:
     from colorama import Fore, Style, init
 
@@ -38,7 +37,7 @@ def compute_hashes(files):
     hashes = {}
     for f in files:
         try:
-            with pathlib.Path(f).open("rb") as fh:
+            with Path(f).open("rb") as fh:
                 data = fh.read()
                 hashes[f] = ssdeep.hash(data)
         except Exception as e:
@@ -50,7 +49,6 @@ def group_similar_files(hashes, threshold):
     visited = set()
     groups = []
     files = list(hashes.keys())
-
     for i, f1 in enumerate(files):
         if f1 in visited:
             continue
@@ -69,10 +67,10 @@ def group_similar_files(hashes, threshold):
 
 
 def copy_groups(groups, output_dir="output") -> None:
-    pathlib.Path(output_dir).mkdir(exist_ok=True, parents=True)
+    Path(output_dir).mkdir(exist_ok=True, parents=True)
     for idx, group in enumerate(groups, start=1):
         group_dir = os.path.join(output_dir, f"group_{idx}")
-        pathlib.Path(group_dir).mkdir(exist_ok=True, parents=True)
+        Path(group_dir).mkdir(exist_ok=True, parents=True)
         for f in group:
             try:
                 shutil.move(f, group_dir)
@@ -81,10 +79,10 @@ def copy_groups(groups, output_dir="output") -> None:
 
 
 def write_report(groups, format="csv", output_dir="output") -> None:
-    pathlib.Path(output_dir).mkdir(exist_ok=True, parents=True)
+    Path(output_dir).mkdir(exist_ok=True, parents=True)
     if format == "csv":
         report_file = os.path.join(output_dir, "similar_report.csv")
-        with pathlib.Path(report_file).open("w", encoding="utf-8", newline="") as csvfile:
+        with Path(report_file).open("w", encoding="utf-8", newline="") as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(["Group", "File"])
             for idx, group in enumerate(groups, start=1):
@@ -94,7 +92,7 @@ def write_report(groups, format="csv", output_dir="output") -> None:
     elif format == "json":
         report_file = os.path.join(output_dir, "similar_report.json")
         data = {f"group_{idx}": group for idx, group in enumerate(groups, start=1)}
-        with pathlib.Path(report_file).open("w", encoding="utf-8") as jf:
+        with Path(report_file).open("w", encoding="utf-8") as jf:
             json.dump(data, jf, indent=2)
         print(f"JSON report written to {report_file}")
 
@@ -115,13 +113,11 @@ def write_matrix(
     output_dir="output",
     pretty=False,
 ) -> None:
-    """Write pairwise similarity matrix, only showing scores >= threshold, with colors in console."""
-    pathlib.Path(output_dir).mkdir(exist_ok=True, parents=True)
+    Path(output_dir).mkdir(exist_ok=True, parents=True)
     files = list(hashes.keys())
     matrix_file = os.path.join(output_dir, "similarity_matrix.csv")
     table = [["File", *files]]
-
-    with pathlib.Path(matrix_file).open("w", encoding="utf-8", newline="") as csvfile:
+    with Path(matrix_file).open("w", encoding="utf-8", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["File", *files])
         for f1 in files:
@@ -135,9 +131,7 @@ def write_matrix(
                 row.append(score)
             writer.writerow(row)
             table.append(row)
-
     print(f"Threshold-filtered similarity matrix written to {matrix_file}")
-
     if pretty:
         if USE_TABULATE:
             colored_table = []
@@ -164,22 +158,17 @@ def main() -> None:
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} <threshold> [copy|csv|json|matrix]")
         sys.exit(1)
-
     try:
         threshold = int(sys.argv[1])
     except ValueError:
         print("Threshold must be an integer (0–100).")
         sys.exit(1)
-
     mode = sys.argv[2] if len(sys.argv) > 2 else "copy"
-
     files = get_all_files(".")
     print(f"Found {len(files)} files. Computing hashes...")
     hashes = compute_hashes(files)
-
     print("Comparing files...")
     groups = group_similar_files(hashes, threshold)
-
     if not groups and mode != "matrix":
         print("No similar files found.")
     elif mode == "copy":

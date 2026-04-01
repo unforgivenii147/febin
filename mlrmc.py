@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from multiprocessing import cpu_count
 
+from dh import mpf, clean_blank_lines
 from tree_sitter import Parser, Language
 import tree_sitter_cpp
 import tree_sitter_rust
@@ -29,23 +29,7 @@ def get_parser(lang):
     return parser
 
 
-def _cleanup_blank_lines(text: str) -> str:
-    lines = text.splitlines()
-    cleaned = []
-    blank_streak = 0
-    for line in lines:
-        if line.strip() == "":
-            blank_streak += 1
-            if blank_streak <= 2:
-                cleaned.append("")
-        else:
-            blank_streak = 0
-            cleaned.append(line.rstrip())
-    return "\n".join(cleaned) + "\n"
-
-
 def _collect_python_docstrings(node, deletions):
-
     def first_named_child(block):
         for child in block.children:
             if child.is_named:
@@ -112,7 +96,7 @@ def process_file(path: Path) -> None:
         for start, end in sorted(deletions, reverse=True):
             del cleaned[start:end]
         cleaned_text = cleaned.decode("utf-8")
-        cleaned_text = _cleanup_blank_lines(cleaned_text)
+        cleaned_text = clean_blank_lines(cleaned_text)
         cleaned = cleaned_text.encode("utf-8")
         parser.parse(cleaned)
         path.write_bytes(cleaned)
@@ -128,12 +112,11 @@ def collect_supported_files(root: Path) -> list[Path]:
 
 
 def main() -> None:
-    root = Path().cwd().resolve()
+    root = Path.cwd()
     files = collect_supported_files(root)
     if not files:
         sys.exit("No supported files found")
-    with Pool(cpu_count()) as pool:
-        pool.map(process_file, files)
+    mpf(process_file, files)
 
 
 if __name__ == "__main__":

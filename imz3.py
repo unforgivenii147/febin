@@ -17,21 +17,17 @@ def extract_imports_from_py(code: str, base_path: Path | None = None) -> set[str
                 mod = a.name.split(".", 1)[0]
                 if mod not in STDLIB:
                     results.add(mod)
-
         elif isinstance(node, ast.ImportFrom):
             if node.level > 0:
                 if base_path is not None:
                     module_str = "." * node.level
                     if node.module:
                         module_str += node.module
-
                     if is_local_module(base_path, module_str):
                         continue
-
                 if node.module:
                     continue
                 continue
-
             if node.module:
                 mod = node.module.split(".", 1)[0]
                 if mod not in STDLIB:
@@ -40,18 +36,14 @@ def extract_imports_from_py(code: str, base_path: Path | None = None) -> set[str
 
 
 def is_local_module(base_path: Path, module: str) -> bool:
-
     dots = len(module) - len(module.lstrip("."))
     mod = module.lstrip(".")
-
     parent = base_path.parent
     for _ in range(dots - 1):
         parent = parent.parent
-
     pkg_dir = parent / mod.replace(".", "/")
     if (pkg_dir / "__init__.py").exists():
         return True
-
     py_file = pkg_dir.with_suffix(".py")
     return bool(py_file.exists())
 

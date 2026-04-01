@@ -2,7 +2,7 @@
 import sys
 import shutil
 import string
-import pathlib
+from pathlib import Path
 
 
 def find_unprintable_positions(text):
@@ -37,7 +37,7 @@ def clean_text(text):
 def clean_file(path: str) -> None:
     backup_path = path + ".bak"
     shutil.copy2(path, backup_path)
-    data = pathlib.Path(path).read_text(encoding="utf-8", errors="ignore")
+    data = Path(path).read_text(encoding="utf-8", errors="ignore")
     positions = find_unprintable_positions(data)
     if positions:
         print(f"Found {len(positions)} unprintable character(s):")
@@ -46,15 +46,15 @@ def clean_file(path: str) -> None:
     else:
         print("No unprintable characters found.")
     cleaned = clean_text(data)
-    pathlib.Path(path).write_text(cleaned, encoding="utf-8", errors="ignore")
+    Path(path).write_text(cleaned, encoding="utf-8", errors="ignore")
 
 
 def main():
     if len(sys.argv) != 2:
-        print(f"Usage: {pathlib.Path(sys.argv[0]).name} <filename>")
+        print(f"Usage: {Path(sys.argv[0]).name} <filename>")
         sys.exit(1)
     fname = sys.argv[1]
-    if not pathlib.Path(fname).is_file():
+    if not Path(fname).is_file():
         print(f"Error: '{fname}' is not a file")
         sys.exit(1)
     clean_file(fname)

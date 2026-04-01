@@ -17,7 +17,6 @@ def process_file(path):
         jsonpath = path.with_suffix(".json")
         cprint(f"{jsonpath} created.", "cyan")
         xml_content = path.read_text(encoding="utf-8", errors="ignore")
-
         with jsonpath.open("w") as f:
             data = xmltodict.parse(xml_content)
             json.dump(data, f, ensure_ascii=False, indent=4)
@@ -30,7 +29,6 @@ def main():
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = [Path(p) for p in args] if args else list(cwd.rglob("*.xml"))
-
     with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:
@@ -39,7 +37,6 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-
     print("done.")
 
 

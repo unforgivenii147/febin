@@ -414,27 +414,27 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Sort and deduplicate a file
+
   python sort_unique_lines.py input.txt
-  # Sort only (no deduplication)
+
   python sort_unique_lines.py input.txt --no-unique
-  # Deduplicate only (no sorting)
+
   python sort_unique_lines.py input.txt --no-sort
-  # Save to different output file
+
   python sort_unique_lines.py input.txt --output sorted_output.txt
-  # Reverse sort
+
   python sort_unique_lines.py input.txt --reverse
-  # Case-insensitive sorting
+
   python sort_unique_lines.py input.txt --case-insensitive
-  # Skip empty lines
+
   python sort_unique_lines.py input.txt --skip-empty
-  # Dry run (preview)
+
   python sort_unique_lines.py input.txt --dry-run -v
-  # Analyze file before processing
+
   python sort_unique_lines.py input.txt --analyze
-  # With report
+
   python sort_unique_lines.py input.txt --report stats.json
-  # Verbose output
+
   python sort_unique_lines.py input.txt -v
         """,
     )

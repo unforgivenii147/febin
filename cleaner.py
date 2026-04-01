@@ -2,12 +2,11 @@
 import sys
 from pathlib import Path
 
+from dh import mpf, get_files
 import regex as re
-from fastwalk import walk_files
 
 
-def clean_log(path):
-    print(f"[] {path}")
+def process_file(path):
     ansi_tmux_re = re.compile(
         rb"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])|"
         rb"\x08|\x0C|\x0F|\x18|\x1C|"
@@ -21,7 +20,7 @@ def clean_log(path):
         rb"\(0mqq\(B\s+\d+M\s*/\s*\d+G"
     )
     try:
-        content = Path(path).read_bytes()
+        content = path.read_bytes()
         content = status_re.sub(b"", content)
         content = ansi_tmux_re.sub(b"", content)
         text = content.decode("utf-8", errors="replace")
@@ -34,18 +33,18 @@ def clean_log(path):
             )
             cleaned_lines.append(cleaned_line)
         result = "".join(cleaned_lines)
-        Path(path).write_text(result, encoding="utf-8")
-        print(f"✓ Cleaned (newlines preserved): {Path(path).name}")
+        path.write_text(result, encoding="utf-8")
+        print(f"✓  {path.name}")
     except Exception as e:
         print(f"✗ Error: {e}", file=sys.stderr)
-        sys.exit(1)
+        return
 
 
 def main() -> None:
-    for pth in walk_files("."):
-        path = Path(pth)
-        if path.is_file() and path.suffix == ".log":
-            clean_log(path)
+    cwd = Path.cwd()
+    args = sys.argv[1:]
+    files = [Path(p) for p in args] if args else get_files(cwd)
+    mpf(process_file, files)
 
 
 if __name__ == "__main__":

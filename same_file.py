@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-import pathlib
+from pathlib import Path
 
 
 def samefile(path1: str, path2: str) -> bool:
     try:
-        return pathlib.Path(path1).samefile(path2)
+        return Path(path1).samefile(path2)
     except FileNotFoundError:
         return False
     except OSError as e:

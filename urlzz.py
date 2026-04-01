@@ -105,7 +105,6 @@ if __name__ == "__main__":
         futures = [executor.submit(extract_urls, fp) for fp in file_paths]
         for future in as_completed(futures):
             all_urls.update(future.result())
-
     with Path("urls.txt").open("w", encoding="utf-8") as f:
         f.writelines(url + "\n" for url in sorted(all_urls))
     print(f"Extracted {len(all_urls)} unique URLs to urls.txt")

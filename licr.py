@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
+from pathlib import Path
 
 import dh
 
@@ -11,9 +11,9 @@ def find_license_files() -> None:
     lf = []
     allfiles = dh.get_files(".")
     for file in allfiles:
-        if pathlib.Path(file).is_symlink():
+        if Path(file).is_symlink():
             continue
-        if pathlib.Path(file).is_file():
+        if Path(file).is_file():
             fn = str(dh.get_fname(file))
             ext = str(dh.get_ext(file))
             if fn.lower().startswith("license") and (ext.lower() in EXT or not ext):
@@ -21,7 +21,7 @@ def find_license_files() -> None:
                 lf.append(file)
     print(f"Found {len(lf)} license files")
     for file_path in lf:
-        pathlib.Path(file_path).write_text("", encoding="utf-8")
+        Path(file_path).write_text("", encoding="utf-8")
 
 
 if __name__ == "__main__":

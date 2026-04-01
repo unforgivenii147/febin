@@ -1,21 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
-import pathlib
+from pathlib import Path
 
 
 def freeze_to_json(input_file="pip.freeze", output_file="packages.json"):
     packages = {}
-
-    with pathlib.Path(input_file).open(encoding="utf-8") as f:
+    with Path(input_file).open(encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if "==" in line:
                 pkg, ver = line.split("==", 1)
                 packages[pkg] = ver
-
-    with pathlib.Path(output_file).open("w", encoding="utf-8") as f:
+    with Path(output_file).open("w", encoding="utf-8") as f:
         json.dump(packages, f, indent=4)
-
     print(f"Saved {len(packages)} packages to {output_file}")
 
 

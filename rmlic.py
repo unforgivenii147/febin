@@ -35,17 +35,14 @@ def remove_patterns_from_content(content: str, patterns: list[str]) -> str:
     for pattern in patterns:
         regex_pattern = escape_for_regex(pattern)
         cleaned = re.sub(regex_pattern, "", cleaned, flags=re.IGNORECASE | re.MULTILINE)
-
     return cleaned
 
 
 def process_file(file_path, patterns) -> tuple:
     path = Path(file_path)
     before = get_size(path)
-
     original_content = path.read_text(encoding="utf-8")
     cleaned_content = remove_patterns_from_content(original_content, patterns)
-
     if len(cleaned_content) != len(original_content):
         path.write_text(cleaned_content, encoding="utf-8")
         cprint(f"{path.name} updated", "green", end=" | ")
@@ -55,7 +52,6 @@ def process_file(file_path, patterns) -> tuple:
 
 
 def main():
-
     if not LIC_FILE.exists():
         print(f"Error: License file not found: {LIC_FILE}")
         return
@@ -69,7 +65,6 @@ def main():
     if not all_files:
         print("No files to process.")
         return
-
     for f in all_files:
         process_file(f, patterns)
 

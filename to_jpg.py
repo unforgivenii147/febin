@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from __future__ import annotations
 
 from pathlib import Path
 import argparse
 
-from dh import get_size, is_image, format_size, unique_path
+from dh import mpf, get_size, is_image, format_size, unique_path
 
 
 try:
@@ -21,7 +20,7 @@ IGNORED_DIRS = {
 }
 
 
-def convert_file(file_path: str) -> bool:
+def process_file(file_path: str) -> bool:
     path = Path(file_path)
     if not path.is_file():
         print(f"Skipping: {path.name} (Unsupported format or not a file)")
@@ -88,7 +87,7 @@ def main() -> None:
     p = argparse.ArgumentParser(description="jpg")
     p.add_argument("files", nargs="*")
     args = p.parse_args()
-    start_size = get_size(".")
+    before = get_size(".")
     if args.files:
         files = [Path(f) for f in args.files if Path(f).is_file() and is_image(f)]
     else:
@@ -101,12 +100,9 @@ def main() -> None:
         print("No image files detected.")
         return
     print(f"converting {len(files)} files...")
-    pool = Pool(8)
-    pool.imap_unordered(convert_file, files)
-    pool.close()
-    pool.join()
-    after = get_size(".")
-    print(f"{format_size(abs(after - start_size))}")
+    mpf(process_file, files)
+    diffsize = before - get_size(".")
+    print(f"{format_size(diffsize)}")
 
 
 if __name__ == "__main__":

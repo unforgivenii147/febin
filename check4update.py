@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import subprocess
 
 from bs4 import BeautifulSoup
@@ -13,27 +12,24 @@ MIRROR_URL = "https://mirror-pypi.runflare.com"
 
 def extract_latest(pkg_name):
     wheel_pattern = re.compile(rf"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\.\-_]*)(\.whl|\.tar\.gz)", re.IGNORECASE)
-
     versions = []
     url = f"{MIRROR_URL}/{package_name}/json"
     response = requests.get(url)
-    response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+    response.raise_for_status()
     for line in response.content.splitlines():
         match = wheel_pattern.search(line)
         if match:
             versions.append(Version(match.group(1)))
-
     return max(versions) if versions else None
 
 
 def get_latest_version_from_mirror(package_name):
     url = f"{MIRROR_URL}/{package_name}/json"
     response = requests.get(url)
-    response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+    response.raise_for_status()
     print(response)
     soup = BeautifulSoup(html_content, "html.parser")
     links = soup.find_all("a")
-
     latest_version = None
     for link in links:
         href = link.get("href")
@@ -45,7 +41,6 @@ def get_latest_version_from_mirror(package_name):
                 version = match.group(1)
                 if latest_version is None or version > latest_version:
                     latest_version = version
-
     return latest_version
 
 
@@ -62,23 +57,11 @@ def get_installed_version(package_name):
 
 
 def check_for_updates(package_name, mirror_url="https://mirror-pypi.runflare.com"):
-    """
-    Checks for updates for a given package.
-
-    Args:
-        package_name (str): The name of the package.
-        mirror_url (str, optional): The base URL of the mirror. Defaults to "https://mirror-pypi.runflare.com".
-
-    Returns:
-        bool: True if an update is available, False otherwise.
-    """
     latest_version = get_latest_version_from_mirror(package_name, mirror_url)
     installed_version = get_installed_version(package_name)
-
     if latest_version is None or installed_version is None:
         print(f"Could not determine version for {package_name}")
         return False
-
     if latest_version > installed_version:
         print(f"Update available for {package_name}: {installed_version} -> {latest_version}")
         return True
@@ -87,5 +70,5 @@ def check_for_updates(package_name, mirror_url="https://mirror-pypi.runflare.com
 
 
 if __name__ == "__main__":
-    package_to_check = "wheel"  # Replace with the package you want to check
+    package_to_check = "wheel"
     check_for_updates(package_to_check)

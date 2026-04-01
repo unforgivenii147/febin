@@ -22,22 +22,17 @@ def process_file(filepath):
 
 
 """
-
         initial_indent = ""
         lines_to_write = []
-
         if content_lines and not content_lines[-1].endswith("\n"):
             lines_to_write.append("\n")
         lines_to_write.append(f"{initial_indent}if __name__ == '__main__':\n")
-
         lines_to_write.append(f"{initial_indent}    # Placeholder for main execution logic\n")
         lines_to_write.append(f"{initial_indent}    pass\n")
         with open(filepath, "a", encoding="utf-8") as f:
             f.writelines(lines_to_write)
     else:
         print(f"__main__ block already present in: {filepath.name}")
-
-
 """
 
 
@@ -49,7 +44,6 @@ def main():
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-
     with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:

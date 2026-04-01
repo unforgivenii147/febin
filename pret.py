@@ -66,7 +66,6 @@ def main() -> None:
             ],
         )
     )
-
     before = get_size(cwd)
     with get_context("spawn").Pool(8) as p:
         pending = deque()

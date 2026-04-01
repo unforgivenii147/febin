@@ -1,11 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Script to extract tar.zst, tar.xz, and standalone .zst archives.
-If a filename is provided, process only that file.
-If no argument, recursively search current directory.
-Deletes original archives after successful extraction and reports size change.
-"""
-
 import sys
 import time
 from pathlib import Path
@@ -17,17 +10,14 @@ import zstandard as zstd
 
 
 def get_dir_size(path):
-    """Calculate total size of directory in bytes."""
     return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
 
 
 def get_size(path):
-    """Get size of a single file."""
     return path.stat().st_size if path.exists() else 0
 
 
 def extract_zst_file(archive_path, extract_path):
-    """Extract a standalone .zst file."""
     output_path = extract_path / archive_path.stem  # Remove .zst extension
     with Path(archive_path).open("rb") as compressed_file:
         dctx = zstd.ZstdDecompressor()
@@ -37,7 +27,6 @@ def extract_zst_file(archive_path, extract_path):
 
 
 def extract_tar_zst(archive_path, extract_path):
-    """Extract tar.zst archive using zstandard library."""
     # Decompress zst to temporary tar file
     with Path(archive_path).open("rb") as compressed_file:
         dctx = zstd.ZstdDecompressor()
@@ -54,7 +43,6 @@ def extract_tar_zst(archive_path, extract_path):
 
 
 def extract_tar_xz(archive_path, extract_path):
-    """Extract tar.xz archive."""
     with tarfile.open(archive_path, "r:xz") as tar:
         tar.extractall(path=extract_path)
 
@@ -65,10 +53,6 @@ def process_archive(
     keep_original=False,
     quiet=False,
 ):
-    """
-    Process a single archive: extract it and delete original if successful.
-    Returns tuple (success, archive_size, extracted_size).
-    """
     if not archive_path.exists():
         if not quiet:
             print(f"Error: File {archive_path} does not exist")
@@ -132,7 +116,6 @@ def process_archive(
 
 
 def find_archives(directory):
-    """Find all supported archives in directory recursively."""
     directory = Path(directory).resolve()
     # Find standalone .zst files (not ending with .tar.zst)
     archives = [zst_file for zst_file in directory.rglob("*.zst") if not zst_file.name.endswith(".tar.zst")]

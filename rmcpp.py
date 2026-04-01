@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 from multiprocessing import get_context
 
-from dh import get_size, get_files, format_size
+from dh import get_size, get_files, format_size, clean_blank_lines
 from tree_sitter import Query, Parser, Language, QueryCursor
 import tree_sitter_cpp as tscpp
 
@@ -62,26 +62,8 @@ class TSCppRemover:
             print("Warning: Resulted code has syntax errors, returning original")
             return source, 0
         cleaned = new_source.decode("utf-8")
-        cleaned = self._cleanup_blank_lines(cleaned)
+        cleaned = clean_blank_lines(cleaned)
         return cleaned, comment_count
-
-    @staticmethod
-    def _cleanup_blank_lines(text: str) -> str:
-        lines = text.splitlines()
-        cleaned = []
-        blank_streak = 0
-        for line in lines:
-            if line.strip() == "":
-                blank_streak += 1
-                if blank_streak <= 2:
-                    cleaned.append("")
-            else:
-                blank_streak = 0
-                cleaned.append(line.rstrip())
-        result = "\n".join(cleaned)
-        if result and not result.endswith("\n"):
-            result += "\n"
-        return result
 
 
 def ts_remover_initializer():
@@ -118,7 +100,6 @@ if __name__ == "__main__":
         else get_files(cwd, extensions=[".js", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".hh"])
     )
     before = get_size(cwd)
-
     with get_context("spawn").Pool(processes=8, initializer=ts_remover_initializer) as pool:
         results = pool.map(process_file, files)
     diffsize = before - get_size(cwd)

@@ -11,7 +11,6 @@ logger.add("/sdcard/allimport.log", diagnose=True)
 
 
 def tryimport(package):
-
     try:
         import_module(package)
         logger.info(f"\u2713 {package}")

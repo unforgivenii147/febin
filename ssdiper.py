@@ -1,7 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
 from pathlib import Path
+import operator
+
+from pbar import Pbar
 import ssdeep
+
+
 def calculate_ssdeep_hash(filepath: Path, min_file_size: int = 1):
     try:
         if filepath.stat().st_size < min_file_size:
@@ -23,6 +28,8 @@ def calculate_ssdeep_hash(filepath: Path, min_file_size: int = 1):
     except Exception as e:
         print(f"An unexpected error occurred for {filepath}: {e}")
         return None
+
+
 def find_files_recursively(directory: Path, ignored_dirs: list[str] | None = None, follow_symlinks: bool = False):
     if ignored_dirs is None:
         ignored_dirs = [".git", "__pycache__"]
@@ -39,17 +46,18 @@ def find_files_recursively(directory: Path, ignored_dirs: list[str] | None = Non
             except OSError:
                 continue
     return file_list
+
+
 def compare_files(file_paths: list[Path], similarity_threshold: int = 70):
     file_hashes = {}
-    print(f"Calculating ssdeep hashes for {len(file_paths)} files...")
-    for filepath in file_paths:
-        file_hash = calculate_ssdeep_hash(filepath)
-        if file_hash:
-            file_hashes[str(filepath)] = file_hash
+    with Pbar("processing...") as pbar:
+        for filepath in pbar.wrap(file_paths):
+            file_hash = calculate_ssdeep_hash(filepath)
+            if file_hash:
+                file_hashes[str(filepath)] = file_hash
     similarities = []
     cwd = Path.cwd()
     filepaths_list = list(file_hashes.keys())
-    print(f"Comparing {len(filepaths_list)} files with valid hashes...")
     for i in range(len(filepaths_list)):
         for j in range(i + 1, len(filepaths_list)):
             filepath1_str = filepaths_list[i]
@@ -64,23 +72,29 @@ def compare_files(file_paths: list[Path], similarity_threshold: int = 70):
                         "file2": str(Path(filepath2_str).relative_to(cwd)),
                         "similarity_score": score,
                     })
-                    print(f"Found similarity ({score}%): {filepath1_str} <-> {filepath2_str}")
+            #                    print(f"Found similarity ({score}%): {filepath1_str} <-> {filepath2_str}")
             except ssdeep.error as e:
                 print(f"Error comparing hashes for {filepath1_str} and {filepath2_str}: {e}")
             except Exception as e:
                 print(f"An unexpected error occurred during comparison for {filepath1_str} and {filepath2_str}: {e}")
+
+    similarities.sort(key=operator.itemgetter("similarity_score"), reverse=True)
+
     return similarities
-def save_to_json(data, filename="similar_files.json"):
+
+
+def save_to_json(data, filename="simz.json"):
     try:
         with Path(filename).open("w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
-        print(f"\nSimilarity results saved to '{filename}'")
     except Exception as e:
         print(f"Error saving data to JSON file '{filename}': {e}")
+
+
 if __name__ == "__main__":
     TARGET_DIRECTORY = Path.cwd()
     MIN_SIMILARITY_THRESHOLD = 70
-    OUTPUT_JSON_FILE = "similar_files_report.json"
+    OUTPUT_JSON_FILE = "simz.json"
     IGNORED_DIRS = [".git", "__pycache__"]
     all_files = find_files_recursively(TARGET_DIRECTORY, ignored_dirs=IGNORED_DIRS, follow_symlinks=False)
     if not all_files:

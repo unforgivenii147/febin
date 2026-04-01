@@ -13,20 +13,13 @@ MAX_QUEUE = 16
 
 
 def process_file(image_path):
-
     img = cv2.imread(str(image_path))
-
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-
     gaussian_blur = cv2.GaussianBlur(blurred, (0, 0), 3)
     sharpened = cv2.addWeighted(blurred, 1.5, gaussian_blur, -0.5, 0)
-
     binary = cv2.adaptiveThreshold(sharpened, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-
     enhanced_img_pil = Image.fromarray(binary)
-
     enhanced = image_path.with_stem(image_path.stem + "_enhanced_pil")
     cv2.imwrite(str(enhanced), enhanced_img_pil)
     return enhanced_img_pil

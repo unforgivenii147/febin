@@ -21,7 +21,6 @@ def is_nested(path1: Path, path2: Path) -> bool:
     return False
 
 
-"""
 def hash_folder(folder_path):
     hasher = xxh64()
     files = []
@@ -43,8 +42,6 @@ def hash_folder(folder_path):
         except OSError:
             continue
     return hasher.hexdigest()
-
-"""
 
 
 def find_duplicate_folders(cwd):

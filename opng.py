@@ -36,7 +36,6 @@ def main():
     with get_context("spawn").Pool(8) as pool:
         for _ in pool.imap_unordered(optimize_png, png_files):
             pass
-
     print("\nOptimization complete.")
 
 

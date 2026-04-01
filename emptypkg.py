@@ -1,25 +1,25 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
+from pathlib import Path
 import sysconfig
 
 
 def is_empty_package(dist_info_path) -> bool:
     record_file = os.path.join(dist_info_path, "RECORD")
-    if not pathlib.Path(record_file).is_file():
+    if not Path(record_file).is_file():
         return False
-    with pathlib.Path(record_file).open(newline="", encoding="utf-8") as f:
+    with Path(record_file).open(newline="", encoding="utf-8") as f:
         reader = csv.reader(f)
         for row in reader:
             if not row:
                 continue
             rel_path = row[0]
-            abs_path = pathlib.Path(
+            abs_path = Path(
                 os.path.join(
-                    pathlib.Path(dist_info_path).parent,
+                    Path(dist_info_path).parent,
                     rel_path,
                 )
             ).resolve()
-            if not abs_path.startswith(pathlib.Path(dist_info_path).resolve() + os.sep):
+            if not abs_path.startswith(Path(dist_info_path).resolve() + os.sep):
                 return False
     return True
 

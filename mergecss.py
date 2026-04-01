@@ -1,24 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-css_bundle.py — merge CSS, deduplicate rules, and bundle assets.
-Features.
---------
-• Merge CSS files in given order
-• Remove Google Fonts imports
-• Rewrite font URLs to local fonts folder
-• Deduplicate CSS rules (last definition wins)
-• Bundle assets (fonts/images) into output directory
-• Rewrite URLs to bundled assets
-Usage
------
-python css_bundle.py *.css -o bundle.css --assets-dir ./assets
-Result:
-  bundle.css
-  assets/
-      fonts...
-      images...
-"""
-
 import shutil
 from pathlib import Path
 import argparse
@@ -81,7 +61,6 @@ def copy_asset(src, assets_dir):
 
 
 def rewrite_urls(css_text, css_dir, assets_dir):
-
     def repl(match):
         url = match.group(2).strip().strip("\"'")
         if url.startswith("http"):

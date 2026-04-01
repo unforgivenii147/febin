@@ -1,72 +1,71 @@
 #!/data/data/com.termux/files/usr/bin/python
+import cv2
 import sys
-from pathlib import Path
-import argparse
+import os
 
-import regex as re
-import ffmpeg
+def format_time(time_str):
+    h, m, s = map(int, time_str.split(':'))
+    return (h * 3600 + m * 60 + s) * 1000  # Return time in milliseconds
 
+def cut_video(input_file, start_time_str, duration_str):
+    if not os.path.exists(input_file):
+        print(f"Error: Input file '{input_file}' not found.")
+        return
 
-TIME_PATTERN = re.compile(r"^\d{2}:\d{2}:\d{2}$")
+    cap = cv2.VideoCapture(input_file)
 
+    if not cap.isOpened():
+        print(f"Error: Could not open video file '{input_file}'.")
+        return
 
-def validate_time(value: str) -> str:
-    if not TIME_PATTERN.match(value):
-        msg = "Time must be in HH:MM:SS format (e.g. 00:10:00)"
-        raise argparse.ArgumentTypeError(msg)
-    return value
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    duration_ms = format_time(duration_str)
+    start_ms = format_time(start_time_str)
 
+    start_frame = int(start_ms * fps / 1000)
+    duration_frames = int(duration_ms * fps / 1000)
+    end_frame = start_frame + duration_frames
 
-def hhmmss_to_seconds(t: str) -> int:
-    h, m, s = map(int, t.split(":"))
-    return h * 3600 + m * 60 + s
+    # Ensure end_frame does not exceed total frames
+    if end_frame > total_frames:
+        end_frame = total_frames
+        print(f"Warning: Duration exceeds video length. Cutting until the end of the video.")
 
+    # Define the codec and create VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v') # You can change the codec as needed
+    output_filename = f"cut_{os.path.basename(input_file)}"
+    out = cv2.VideoWriter(output_filename, fourcc, fps, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
-def main():
-    parser = argparse.ArgumentParser(description="Trim a video using ffmpeg-python (stream copy)")
-    parser.add_argument("file", help="Input video file")
-    parser.add_argument(
-        "start",
-        type=validate_time,
-        help="Start time (HH:MM:SS)",
-    )
-    parser.add_argument(
-        "end",
-        type=validate_time,
-        help="End time (HH:MM:SS)",
-    )
-    args = parser.parse_args()
-    input_path = Path(args.file)
-    if not input_path.exists():
-        print("Error: file not found.")
-        sys.exit(1)
-    start_sec = hhmmss_to_seconds(args.start)
-    end_sec = hhmmss_to_seconds(args.end)
-    if end_sec <= start_sec:
-        print("Error: end time must be greater than start time.")
-        sys.exit(1)
-    duration = end_sec - start_sec
-    output_path = input_path.with_name(f"{input_path.stem}_trimmed{input_path.suffix}")
-    try:
-        (
-            ffmpeg
-            .input(
-                str(input_path),
-                ss=args.start,
-                t=duration,
-            )
-            .output(
-                str(output_path),
-                c="copy",
-                avoid_negative_ts="make_zero",
-            )
-            .run(overwrite_output=True)
-        )
-        print(f"Saved: {output_path}")
-    except:
-        print("FFmpeg error:")
-        sys.exit(1)
+    if not out.isOpened():
+        print(f"Error: Could not create video writer for '{output_filename}'.")
+        cap.release()
+        return
 
+    cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+
+    frames_written = 0
+    for i in range(start_frame, end_frame):
+        ret, frame = cap.read()
+        if not ret:
+            break
+        out.write(frame)
+        frames_written += 1
+
+    print(f"Video segment saved to '{output_filename}'")
+    print(f"Frames processed: {frames_written}")
+
+    cap.release()
+    out.release()
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 4:
+        print("Usage: python cut_video.py <filename.mkv> <start_time_hh:mm:ss> <duration_hh:mm:ss>")
+        sys.exit(1)
+
+    input_filename = sys.argv[1]
+    start_time_str = sys.argv[2]
+    duration_str = sys.argv[3]
+
+    cut_video(input_filename, start_time_str, duration_str)

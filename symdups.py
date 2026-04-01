@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import json
 from pathlib import Path
 import argparse
@@ -30,37 +29,27 @@ def find_duplicates(directory="."):
     size_map = defaultdict(list)
     file_count = 0
     skipped_count = 0
-    for root, dirs, files in os.walk(directory):
-        if ".git" in dirs:
-            dirs.remove(".git")
-        for filename in files:
-            if filename.startswith("."):
-                continue
-            filepath = os.path.join(root, filename)
-            if Path(filepath).is_symlink():
-                print(f"[DEBUG] Skipping symlink: {filepath}")
-                continue
-            try:
-                size = Path(filepath).stat().st_size
-                if size < MIN_FILE_SIZE:
-                    print(f"[DEBUG] Skipping file under {MIN_FILE_SIZE} bytes: {filepath}")
-                    skipped_count += 1
-                    continue
-                size_map[size].append(filepath)
-                file_count += 1
-            except OSError as e:
-                print(f"[ERROR] Accessing {filepath}: {e}")
-    print(f"[INFO] Scanned {file_count + skipped_count} files ({skipped_count} skipped due to size)")
-    print(f"[INFO] Found {file_count} files that qualify for duplicate analysis")
+    cwd=Path.cwd()
+    
+    for path in cwd.rglob("*"):
+        if path.is_symlink():
+            continue
+        if ".git" in path.parts:
+            continue
+        size = path.stat().st_size
+        if size < MIN_FILE_SIZE:
+            skipped_count += 1
+            continue
+        size_map[size].append(path)
+        file_count += 1
     hash_map = defaultdict(list)
-    potential_duplicates = [files for files in size_map.values() if len(files) > 1]
-    print(f"[INFO] Checking {sum(len(files) for files in potential_duplicates)} potential duplicates...")
-    for files in potential_duplicates:
-        for filepath in files:
-            file_hash = calculate_file_hash(filepath)
+    potential_duplicates = [paths for paths in size_map.values() if len(paths) > 1]
+    for paths in potential_duplicates:
+        for path in paths:
+            file_hash = calculate_file_hash(path)
             if file_hash:
-                hash_map[file_hash].append(filepath)
-    return {h: files for h, files in hash_map.items() if len(files) > 1}
+                hash_map[file_hash].append(path)
+    return {h: paths for h, paths in hash_map.items() if len(paths) > 1}
 
 
 def choose_keeper(files):
@@ -77,8 +66,6 @@ def create_symlinks(duplicates, dry_run=False):
     for file_hash, files in duplicates.items():
         keeper = choose_keeper(files)
         keeper_abs = Path(keeper).resolve()
-        print(f"\n[INFO] Duplicate group (hash: {file_hash[:16]}...):")
-        print(f"  Keeping: {keeper}")
         for duplicate in files:
             if duplicate == keeper:
                 continue
@@ -107,8 +94,6 @@ def create_symlinks(duplicates, dry_run=False):
         with Path(BACKUP_FILE).open("w", encoding="utf-8") as f:
             json.dump(backup_data, f, indent=2)
         print(f"\n[INFO] Backup data saved to {BACKUP_FILE}")
-    print(f"\n{'[DRY RUN] ' if dry_run else ''}Summary:")
-    print(f"  Symlinks created: {symlink_count}")
     print(f"  Space saved: {total_saved / (1024 * 1024):.2f} MB")
     if dry_run:
         print("[DRY RUN] No changes were made")
@@ -121,17 +106,13 @@ def reverse_symlinks(backup_file=BACKUP_FILE):
         return False
     with Path(backup_file).open(encoding="utf-8") as f:
         backup_data = json.load(f)
-    print(f"[INFO] Restoring from backup created at: {backup_data['timestamp']}")
-    print(f"[INFO] Operations to reverse: {len(backup_data['operations'])}")
     restored_count = 0
     for op in backup_data["operations"]:
         symlink_path = op["symlink"]
         target_path = op["target"]
         if not Path(symlink_path).is_symlink():
-            print(f"[WARNING] {symlink_path} is not a symlink, skipping")
             continue
         if not Path(target_path).exists():
-            print(f"[ERROR] Target file {target_path} no longer exists!")
             continue
         try:
             Path(symlink_path).unlink()
@@ -139,10 +120,8 @@ def reverse_symlinks(backup_file=BACKUP_FILE):
 
             shutil.copy2(target_path, symlink_path)
             restored_count += 1
-            print(f"[INFO] Restored: {symlink_path}")
         except OSError as e:
             print(f"[ERROR] Restoring {symlink_path}: {e}")
-    print(f"\n[INFO] Restored {restored_count} files")
     backup_renamed = f"{backup_file}.restored.{datetime.now(tz=UTC).strftime('%Y%m%d_%H%M%S')}"
     Path(backup_file).rename(backup_renamed)
     print(f"[INFO] Backup file renamed to: {backup_renamed}")

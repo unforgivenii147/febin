@@ -5,7 +5,6 @@ from pathlib import Path
 
 from dh import move_file
 
-
 MAX_QUEUE = 16
 cwd = Path.cwd()
 ok_dir = Path(f"{cwd}/OK")

@@ -1,17 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
-import io
 import ast
+import io
 import shutil
-from pathlib import Path
 import tempfile
 import tokenize
 from multiprocessing import get_context
+from pathlib import Path
 
-from dh import DOC_TH1, DOC_TH2
 import regex as re
-from fastwalk import walk_files
 from deep_translator import GoogleTranslator
-
+from dh import DOC_TH1, DOC_TH2
+from fastwalk import walk_files
 
 DIRECTORY = "."
 non_english_pattern = re.compile(r"[^\x00-\x7F]")

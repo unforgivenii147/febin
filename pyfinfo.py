@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 
 def levenshtein_distance(a: str, b: str) -> int:

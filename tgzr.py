@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
-from pathlib import Path
 import tarfile
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 
 def remove_items_fast(items):

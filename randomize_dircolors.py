@@ -2,7 +2,6 @@
 from pathlib import Path
 from secrets import randbelow
 
-
 extensions = [
     ".3dml",
     ".3ds",

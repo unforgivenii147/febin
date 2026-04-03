@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
+import subprocess
 import tarfile
 import zipfile
-import subprocess
 from multiprocessing import cpu_count
+from pathlib import Path
 
 import regex as re
-
 
 OUTPUT_FILE = "/sdcard/gitlinks.txt"
 ARCHIVE_EXTENSIONS = (

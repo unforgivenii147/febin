@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import sys
-import lzma
-import shutil
-import logging
-from pathlib import Path
 import argparse
+import logging
+import lzma
+import os
+import shutil
+import sys
 from datetime import datetime
 from multiprocessing import cpu_count
+from pathlib import Path
 
 
 def setup_logging(verbose=True):

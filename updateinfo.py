@@ -3,7 +3,6 @@ import re
 import sys
 from pathlib import Path
 
-
 NEW_INFO = {
     "name": "Isaac Onagh",
     "email": "mkalafsaz@gmail.com",

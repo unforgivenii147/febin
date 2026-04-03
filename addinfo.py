@@ -1,9 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import json
-from pathlib import Path
 import datetime
-
+import json
+import os
+from pathlib import Path
 
 INFO_PATH = Path("~/isaac/.info.json").expanduser()
 

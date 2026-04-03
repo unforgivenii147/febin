@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+import argparse
 import os
 import re
 import urllib
 from pathlib import Path
-import argparse
 
-import pypdf
 import lxml.html
+import pypdf
 
 
 class Section:

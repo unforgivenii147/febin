@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-from time import perf_counter
 import hashlib
-from pathlib import Path
 import operator
+from pathlib import Path
+from time import perf_counter
 
 
 def hash_file_chunked(filepath, chunk_size):

@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 from dh import unique_path
-
 
 EXTENSIONS = {
     ".js",

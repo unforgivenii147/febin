@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-from pathlib import Path
 import argparse
+from pathlib import Path
 
-from dh import mpf, get_size, is_image, format_size, unique_path
-
+from dh import format_size, get_size, is_image, mpf, unique_path
 
 try:
     import cv2

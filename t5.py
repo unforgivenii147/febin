@@ -3,10 +3,9 @@ import ast
 import sys
 from pathlib import Path
 
-from dh import mpf, get_size, format_size, get_pyfiles, clean_blank_lines
-from tree_sitter import Query, Parser, Language, QueryCursor
 import tree_sitter_python as tspython
-
+from dh import clean_blank_lines, format_size, get_pyfiles, get_size, mpf
+from tree_sitter import Language, Parser, Query, QueryCursor
 
 QUERY_STRING = """
 (comment) @comment

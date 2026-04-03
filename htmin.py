@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
-from time import perf_counter
-from pathlib import Path
 from multiprocessing import Pool
+from pathlib import Path
+from time import perf_counter
 
 import htmlmin
 from fastwalk import walk_files

@@ -3,10 +3,9 @@ import sys
 from pathlib import Path
 
 import cv2
+import pytesseract
 from PIL import Image
 from termcolor import cprint
-import pytesseract
-
 
 video = sys.argv[1]
 txtfile = Path(video).with_suffix(".txt")

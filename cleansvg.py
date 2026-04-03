@@ -1,8 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
-import tempfile
 import subprocess
-
+import tempfile
+from pathlib import Path
 
 SVGCPATH = "/data/data/com.termux/files/home/.cargo/bin/svgcleaner"
 

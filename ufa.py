@@ -2,7 +2,7 @@
 import sys
 from pathlib import Path
 
-from dh import is_binary, get_nobinary
+from dh import get_nobinary, is_binary
 
 
 def unicode_unescape(text: str) -> str:

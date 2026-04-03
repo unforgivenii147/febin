@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import csv
+import os
 import site
-from pathlib import Path
 from multiprocessing import cpu_count
+from pathlib import Path
 
 
 def get_all_dist_info_dirs():

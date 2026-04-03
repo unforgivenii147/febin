@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import mmap
+import argparse
 import fnmatch
 import logging
+import mmap
 from pathlib import Path
-import argparse
 
 from dh import is_binary
 from tqdm import tqdm

@@ -1,14 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from pathlib import Path
 from multiprocessing import get_context
+from pathlib import Path
 
-from dh import get_size, format_size, clean_blank_lines
+import tree_sitter_python as tspython
+from dh import clean_blank_lines, format_size, get_size
 from fastwalk import walk_files
 from termcolor import cprint
-from tree_sitter import Query, Parser, Language, QueryCursor
-import tree_sitter_python as tspython
-
+from tree_sitter import Language, Parser, Query, QueryCursor
 
 ts_remover = None
 

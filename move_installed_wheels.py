@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import shutil
-from pathlib import Path
+import sys
 from importlib import metadata
+from pathlib import Path
 
-from termcolor import cprint
 from packaging.utils import parse_wheel_filename
 from packaging.version import Version
-
+from termcolor import cprint
 
 WHL_DIR = Path("/sdcard/whl")
 DEST_DIR = Path("/sdcard/installed")

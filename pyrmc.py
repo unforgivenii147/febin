@@ -1,14 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 import sys
-from pathlib import Path
 from multiprocessing import Pool
+from pathlib import Path
 
-from dh import DOC_TH1, get_size, format_size, clean_blank_lines
-from termcolor import cprint
-from tree_sitter import Parser, Language
 import tree_sitter_python
-
+from dh import DOC_TH1, clean_blank_lines, format_size, get_size
+from termcolor import cprint
+from tree_sitter import Language, Parser
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 parser = Parser()
@@ -35,6 +34,7 @@ def process_again(pt):
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:

@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
+from multiprocessing import Process, Queue, cpu_count
 from pathlib import Path
-from multiprocessing import Queue, Process, cpu_count
 
 import cv2
+import pytesseract
 from PIL import Image
 from termcolor import cprint
-import pytesseract
-
 
 video = sys.argv[1]
 txtfile = Path(video).with_suffix(".txt")

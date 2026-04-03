@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+import operator
 import sys
 import time
-from pathlib import Path
 from datetime import datetime
-import operator
+from pathlib import Path
 
 
 def parse_minutes() -> float:

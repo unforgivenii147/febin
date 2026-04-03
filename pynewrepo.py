@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
-from pathlib import Path
 import argparse
-from datetime import datetime
 import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
 
 
 class GitHubRepoManager:

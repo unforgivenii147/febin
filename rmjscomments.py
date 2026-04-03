@@ -3,15 +3,13 @@ import re
 import sys
 from pathlib import Path
 
-from dh import fsz, gsz, get_files
+from dh import fsz, get_files, gsz
 from joblib import Parallel, delayed
 from loguru import logger
 from termcolor import cprint
 
-
 CHUNK_SIZE = 1024 * 1024
 N_JOBS = -1
-
 
 multi_line_comment_re = r"/\*.*?\*/"
 

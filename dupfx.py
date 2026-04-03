@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
-from dh import get_files
 import cffi
-
+from dh import get_files
 
 ffi = cffi.FFI()
 ffi.cdef("""

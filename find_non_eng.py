@@ -1,12 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import argparse
 import os
 import sys
-from pathlib import Path
-import argparse
 from collections import Counter
+from pathlib import Path
 
 import pycld2
-
 
 BINARY_EXTENSIONS = {
     ".pyc",

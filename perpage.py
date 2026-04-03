@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 from multiprocessing import Pool
+from pathlib import Path
 
-from termcolor import cprint
 import pdfplumber
+from termcolor import cprint
 
 
 def process_file(fp):

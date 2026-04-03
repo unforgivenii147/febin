@@ -2,18 +2,20 @@
 from __future__ import annotations
 
 import base64
-from typing import TYPE_CHECKING
 import hashlib
 from pathlib import Path
+from typing import TYPE_CHECKING
 
+
+from dh import MIME2EXT
 import regex as re
-
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
 OUTPUT_DIR = Path("extracted_base64")
 DATA_URL_RE = re.compile(
-    r"\"data:(.*)+;base64,(?P<data>[A-Za-z0-9+/=\n\r]+)\"",
+    r"data:(.*)+;base64,(?P<data>[A-Za-z0-9+/=\n\r]+)",
     re.IGNORECASE,
 )
 
@@ -41,9 +43,13 @@ def extract_from_html(html: str) -> Iterable[tuple[str, bytes]]:
 
 def save_asset(mime: str, data: bytes) -> Path:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    ext = infer_extension(mime)
+    ext = MIME2EXT.get(mime)[0]
+    if not ext or ext is None:
+        ext = ""
+    if ext and not str(ext).startswith("."):
+        ext = "." + str(ex)
     digest = content_hash(data)
-    filename = f"{digest}.{ext}"
+    filename = f"{digest}{ext}"
     path = OUTPUT_DIR / filename
     if not path.exists():
         path.write_bytes(data)
@@ -51,11 +57,12 @@ def save_asset(mime: str, data: bytes) -> Path:
 
 
 def main() -> None:
-    root = Path.cwd()
-    for html_file in iter_html_files(root):
+    c = 0
+    cwd = Path.cwd()
+    seen_hashes = set()
+    for html_file in cwd.rglob("*.html"):
         try:
             html = html_file.read_text(encoding="utf-8", errors="ignore")
-            extract_from_html(html)
         except Exception:
             continue
         for mime, data in extract_from_html(html):
@@ -64,7 +71,8 @@ def main() -> None:
                 continue
             seen_hashes.add(digest)
             save_asset(mime, data)
-            extracted_count += 1
+            c += 1
+    print(f"{c} elements extracted")
 
 
 if __name__ == "__main__":

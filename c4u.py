@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import re
 import contextlib
+import re
 
-from dh import get_installed_packages
 import requests
-from termcolor import cprint
+from dh import get_installed_packages
 from packaging.version import Version
+from termcolor import cprint
 
 
 def get_latest_pkg_version(pkg_name):

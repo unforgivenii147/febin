@@ -1,12 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import operator
 import os
 import time
-from pathlib import Path
-import operator
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 from tqdm import tqdm
-
 
 SECONDS_24H = 24 * 60 * 60
 NOW = time.time()

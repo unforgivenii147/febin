@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import subprocess
 import sys
 from pathlib import Path
-import subprocess
 
 from dh import MIME2EXT
 
@@ -29,23 +29,13 @@ def get_file_mime(file_path):
         return None
 
 
-def safe_rename(old_path, new_path):
-    base, ext = os.path.splitext(new_path)
-    counter = 1
-    while Path(new_path).exists():
-        new_path = f"{base}_{counter}{ext}"
-        counter += 1
-    Path(old_path).rename(new_path)
-    return new_path
-
-
 def check_files(directory):
     mismatched_files = []
 
     for root, _, files in os.walk(directory):
         for name in files:
-            file_path = os.path.join(root, name)
-            ext = os.path.splitext(name)[1].lower()
+            file_path = Path(root) / name
+            ext = file_path.suffix.lower()
             if ext == ".css":
                 continue
             mime = get_file_mime(file_path)
@@ -55,11 +45,15 @@ def check_files(directory):
                 if expected_exts and ext not in expected_exts:
                     new_path = None
                     new_ext = expected_exts[0]
-                    if new_ext == ".txt":
-                        new_ext = filetype.guess(file_path)
-                    new_name = os.path.splitext(name)[0] + new_ext
-                    new_path = os.path.join(root, new_name)
-                    new_path = safe_rename(file_path, new_path)
+                    if new_ext == ".txt" and ext == ".css":
+                        continue
+                    #                        new_ext = filetype.guess(file_path)
+                    new_path = file_path.with_suffix(new_ext)
+                    if new_path.exists():
+                        new_path = unique_path(new_path)
+                        content = file_path.read_text(encoding="utf-8")
+                        new_path.write_text(content, encoding="utf-8")
+                        file_path.unlink()
                     mismatched_files.append((
                         file_path,
                         ext,
@@ -82,9 +76,12 @@ def main():
             new_path,
         ) in mismatches:
             if new_path:
-                print(f"\033[5m;93m{file_path} {mime} \033[5m;96m{new_path}]\033[0m")
+                print(
+                    f"\033[5;93m{file_path.relative_to(cwd)} | {mime} | \033[5;96m{new_path.relative_to(cwd)}]\033[0m"
+                )
+
             else:
-                print(f"{file_path} -> \033[5m;94mdetected: {mime}\033[0m")
+                print(f"{file_path.relative_to(cwd)} -> \033[5m;94mdetected: {mime}\033[0m")
     else:
         print("All file extensions match their detected types.")
 

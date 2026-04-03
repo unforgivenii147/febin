@@ -1,12 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import json
-from pathlib import Path
 import argparse
-from datetime import UTC, datetime
+import json
 from collections import defaultdict
+from datetime import UTC, datetime
+from pathlib import Path
 
 import xxhash
-
 
 BACKUP_FILE = ".symlink_backup.json"
 MIN_FILE_SIZE = 8
@@ -29,8 +28,8 @@ def find_duplicates(directory="."):
     size_map = defaultdict(list)
     file_count = 0
     skipped_count = 0
-    cwd=Path.cwd()
-    
+    cwd = Path.cwd()
+
     for path in cwd.rglob("*"):
         if path.is_symlink():
             continue
@@ -63,7 +62,7 @@ def create_symlinks(duplicates, dry_run=False):
     }
     total_saved = 0
     symlink_count = 0
-    for file_hash, files in duplicates.items():
+    for files in duplicates.values():
         keeper = choose_keeper(files)
         keeper_abs = Path(keeper).resolve()
         for duplicate in files:

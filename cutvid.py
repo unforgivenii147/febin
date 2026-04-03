@@ -1,14 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
-import cv2
+import pathlib
 import sys
-import os
+
+import cv2
+
 
 def format_time(time_str):
-    h, m, s = map(int, time_str.split(':'))
+    h, m, s = map(int, time_str.split(":"))
     return (h * 3600 + m * 60 + s) * 1000  # Return time in milliseconds
 
+
 def cut_video(input_file, start_time_str, duration_str):
-    if not os.path.exists(input_file):
+    if not pathlib.Path(input_file).exists():
         print(f"Error: Input file '{input_file}' not found.")
         return
 
@@ -30,12 +33,14 @@ def cut_video(input_file, start_time_str, duration_str):
     # Ensure end_frame does not exceed total frames
     if end_frame > total_frames:
         end_frame = total_frames
-        print(f"Warning: Duration exceeds video length. Cutting until the end of the video.")
+        print("Warning: Duration exceeds video length. Cutting until the end of the video.")
 
     # Define the codec and create VideoWriter object
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v') # You can change the codec as needed
-    output_filename = f"cut_{os.path.basename(input_file)}"
-    out = cv2.VideoWriter(output_filename, fourcc, fps, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # You can change the codec as needed
+    output_filename = f"cut_{pathlib.Path(input_file).name}"
+    out = cv2.VideoWriter(
+        output_filename, fourcc, fps, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    )
 
     if not out.isOpened():
         print(f"Error: Could not create video writer for '{output_filename}'.")
@@ -45,7 +50,7 @@ def cut_video(input_file, start_time_str, duration_str):
     cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
     frames_written = 0
-    for i in range(start_frame, end_frame):
+    for _i in range(start_frame, end_frame):
         ret, frame = cap.read()
         if not ret:
             break
@@ -58,6 +63,7 @@ def cut_video(input_file, start_time_str, duration_str):
     cap.release()
     out.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:

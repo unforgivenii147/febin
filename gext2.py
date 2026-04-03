@@ -1,15 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import ast
+import os
 import shutil
-from typing import Any
-from pathlib import Path
 import tarfile
 import zipfile
 from multiprocessing import cpu_count
+from pathlib import Path
+from typing import Any
 
 import regex as re
-
 
 OUTPUT_DIR = Path("output")
 ARCHIVE_EXTENSIONS = (

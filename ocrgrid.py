@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
-import argparse
 
 import cv2
-from PIL import Image
 import numpy as np
 import pytesseract
+from PIL import Image
 
 
 def pil_to_cv(img: Image.Image) -> np.ndarray:

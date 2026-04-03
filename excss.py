@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from pathlib import Path
 from multiprocessing import get_context
+from pathlib import Path
 
-from dh import get_size, get_files, format_size, get_random_name
 from bs4 import BeautifulSoup
+from dh import format_size, get_files, get_random_name, get_size
 from termcolor import cprint
 
 
@@ -40,7 +40,7 @@ def process_file(fp):
 def main():
     outpath = Path("css")
     if not outpath.exists():
-        outpath.mkdir(exists_ok=True)
+        outpath.mkdir(exist_ok=True)
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = (

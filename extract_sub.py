@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import json
-from pathlib import Path
 import argparse
+import json
 import subprocess
+from pathlib import Path
 
 
 def run(cmd):

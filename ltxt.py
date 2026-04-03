@@ -1,12 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 from dh import BIN_EXT
 from tqdm import tqdm
-
 
 EXCLUDED_EXTENSIONS = BIN_EXT
 

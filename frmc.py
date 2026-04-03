@@ -2,9 +2,8 @@
 import ast
 import sys
 from pathlib import Path
-from multiprocessing import get_context
 
-from dh import SOURCE_CODE_EXT, get_size, is_binary, format_size, get_nobinary, clean_blank_lines
+from dh import SOURCE_CODE_EXT, clean_blank_lines, format_size, get_nobinary, get_size, is_binary, mpf
 from termcolor import cprint
 
 
@@ -17,16 +16,14 @@ def process_file(fp):
         print(f"[skip] {fp.name} is binary or source code")
         return
     before: int = get_size(fp)
-    lines: list[str] = []
+    lines = fp.read_text(encoding="utf-8").splitlines(keepends=True)
     print(f"[Ok] {fp.name} ", end="")
-    with Path(fp).open(encoding="utf-8") as fin:
-        lines = fin.readlines()
-        if not lines:
-            return
+    if not lines:
+        return
     cleaned = []
     for line in lines:
-        line = line.rstrip("\n")
-        if line.startswith("#!"):
+        stripped = line.strip()
+        if stripped.startswith("#!") or "#!" in stripped:
             cleaned.append(line)
             continue
         if "#" in line and not line.startswith("#"):
@@ -41,7 +38,7 @@ def process_file(fp):
     code = "\n".join(cleaned)
     code = clean_blank_lines(code)
     if fp.suffix != ".py":
-        Path(fp).write_text(code, encoding="utf-8")
+        fp.write_text(code, encoding="utf-8")
         after = get_size(fp)
         diffsize = after - before
         cprint(
@@ -51,7 +48,7 @@ def process_file(fp):
     else:
         try:
             _ = ast.parse(code)
-            Path(fp).write_text(code, encoding="utf-8")
+            fp.write_text(code, encoding="utf-8")
             after = get_size(fp)
             diffsize = after - before
             cprint(
@@ -73,11 +70,7 @@ def main() -> None:
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-    p = get_context("spawn").Pool(8)
-    for _ in p.imap_unordered(process_file, files):
-        pass
-    p.close()
-    p.join()
+    _ = mpf(process_file, files)
     diffsize = before - get_size(cwd)
     cprint(
         f"{format_size(diffsize)}",

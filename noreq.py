@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import shutil
-from pathlib import Path
 import tarfile
-import zipfile
 import tempfile
-
+import zipfile
+from pathlib import Path
 
 TARGET_FILES = {"METADATA", "PKGINFO", "PKG-INFO"}
 PREFIX = "Requires-Dist:"

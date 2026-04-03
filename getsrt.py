@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 
 def extract_subtitles(input_file, output_file=None, subtitle_index=0):

@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from pathlib import Path
 import warnings
+from pathlib import Path
 
 from pip._internal.cli.main import main as pip_main
-
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 

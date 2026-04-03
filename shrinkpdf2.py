@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+import subprocess
 import sys
 from pathlib import Path
-import subprocess
 
 
 def human_size(num_bytes: int) -> str:

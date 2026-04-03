@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import sys
-import stat
-from pathlib import Path
 import operator
-
+import os
+import stat
+import sys
+from pathlib import Path
 
 CYAN = "\033[36m"
 BLUE = "\033[34m"

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import sqlite3
+from pathlib import Path
 
 
 def get_current_folder_name():

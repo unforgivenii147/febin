@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import mmap
-from pathlib import Path
 import tokenize
+from pathlib import Path
 
-from dh import get_files
 import regex as re
-
+from dh import get_files
 
 SIZE_THRESHOLD = 1 * 1024 * 1024
 OLD_PRINT_RE = re.compile(r"(?m)^[ \t]*print[ \t]+[^(\n]")

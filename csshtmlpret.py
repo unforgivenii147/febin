@@ -1,16 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
+import itertools
 import os
 import sys
-from time import sleep
-from pathlib import Path
 from argparse import ArgumentParser
 from datetime import datetime
-import itertools
-from subprocess import getoutput
 from multiprocessing import cpu_count
+from pathlib import Path
+from subprocess import getoutput
+from time import sleep
 
 import regex as re
-
 
 try:
     from bs4 import BeautifulSoup

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+import concurrent.futures
 import os
 import subprocess
-import concurrent.futures
 
 from tqdm import tqdm
 

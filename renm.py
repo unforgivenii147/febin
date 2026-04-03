@@ -1,14 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
-from dh import unique_path
-from tqdm import tqdm
 import regex as re
-from fastwalk import walk_files
 from deep_translator import GoogleTranslator
-
+from dh import unique_path
+from fastwalk import walk_files
+from tqdm import tqdm
 
 DIRECTORY = "."
 non_english_pattern = re.compile(r"[^\x00-\x7F]")

@@ -1,15 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import json
-from pathlib import Path
+import sys
 from collections import deque
 from multiprocessing import get_context
+from pathlib import Path
 
 from dh import get_nobinary
-from toolz import compose, frequencies
 from loguru import logger
+from toolz import compose, frequencies
 from toolz.curried import map as _map
-
 
 MAX_QUEUE = 16
 

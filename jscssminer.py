@@ -2,8 +2,8 @@
 import os
 from pathlib import Path
 
-from rjsmin import jsmin
 from rcssmin import cssmin
+from rjsmin import jsmin
 
 
 def minify_assets_in_directory(cwd=".") -> None:

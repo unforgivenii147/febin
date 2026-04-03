@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import random
-from pathlib import Path
-import secrets
 import argparse
+import random
+import secrets
+from pathlib import Path
 
 
 def enhanced_shuffle(

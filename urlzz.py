@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import tarfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
-from dh import BIN_EXT, TXT_EXT, get_files
 import py7zr
 import regex as re
-
+from dh import BIN_EXT, TXT_EXT, get_files
 
 url_pattern = re.compile(r'https?://[^\s"\']+')
 EXT = BIN_EXT

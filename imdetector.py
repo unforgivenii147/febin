@@ -1,8 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import ast
+import os
 from pathlib import Path
-
 
 OUTPUT_FILE = "found.txt"
 

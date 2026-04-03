@@ -1,9 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
-import zipfile
 import subprocess
-
+import zipfile
+from pathlib import Path
 
 VENV_PATH = Path("~/venv").expanduser()
 

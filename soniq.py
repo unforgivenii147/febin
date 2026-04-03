@@ -4,7 +4,6 @@ from pathlib import Path
 
 from dh import is_binary
 
-
 THRESHOLD = 10485760
 
 

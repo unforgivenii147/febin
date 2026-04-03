@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-from sys import argv
 from pathlib import Path
+from sys import argv
 
 from dh import run_command
-
 
 if __name__ == "__main__":
     path = Path(argv[1])

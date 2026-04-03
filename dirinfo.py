@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+import operator
 import os
 import sys
-from pathlib import Path
-import operator
 from collections import defaultdict
+from pathlib import Path
 
 
 def scan_directory(path="."):

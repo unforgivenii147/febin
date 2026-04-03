@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+import contextlib
 import os
-from pathlib import Path
 import tarfile
 import zipfile
-import contextlib
 from multiprocessing import cpu_count
+from pathlib import Path
 
 import regex as re
-
 
 OUTPUT_FILE = "gitlinks.txt"
 ARCHIVE_EXTENSIONS = (

@@ -1,18 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
+import argparse
+import contextlib
 import io
 import os
 import sys
-from time import perf_counter
-from pathlib import Path
 import tarfile
-import zipfile
-import argparse
 import tempfile
-import contextlib
+import zipfile
+from pathlib import Path
+from time import perf_counter
 
-from dh import is_valid_url
 import regex as re
-
+from dh import is_valid_url
 
 try:
     import zstandard as zstd

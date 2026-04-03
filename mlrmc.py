@@ -2,12 +2,11 @@
 import sys
 from pathlib import Path
 
-from dh import mpf, clean_blank_lines
-from tree_sitter import Parser, Language
 import tree_sitter_cpp
-import tree_sitter_rust
 import tree_sitter_python
-
+import tree_sitter_rust
+from dh import clean_blank_lines, mpf
+from tree_sitter import Language, Parser
 
 LANGUAGES = {
     ".py": tree_sitter_python.language(),
@@ -30,6 +29,7 @@ def get_parser(lang):
 
 
 def _collect_python_docstrings(node, deletions):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:

@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import grp
-import pwd
-import sys
-import stat
-from pathlib import Path
 import argparse
 import datetime
-
+import grp
+import os
+import pwd
+import stat
+import sys
+from pathlib import Path
 
 COLORS = {
     "dir": "\033[34m",

@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import gc
 import sys
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
-from dh import mpf, get_size, format_size, get_nobinary
+from dh import format_size, get_nobinary, get_size, mpf
 from termcolor import cprint
 
 

@@ -3,10 +3,10 @@ import ast
 import sys
 from pathlib import Path
 
-from dh import mpf, get_size, is_binary, format_size, get_pyfiles
-from termcolor import cprint
-import unidecode
 import astunparse
+import unidecode
+from dh import format_size, get_pyfiles, get_size, is_binary, mpf
+from termcolor import cprint
 
 
 def process_file(fn: Path) -> bool:

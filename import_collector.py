@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
+import importlib.metadata
+import importlib.util
 import sys
 from pathlib import Path
-import importlib.util
-import importlib.metadata
-
 
 PACKAGE_MAPPING = {
     "cv2": "opencv-python",

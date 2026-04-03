@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
-from pathlib import Path
 import operator
+from pathlib import Path
 
-from pbar import Pbar
 import ssdeep
+from pbar import Pbar
 
 
 def calculate_ssdeep_hash(filepath: Path, min_file_size: int = 1):

@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from sys import argv
 from pathlib import Path
+from sys import argv
 
 
 def remove_spaces_from_file(fname) -> None:

@@ -2,11 +2,10 @@
 import sys
 from pathlib import Path
 
-from dh import get_size, format_size, clean_blank_lines
-from termcolor import cprint
-from tree_sitter import Parser, Language
 import tree_sitter_rust
-
+from dh import clean_blank_lines, format_size, get_size
+from termcolor import cprint
+from tree_sitter import Language, Parser
 
 EXCLUDE_PREFIXES = (b"#!/",)
 parser = Parser()

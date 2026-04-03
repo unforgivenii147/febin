@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import csv
-import sys
 import json
 import shutil
+import sys
 from pathlib import Path
 
 import ssdeep
-
+from dh import get_files
 
 try:
     from tabulate import tabulate
@@ -22,15 +21,6 @@ try:
     USE_COLOR = True
 except ImportError:
     USE_COLOR = False
-
-
-def get_all_files(root="."):
-    file_paths = []
-    for dirpath, _, filenames in os.walk(root):
-        for f in filenames:
-            full_path = os.path.join(dirpath, f)
-            file_paths.append(full_path)
-    return file_paths
 
 
 def compute_hashes(files):
@@ -156,35 +146,33 @@ def write_matrix(
             print("-" * len(header))
             for row in table[1:]:
                 formatted = [row[0]] + [colorize_score(cell, threshold) for cell in row[1:]]
-                print(" | ".join(str(x) if x != "" else "." for x in formatted))
+                print(" | ".join(str(x) if x else "." for x in formatted))
 
 
 def main() -> None:
-    if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <threshold> [copy|csv|json|matrix]")
-        sys.exit(1)
-    try:
-        threshold = int(sys.argv[1])
-    except ValueError:
-        print("Threshold must be an integer (0–100).")
-        sys.exit(1)
-    mode = sys.argv[2] if len(sys.argv) > 2 else "copy"
-    files = get_all_files(".")
+    mode = sys.argv[1]
+    threshold = 50
+    cwd = Path.cwd()
+    files = get_files(cwd)
     print(f"Found {len(files)} files. Computing hashes...")
     hashes = compute_hashes(files)
-    print("Comparing files...")
     groups = group_similar_files(hashes, threshold)
+
     if not groups and mode != "matrix":
         print("No similar files found.")
+
     elif mode == "copy":
         print(f"Found {len(groups)} groups of similar files.")
         copy_groups(groups)
         print("Copied groups to 'output' directory.")
+
     elif mode in {"csv", "json"}:
         print(f"Found {len(groups)} groups of similar files.")
         write_report(groups, format=mode)
+
     elif mode == "matrix":
         write_matrix(hashes, threshold, pretty=True)
+
     else:
         print("Unknown mode. Use 'copy', 'csv', 'json', or 'matrix'.")
 

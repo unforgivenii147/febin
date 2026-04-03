@@ -2,7 +2,6 @@
 import sys
 from pathlib import Path
 
-
 try:
     import cv2
     import numpy as np

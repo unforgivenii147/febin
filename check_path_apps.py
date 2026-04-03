@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
 
 def find_path_duplicates():

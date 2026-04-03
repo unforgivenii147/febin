@@ -214,8 +214,8 @@ if __name__ == "__main__":
         from bs4 import BeautifulSoup
     except ImportError:
         print("📦 Installing BeautifulSoup4...")
-        import sys
         import subprocess
+        import sys
 
         subprocess.check_call([
             sys.executable,

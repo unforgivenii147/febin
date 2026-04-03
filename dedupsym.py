@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import json
-import shutil
-from pathlib import Path
 import argparse
+import json
+import os
+import shutil
 from collections import defaultdict
+from pathlib import Path
 
 import xxhash
-
 
 CACHE_PATH = Path.home() / ".cache" / "dups_cache.json"
 DUPS_DIR = Path.home() / ".cache" / "dups"

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+import operator
 import os
 import shutil
 from pathlib import Path
-import operator
 
 from dh import unique_path
 from fastwalk import walk_files

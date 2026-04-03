@@ -1,15 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
-from queue import Queue
-import fnmatch
-from pathlib import Path
-import tarfile
-import zipfile
 import argparse
+import fnmatch
+import tarfile
 import threading
+import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+from queue import Queue
 
 from fastwalk import walk_files
-
 
 pause_event = threading.Event()
 pause_event.set()

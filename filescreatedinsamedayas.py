@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 def get_file_creation_time(filepath):

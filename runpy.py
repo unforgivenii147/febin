@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from pathlib import Path
 from collections import deque
 from multiprocessing import get_context
+from pathlib import Path
 
-from dh import get_size, format_size, get_pyfiles, run_command
+from dh import format_size, get_pyfiles, get_size, run_command
 from termcolor import cprint
 
 

@@ -2,11 +2,11 @@
 import sys
 
 import regex as re
-from pygments import highlight
 from markdown2 import markdown_path
-from weasyprint import CSS, HTML
-from pygments.lexers import TextLexer, get_lexer_by_name
+from pygments import highlight
 from pygments.formatters import HtmlFormatter
+from pygments.lexers import TextLexer, get_lexer_by_name
+from weasyprint import CSS, HTML
 
 
 class ValidationError(Exception):

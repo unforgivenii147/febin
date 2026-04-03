@@ -1,15 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import ast
+import os
 import shutil
-from pathlib import Path
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
-from dh import DOC_TH1, DOC_TH2, get_pyfiles
 import regex as re
 from deep_translator import GoogleTranslator
-
+from dh import DOC_TH1, DOC_TH2, get_pyfiles
 
 PYTHON_EXT = ".py"
 BACKUP_EXT = ".bak"

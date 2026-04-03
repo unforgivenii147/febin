@@ -1,9 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import time
 import shutil
+import time
 from pathlib import Path
-
 
 TIME_THRESHOLD = 8 * 60
 

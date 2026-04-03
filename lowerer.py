@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from sys import argv, exit
 from pathlib import Path
+from sys import argv, exit
 
 
 def main():

@@ -4,7 +4,6 @@ from pathlib import Path
 
 from dh import run_command
 
-
 if __name__ == "__main__":
     cwd = Path.cwd()
     for path in cwd.rglob("setup.py"):

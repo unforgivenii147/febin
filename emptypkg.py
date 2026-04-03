@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import sysconfig
+from pathlib import Path
 
 
 def is_empty_package(dist_info_path) -> bool:

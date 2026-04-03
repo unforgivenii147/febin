@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import argparse
 import os
 from pathlib import Path
-import argparse
 from urllib.parse import urljoin
 
-from bs4 import BeautifulSoup
 import requests
+from bs4 import BeautifulSoup
 
 
 def download_image(url, output_dir):

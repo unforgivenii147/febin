@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 import sys
-from pathlib import Path
 from multiprocessing import Pool
+from pathlib import Path
 
-from dh import get_size, get_files, format_size, clean_blank_lines
-from termcolor import cprint
-from tree_sitter import Parser, Language
 import tree_sitter_python as tspython
+from dh import clean_blank_lines, format_size, get_files, get_size
+from termcolor import cprint
+from tree_sitter import Language, Parser
 
 
 class TSRemover:

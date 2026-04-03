@@ -1,8 +1,8 @@
+import contextlib
 import lzma
+import tempfile
 import time
 from pathlib import Path
-import tempfile
-import contextlib
 
 from loguru import logger
 

@@ -1,12 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from pathlib import Path
 from multiprocessing import get_context
+from pathlib import Path
 
-from dh import get_size, get_files, format_size, clean_blank_lines
-from tree_sitter import Parser, Language
 import tree_sitter_python
-
+from dh import clean_blank_lines, format_size, get_files, get_size
+from tree_sitter import Language, Parser
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
 parser = Parser()
@@ -14,6 +13,7 @@ parser.language = Language(tree_sitter_python.language())
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:

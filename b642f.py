@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import base64
+import sys
 from pathlib import Path
 
 

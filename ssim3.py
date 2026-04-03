@@ -1,15 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
+import argparse
 import os
 import shutil
-from pathlib import Path
-import argparse
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
-from tqdm import tqdm
 import ssdeep
 import xxhash
-
+from tqdm import tqdm
 
 EXCLUDE_DIRS = {
     ".git",

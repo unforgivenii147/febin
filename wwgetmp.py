@@ -1,14 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import json
 import math
-import time
 import signal
-from pathlib import Path
+import sys
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 import requests
-
 
 PART_SIZE = 10 * 1024 * 1024
 MAX_RETRIES = 5

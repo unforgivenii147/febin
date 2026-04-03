@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 
 def save_installed_packages(output_file="installed.txt"):

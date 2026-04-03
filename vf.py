@@ -3,7 +3,6 @@ from pathlib import Path
 
 import regex as re
 
-
 whl_directory = Path()
 whl_pattern = re.compile(
     r"(?P<name>[\w\-]+)-(?P<version>[\d\.]+(?:-\d{8})?)-(?P<python>py3-none-any|cp37-abi3-linux_armv8l|cp312-cp312-linux_armv8l|cp312-cp312-linux_arm|py3-none-linux_armv8l)\.whl"

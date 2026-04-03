@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import json
+import sys
 import time
 
-from dh import get_installed_packages
 import requests
-from packaging.version import Version, InvalidVersion
+from dh import get_installed_packages
+from packaging.version import InvalidVersion, Version
 
 
 def check_package_on_pypi(package_name: str, current_version: str) -> str | None:

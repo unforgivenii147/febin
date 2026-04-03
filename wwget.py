@@ -1,14 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import json
-import time
 import signal
-from pathlib import Path
+import sys
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 import requests
-
 
 CHUNK_SIZE = 5 * 1024 * 1024
 MAX_RETRIES = 5

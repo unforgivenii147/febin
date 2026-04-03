@@ -1,8 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import subprocess
-
+from pathlib import Path
 
 if __name__ == "__main__":
     target_dir = Path(Path.cwd())

@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import ast
-from pathlib import Path
+import multiprocessing as mp
+import os
 import tarfile
 import zipfile
-import multiprocessing as mp
+from pathlib import Path
 
-from dh import STDLIB, PKG_MAPPING
-
+from dh import PKG_MAPPING, STDLIB
 
 STD_LIB = STDLIB
 MAPPING = PKG_MAPPING

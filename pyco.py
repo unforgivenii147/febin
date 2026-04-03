@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import shutil
+import sys
 from pathlib import Path
 
 from dh import format_size

@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import json
-from pathlib import Path
+import sys
 from collections import deque
 from multiprocessing import get_context
+from pathlib import Path
 
-from termcolor import cprint
 import xmltodict
-
+from termcolor import cprint
 
 MAX_QUEUE = 16
 
@@ -19,7 +18,7 @@ def process_file(path):
         xml_content = path.read_text(encoding="utf-8", errors="ignore")
         with jsonpath.open("w") as f:
             data = xmltodict.parse(xml_content)
-            json.dump(data, f, ensure_ascii=False, indent=4)
+            json.dump(data, f, ensure_ascii=False, indent=2)
         path.unlink()
     except OSError as e:
         print(f"error {e}")

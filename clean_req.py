@@ -4,7 +4,6 @@ from pathlib import Path
 
 import regex as re
 
-
 _VERSION_OP_RE = re.compile(r"\s*(?:===|==|!=|>=|<=|~=|>|<)\s*")
 
 

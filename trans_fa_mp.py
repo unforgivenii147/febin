@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
 import time
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 from deep_translator import GoogleTranslator
-
 
 INPUT_FILE = "words.txt"
 OUTPUT_FILE = "dic_mp.json"

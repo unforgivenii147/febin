@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import base64
 import hashlib
+import sys
 from pathlib import Path
 
 from loguru import logger

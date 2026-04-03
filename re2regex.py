@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import argparse
 from concurrent.futures import ProcessPoolExecutor
+from pathlib import Path
 
 import regex as re
-
 
 NORMAL_IMPORT = r"^import re\b"
 REGEX_IMPORT = r"^import regex as re\b"

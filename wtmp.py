@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+import shutil
 import sys
 import time
-import shutil
 import typing
 from pathlib import Path
 
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
-
 
 DEST_DIR = Path("/data/data/com.termux/files/home/tmp/tgz")
 if not DEST_DIR.exists():

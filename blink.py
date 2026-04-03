@@ -2,7 +2,6 @@
 import sys
 from pathlib import Path
 
-
 if __name__ == "__main__":
     cwd = Path.cwd()
     files = list(cwd.rglob("*"))

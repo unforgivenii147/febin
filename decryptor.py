@@ -1,15 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
+import argparse
 import glob
+import os
 import random
 import string
 from pathlib import Path
-import argparse
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.primitives.ciphers import Cipher, modes, algorithms
-
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 AES_BLOCK_SIZE = 16
 

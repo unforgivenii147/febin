@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+import contextlib
 import os
 import site
-from pathlib import Path
-import contextlib
 from collections import defaultdict
+from pathlib import Path
 
 import regex as re
 

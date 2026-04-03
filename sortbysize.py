@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
-from pathlib import Path
 import operator
+from pathlib import Path
 
 
 def sort_by_size(root_folder):

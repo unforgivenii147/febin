@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 import typing
-from pathlib import Path
 import zipfile
+from pathlib import Path
 
 
 class WheelInspector:

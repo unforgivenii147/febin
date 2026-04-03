@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import subprocess
 from multiprocessing import cpu_count
+from pathlib import Path
 
 from rich.progress import Progress
 

@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-from io import StringIO
 import sys
-from pathlib import Path
 import tokenize
+from io import StringIO
+from pathlib import Path
 
 import regex as re
-
 
 python_keywords = {
     "def",

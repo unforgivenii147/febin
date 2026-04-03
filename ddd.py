@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import operator
+from pathlib import Path
 
 
 def get_dir_size(path="."):

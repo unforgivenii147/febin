@@ -2,7 +2,6 @@
 import sys
 from pathlib import Path
 
-
 INVISIBLE_CHARS = {
     "\u200b",
     "\u200c",

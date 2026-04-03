@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import subprocess
 import sys
 from pathlib import Path
-import subprocess
 
-from tqdm import tqdm
 import regex as re
 import requests
+from tqdm import tqdm
 
 
 def get_repo_size(repo_url):

@@ -3,9 +3,8 @@ import sys
 import time
 from pathlib import Path
 
-from tqdm import tqdm
 from deep_translator import GoogleTranslator
-
+from tqdm import tqdm
 
 MAX_CHARS = 5000
 

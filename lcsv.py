@@ -1,12 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import csv
-from pathlib import Path
+import os
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 from tqdm import tqdm
-
 
 binf = Path("/sdcard/bin").open(encoding="utf-8")
 EXCLUDED_EXTENSIONS = [line.strip() for line in binf]

@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+import argparse
 import sys
 from pathlib import Path
-import argparse
 
 import regex as re
-
 
 try:
     from termcolor import colored

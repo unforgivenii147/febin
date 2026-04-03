@@ -2,7 +2,6 @@
 import os
 from pathlib import Path
 
-
 search_string = 'b64 = """'
 current_dir = Path.cwd()
 for root, _dirs, files in os.walk(current_dir):

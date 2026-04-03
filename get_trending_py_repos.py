@@ -1,12 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import csv
 import json
-from pathlib import Path
 from dataclasses import asdict, dataclass
+from pathlib import Path
 
-from bs4 import BeautifulSoup
 import requests
-
+from bs4 import BeautifulSoup
 
 BASE_URL = "https://github.com/trending/python"
 TIMEFRAMES = ["daily", "weekly", "monthly"]

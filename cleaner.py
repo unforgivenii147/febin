@@ -2,8 +2,8 @@
 import sys
 from pathlib import Path
 
-from dh import mpf, get_files
 import regex as re
+from dh import get_files, mpf
 
 
 def process_file(path):

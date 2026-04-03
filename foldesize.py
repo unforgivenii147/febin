@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import math
+import operator
+import os
 import shutil
 from pathlib import Path
-import operator
 
 
 def get_all_files_in_root_only(root_path):

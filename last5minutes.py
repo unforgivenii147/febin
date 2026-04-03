@@ -3,7 +3,6 @@ import sys
 
 from moviepy import AudioFileClip
 
-
 file = sys.argv[1]
 output = "last_5_minutes.mp3"
 print("Loading file and extracting last 5 minutes...")

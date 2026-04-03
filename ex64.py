@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import base64
 import hashlib
+import os
 from pathlib import Path
 
 import regex as re
-
 
 BASE64_IMG_REGEX = re.compile(r"data:image/(?P<ext>[a-zA-Z0-9+]+);base64,(?P<data>[A-Za-z0-9+/=\n\r]+)")
 

@@ -1,12 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
-from dh import STDLIB, get_files, get_installed_pkgs
-from tree_sitter import Parser, Language
 import tree_sitter_python as tsp
-
+from dh import STDLIB, get_files, get_installed_pkgs
+from tree_sitter import Language, Parser
 
 parser = Parser()
 parser.language = Language(tsp.language())

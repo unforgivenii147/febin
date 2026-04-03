@@ -3,7 +3,6 @@ from pathlib import Path
 
 import regex as re
 
-
 LOG_EXT = ".log"
 PATTERNS = [
     r"\^\[",

@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import csv
-import sys
-import shutil
-from pathlib import Path
 import argparse
-import tempfile
+import csv
+import os
+import shutil
 import subprocess
-
+import sys
+import tempfile
+from pathlib import Path
 
 try:
     from tqdm import tqdm

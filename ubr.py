@@ -1,12 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import mmap
+import sys
 from pathlib import Path
 
-from dh import get_size, get_files, format_size
-from termcolor import cprint
 import brotlicffi
-
+from dh import format_size, get_files, get_size
+from termcolor import cprint
 
 CHUNK_SIZE = 32768
 N_JOBS = -1

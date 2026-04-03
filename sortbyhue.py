@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+import colorsys
 import sys
 from pathlib import Path
-import colorsys
 
 import regex as re
-
 
 HEX_RE = re.compile(r"^#([0-9a-fA-F]{6})$")
 

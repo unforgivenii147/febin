@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import math
-from pathlib import Path
 import threading
+from pathlib import Path
 
 import requests
 

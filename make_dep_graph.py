@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+import json
 import os
 import re
 import sys
-import json
 from pathlib import Path
 
 

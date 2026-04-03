@@ -1,12 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from pathlib import Path
 from collections import deque
 from multiprocessing import Pool
+from pathlib import Path
 
-from dh import get_size, get_files, format_size
 import regex as re
-
+from dh import format_size, get_files, get_size
 
 MAX_QUEUE = 16
 image_re = re.compile(

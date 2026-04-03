@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+import argparse
 import csv
 import sys
 from pathlib import Path
-import argparse
 
 
 def find_site_packages():

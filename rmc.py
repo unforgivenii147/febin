@@ -1,20 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
-import gc
 import ast
+import gc
+import operator
 import sys
 from pathlib import Path
-import operator
 
-from dh import DOC_TH1, DOC_TH2, mpf, get_size, format_size, get_pyfiles, clean_blank_lines
-from termcolor import cprint
-from tree_sitter import Parser, Language
 import tree_sitter_python as tspython
+from dh import DOC_TH1, DOC_TH2, clean_blank_lines, fsz, get_pyfiles, gsz, mpf3
+from termcolor import cprint
+from tree_sitter import Language, Parser
 
-
-MAX_QUEUE = 16
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
-PRESERVED: dict = {
+PRESERVED: set = {
     "#!",
     "# type",
     "# fmt",
@@ -23,22 +21,23 @@ PRESERVED: dict = {
 
 def preprocess(orig):
     cleaned = []
-    lines = orig.splitlines()
+    lines = orig.splitlines(keepends=True)
     for line in lines:
-        if line.startswith(DOC_TH1) and line.endswith(DOC_TH1) and line != DOC_TH1 * 2:
+        stripped = line.strip()
+        if stripped.startswith(DOC_TH1) and stripped.endswith(DOC_TH1) and stripped != DOC_TH1 * 2:
             continue
-        if line.startswith(DOC_TH2) and line.endswith(DOC_TH2) and line != DOC_TH2 * 2:
+        if stripped.startswith(DOC_TH2) and stripped.endswith(DOC_TH2) and stripped != DOC_TH2 * 2:
             continue
-        if any(pat in line for pat in PRESERVED):
+        if any(pat in stripped for pat in PRESERVED):
             cleaned.append(line)
             continue
-        if "#" in line and not line.startswith("#"):
+        if "#" in stripped and not stripped.startswith("#"):
             indx = line.index("#")
-            cleaned.append(line[:indx] + "\n")
+            cleaned.append(line[:indx])
             continue
-        if not line.startswith("#"):
+        if not stripped.startswith("#"):
             cleaned.append(line)
-    code = "\n".join(cleaned)
+    code = "".join(cleaned)
     try:
         _ = ast.parse(code)
         gc.collect()
@@ -149,26 +148,23 @@ def find_docstring_ranges(node) -> list[tuple[int, int]]:
 
 
 def process_file(file_path: Path) -> bool:
-    before = get_size(file_path)
+    before = gsz(file_path)
     try:
         original = file_path.read_text(encoding="utf-8")
-        if DOC_TH1 not in original and DOC_TH2 not in original and "#" not in original:
+        if not (DOC_TH1 in original) and not (DOC_TH2 in original) and not ("#" in original):
             return True
 
-        code = preprocess(original)
+        modified, removed = rm_ast(original)
+        finalcode = strip_code(modified)
+        wcode = clean_blank_lines(finalcode)
         try:
-            modified, removed = rm_ast(code)
-        except:
-            modified, _removed = 0, 0, code
-        try:
-            finalcode = strip_code(modified)
-            finalcode = clean_blank_lines(finalcode)
-            _ = ast.parse(finalcode)
-            file_path.write_text(finalcode, encoding="utf-8")
-            diffsize = before - get_size(file_path)
+            _ = ast.parse(wcode)
+            file_path.write_text(wcode, encoding="utf-8")
+
+            dsz = before - gsz(file_path)
             print(f"{file_path.name}", end=" ")
             cprint(
-                f"{format_size(diffsize)}",
+                f"{fsz(dsz)}",
                 "blue",
             )
             gc.collect()
@@ -178,7 +174,7 @@ def process_file(file_path: Path) -> bool:
                 _ = ast.parse(modified)
                 finalcode = clean_blank_lines(modified)
                 file_path.write_text(finalcode, encoding="utf-8")
-                diffsize = before - get_size(file_path)
+                diffsize = before - gsz(file_path)
                 print(f"{file_path.name}", end=" ")
                 cprint(
                     f"{fsz(diffsize)}",
@@ -186,29 +182,28 @@ def process_file(file_path: Path) -> bool:
                 )
                 gc.collect()
                 return True
-            except Exceptions as e:
-                msg = f"error : {e}"
-                print(msg)
+            except:
                 gc.collect()
                 return False
-    except Exception as exc:
-        print(f"✗ Error processing {file_path}: {exc}")
+    except:
         gc.collect()
         return False
 
 
 def main():
     cwd = Path.cwd()
-    before = get_size(cwd)
+    before = gsz(cwd)
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_pyfiles(cwd)
     numfiles = len(files)
     if numfiles == 1:
         process_file(files[0])
         sys.exit(0)
-    _ = mpf(process_file, files)
-    diff_size = before - get_size(cwd)
-    print(f"space saved : {format_size(diff_size)}")
+
+    mpf3(process_file, files)
+
+    diff_size = before - gsz(cwd)
+    print(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

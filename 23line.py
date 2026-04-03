@@ -4,7 +4,6 @@ from pathlib import Path
 
 import dh
 
-
 EXT = [
     ".py",
     ".h",

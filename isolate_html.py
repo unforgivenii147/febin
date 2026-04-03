@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import base64
 import os
 import sys
-import base64
 from pathlib import Path
 
-from bs4 import BeautifulSoup
 import regex as re
+from bs4 import BeautifulSoup
 
 
 def encode_local_file_to_base64(file_path):

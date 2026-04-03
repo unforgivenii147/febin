@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-from sys import exit
 from pathlib import Path
+from sys import exit
 
 from dh import unique_path
 from fastwalk import walk_files
 from termcolor import cprint
-
 
 OUT_PATH = Path("/data/data/com.termux/files/home/tmp/metadata")
 

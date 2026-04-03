@@ -3,9 +3,8 @@ import os
 from pathlib import Path
 
 import regex as re
-from fastwalk import walk_files
 from deep_translator import GoogleTranslator
-
+from fastwalk import walk_files
 
 DIRECTORY = "."
 non_english_pattern = re.compile(r"[^\x00-\x7F]")
@@ -38,8 +37,8 @@ def get_unique_path(path: Path) -> Path:
 
 
 def rename_files(directory: str):
-    for _pth in walk_files(directory):
-        path = Path(filepath)
+    for pth in walk_files(directory):
+        path = Path(pth)
         if path.is_file():
             new_name = translate_if_needed(path.name)
             if new_name == path.name:

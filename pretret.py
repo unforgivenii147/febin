@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from sys import exit
-from time import perf_counter
-from pathlib import Path
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+from sys import exit
+from time import perf_counter
 
 from fastwalk import walk_files
 

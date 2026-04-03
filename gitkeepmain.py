@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import shutil
 import subprocess
+import sys
 
 
 def run_git_command(cmd, check=True, capture_output=True):

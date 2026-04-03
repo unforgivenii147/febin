@@ -1,8 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import json
+import sys
 from pathlib import Path
-
 
 if len(sys.argv) != 2:
     print("Usage: python dedup_json.py <json_file>")

@@ -1,8 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 from base64 import b64encode
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
+from pathlib import Path
 
 CHUNK_SIZE = 524288
 MAX_BYTE_INDEX = 19

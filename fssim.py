@@ -1,14 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import csv
-import sys
 import json
+import os
 import shutil
+import sys
 from pathlib import Path
 
-from ppdeep import compare, hash_from_file
 import ssdeep
-
+from ppdeep import compare, hash_from_file
 
 try:
     from tabulate import tabulate

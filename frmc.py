@@ -17,7 +17,7 @@ def process_file(fp):
         return
     before: int = get_size(fp)
     lines = fp.read_text(encoding="utf-8").splitlines(keepends=True)
-    print(f"[Ok] {fp.name} ", end="")
+    print(f"{fp.name}", end="|")
     if not lines:
         return
     cleaned = []
@@ -26,42 +26,40 @@ def process_file(fp):
         if stripped.startswith("#!") or "#!" in stripped:
             cleaned.append(line)
             continue
-        if "#" in line and not line.startswith("#"):
+        if "#" in stripped and not stripped.startswith("#"):
             indx = line.index("#")
-            cleaned.append(line[:indx])
+            cleaned.append(line[:indx] + "\n")
             inline += 1
             continue
-        if not line.startswith("#"):
+        if not stripped.startswith("#"):
             cleaned.append(line)
         else:
             removed += 1
-    code = "\n".join(cleaned)
+    code = "".join(cleaned)
     code = clean_blank_lines(code)
-    if fp.suffix != ".py":
-        fp.write_text(code, encoding="utf-8")
-        after = get_size(fp)
-        diffsize = after - before
-        cprint(
-            f"{format_size(diffsize)} | removed : {removed} | inline : {inline}",
-            "yellow",
-        )
-    else:
+    if fp.suffix == ".py":
         try:
             _ = ast.parse(code)
             fp.write_text(code, encoding="utf-8")
-            after = get_size(fp)
-            diffsize = after - before
+            diffsize = before - get_size(fp)
             cprint(
-                f"{format_size(diffsize)} | removed : {removed} | inline : {inline}",
+                f"{format_size(diffsize)}|removed :{removed}|inline :{inline}",
                 "yellow",
             )
         except:
             cprint("result code invalid.", "magenta")
+            return
+    else:
+        fp.write_text(code, encoding="utf-8")
+        diffsize = before - get_size(fp)
+        cprint(
+            f"{format_size(diffsize)}|removed :{removed}|inline :{inline}",
+            "yellow",
+        )
 
 
 def main() -> None:
     cwd = Path.cwd()
-    before = get_size(cwd)
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_nobinary(cwd)
     if not files:
@@ -70,6 +68,7 @@ def main() -> None:
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
+    before = get_size(cwd)
     _ = mpf(process_file, files)
     diffsize = before - get_size(cwd)
     cprint(

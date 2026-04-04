@@ -34,7 +34,7 @@ def process_file(filepath):
             return
         if lines and lines[0].startswith("#!"):
             lines[0] = TARGET_SHEBANG + "\n"
-            if len(lines) > 1 and lines[1].strip() != "":
+            if len(lines) > 1 and lines[1].strip():
                 lines.insert(1, "\n")
         else:
             has_python_code = any(

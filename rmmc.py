@@ -5,7 +5,7 @@ from multiprocessing import get_context
 from pathlib import Path
 
 import regex as re
-from dh import format_size, get_nobinary, get_size
+from dh import format_size, get_nobinary, get_size, is_binary
 
 
 def process_file(file_path: Path) -> None:

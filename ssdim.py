@@ -36,9 +36,8 @@ def compute_hashes(files):
     hashes = {}
     for f in files:
         try:
-            with Path(f).open("rb") as fh:
-                data = fh.read()
-                hashes[f] = ssdeep.hash(data)
+            data = f.read_bytes()
+            hashes[f] = ssdeep.hash(data)
         except Exception as e:
             print(f"Skipping {f}: {e}")
     return hashes
@@ -77,9 +76,9 @@ def copy_groups(groups, output_dir="output") -> None:
                 print(f"Failed to copy {f}: {e}")
 
 
-def write_report(groups, format="csv", output_dir="output") -> None:
+def write_report(groups, furmat="csv", output_dir="output") -> None:
     Path(output_dir).mkdir(exist_ok=True, parents=True)
-    if format == "csv":
+    if furmat == "csv":
         report_file = os.path.join(output_dir, "similar_report.csv")
         with Path(report_file).open("w", encoding="utf-8", newline="") as csvfile:
             writer = csv.writer(csvfile)
@@ -88,7 +87,7 @@ def write_report(groups, format="csv", output_dir="output") -> None:
                 for f in group:
                     writer.writerow([idx, f])
         print(f"CSV report written to {report_file}")
-    elif format == "json":
+    elif furmat == "json":
         report_file = os.path.join(output_dir, "similar_report.json")
         data = {f"group_{idx}": group for idx, group in enumerate(groups, start=1)}
         with Path(report_file).open("w", encoding="utf-8") as jf:
@@ -97,7 +96,7 @@ def write_report(groups, format="csv", output_dir="output") -> None:
 
 
 def colorize_score(score, threshold):
-    if not USE_COLOR or score == "":
+    if not USE_COLOR or not score:
         return str(score)
     if score == 100 or score >= threshold + 10:
         return Fore.GREEN + str(score) + Style.RESET_ALL
@@ -150,7 +149,7 @@ def write_matrix(
             print("-" * len(header))
             for row in table[1:]:
                 formatted = [row[0]] + [colorize_score(cell, threshold) for cell in row[1:]]
-                print(" | ".join(str(x) if x != "" else "." for x in formatted))
+                print(" | ".join(str(x) if x else "." for x in formatted))
 
 
 def main() -> None:
@@ -176,7 +175,7 @@ def main() -> None:
         print("Copied groups to 'output' directory.")
     elif mode in {"csv", "json"}:
         print(f"Found {len(groups)} groups of similar files.")
-        write_report(groups, format=mode)
+        write_report(groups, furmat=mode)
     elif mode == "matrix":
         write_matrix(hashes, threshold, pretty=True)
     else:

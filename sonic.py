@@ -8,7 +8,7 @@ import tempfile
 import time
 from collections import Counter
 from collections.abc import Generator
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 
 
@@ -339,7 +339,7 @@ class FileSorter(LineProcessor):
         import json
 
         report = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(tz=UTC).isoformat(),
             "statistics": stats,
         }
         try:

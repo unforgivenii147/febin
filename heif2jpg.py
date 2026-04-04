@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-from sys import exit
+import sys
 
 import pillow_heif as ph
 from dh import get_size
@@ -37,4 +37,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

@@ -1,22 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
-from multiprocessing import Pool
 from pathlib import Path
-from time import perf_counter
 
 import htmlmin
 from fastwalk import walk_files
+from dh import mpf
 
 
-# fmt: off
 def process_file(file: Path) -> bool:
     try:
         orig = file.read_text(encoding="utf-8")
         print(len(orig))
         code = orig
         code = htmlmin.minify(orig, remove_comments=True)
-        # fmt: on
         print(len(code))
         if len(code) != len(orig):
             Path(file).write_text(code, encoding="utf-8")
@@ -28,7 +25,6 @@ def process_file(file: Path) -> bool:
 
 
 def main() -> None:
-    start_time = perf_counter()
     files = []
     dir = Path().cwd().resolve()
     for pth in walk_files(str(dir)):
@@ -38,13 +34,7 @@ def main() -> None:
     if not files:
         print("No html files detected.")
         return
-    pool = Pool(10)
-    for name in files:
-        pool.apply_async(process_file, ((name), ))
-    pool.close()
-    pool.join()
-    duration = perf_counter() - start_time
-    print(f"Total Runtime: {duration:.4f} seconds")
+    mpf(process_file, files)
 
 
 if __name__ == "__main__":

@@ -6,7 +6,8 @@ from pathlib import Path
 import ssdeep
 
 
-def find_fuzzy_duplicates(start_dir: Path = Path.cwd(), threshold: int = 70):
+def find_fuzzy_duplicates(threshold: int = 70):
+    start_dir = Path.cwd()
     file_hashes = {}
     duplicates = defaultdict(list)
     print(f"Scanning for fuzzy duplicates in: {start_dir}")
@@ -53,5 +54,4 @@ def find_fuzzy_duplicates(start_dir: Path = Path.cwd(), threshold: int = 70):
 
 
 if __name__ == "__main__":
-    cwd = Path.cwd()
-    find_fuzzy_duplicates(cwd, threshold=90)
+    find_fuzzy_duplicates(threshold=50)

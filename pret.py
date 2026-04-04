@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from collections import deque
-from multiprocessing import get_context
 from pathlib import Path
 
 from dh import format_size, get_files, get_size, mpf, run_command
@@ -47,7 +45,7 @@ def process_file(file_path):
 def main() -> None:
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = (
+    files = sorted(
         [Path(arg) for arg in args]
         if args
         else get_files(
@@ -61,16 +59,21 @@ def main() -> None:
                 ".json",
                 ".html",
                 ".cjs",
+                ".cts",
+                ".mts",
                 ".mjs",
+                ".coffee",
+                ".yaml",
+                ".yml",
             ],
         )
     )
     before = get_size(cwd)
-
+    cprint(f"{len(files)} files found.", "green")
     mpf(process_file, files)
 
     diffsize = before - get_size(cwd)
-    print(f"space change:{format_size(diffsize)}")
+    cprint(f"space change:{format_size(diffsize)}", "cyan")
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 def download_image(url, output_dir):
     try:
-        response = requests.get(url, stream=True)
+        response = requests.get(url, stream=True, timeout=5)
         response.raise_for_status()
         filename = os.path.join(output_dir, Path(url).name)
         with Path(filename).open("wb") as f:
@@ -22,7 +22,7 @@ def download_image(url, output_dir):
 
 def extract_images_from_url(url, output_dir):
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
         img_tags = soup.find_all("img")

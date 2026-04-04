@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-from sys import argv, exit
+import sys
 
 
 def main():
-    path = Path(argv[1])
+    path = Path(sys.argv[1])
     template = """#!/data/data/com.termux/files/usr/bin/env python
 
 from pathlib import Path
-from sys import exit,argv
+import sys,argv
 
 from dh import get_files,mpf
 
@@ -28,11 +28,11 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())
 """
     path.write_text(template, encoding="utf-8")
     print(f"{path.name} created.")
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

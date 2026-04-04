@@ -151,10 +151,10 @@ def process_file(file_path: Path) -> bool:
     before = gsz(file_path)
     try:
         original = file_path.read_text(encoding="utf-8")
-        if not (DOC_TH1 in original) and not (DOC_TH2 in original) and not ("#" in original):
+        if DOC_TH1 not in original and DOC_TH2 not in original and "#" not in original:
             return True
 
-        modified, removed = rm_ast(original)
+        modified, _removed = rm_ast(original)
         finalcode = strip_code(modified)
         wcode = clean_blank_lines(finalcode)
         try:

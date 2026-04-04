@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import get_context
 from pathlib import Path
-from time import perf_counter
 
 from fastwalk import walk_files
 from rcssmin import cssmin
+from dh import mpf
 
 
 def process_file(path) -> str:
@@ -34,20 +33,13 @@ def collect_files() -> list:
 
 
 def main() -> None:
-    s = perf_counter()
     files = collect_files()
     if not files:
         print("No CSS files found.")
         return
     print(f"Found {len(files)} files. Starting multiprocessing...")
-    with get_context("spawn").Pool(8) as pool:
-        for result in pool.imap_unordered(process_file, files):
-            print(result)
-    took = perf_counter() - s
-    if took <= 1:
-        print(f"{round(took * 1000, 2)} ms")
-    else:
-        print(f"{round(took, 2)} s")
+    for k in mpf(process_file, files):
+        print(k)
 
 
 if __name__ == "__main__":

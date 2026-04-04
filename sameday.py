@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ctypes
 import ctypes.util
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 class StatxTimestamp(ctypes.Structure):
@@ -54,7 +54,7 @@ def get_creation_time_statx(path):
     )
     if result == 0 and statx_buf.stx_mask & STATX_BTIME:
         timestamp = statx_buf.stx_btime.tv_sec
-        return datetime.fromtimestamp(timestamp)
+        return datetime.fromtimestamp(timestamp, tz=UTC)
     return None
 
 

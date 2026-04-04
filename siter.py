@@ -3,18 +3,12 @@ import argparse
 import base64
 import csv
 import hashlib
-import logging
 import shutil
 import sys
 import tempfile
 import zipfile
 from pathlib import Path
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(levelname)s: %(message)s",
-)
-log = logging.getLogger(__name__)
+from loguru import logger
 
 
 class WheelBuilder:
@@ -43,7 +37,6 @@ class WheelBuilder:
         return None
 
     def _find_bin_dir(self) -> Path | None:
-        return Path("/data/data/com.termux/files/usr/bin")
         if not self.venv_root:
             return None
         for name in ["bin", "Scripts"]:
@@ -83,7 +76,7 @@ class WheelBuilder:
             return installer_file.read_text().strip()
         return "unknown"
 
-    def _find_scripts_for_package(self, package_name: str, records: dict) -> list[Path]:
+    def _find_scripts_for_package(self, records: dict) -> list[Path]:
         if not self.bin_dir or not self.bin_dir.exists():
             return []
         scripts = []
@@ -114,7 +107,7 @@ class WheelBuilder:
                     scripts.append(exe_path)
         return scripts
 
-    def _find_data_for_package(self, package_name: str, records: dict) -> list[tuple[Path, str]]:
+    def _find_data_for_package(self, package_name: str) -> list[tuple[Path, str]]:
         if not self.share_dir or not self.share_dir.exists():
             return []
         data_files = []
@@ -165,14 +158,14 @@ class WheelBuilder:
             return None
         parts = dist_info_dir.stem.split("-")
         if len(parts) < 2:
-            log.warning(f"Invalid dist-info name: {dist_info_dir.name}")
+            logger.warning(f"Invalid dist-info name: {dist_info_dir.name}")
             return None
         pkg_name = parts[0]
         version = parts[1] if len(parts) > 1 else "0.0.0"
-        log.info("Building wheel for %s %s", pkg_name, version)
+        logger.info("Building wheel for %s %s", pkg_name, version)
         records = self._read_record(dist_info_dir)
         if not records:
-            log.warning("No RECORD file for %s", pkg_name)
+            logger.warning("No RECORD file for %s", pkg_name)
             return None
         is_pure = self._detect_purity(records)
         if is_pure:
@@ -188,12 +181,12 @@ class WheelBuilder:
                 platform_tag,
                 _,
             ) = self._get_wheel_tags()
-        scripts = self._find_scripts_for_package(pkg_name, records)
-        data_files = self._find_data_for_package(pkg_name, records)
+        scripts = self._find_scripts_for_package(records=records)
+        data_files = self._find_data_for_package(pkg_name)
         if scripts:
-            log.info(f"  Found {len(scripts)} script(s)")
+            logger.info(f"  Found {len(scripts)} script(s)")
         if data_files:
-            log.info(f"  Found {len(data_files)} data file(s)")
+            logger.info(f"  Found {len(data_files)} data file(s)")
         wheel_name = f"{pkg_name.replace('-', '_')}-{version}-{python_tag}-{abi_tag}-{platform_tag}.whl"
         wheel_path = self.output_dir / wheel_name
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -290,29 +283,26 @@ class WheelBuilder:
                     if file.is_file():
                         arcname = file.relative_to(tmp_path)
                         whl.write(file, arcname)
-        log.info(f"  Created: {wheel_path.name}")
+        logger.info(f"  Created: {wheel_path.name}")
         return wheel_path
 
     def build_all(self) -> int:
         dist_infos = sorted(self.site_packages.glob("*.dist-info"))
         if not dist_infos:
-            log.error(f"No packages found in {self.site_packages}")
+            logger.error(f"No packages found in {self.site_packages}")
             return 0
-        log.info(f"Found {len(dist_infos)} package(s) in {self.site_packages}")
+        logger.info(f"Found {len(dist_infos)} package(s) in {self.site_packages}")
         if self.venv_root:
-            log.info(f"Virtual environment: {self.venv_root}")
+            logger.info(f"Virtual environment: {self.venv_root}")
         built = 0
         for dist_info in dist_infos:
             try:
                 if self.build_wheel(dist_info):
                     built += 1
             except Exception as e:
-                log.exception(f"Failed to build {dist_info.name}: {e}")
-                if log.level == logging.DEBUG:
-                    import traceback
+                logger.debug(f"Failed to build {dist_info.name}: {e}")
 
-                    traceback.print_exc()
-        log.info(f"\nBuilt {built}/{len(dist_infos)} wheels in {self.output_dir}")
+        logger.info(f"\nBuilt {built}/{len(dist_infos)} wheels in {self.output_dir}")
         return built
 
 
@@ -380,7 +370,6 @@ Examples:
         help="List available site-packages directories and exit",
     )
     args = parser.parse_args()
-    logging.getLogger().setLevel(logging.DEBUG)
     if args.list:
         sites = find_site_packages()
         print(f"Found {len(sites)} site-packages:")
@@ -390,12 +379,12 @@ Examples:
     if args.site_packages:
         site_packages = args.site_packages.resolve()
         if not site_packages.exists():
-            log.error("Site-packages not found: %s", site_packages)
+            logger.error("Site-packages not found: %s", site_packages)
             return 1
     else:
         sites = find_site_packages()
         if not sites:
-            log.error("No site-packages found. Use --site-packages to specify.")
+            logger.error("No site-packages found. Use --site-packages to specify.")
             return 1
         if len(sites) == 1:
             site_packages = sites[0]
@@ -407,21 +396,21 @@ Examples:
                 choice = int(input("\nSelect site-packages [1]: ") or "1")
                 site_packages = sites[choice - 1]
             except (ValueError, IndexError):
-                log.exception("Invalid selection")
+                logger.exception("Invalid selection")
                 return 1
-    log.info("Using site-packages: %s", site_packages)
+    logger.info("Using site-packages: %s", site_packages)
     builder = WheelBuilder(site_packages, args.output)
     if args.package:
         dist_info = site_packages / f"{args.package}-*.dist-info"
         matches = list(site_packages.glob(f"{args.package}*.dist-info"))
         if not matches:
-            log.error(f"Package not found: {args.package}")
+            logger.error(f"Package not found: {args.package}")
             return 1
         if len(matches) > 1:
-            log.warning(f"Multiple matches for '{args.package}':")
+            logger.warning(f"Multiple matches for '{args.package}':")
             for m in matches:
-                log.warning(f"  - {m.name}")
-            log.info("Building all matches...")
+                logger.warning(f"  - {m.name}")
+            logger.info("Building all matches...")
         built = 0
         for dist_info in matches:
             if builder.build_wheel(dist_info):

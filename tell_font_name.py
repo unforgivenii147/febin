@@ -1,14 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import get_context
 from pathlib import Path
 
 import regex as re
-from dh import get_files, unique_path
+from dh import get_files, mpf, unique_path
 from fontTools.ttLib import TTFont
 from termcolor import cprint
-
-MAX_QUEUE = 16
 
 
 def is_ascii_printable(s: str) -> bool:
@@ -66,7 +63,8 @@ def process_file(fn):
         cprint("no change", "blue")
         return 0
     fn.rename(new_path)
-    cprint(f"{fn.name} -> {new_path.name}", "green")
+    print(f"{fn.name} -> ", end="")
+    cprint(f"{new_path.name}", "green")
     return 0
 
 
@@ -79,11 +77,11 @@ def main() -> None:
     if not files:
         print("no files found")
         return
-    p = get_context("spawn").Pool(8)
-    for _ in p.imap_unordered(process_file, files):
-        pass
-    p.close()
-    p.join()
+    if len(files) == 1:
+        process_file(files[0])
+        sys.exit(0)
+
+    _ = mpf(process_file, files)
 
 
 if __name__ == "__main__":

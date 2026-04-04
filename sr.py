@@ -82,9 +82,9 @@ def read_record_list(distinfo_dir):
     rec = distinfo_dir / "RECORD"
     if rec.exists():
         return [
-            l.strip().split(",", 1)[0]
-            for l in rec.read_text(encoding="utf-8", errors="ignore").splitlines()
-            if l.strip()
+            line.strip().split(",", 1)[0]
+            for line in rec.read_text(encoding="utf-8", errors="ignore").splitlines()
+            if line.strip()
         ]
     return None
 

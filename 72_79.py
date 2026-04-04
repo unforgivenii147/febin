@@ -1,5 +1,5 @@
-from multiprocessing import get_context
 from collections import deque
+from multiprocessing import get_context
 from pathlib import Path
 
 
@@ -20,5 +20,5 @@ def mpf(process_file, files):
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-    files = [p for p in cwd.rglob("*")]
+    files = list(cwd.rglob("*"))
     mpf(process_file, files)

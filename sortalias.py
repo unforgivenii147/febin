@@ -14,8 +14,8 @@ def main():
     fname = sys.argv[1]
     with Path(fname).open(encoding="utf-8") as f:
         lines = f.readlines()
-    alias_lines = [l for l in lines if l.startswith("alias ")]
-    other_lines = [l for l in lines if not l.startswith("alias ")]
+    alias_lines = [line for line in lines if line.startswith("alias ")]
+    other_lines = [line for line in lines if not line.startswith("alias ")]
     alias_lines.sort(key=alias_name)
     with Path(fname).open("w", encoding="utf-8") as f:
         f.writelines(alias_lines + other_lines)

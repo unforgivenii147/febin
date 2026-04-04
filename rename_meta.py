@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-from sys import exit
+import sys
 
 from dh import unique_path
 from fastwalk import walk_files
@@ -47,7 +47,7 @@ def process_file(fp) -> bool | None:
 
 
 def main() -> None:
-    dir = Path.cwd()
+    cwd = Path.cwd()
     for pth in walk_files(dir):
         path = Path(pth)
         if path.is_file() and (path.name == "METADATA" or path.suffix == ".metadata"):
@@ -55,4 +55,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

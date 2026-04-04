@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-from sys import exit
 
 from dh import get_size
 from termcolor import cprint
@@ -27,4 +26,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    exit(main())
+    main()

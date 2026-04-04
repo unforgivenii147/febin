@@ -2,7 +2,7 @@
 import os
 import shutil
 from pathlib import Path
-from sys import exit
+import sys
 
 from termcolor import cprint
 
@@ -30,4 +30,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import get_context
 from pathlib import Path
 from typing import Int, Str
 
-from dh import format_size, get_files, get_size
+from dh import format_size, get_files, get_size, mpf
 
 
 def _get_comments_symbol(text: Str, symbol: Str) -> list[Str]:
@@ -48,19 +47,19 @@ def remove_comments(text: str) -> str:
     return "\n".join(new_lines)
 
 
+def process_file(fp):
+    data = fp.read_text()
+    result = remove_comments(data)
+    fp.write_text(result)
+
+
 def main():
     cwd = Path.cwd()
     before = get_size(cwd)
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
-    with get_context("spawn").Pool(8) as pool:
-        pending = deque()
-        for f in files:
-            pending.append(pool.apply_async(process_file, (f,)))
-            if len(pending) > MAX_QUEUE:
-                pending.popleft().get()
-        while pending:
-            pending.popleft().get()
+
+    mpf(process_file, files)
     diff_size = before - get_size(cwd)
     print(f"space saved : {format_size(diff_size)}")
 

@@ -16,7 +16,7 @@ def main() -> None:
         sys.exit(1)
     fname = sys.argv[1]
     delimiter = sys.argv[2]
-    if delimiter == "":
+    if not delimiter:
         print("Error: delimiter cannot be empty")
         sys.exit(1)
     split_file_by_delimiter(fname, delimiter)

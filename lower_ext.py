@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import string
 from pathlib import Path
-from sys import exit
-from time import perf_counter
+import sys
 
 from fastwalk import walk_files
+from dh import mpf
 
 
 def is_all_upper(str1):
@@ -23,19 +23,14 @@ def process_file(fp):
 
 
 def main():
-    start = perf_counter()
     files = []
     for pth in walk_files("."):
         path = Path(pth)
         if path.is_file():
             files.append(path)
-    pool = Pool(12)
-    for f in files:
-        pool.apply_async(process_file, ((f),))
-    pool.close()
-    pool.join()
-    print(f"{perf_counter() - start} sec")
+
+    mpf(process_file, files)
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

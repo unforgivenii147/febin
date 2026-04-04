@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-from sys import argv, exit
+from sys import argv
 
 
 def main():
@@ -11,4 +11,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

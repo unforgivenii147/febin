@@ -1,31 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-import os
-from pathlib import Path
-from typing import Union, List, Tuple, Optional, Dict
 from functools import partial
+from pathlib import Path
+from dh import unique_path, mpf
 
 
-def mpf3(func: Callable, items: Iterable) -> list[Any]:
-    """
-    A placeholder for a multiprocessing function.
-    In a real scenario, this would be a robust parallel processing utility.
-    For this example, it will run sequentially.
-    """
-    results = []
-    print(f"Starting {len(items)} tasks sequentially (using placeholder mpf3).")
-    for item in items:
-        try:
-            result = func(item)
-            results.append(result)
-        except Exception as e:
-            print(f"Error processing {item}: {e}", file=sys.stderr)
-            results.append(None)  # Or handle error specifically
-    print("Placeholder mpf3 finished.")
-    return results
-
-
-def rename_item_to_lowercase(path: Path, dry_run: bool = False, verbose: bool = False) -> Optional[Tuple[Path, Path]]:
+def rename_item_to_lowercase(path: Path, dry_run: bool = False, verbose: bool = False) -> tuple[Path, Path] | None:
     """
     Renames a file or directory to its lowercase equivalent.
     Handles existing lowercase names by generating unique names.
@@ -63,7 +43,7 @@ def rename_item_to_lowercase(path: Path, dry_run: bool = False, verbose: bool = 
         print(f"DRY RUN: Would rename '{path}' to '{new_path}'")
         return (path, new_path)
     try:
-        os.rename(path, new_path)  # os.rename works for both files and directories
+        Path(path).rename(new_path)  # os.rename works for both files and directories
         if verbose:
             print(f"Renamed '{path.name}' to '{new_path.name}'")
         return (path, new_path)
@@ -111,7 +91,7 @@ def main():
     # Execute the renaming in parallel
     # mpf3 should be a robust multiprocessing function.
     # The return value (list of (original, new) tuples or None) can be collected if needed.
-    results = mpf3(process_func_with_flags, paths_to_process)
+    results = mpf(process_func_with_flags, paths_to_process)
     if dry_run:
         print("--- DRY RUN COMPLETE ---")
     else:

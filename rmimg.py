@@ -12,7 +12,7 @@ from termcolor import cprint
 def process_file(file_path: Path) -> None:
     before = get_size(file_path)
     try:
-        file_path.read_text(encoding="utf-8")
+        html = file_path.read_text(encoding="utf-8")
         soup = BeautifulSoup(html, "html.parser")
         for img in soup.find_all("img"):
             img.decompose()

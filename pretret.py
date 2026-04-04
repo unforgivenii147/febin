@@ -2,10 +2,9 @@
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from sys import exit
-from time import perf_counter
+import sys
 
-from fastwalk import walk_files
+from dh import get_filez
 
 
 def process_file(fp):
@@ -25,23 +24,22 @@ def process_file(fp):
 
 
 def main():
-    start = perf_counter()
-    files = []
     cwd = str(Path.cwd())
-    for pth in walk_files(cwd):
-        path = Path(pth)
-        if path.is_symlink():
-            continue
-        if path.is_file():
-            files.append(path)
+    args = sys.argv[1:]
+    files = (
+        [Path(f) for f in args]
+        if args
+        else get_filez(cwd, exts=[".html", ".htm", ".js", ".jsx", ".ts", ".tsx", ".css", ".md", ".jsm", ".scss"])
+    )
+
     with ThreadPoolExecutor(8) as executor:
         futures = [executor.submit(process_file, fp) for fp in files]
+
     for future in as_completed(futures):
         s = future.result()
         if not s[0]:
             print(s[1])
-    print(f"{perf_counter() - start} seconds")
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

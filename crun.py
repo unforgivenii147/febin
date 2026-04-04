@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-from sys import exit
+import sys
 
 from dh import format_size, get_size, run_command
 from fastwalk import walk_files
@@ -40,4 +40,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

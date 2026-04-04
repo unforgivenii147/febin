@@ -6,9 +6,10 @@ import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+MB_5 = 5 * 1024 * 1024
+
 
 def sort_and_uniq(file_path):
-    MB_5 = 5 * 1024 * 1024
     if not Path(file_path).exists():
         print(f"Error: File '{file_path}' not found.")
         return
@@ -26,8 +27,7 @@ def sort_and_uniq(file_path):
             ):
                 lines = mm.read().decode("utf-8").splitlines()
         else:
-            with Path(file_path).open(encoding="utf-8") as f:
-                lines = f.read().splitlines()
+            lines = file_path.read_text(encoding="utf-8").splitlines()
         with ThreadPoolExecutor() as executor:
             processed_lines = list(executor.map(lambda x: x.strip(), lines))
         unique_sorted_lines = sorted(set(processed_lines))

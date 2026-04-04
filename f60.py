@@ -30,17 +30,16 @@ def main() -> None:
         stats = path.stat()
         created = stats.st_ctime
         modified = stats.st_mtime
-        changed = stats.st_ctime
         pathstr = str(path.name)
         max_path_string = max(len(pathstr), 20)
-        if created <= cutoff or modified >= cutoff or changed >= cutoff:
+        if created <= cutoff or modified >= cutoff:
             ctm[path] = created
     ctmsorted = dict(sorted(ctm.items(), key=operator.itemgetter(1)))
     newct = {}
     for pth, ct in ctmsorted.items():
-        ctime = datetime.fromtimestamp(ct).strftime("%m-%d|%H:%M")
+        ctime = datetime.fromtimestamp(ct).strftime("%Y/%m/%d-%H:%M:%S")
         newct[pth] = ctime
-        print(f"\033[05;96m{pth.name[:19]:<{max_path_string}} \033[05;93m{ctime}\033[0m")
+        print(f"\033[05;96m{Path(pth).name[:19]:<{max_path_string}} \033[05;93m{ctime}\033[0m")
 
 
 if __name__ == "__main__":

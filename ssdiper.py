@@ -5,6 +5,7 @@ from pathlib import Path
 
 import ssdeep
 from pbar import Pbar
+from dh import get_files
 
 
 def calculate_ssdeep_hash(filepath: Path, min_file_size: int = 1):
@@ -28,24 +29,6 @@ def calculate_ssdeep_hash(filepath: Path, min_file_size: int = 1):
     except Exception as e:
         print(f"An unexpected error occurred for {filepath}: {e}")
         return None
-
-
-def find_files_recursively(directory: Path, ignored_dirs: list[str] | None = None, follow_symlinks: bool = False):
-    if ignored_dirs is None:
-        ignored_dirs = [".git", "__pycache__"]
-    file_list = []
-    for item in directory.rglob("*"):
-        if any(ignored_dir in item.parts for ignored_dir in ignored_dirs):
-            continue
-        if item.is_symlink():
-            continue
-        if item.is_file():
-            try:
-                if item.stat().st_size > 1:
-                    file_list.append(item.resolve())
-            except OSError:
-                continue
-    return file_list
 
 
 def compare_files(file_paths: list[Path], similarity_threshold: int = 70):
@@ -72,7 +55,6 @@ def compare_files(file_paths: list[Path], similarity_threshold: int = 70):
                         "file2": str(Path(filepath2_str).relative_to(cwd)),
                         "similarity_score": score,
                     })
-            #                    print(f"Found similarity ({score}%): {filepath1_str} <-> {filepath2_str}")
             except ssdeep.error as e:
                 print(f"Error comparing hashes for {filepath1_str} and {filepath2_str}: {e}")
             except Exception as e:
@@ -92,15 +74,14 @@ def save_to_json(data, filename="simz.json"):
 
 
 if __name__ == "__main__":
-    TARGET_DIRECTORY = Path.cwd()
+    cwd = Path.cwd()
     MIN_SIMILARITY_THRESHOLD = 70
     OUTPUT_JSON_FILE = "simz.json"
-    IGNORED_DIRS = [".git", "__pycache__"]
-    all_files = find_files_recursively(TARGET_DIRECTORY, ignored_dirs=IGNORED_DIRS, follow_symlinks=False)
-    if not all_files:
+    files = get_files(cwd)
+    if not files:
         print("No files found matching the criteria in the specified directory.")
     else:
-        similar_file_pairs = compare_files(all_files, MIN_SIMILARITY_THRESHOLD)
+        similar_file_pairs = compare_files(files, MIN_SIMILARITY_THRESHOLD)
         if similar_file_pairs:
             save_to_json(similar_file_pairs, OUTPUT_JSON_FILE)
         else:

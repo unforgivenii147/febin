@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from time import perf_counter
 
 
 def main():
-    start = perf_counter()
     fn = sys.argv[1]
     lines = []
     with Path(fn).open(encoding="utf-8") as f:
@@ -17,7 +15,6 @@ def main():
             str1 = '"' + str(line.strip()) + '", ' if '"' not in line else "'" + str(line.strip()) + "', "
             fo.write(str1)
         fo.write("}")
-    print(f"{perf_counter() - start} seconds")
 
 
 if __name__ == "__main__":

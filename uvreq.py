@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-from sys import exit as _exit
 
 
 def process_file(fp):
@@ -21,4 +20,4 @@ def main():
 
 
 if __name__ == "__main__":
-    _exit(main())
+    main()

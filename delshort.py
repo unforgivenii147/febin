@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-from sys import exit
+import sys
 
 from dh import is_binary
 from fastwalk import walk_files
@@ -27,4 +27,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

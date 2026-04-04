@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-import mmap
 import sys
+import mmap
 from pathlib import Path
 
-import brotlicffi
-from dh import format_size, get_files, get_size
+from dh import get_size, get_files, format_size
 from joblib import Parallel, delayed
 from termcolor import cprint
+import brotlicffi
 
 CHUNK_SIZE = 32768
 QUALITY = 11

@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import os
 import csv
 import json
 import shutil
@@ -27,9 +28,8 @@ def compute_hashes(files):
     hashes = {}
     for f in files:
         try:
-            with Path(f).open("rb") as fh:
-                data = fh.read()
-                hashes[f] = ssdeep.hash(data)
+            data = f.read_bytes()
+            hashes[f] = ssdeep.hash(data)
         except Exception as e:
             print(f"Skipping {f}: {e}")
     return hashes
@@ -64,18 +64,19 @@ def group_similar_files(hashes, threshold):
 def copy_groups(groups, output_dir="output") -> None:
     Path(output_dir).mkdir(exist_ok=True, parents=True)
     for idx, group in enumerate(groups, start=1):
-        group_dir = os.path.join(output_dir, f"group_{idx}")
-        Path(group_dir).mkdir(exist_ok=True, parents=True)
-        for f in group:
-            try:
-                shutil.move(f, group_dir)
-            except Exception as e:
-                print(f"Failed to copy {f}: {e}")
+        if len(group) > 1:
+            group_dir = os.path.join(output_dir, f"group_{idx}")
+            Path(group_dir).mkdir(exist_ok=True, parents=True)
+            for f in group:
+                try:
+                    shutil.move(f, group_dir)
+                except Exception as e:
+                    print(f"Failed to copy {f}: {e}")
 
 
-def write_report(groups, format="csv", output_dir="output") -> None:
+def write_report(groups, furmat="csv", output_dir="output") -> None:
     Path(output_dir).mkdir(exist_ok=True, parents=True)
-    if format == "csv":
+    if furmat == "csv":
         report_file = os.path.join(output_dir, "similar_report.csv")
         with Path(report_file).open("w", encoding="utf-8", newline="") as csvfile:
             writer = csv.writer(csvfile)
@@ -84,7 +85,7 @@ def write_report(groups, format="csv", output_dir="output") -> None:
                 for f in group:
                     writer.writerow([idx, f])
         print(f"CSV report written to {report_file}")
-    elif format == "json":
+    elif furmat == "json":
         report_file = os.path.join(output_dir, "similar_report.json")
         data = {f"group_{idx}": group for idx, group in enumerate(groups, start=1)}
         with Path(report_file).open("w", encoding="utf-8") as jf:
@@ -93,7 +94,7 @@ def write_report(groups, format="csv", output_dir="output") -> None:
 
 
 def colorize_score(score, threshold):
-    if not USE_COLOR or score == "":
+    if not USE_COLOR or not score:
         return str(score)
     if score == 100 or score >= threshold + 10:
         return Fore.GREEN + str(score) + Style.RESET_ALL
@@ -168,7 +169,7 @@ def main() -> None:
 
     elif mode in {"csv", "json"}:
         print(f"Found {len(groups)} groups of similar files.")
-        write_report(groups, format=mode)
+        write_report(groups, furmat=mode)
 
     elif mode == "matrix":
         write_matrix(hashes, threshold, pretty=True)

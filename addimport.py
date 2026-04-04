@@ -1,10 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from multiprocessing import get_context
 from pathlib import Path
-from sys import exit
-from time import perf_counter
+import sys
 
 from fastwalk import walk_files
+from dh import mpf
 
 shebang = "#!/data/data/com.termux/files/usr/bin/python\n\n"
 
@@ -31,16 +30,13 @@ def process_file(fp):
 
 
 def main():
-    start = perf_counter()
     files = []
     for pth in walk_files("."):
         path = Path(pth)
         if path.is_file() and path.suffix == ".py":
             files.append(path)
-    with get_context("spawn").Pool(8) as pool:
-        pool.imap_unordered(process_file, files)
-    print(f"{perf_counter() - start} sec")
+    mpf(process_file, files)
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

@@ -2,7 +2,6 @@
 import json
 import operator
 from pathlib import Path
-
 import ssdeep
 from pbar import Pbar
 from dh import get_files
@@ -59,9 +58,7 @@ def compare_files(file_paths: list[Path], similarity_threshold: int = 70):
                 print(f"Error comparing hashes for {filepath1_str} and {filepath2_str}: {e}")
             except Exception as e:
                 print(f"An unexpected error occurred during comparison for {filepath1_str} and {filepath2_str}: {e}")
-
     similarities.sort(key=operator.itemgetter("similarity_score"), reverse=True)
-
     return similarities
 
 

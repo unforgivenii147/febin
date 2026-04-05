@@ -5,7 +5,6 @@ import json
 import shutil
 import sys
 from pathlib import Path
-
 import ssdeep
 from dh import get_files
 
@@ -158,22 +157,17 @@ def main() -> None:
     print(f"Found {len(files)} files. Computing hashes...")
     hashes = compute_hashes(files)
     groups = group_similar_files(hashes, threshold)
-
     if not groups and mode != "matrix":
         print("No similar files found.")
-
     elif mode == "copy":
         print(f"Found {len(groups)} groups of similar files.")
         copy_groups(groups)
         print("Copied groups to 'output' directory.")
-
     elif mode in {"csv", "json"}:
         print(f"Found {len(groups)} groups of similar files.")
         write_report(groups, furmat=mode)
-
     elif mode == "matrix":
         write_matrix(hashes, threshold, pretty=True)
-
     else:
         print("Unknown mode. Use 'copy', 'csv', 'json', or 'matrix'.")
 

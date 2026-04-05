@@ -35,7 +35,6 @@ def main() -> int:
         return 1
     ext = path.suffix
     outname = f"{start}{ext}" if end == -1 else f"{start}_{end}{ext}"
-
     try:
         with (
             path.open(

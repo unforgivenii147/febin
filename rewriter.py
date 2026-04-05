@@ -2,7 +2,6 @@
 import ast
 import sys
 from pathlib import Path
-
 import astunparse
 import unidecode
 from dh import format_size, get_pyfiles, get_size, is_binary, mpf
@@ -41,7 +40,6 @@ def main() -> None:
         process_file(files[0])
         sys.exit(0)
     _ = mpf(process_file, files)
-
     diffsize = before - get_size(cwd)
     print(f"space change: {format_size(diffsize)}")
 

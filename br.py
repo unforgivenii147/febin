@@ -2,7 +2,6 @@
 import sys
 import mmap
 from pathlib import Path
-
 from dh import get_size, get_files, format_size
 from joblib import Parallel, delayed
 from termcolor import cprint

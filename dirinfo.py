@@ -22,7 +22,6 @@ def scan_directory(path="."):
             except OSError:
                 size = 0
             total_size += size
-
             ext = full_path.suffix
             ext = ext.lower() if ext else "(no extension)"
             extensions.add(ext)

@@ -19,11 +19,8 @@ def copy_lines_to_clipboard(filename: str, start_line: int, end_line: int | None
         print(f"An unexpected error occurred while reading the file: {e}", file=sys.stderr)
         sys.exit(1)
     total_lines = len(lines)
-
     start_index = start_line - 1
-
     end_index = total_lines if end_line is None else end_line
-
     if not (0 <= start_index < total_lines):
         print(f"Error: Start line ({start_line}) is out of bounds. File has {total_lines} lines.", file=sys.stderr)
         sys.exit(1)
@@ -39,13 +36,11 @@ def copy_lines_to_clipboard(filename: str, start_line: int, end_line: int | None
             file=sys.stderr,
         )
         sys.exit(1)
-
     selected_lines = lines[start_index:end_index]
     content_to_copy = "".join(selected_lines)
     if not content_to_copy:
         print("No content selected to copy.", file=sys.stderr)
         sys.exit(0)
-
     try:
         process = subprocess.Popen(["termux-clipboard-set"], stdin=subprocess.PIPE, text=True, stderr=subprocess.PIPE)
         _stdout, stderr = process.communicate(input=content_to_copy)

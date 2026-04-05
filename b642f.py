@@ -22,7 +22,6 @@ def decode_base64_lines(input_path, output_folder="decoded_files"):
                     output_filename = f"decoded_{i:04d}.bin"
                     output_path = output_dir / output_filename
                     Path(output_path).write_bytes(decoded_bytes)
-
                     success_count += 1
                 except Exception as e:
                     print(f"✗ Line {i:4d} failed: {e}")

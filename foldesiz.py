@@ -3,7 +3,6 @@ import operator
 import os
 import shutil
 from pathlib import Path
-
 from dh import unique_path
 from fastwalk import walk_files
 
@@ -84,7 +83,6 @@ def distribute_files(files, folders, base_dir):
                 try:
                     dest_path = unique_path(dest_path)
                     shutil.move(filepath, dest_path)
-
                     moved_count += 1
                     break
                 except Exception as e:
@@ -96,16 +94,13 @@ def distribute_files(files, folders, base_dir):
 
 def main():
     base_dir = Path.cwd()
-
     files = get_all_files(base_dir)
     if not files:
         print("No files found.")
         return
-
     num_folders = calculate_optimal_folders(files)
     num_folders = 4
     folders = create_range_folders(base_dir, files, num_folders)
-
     distribute_files(files, folders, base_dir)
     print("Folderization complete!")
 

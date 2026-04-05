@@ -24,13 +24,11 @@ def enhanced_shuffle(
         try:
             with Path(input_file).open("r+b") as f:
                 mm = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
-
                 decoded_content = mm.decode("utf-8", errors="ignore")
                 lines = decoded_content.splitlines(keepends=True)
                 mm.close()
         except Exception as e:
             print(f"Error using mmap: {e}. Falling back to standard file reading.")
-
             with Path(input_file).open(encoding="utf-8") as f:
                 lines = f.readlines()
     else:
@@ -48,9 +46,7 @@ def enhanced_shuffle(
                 crypto_shuffle(shuffled_lines)
             elif method == "shuffle3":
                 shuffle3(shuffled_lines)
-
         output_path = output_file_prefix or input_file
-
         if output_file_prefix:
             output_path = f"{output_file_prefix}_{method}.txt"
         else:
@@ -76,7 +72,6 @@ def shuffle3(lst):
 
 
 def test_randomness(input_file):
-
     method_to_test = "crypto"
     print(f"Testing randomness with method: {method_to_test}")
     lines_to_test = []
@@ -118,7 +113,6 @@ def main():
         "--output",
         help="Output file prefix (default: will append method name to input file name)",
     )
-
     parser.add_argument(
         "-r",
         "--repeats",
@@ -133,7 +127,6 @@ def main():
         help="Test randomness of the 'crypto' method",
     )
     args = parser.parse_args()
-
     output_prefix = args.output
     if output_prefix and not output_prefix.endswith((".txt", ".TXT")):
         output_prefix += ".txt"

@@ -2,7 +2,6 @@
 import mmap
 from multiprocessing import cpu_count
 from pathlib import Path
-
 import regex as re
 
 LOG_EXT = ".log"

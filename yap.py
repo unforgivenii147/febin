@@ -4,7 +4,6 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-
 from dh import format_size, get_pyfiles, get_size
 from termcolor import cprint
 
@@ -39,7 +38,6 @@ def format_single_file(file_path: Path, args) -> bool:
                     line_length=120,
                 ),
             )
-
             file_path.write_text(code, encoding="utf-8")
         elif args.autopep:
             import autopep8

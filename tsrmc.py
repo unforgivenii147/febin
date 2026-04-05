@@ -2,7 +2,6 @@
 import ast
 from multiprocessing import get_context
 from pathlib import Path
-
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, format_size, get_size
 from fastwalk import walk_files

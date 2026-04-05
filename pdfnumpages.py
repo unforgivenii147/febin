@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 from multiprocessing import get_context
 from pathlib import Path
 import sys
-
 import pdfplumber
 from fastwalk import walk_files
 
@@ -13,11 +11,9 @@ def process_file(fp):
     if fp.exists() and not fp.is_symlink():
         with pdfplumber.open(fp) as pdf:
             numpages = len(pdf.pages)
-            #            print(numpages)
             new_name = fp.stem + str(numpages) + ".pdf"
             print(new_name)
             np = Path(f"{fp.parent}/{new_name}")
-            #            print(np)
             if str(numpages) in fp.stem:
                 return
             if not np.exists():
@@ -34,7 +30,6 @@ def main():
         path = Path(pth)
         if path.is_file() and path.suffix == ".pdf":
             files.append(path)
-
     with get_context("spawn").Pool(8) as pool:
         for _ in pool.imap_unordered(process_file, files):
             pass

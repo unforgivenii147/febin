@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-
 from moviepy import AudioFileClip
 
 file = sys.argv[1]

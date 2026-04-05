@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 import sys
-
 from fastwalk import walk_files
 from dh import mpf
 

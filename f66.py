@@ -37,7 +37,6 @@ def main() -> None:
         ctime = datetime.fromtimestamp(ct).strftime("%Y/%m/%d-%H:%M:%S")
         newct[pth] = ctime
         path_str = str(pth.relative_to(cwd))
-
         max_path_len = max(len(path_str), 20)
         print(f"{path_str:<{max_path_len}}", end=" ")
         cprint(f"{ctime}", "yellow")

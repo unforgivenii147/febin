@@ -2,7 +2,6 @@
 import string
 from pathlib import Path
 import sys
-
 from fastwalk import walk_files
 from dh import mpf
 
@@ -28,7 +27,6 @@ def main():
         path = Path(pth)
         if path.is_file():
             files.append(path)
-
     mpf(process_file, files)
 
 

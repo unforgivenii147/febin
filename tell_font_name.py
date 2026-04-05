@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 import regex as re
 from dh import get_files, mpf, unique_path
 from fontTools.ttLib import TTFont
@@ -80,7 +79,6 @@ def main() -> None:
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-
     _ = mpf(process_file, files)
 
 

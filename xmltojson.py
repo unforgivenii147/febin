@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-import xml.etree.ElementTree as ET
+from defusedxml.ElementTree import parse as _parse
 import json
 from pathlib import Path
 import sys
@@ -32,17 +32,14 @@ def etree_to_dict(element):
 def xml_to_json(xml_file_path):
     json_file_path = Path(xml_file_path).with_suffix(".json")
     try:
-        # Parse the XML file
-        tree = ET.parse(xml_file_path)
+        tree = _parse(xml_file_path)
         root = tree.getroot()
-
         json_data = etree_to_dict(root)
-
         with json_file_path.open("w", encoding="utf-8") as json_file:
             json.dump(json_data, json_file, indent=2, ensure_ascii=False)
         print(f"Successfully converted '{xml_file_path}' to '{json_file_path}'")
-    except ET.ParseError as e:
-        print(f"Error parsing XML file: {e}")
+    except:
+        print("Error parsing XML file")
 
 
 if __name__ == "__main__":

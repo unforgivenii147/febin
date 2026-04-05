@@ -2,7 +2,6 @@
 import json
 from collections import defaultdict
 from pathlib import Path
-
 from fastwalk import walk
 from folder_hash import hash_folder
 

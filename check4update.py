@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 import subprocess
-
 import regex as re
 import requests
 from bs4 import BeautifulSoup

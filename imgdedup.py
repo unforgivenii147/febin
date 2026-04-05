@@ -1,18 +1,14 @@
 import argparse
 from pathlib import Path
-
 import cv2
 import numpy as np
 from imutils import paths
 
 
 def dhash(image, hashSize=8):
-
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     resized = cv2.resize(gray, (hashSize + 1, hashSize))
-
     diff = resized[:, 1:] > resized[:, :-1]
-
     return sum(2**i for (i, v) in enumerate(diff.flatten()) if v)
 
 
@@ -50,37 +46,29 @@ Examples:
     )
     ap.add_argument("--remove", action="store_true", help="actually delete duplicate images")
     args = vars(ap.parse_args())
-
     dataset_path = args["path"]
     if not Path(dataset_path).is_dir():
         msg = f"[ERROR] dataset path does not exist or is not a directory: {dataset_path}"
         raise SystemExit(msg)
-
     is_remove_mode = args["remove"]
-
     print("[INFO] computing image hashes...")
     hashes = compute_hashes(dataset_path)
     if not hashes:
         print("[INFO] no images found in directory")
         return
     print(f"[INFO] found {len(hashes)} unique image(s)")
-
     for h, hashedPaths in hashes.items():
         if len(hashedPaths) > 1:
             if not is_remove_mode:
                 montage = None
-
                 for p in hashedPaths:
                     image = cv2.imread(p)
                     if image is None:
                         print(f"[WARN] unable to read image for montage: {p}")
                         continue
                     image = cv2.resize(image, (900, 900))
-
                     montage = image if montage is None else np.hstack([montage, image])
-
                 print(f"[INFO] found {len(hashedPaths) - 1} duplicates with hash: {h}")
-
             else:
                 print(f"[INFO] removing {len(hashedPaths) - 1} duplicates with hash: {h}")
                 for p in hashedPaths[1:]:

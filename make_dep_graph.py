@@ -9,7 +9,6 @@ from pathlib import Path
 def get_installed_packages_dependencies():
     dependencies = {}
     site_packages_path = None
-
     for path in sys.path:
         if "site-packages" in path:
             site_packages_path = path

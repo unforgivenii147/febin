@@ -14,7 +14,6 @@ def update_setup_py(file_path: Path) -> bool:
     try:
         content = file_path.read_text(encoding="utf-8")
         original_content = content
-
         content = re.sub(
             r'author\s*=\s*["\'][^"\']*["\']',
             f'author="{NEW_INFO["name"]}"',
@@ -25,7 +24,6 @@ def update_setup_py(file_path: Path) -> bool:
             f'author_email="{NEW_INFO["email"]}"',
             content,
         )
-
         content = re.sub(
             r'(https?://github\.com/)[^/]+(/[^"\']*)',
             rf"\g<1>{NEW_INFO['github_username']}\g<2>",
@@ -46,7 +44,6 @@ def update_pyproject_toml(file_path: Path) -> bool:
     try:
         content = file_path.read_text(encoding="utf-8")
         original_content = content
-
         if "[project]" in content:
             author_pattern = (
                 r'(authors\s*=\s*\[\s*\{[^}]*name\s*=\s*["\'][^"\']*["\'][^}]*email\s*=\s*["\'][^"\']*["\'][^}]*\})'
@@ -54,13 +51,11 @@ def update_pyproject_toml(file_path: Path) -> bool:
 
             def replace_author(match):
                 author_block = match.group(1)
-
                 author_block = re.sub(
                     r'name\s*=\s*["\'][^"\']*["\']',
                     f'name = "{NEW_INFO["name"]}"',
                     author_block,
                 )
-
                 return re.sub(
                     r'email\s*=\s*["\'][^"\']*["\']',
                     f'email = "{NEW_INFO["email"]}"',
@@ -73,7 +68,6 @@ def update_pyproject_toml(file_path: Path) -> bool:
                 content,
                 flags=re.DOTALL,
             )
-
         content = re.sub(
             r"(https?://github\.com/)[^/]+(/)",
             rf"\g<1>{NEW_INFO['github_username']}\g<2>",
@@ -94,7 +88,6 @@ def update_setup_cfg(file_path: Path) -> bool:
     try:
         content = file_path.read_text(encoding="utf-8")
         original_content = content
-
         if "[metadata]" in content:
             content = re.sub(
                 r"^author\s*=\s*.*$",
@@ -102,14 +95,12 @@ def update_setup_cfg(file_path: Path) -> bool:
                 content,
                 flags=re.MULTILINE,
             )
-
             content = re.sub(
                 r"^author_email\s*=\s*.*$",
                 f"author_email = {NEW_INFO['email']}",
                 content,
                 flags=re.MULTILINE,
             )
-
         content = re.sub(
             r"(https?://github\.com/)[^/]+(/)",
             rf"\g<1>{NEW_INFO['github_username']}\g<2>",
@@ -133,7 +124,6 @@ def main():
     print(f"   Email: {NEW_INFO['email']}")
     print(f"   GitHub Username: {NEW_INFO['github_username']}")
     print("-" * 50)
-
     files_to_update = [
         (Path("setup.py"), update_setup_py),
         (

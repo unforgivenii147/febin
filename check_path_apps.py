@@ -5,11 +5,8 @@ from pathlib import Path
 
 
 def find_path_duplicates():
-
     path_env = os.environ.get("PATH", "")
-
     directories = [d for d in path_env.split(":") if d]
-
     app_map = defaultdict(list)
     print(f"--- Scanning {len(directories)} directories in PATH ---\n")
     for directory in directories:
@@ -18,13 +15,11 @@ def find_path_duplicates():
         try:
             for item in os.listdir(directory):
                 full_path = os.path.join(directory, item)
-
                 if Path(full_path).is_file() and os.access(full_path, os.X_OK):
                     app_map[item].append(directory)
         except PermissionError:
             print(f"Permission denied: {directory}")
             continue
-
     duplicates_found = False
     for app, locations in app_map.items():
         if len(locations) > 1:

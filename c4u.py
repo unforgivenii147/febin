@@ -1,17 +1,33 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
 import re
-
 import requests
-from dh import get_installed_packages
 from packaging.version import Version
 from termcolor import cprint
+import operator
+
+
+def get_installed_packages() -> dict[str, str]:
+    packages = {}
+    for dist in importlib.metadata.distributions():
+        meta = dist.metadata
+        name = meta.get("Name") or meta.get("name")
+        version = meta.get("Version") or meta.get("version")
+        if not name or not version:
+            continue
+        name = name.strip()
+        packages[name] = version
+    return dict(sorted(packages.items(), key=operator.itemgetter(0)))
 
 
 def get_latest_pkg_version(pkg_name):
-    url = f"https://mirror-pypi.runflare.com/{pkg_name}/json"
-    html = requests.get(url, timeout=10).text
+    try:
+        url = f"https://mirror-pypi.runflare.com/{pkg_name}/json"
+        html = requests.get(url, timeout=15).text
+    #        html.raise_for_status()
 
+    except:
+        return None
     wheel_pattern = re.compile(rf"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\.\-_]*)\.(?:whl|tar\.gz|zip)", re.IGNORECASE)
     versions = []
     for match in wheel_pattern.finditer(html):

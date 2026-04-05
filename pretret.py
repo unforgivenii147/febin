@@ -3,7 +3,6 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import sys
-
 from dh import get_filez
 
 
@@ -31,10 +30,8 @@ def main():
         if args
         else get_filez(cwd, exts=[".html", ".htm", ".js", ".jsx", ".ts", ".tsx", ".css", ".md", ".jsm", ".scss"])
     )
-
     with ThreadPoolExecutor(8) as executor:
         futures = [executor.submit(process_file, fp) for fp in files]
-
     for future in as_completed(futures):
         s = future.result()
         if not s[0]:

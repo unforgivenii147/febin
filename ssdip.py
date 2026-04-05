@@ -2,7 +2,6 @@
 import sys
 from collections import defaultdict
 from pathlib import Path
-
 import ssdeep
 
 
@@ -25,7 +24,6 @@ def find_fuzzy_duplicates(threshold: int = 70):
             except Exception as e:
                 print(f"Unexpected error processing {filepath}: {e}", file=sys.stderr)
     print(f"Calculated fuzzy hashes for {len(file_hashes)} files.")
-
     processed_files = list(file_hashes.keys())
     for i, f1_path in enumerate(processed_files):
         if not file_hashes.get(f1_path):
@@ -34,19 +32,16 @@ def find_fuzzy_duplicates(threshold: int = 70):
             f2_path = processed_files[j]
             if not file_hashes.get(f2_path):
                 continue
-
             comparison_score = ssdeep.compare(file_hashes[f1_path], file_hashes[f2_path])
             if comparison_score >= threshold:
                 print(
                     f"Potential match: {f1_path.relative_to(start_dir)} and {f2_path.relative_to(start_dir)} (Score: {comparison_score})"
                 )
-
                 duplicates[f1_path].append((f2_path, comparison_score))
     if not duplicates:
         print("No significantly similar files found.")
     else:
         print("\n--- Fuzzy Duplicate Sets ---")
-
         for file, similar_files in duplicates.items():
             print(f"\nFile: {file.relative_to(start_dir)}")
             for dup_file, score in similar_files:

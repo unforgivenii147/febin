@@ -2,7 +2,6 @@
 import sys
 from multiprocessing import get_context
 from pathlib import Path
-
 import tree_sitter_python
 from dh import clean_blank_lines, format_size, get_files, get_size
 from tree_sitter import Language, Parser
@@ -13,7 +12,6 @@ parser.language = Language(tree_sitter_python.language())
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
-
     def first_named_child(block):
         for child in block.children:
             if child.is_named:

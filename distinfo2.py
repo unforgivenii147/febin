@@ -3,7 +3,6 @@ import os
 import shutil
 from pathlib import Path
 import sys
-
 from termcolor import cprint
 
 ALLOWED = [
@@ -52,7 +51,6 @@ def process_lic(fp):
     if lic_dir.exists():
         shutil.rmtree(lic_dir)
         print(f"{lic_dir} removed.")
-
     rett = []
     for f in ALLOWED:
         nf = Path(f"{fp}/{f}")

@@ -2,7 +2,6 @@
 import ast
 import sys
 from pathlib import Path
-
 from dh import SOURCE_CODE_EXT, clean_blank_lines, format_size, get_nobinary, get_size, is_binary, mpf
 from termcolor import cprint
 

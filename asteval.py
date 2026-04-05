@@ -2,7 +2,6 @@
 import ast
 import sys
 from pathlib import Path
-
 from dh import move_file
 
 MAX_QUEUE = 16

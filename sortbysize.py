@@ -14,7 +14,6 @@ def sort_by_size(root_folder):
         if path.is_file():
             size = path.stat().st_size
         items.append({"name": path.name, "size": size})
-
     items.sort(key=operator.itemgetter("size"), reverse=True)
     return items
 

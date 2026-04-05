@@ -4,7 +4,6 @@ import os
 import sys
 from collections import Counter
 from pathlib import Path
-
 import pycld2
 
 BINARY_EXTENSIONS = {
@@ -108,21 +107,17 @@ class LanguageDetector:
 
     def is_text_file(self, filepath):
         ext = filepath.suffix.lower()
-
         if ext in BINARY_EXTENSIONS:
             return False
         if ext in TEXT_EXTENSIONS:
             return True
-
         try:
             with Path(filepath).open("rb") as f:
                 sample = f.read(1024)
                 if not sample:
                     return False
-
                 if b"\x00" in sample:
                     return False
-
                 try:
                     sample.decode("utf-8")
                     return True
@@ -135,7 +130,6 @@ class LanguageDetector:
         try:
             with Path(filepath).open(encoding="utf-8", errors="ignore") as f:
                 content = f.read(self.max_bytes)
-
             if len(content) < self.min_bytes:
                 return (
                     False,
@@ -143,7 +137,6 @@ class LanguageDetector:
                     None,
                     None,
                 )
-
             is_reliable, _, details = pycld2.detect(content, returnVectors=True)
             if details and len(details) > 0:
                 (
@@ -191,14 +184,11 @@ class LanguageDetector:
             return
         print(f"🔍 Scanning directory: {directory.absolute()}")
         print("=" * 60)
-
         for root, dirs, files in os.walk(directory):
             root_path = Path(root)
-
             dirs[:] = [d for d in dirs if not d.startswith(".")]
             for file in files:
                 filepath = root_path / file
-
                 if file.startswith("."):
                     continue
                 self.stats["total_files"] += 1
@@ -208,18 +198,15 @@ class LanguageDetector:
                         end="",
                         flush=True,
                     )
-
                 if not self.is_text_file(filepath):
                     self.stats["skipped_binary"] += 1
                     continue
-
                 (
                     is_reliable,
                     lang_name,
                     lang_code,
                     percent,
                 ) = self.detect_language(filepath)
-
                 if lang_name in {
                     "TOO_SHORT",
                     "UNKNOWN",
@@ -227,9 +214,7 @@ class LanguageDetector:
                 } or lang_name.startswith(("ERROR:", "CLD2_ERROR:")):
                     self.stats[("skipped_small" if lang_name == "TOO_SHORT" else "skipped_error")] += 1
                     continue
-
                 self.stats["languages"][lang_name] += 1
-
                 if lang_code != "en" or not only_report_non_english:
                     if (lang_code == "en" and not is_reliable and only_report_non_english) or lang_code != "en":
                         self.stats["non_english"].append({
@@ -245,7 +230,6 @@ class LanguageDetector:
     def report_results(self, only_report_non_english=True):
         print("\n📊 SCAN RESULTS")
         print("=" * 60)
-
         print(f"📁 Total files processed: {self.stats['total_files']}")
         print(f"⏭️  Skipped binary files: {self.stats['skipped_binary']}")
         print(f"📏 Skipped small files (<100 bytes): {self.stats['skipped_small']}")
@@ -254,16 +238,13 @@ class LanguageDetector:
             print(f"🌍 Non-English files found: {len(self.stats['non_english'])}")
         else:
             print(f"🌍 Total text files analyzed: {sum(self.stats['languages'].values())}")
-
         if self.stats["languages"]:
             print("\n📈 Language Distribution:")
             for lang, count in self.stats["languages"].most_common():
                 print(f"  • {lang}: {count} files")
-
         if self.stats["non_english"]:
             print(f"\n📝 Non-English Files ({len(self.stats['non_english'])}):")
             print("-" * 60)
-
             non_english_by_lang = {}
             for item in self.stats["non_english"]:
                 lang = item["language"]
@@ -281,7 +262,6 @@ class LanguageDetector:
                     print(f"    ... and {len(files) - 10} more")
         else:
             print("\n✅ No non-English files found!")
-
         print("\n" + "=" * 60)
         english_files = sum(self.stats["languages"].get("ENGLISH", 0))
         print(
@@ -328,18 +308,15 @@ def main():
         help="Output results to file",
     )
     args = parser.parse_args()
-
     detector = LanguageDetector(
         min_bytes=args.min_bytes,
         max_bytes=args.max_bytes,
     )
-
     detector.scan_directory(
         args.directory,
         show_progress=not args.no_progress,
         only_report_non_english=not args.all,
     )
-
     if args.output:
         from contextlib import redirect_stdout
 

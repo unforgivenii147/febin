@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
-
 import argparse
 import fnmatch
 import operator
@@ -10,13 +9,11 @@ import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import TYPE_CHECKING
-
 import regex as re
 from dh import is_binary
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
-
 IGNORED_DIRS = {
     ".git",
     ".hg",

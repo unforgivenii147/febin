@@ -2,7 +2,6 @@
 import re
 import sys
 from pathlib import Path
-
 from dh import fsz, get_files, gsz
 from joblib import Parallel, delayed
 from loguru import logger
@@ -10,9 +9,7 @@ from termcolor import cprint
 
 CHUNK_SIZE = 1024 * 1024
 N_JOBS = -1
-
 multi_line_comment_re = r"/\*.*?\*/"
-
 single_line_comment_re = r"//.*"
 
 
@@ -30,10 +27,9 @@ def process_file(fp):
 
 def main():
     root_dir = Path.cwd()
-    before = gsz(root_dir)  # Get total size before processing
+    before = gsz(root_dir)
     args = sys.argv[1:]
     files = []
-
     if args:
         for arg in args:
             p = Path(arg)
@@ -62,11 +58,9 @@ def main():
                 ".mm",
             ],
         )
-
     Parallel(n_jobs=N_JOBS, backend="loky")(delayed(process_file)(f) for f in files)
-
     diffsize = before - gsz(root_dir)
-    cprint(f"space change : {fsz(diffsize)}", "cyan")  # Better to sum sizes of processed files.
+    cprint(f"space change : {fsz(diffsize)}", "cyan")
 
 
 if __name__ == "__main__":

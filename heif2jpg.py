@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 import sys
-
 import pillow_heif as ph
 from dh import get_size
 from fastwalk import walk_files

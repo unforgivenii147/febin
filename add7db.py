@@ -5,7 +5,6 @@ import os
 import sqlite3
 import sys
 from pathlib import Path
-
 import py7zr
 
 
@@ -47,12 +46,9 @@ def compress_data(data_bytes):
         return None
     try:
         buffer = io.BytesIO()
-
         with py7zr.SevenZipFile(buffer, "w") as archive:
             archive.writestr("content", data_bytes)
-
         compressed_data = buffer.getvalue()
-
         return base64.b64encode(compressed_data).decode("ascii")
     except Exception as e:
         print(f"    Compression error: {e!s}")
@@ -68,10 +64,8 @@ def read_file_contents(filepath):
             "iso-8859-1",
         ]
         get_size = Path(filepath).stat().st_size
-
         if get_size > 10 * 1024 * 1024:
             print(f"    Warning: Large file ({get_size / 1024 / 1024:.1f}MB), may take time to compress")
-
         for encoding in encodings:
             try:
                 with Path(filepath).open(encoding=encoding) as f:
@@ -91,7 +85,6 @@ def read_file_contents(filepath):
                 UnicodeError,
             ):
                 continue
-
         with Path(filepath).open("rb") as f:
             content = f.read()
             return {
@@ -126,7 +119,6 @@ def get_files_in_current_dir():
                 size_str = f"{get_size / 1024:.1f}KB" if get_size < 1024 * 1024 else f"{get_size / 1024 / 1024:.1f}MB"
                 print(f"  Processing: {item} ({size_str})")
                 file_data = read_file_contents(item_path)
-
                 if file_data["is_binary"]:
                     compressed = compress_data(file_data["content"])
                     if compressed:
@@ -180,7 +172,6 @@ def insert_files(cursor, folder_name, files):
 
 
 def main():
-
     try:
         pass
     except ImportError:
@@ -188,7 +179,6 @@ def main():
         print("Install it with: pip install py7zr")
         sys.exit(1)
     db_path = "/sdcard/pkgs.db"
-
     if not os.access("/sdcard/", os.W_OK):
         print("Error: Cannot write to /sdcard/. Make sure you have proper permissions.")
         print("On Android, you might need to:")
@@ -199,14 +189,12 @@ def main():
     folder_name = get_user_folder_name(default_name)
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-
     while folder_exists_in_db(cursor, folder_name):
         print(f"Folder name '{folder_name}' already exists in database!")
         folder_name = input("Please enter a different name: ").strip()
         if not folder_name:
             folder_name = default_name + "_new"
             print(f"Using '{folder_name}' as default")
-
     create_folder_table(cursor, folder_name)
     print(f"\nScanning current directory: {Path.cwd()}")
     print("Reading and compressing file contents...")
@@ -216,7 +204,6 @@ def main():
     else:
         insert_files(cursor, folder_name, files)
         conn.commit()
-
         total_original = sum(f.get("original_size", 0) for f in files)
         total_compressed = sum(f.get("compressed_size", 0) for f in files)
         print(f"\n✅ Successfully added {len(files)} files to table '{folder_name}'")

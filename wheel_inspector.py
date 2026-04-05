@@ -27,7 +27,6 @@ class WheelInspector:
                     "files": zf.namelist(),
                     "metadata": {},
                 }
-
                 metadata_files = [f for f in zf.namelist() if f.endswith("/METADATA")]
                 if metadata_files:
                     metadata_content = zf.read(metadata_files[0]).decode("utf-8")
@@ -35,12 +34,10 @@ class WheelInspector:
                         if ":" in line:
                             key, value = line.split(":", 1)
                             info["metadata"][key.strip()] = value.strip()
-
                 wheel_files = [f for f in zf.namelist() if f.endswith("/WHEEL")]
                 if wheel_files:
                     wheel_content = zf.read(wheel_files[0]).decode("utf-8")
                     info["wheel_metadata"] = wheel_content
-
                 info["file_types"] = {
                     ".py": len([f for f in zf.namelist() if f.endswith(".py")]),
                     ".so": len([f for f in zf.namelist() if f.endswith(".so")]),
@@ -57,19 +54,15 @@ class WheelInspector:
         try:
             with zipfile.ZipFile(wheel_path, "r") as zf:
                 files = zf.namelist()
-
                 has_metadata = any(f.endswith("/METADATA") for f in files)
                 if not has_metadata:
                     issues.append("Missing METADATA file")
-
                 has_wheel = any(f.endswith("/WHEEL") for f in files)
                 if not has_wheel:
                     issues.append("Missing WHEEL file")
-
                 has_record = any(f.endswith("/RECORD") for f in files)
                 if not has_record:
                     issues.append("Missing RECORD file")
-
                 dist_info = [f for f in files if ".dist-info/" in f]
                 if not dist_info:
                     issues.append("No dist-info directory found")

@@ -3,106 +3,140 @@ import os
 import time
 from joblib import Parallel, delayed
 import brotlicffi
-from rich.console import Console
-from rich.text import Text
-console = Console()
-def compress_file_task(filepath, current_dir, output_base_dir):
-    """
-    Compresses a single file using brotlicffi.
-    Returns a dictionary with compression results.
-    """
+from loguru import logger
+import sys
+
+logger.remove()
+logger.add(sys.stderr, format="{time} {level} {message}", level="INFO")
+CHUNK_SIZE = 1 * 1024 * 1024
+
+
+def compress_chunk(chunk_data, quality=11):
+    try:
+        return brotlicffi.compress(chunk_data, quality=quality)
+    except Exception as e:
+        logger.error(f"Error compressing chunk: {e}")
+        return None
+
+
+def process_single_file(filepath, current_dir, output_base_dir, quality=11):
     try:
         relative_path = os.path.relpath(filepath, current_dir)
         output_sub_dir = os.path.join(output_base_dir, os.path.dirname(relative_path))
         os.makedirs(output_sub_dir, exist_ok=True)
-original_size = os.path.getsize(filepath)
         compressed_filepath = os.path.join(output_sub_dir, os.path.basename(filepath) + ".br")
-with open(filepath, 'rb') as f_in:
-            data = f_in.read()
-with open(compressed_filepath, 'wb') as f_out:
-            compressed_data = brotlicffi.compress(data, quality=11)  # quality 11 is max
-            f_out.write(compressed_data)
-compressed_size = os.path.getsize(compressed_filepath)
-# Delete original file only if compression was successful and compressed file exists
-        if os.path.exists(compressed_filepath) and compressed_size > 0:
-            os.remove(filepath)
-            console.log(f"[green]Compressed and deleted original:[/green] [cyan]{filepath}[/cyan] -> [yellow]{compressed_filepath}[/yellow]")
-            return {
-                "success": True,
-                "filepath": filepath,
-                "original_size": original_size,
-                "compressed_size": compressed_size
-            }
-        else:
-            # If compressed file is empty or not created, consider it a failure
-            if os.path.exists(compressed_filepath):
-                os.remove(compressed_filepath) # Clean up empty compressed file
-            console.log(f"[bold red]Failed to compress (empty output) {filepath}. Original not deleted.[/bold red]")
+        original_size = os.path.getsize(filepath)
+        logger.info(f"Processing file: {filepath} (Size: {original_size / (1024 * 1024):.2f} MB)")
+        chunks = []
+        with open(filepath, "rb") as f_in:
+            while True:
+                chunk = f_in.read(CHUNK_SIZE)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+        if not chunks:
+            logger.warning(f"File {filepath} is empty. Skipping compression.")
             return {
                 "success": False,
                 "filepath": filepath,
                 "original_size": original_size,
-                "compressed_size": 0
+                "compressed_size": 0,
+                "reason": "empty_file",
             }
-except Exception as e:
-        console.log(f"[bold red]Error compressing {filepath}:[/bold red] {e}")
+        logger.info(f"Compressing {len(chunks)} chunks for {filepath}...")
+        compressed_chunks = Parallel(n_jobs=-1, verbose=0)(delayed(compress_chunk)(chunk, quality) for chunk in chunks)
+        compressed_chunks = [c for c in compressed_chunks if c is not None]
+        if not compressed_chunks:
+            logger.error(f"All chunks failed to compress for {filepath}. Original not deleted.")
+            return {
+                "success": False,
+                "filepath": filepath,
+                "original_size": original_size,
+                "compressed_size": 0,
+                "reason": "chunk_compression_failed",
+            }
+        with open(compressed_filepath, "wb") as f_out:
+            f_out.writelines(compressed_chunks)
+        compressed_size = os.path.getsize(compressed_filepath)
+        if os.path.exists(compressed_filepath) and compressed_size > 0:
+            os.remove(filepath)
+            logger.info(f"Successfully compressed and deleted original: {filepath} -> {compressed_filepath}")
+            return {
+                "success": True,
+                "filepath": filepath,
+                "original_size": original_size,
+                "compressed_size": compressed_size,
+            }
+        if os.path.exists(compressed_filepath):
+            os.remove(compressed_filepath)
+        logger.error(f"Failed to compress {filepath} (empty or invalid output). Original not deleted.")
+        return {
+            "success": False,
+            "filepath": filepath,
+            "original_size": original_size,
+            "compressed_size": 0,
+            "reason": "invalid_compressed_output",
+        }
+    except Exception as e:
+        logger.error(f"An unexpected error occurred while processing {filepath}: {e}")
         return {
             "success": False,
             "filepath": filepath,
             "original_size": 0,
-            "compressed_size": 0
+            "compressed_size": 0,
+            "reason": "unexpected_error",
         }
+
+
 def get_all_files(directory):
-    """
-    Recursively gets all files in the given directory.
-    """
     file_list = []
     for root, _, files in os.walk(directory):
-        for filename in files:
-            file_list.append(os.path.join(root, filename))
+        file_list.extend(os.path.join(root, filename) for filename in files)
     return file_list
+
+
 def main():
     current_dir = os.getcwd()
-    output_base_dir = os.path.join(current_dir, "compressed_files") # New base directory for compressed files
-all_files = get_all_files(current_dir)
-# Filter out files that are already compressed or in the output directory
-    files_to_compress = []
-    for f in all_files:
-        if not f.endswith(".br") and not f.startswith(output_base_dir):
-            files_to_compress.append(f)
-if not files_to_compress:
-        console.print("[bold yellow]No files found to compress in the current directory.[/bold yellow]")
+    output_base_dir = os.path.join(current_dir, "compressed_files")
+    all_files = get_all_files(current_dir)
+    files_to_compress = [f for f in all_files if not f.endswith(".br") and not f.startswith(output_base_dir)]
+    if not files_to_compress:
+        logger.info("No files found to compress in the current directory.")
         return
-console.print(f"[bold blue]Found {len(files_to_compress)} files to compress. Starting parallel compression...[/bold blue]")
-# Use joblib for parallel processing
-    # n_jobs=-1 means use all available CPU cores
-    results = Parallel(n_jobs=-1, verbose=10)(
-        delayed(compress_file_task)(filepath, current_dir, output_base_dir)
-        for filepath in files_to_compress
+    logger.info(
+        f"Found {len(files_to_compress)} files to compress. Starting sequential file processing with parallel chunk compression..."
     )
-successful_compressions = 0
+    total_files_processed = 0
+    successful_compressions = 0
     total_original_size = 0
     total_compressed_size = 0
-for result in results:
-        if result["success"]:
-            successful_compressions += 1
-            total_original_size += result["original_size"]
-            total_compressed_size += result["compressed_size"]
-console.print(Text("\n" + "="*40, style="bold blue"))
-    console.print("[bold green]Compression Summary:[/bold green]")
-    console.print(f"Total files processed: {len(files_to_compress)}")
-    console.print(f"Successfully compressed and deleted originals: {successful_compressions}")
-    console.print(f"Failed compressions: {len(files_to_compress) - successful_compressions}")
-if total_original_size > 0:
+    start_time = time.time()
+    for file_idx, filepath in enumerate(files_to_compress):
+        logger.info(f"--- Processing file {file_idx + 1}/{len(files_to_compress)}: {filepath} ---")
+        result = process_single_file(filepath, current_dir, output_base_dir)
+        total_files_processed += 1
+    if result["success"]:
+        successful_compressions += 1
+        total_original_size += result["original_size"]
+        total_compressed_size += result["compressed_size"]
+    logger.info(f"--- Finished file {file_idx + 1}/{len(files_to_compress)} ---")
+    end_time = time.time()
+    logger.info("\n" + "=" * 50)
+    logger.info("Compression Summary:")
+    logger.info(f"Total files scanned: {len(files_to_compress)}")
+    logger.info(f"Files successfully compressed and originals deleted: {successful_compressions}")
+    logger.info(f"Files with failed compression: {total_files_processed - successful_compressions}")
+    if total_original_size > 0:
         reduction_percent = ((total_original_size - total_compressed_size) / total_original_size) * 100
-        console.print(f"Total original size: {total_original_size / (1024*1024):.2f} MB")
-        console.print(f"Total compressed size: {total_compressed_size / (1024*1024):.2f} MB")
-        console.print(f"[bold green]Total size reduction: {reduction_percent:.2f}%[/bold green]")
+        logger.info(f"Total original size: {total_original_size / (1024 * 1024):.2f} MB")
+        logger.info(f"Total compressed size: {total_compressed_size / (1024 * 1024):.2f} MB")
+        logger.info(f"Total size reduction: {reduction_percent:.2f}%")
     else:
-        console.print("No data was successfully compressed to calculate reduction.")
-console.print(f"[bold magenta]Compressed files are saved in the '{output_base_dir}' directory.[/bold magenta]")
-    console.print(Text("="*40, style="bold blue"))
+        logger.info("No data was successfully compressed to calculate reduction.")
+    logger.info(f"Compressed files are saved in the '{output_base_dir}' directory.")
+    logger.info(f"Total time taken: {end_time - start_time:.2f} seconds")
+    logger.info("=" * 50)
+
+
 if __name__ == "__main__":
-    # Ensure joblib, brotlicffi, and rich are installed:
-    # pip install joblib brotlicffi rich
     main()

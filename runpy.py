@@ -3,7 +3,6 @@ import sys
 from pathlib import Path
 from collections import deque
 from multiprocessing import get_context
-
 from dh import get_size, format_size, get_pyfiles, run_command
 from termcolor import cprint
 

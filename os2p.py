@@ -2,20 +2,17 @@
 import ast
 import sys
 from pathlib import Path
-
 from dh import fsz, get_files, gsz, mpf
 from termcolor import cprint
 
 
 def process_file(fp):
-
     try:
         content = fp.read_text(encoding="utf-8")
         tree = ast.parse(content)
 
         class OsPathTransformer(ast.NodeTransformer):
             def visit_Call(self, node):
-
                 if (
                     isinstance(node.func, ast.Attribute)
                     and isinstance(node.func.value, ast.Name)
@@ -27,13 +24,11 @@ def process_file(fp):
                             f"Warning: os.path.join found in {file_path}. Requires manual review for Path division operator. Node: {ast.dump(node)}"
                         )
                         return node
-
                     if node.func.attr == "listdir":
                         print(
                             f"Info: os.listdir found in {file_path}. Consider using Path(path).iterdir(). Node: {ast.dump(node)}"
                         )
                         return node
-
                     if node.func.attr == "remove":
                         print(
                             f"Info: os.remove found in {file_path}. Replacing with Path.unlink(). Node: {ast.dump(node)}"
@@ -48,9 +43,7 @@ def process_file(fp):
                         print(
                             f"Info: os.path.splitext found in {file_path}. Replacing with Path.stem/suffix. Node: {ast.dump(node)}"
                         )
-
                         return node
-
                 elif (
                     isinstance(node.func, ast.Name)
                     and node.func.id == "os"
@@ -62,11 +55,9 @@ def process_file(fp):
                         f"Warning: Direct os.remove(string) call found in {file_path}. Consider using Path.unlink(). Node: {ast.dump(node)}"
                     )
                     return node
-
                 return self.generic_visit(node)
 
             def visit_Attribute(self, node):
-
                 if isinstance(node.value, ast.Name) and node.value.id == "os" and node.attr == "remove":
                     print(
                         f"Info: os.remove attribute found in {file_path}. Replacing with Path.unlink(). Node: {ast.dump(node)}"
@@ -77,23 +68,18 @@ def process_file(fp):
 
         transformer = OsPathTransformer()
         new_tree = transformer.visit(tree)
-
         has_pathlib_import = any(
             (isinstance(node, ast.Import) and any(alias.name == "pathlib" for alias in node.names))
             or (isinstance(node, ast.ImportFrom) and node.module == "pathlib")
             for node in ast.walk(new_tree)
         )
-
         if not has_pathlib_import:
             import_pathlib = ast.Import(names=[ast.alias(name="Path")])
             ast.fix_missing_locations(import_pathlib)
-
             new_tree.body.insert(0, import_pathlib)
             print(f"Info: Added import Path from pathlib to {file_path}")
-
         ast.fix_missing_locations(new_tree)
         new_content = ast.unparse(new_tree)
-
         try:
             ast.parse(new_content)
             print(f"Successfully validated and refactored: {file_path}")
@@ -101,7 +87,6 @@ def process_file(fp):
         except SyntaxError as e:
             print(f"Syntax error in refactored {file_path}: {e}")
             return content, False
-
     except Exception as e:
         print(f"Error processing {file_path}: {e}")
         return None, False
@@ -109,10 +94,9 @@ def process_file(fp):
 
 def main():
     root_dir = Path.cwd()
-    before = gsz(root_dir)  # Get total size before processing
+    before = gsz(root_dir)
     args = sys.argv[1:]
     files = []
-
     if args:
         for arg in args:
             p = Path(arg)
@@ -122,13 +106,12 @@ def main():
                 files.extend(get_files(p, recursive=True))
     else:
         files = get_files(root_dir)
-
     results = mpf(process_file, files)
     for result in results:
         if result:
             pass
     diffsize = before - gsz(root_dir)
-    cprint(f"space change : {fsz(diffsize)}", "cyan")  # Better to sum sizes of processed files.
+    cprint(f"space change : {fsz(diffsize)}", "cyan")
 
 
 if __name__ == "__main__":

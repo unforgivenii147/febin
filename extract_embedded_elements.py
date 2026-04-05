@@ -4,12 +4,10 @@ import hashlib
 import sys
 from collections.abc import Iterable
 from pathlib import Path
-
 import regex as re
 from dh import get_nobinary
 
 OUTPUT_DIR = Path("extracted_base64")
-
 DATA_URL_RE = re.compile(
     r"data:(?P<mime>[-\w.+/]+);base64,(?P<data>[A-Za-z0-9+/=\s]+)",
     re.IGNORECASE,
@@ -55,7 +53,6 @@ def content_hash(data: bytes) -> str:
 def extract_from_html(
     html: str,
 ) -> Iterable[tuple[str, bytes]]:
-
     for matchz in DATA_URL_RE.finditer(html):
         mime = matchz.group("mime")
         raw_data = matchz.group("data")

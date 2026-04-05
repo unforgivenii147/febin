@@ -489,8 +489,6 @@ class VenvRepacker:
 
 
 # CLI Interface
-
-
 def main():
     import argparse
 

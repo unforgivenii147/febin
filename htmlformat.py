@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-
 import regex as re
 
 HTML_EXTS = {".html", ".htm", ".svg", ".xml"}

@@ -5,7 +5,6 @@ import os
 import shutil
 import sys
 from pathlib import Path
-
 import ssdeep
 from ppdeep import compare, hash_from_file
 

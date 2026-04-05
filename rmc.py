@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
-import gc
 import operator
 import sys
 from pathlib import Path
-
 import tree_sitter_python as tspython
 from dh import DOC_TH1, DOC_TH2, clean_blank_lines, fsz, get_pyfiles, gsz, mpf3
 from termcolor import cprint
@@ -17,34 +15,6 @@ PRESERVED: set = {
     "# type",
     "# fmt",
 }
-
-
-def preprocess(orig):
-    cleaned = []
-    lines = orig.splitlines(keepends=True)
-    for line in lines:
-        stripped = line.strip()
-        if stripped.startswith(DOC_TH1) and stripped.endswith(DOC_TH1) and stripped != DOC_TH1 * 2:
-            continue
-        if stripped.startswith(DOC_TH2) and stripped.endswith(DOC_TH2) and stripped != DOC_TH2 * 2:
-            continue
-        if any(pat in stripped for pat in PRESERVED):
-            cleaned.append(line)
-            continue
-        if "#" in stripped and not stripped.startswith("#"):
-            indx = line.index("#")
-            cleaned.append(line[:indx])
-            continue
-        if not stripped.startswith("#"):
-            cleaned.append(line)
-    code = "".join(cleaned)
-    try:
-        _ = ast.parse(code)
-        gc.collect()
-        return code
-    except:
-        gc.collect()
-        return orig
 
 
 def should_preserve_comment(content):
@@ -96,10 +66,8 @@ def strip_code(source_code):
             replacement,
         ) in modifications:
             working_code = working_code[:start] + replacement + working_code[end:]
-        gc.collect()
         return working_code
     except:
-        gc.collect()
         return source_code
 
 
@@ -112,7 +80,6 @@ def rm_ast(content: str) -> tuple[str, int]:
     ranges = find_docstring_ranges(tree)
     for start, end in sorted(ranges, reverse=True):
         del lines[start - 1 : end]
-        gc.collect()
     return "\n".join(lines), len(ranges)
 
 
@@ -143,7 +110,6 @@ def find_docstring_ranges(node) -> list[tuple[int, int]]:
                     child.body[0].lineno,
                     child.body[0].end_lineno,
                 ))
-    gc.collect()
     return ranges
 
 
@@ -151,23 +117,20 @@ def process_file(file_path: Path) -> bool:
     before = gsz(file_path)
     try:
         original = file_path.read_text(encoding="utf-8")
-        if DOC_TH1 not in original and DOC_TH2 not in original and "#" not in original:
+        if DOC_TH1 not in original and DOC_TH2 not in original and "#!" not in original and "#" not in original:
             return True
-
         modified, _removed = rm_ast(original)
         finalcode = strip_code(modified)
         wcode = clean_blank_lines(finalcode)
         try:
             _ = ast.parse(wcode)
             file_path.write_text(wcode, encoding="utf-8")
-
             dsz = before - gsz(file_path)
             print(f"{file_path.name}", end=" ")
             cprint(
                 f"{fsz(dsz)}",
                 "blue",
             )
-            gc.collect()
             return True
         except:
             try:
@@ -180,13 +143,10 @@ def process_file(file_path: Path) -> bool:
                     f"{fsz(diffsize)}",
                     "blue",
                 )
-                gc.collect()
                 return True
             except:
-                gc.collect()
                 return False
     except:
-        gc.collect()
         return False
 
 
@@ -199,9 +159,7 @@ def main():
     if numfiles == 1:
         process_file(files[0])
         sys.exit(0)
-
     mpf3(process_file, files)
-
     diff_size = before - gsz(cwd)
     print(f"space saved : {fsz(diff_size)}")
 

@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-
 import regex as re
 from deep_translator import GoogleTranslator
 from dh import is_text_file

@@ -301,7 +301,6 @@ class WheelBuilder:
                     built += 1
             except Exception as e:
                 logger.debug(f"Failed to build {dist_info.name}: {e}")
-
         logger.info(f"\nBuilt {built}/{len(dist_infos)} wheels in {self.output_dir}")
         return built
 
@@ -335,13 +334,9 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-
   %(prog)s
-
   %(prog)s --site-packages /path/to/venv/lib/python3.11/site-packages
-
   %(prog)s --output ./wheels
-
   %(prog)s --package requests
         """,
     )

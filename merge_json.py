@@ -2,7 +2,6 @@
 import json
 import sys
 from pathlib import Path
-
 from dh import get_random_name
 
 
@@ -28,7 +27,6 @@ def merge_json_files(files):
             continue
         try:
             merged = mergedict(merged, load_json_object(path))
-
         except Exception as e:
             print(f"Warning: {path}: {e}")
     return merged

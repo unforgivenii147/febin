@@ -2,7 +2,6 @@
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from file_hash import hash_file
 from termcolor import cprint
 

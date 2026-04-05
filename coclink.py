@@ -2,7 +2,6 @@
 import os
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-
 import regex as re
 from dotenv import load_dotenv
 from googleapiclient.discovery import build

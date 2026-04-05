@@ -414,27 +414,16 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-
   python sort_unique_lines.py input.txt
-
   python sort_unique_lines.py input.txt --no-unique
-
   python sort_unique_lines.py input.txt --no-sort
-
   python sort_unique_lines.py input.txt --output sorted_output.txt
-
   python sort_unique_lines.py input.txt --reverse
-
   python sort_unique_lines.py input.txt --case-insensitive
-
   python sort_unique_lines.py input.txt --skip-empty
-
   python sort_unique_lines.py input.txt --dry-run -v
-
   python sort_unique_lines.py input.txt --analyze
-
   python sort_unique_lines.py input.txt --report stats.json
-
   python sort_unique_lines.py input.txt -v
         """,
     )

@@ -2,7 +2,6 @@
 import argparse
 import shutil
 from pathlib import Path
-
 import regex as re
 
 PRINT_PATTERN = re.compile(r"^\s*print\s+(?!\()(.+)$")

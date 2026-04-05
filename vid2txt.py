@@ -2,7 +2,6 @@
 import sys
 from multiprocessing import Process, Queue, cpu_count
 from pathlib import Path
-
 import cv2
 import pytesseract
 from PIL import Image
@@ -60,7 +59,6 @@ def main():
         if not ret:
             break
         frame_id += 1
-
         q_in.put((frame_id, frame))
         sent += 1
     for _ in workers:

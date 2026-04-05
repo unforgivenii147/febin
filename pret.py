@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 from dh import format_size, get_files, get_size, mpf, run_command
 from termcolor import cprint
 
@@ -69,9 +68,18 @@ def main() -> None:
         )
     )
     before = get_size(cwd)
-    cprint(f"{len(files)} files found.", "green")
+    lenbefore = len(files)
+    if not files:
+        print("no file found.")
+        sis.exit(0)
+    cprint(f"{lenbefore} files found.", "green")
+    for i, file in enumerate(files, 0):
+        if "node_modules" in file.parts:
+            files.pop(i)
+    lenafter = len(files)
+    print(f"frocessing {lenafter} files.", end=" | ")
+    cprint(f"{lenbefore - lenafter} files poped.", "cyan")
     mpf(process_file, files)
-
     diffsize = before - get_size(cwd)
     cprint(f"space change:{format_size(diffsize)}", "cyan")
 

@@ -8,7 +8,6 @@ from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
 from textwrap import dedent
-
 from dh import get_files, unique_path
 from loguru import logger
 

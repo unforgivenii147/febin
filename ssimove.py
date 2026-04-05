@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
 from pathlib import Path
-
 import ssdeep
 
 SEARCH_DIR = Path.cwd()
@@ -29,7 +28,6 @@ def find_similar_files(
 ) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     file_hashes: dict[Path, str] = {}
-
     for filepath in search_dir.rglob("*"):
         if filepath.is_file() and not filepath.is_symlink():
             hash_value = calculate_fuzzy_hash(filepath)
@@ -38,10 +36,8 @@ def find_similar_files(
     if not file_hashes:
         print("No files found or no hashes could be generated.")
         return
-
     similar_groups: dict[Path, list[Path]] = {}
     processed_files = set()
-
     file_paths = list(file_hashes.keys())
     num_files = len(file_paths)
     for i in range(num_files):
@@ -55,7 +51,6 @@ def find_similar_files(
             if other_file in processed_files:
                 continue
             other_hash = file_hashes[other_file]
-
             try:
                 similarity = ssdeep.compare(current_hash, other_hash)
                 if similarity >= similarity_threshold:
@@ -65,18 +60,14 @@ def find_similar_files(
                 print(f"Error comparing hashes for {current_file} and {other_file}: {e}")
             except Exception as e:
                 print(f"Unexpected error comparing hashes for {current_file} and {other_file}: {e}")
-
         if len(current_group) >= min_group_size:
             processed_files.update(current_group)
-
             representative_file = current_group[0]
             similar_groups[representative_file] = current_group
             print(f"  -> Added group (starting with {representative_file.name}) with {len(current_group)} files.")
-
     print("\n--- Moving Similar Files ---")
     moved_files_count = 0
     group_counter = 0
-
     files_to_move = set()
     final_groups_to_move = []
     for rep_file, group in similar_groups.items():
@@ -84,18 +75,15 @@ def find_similar_files(
         if len(valid_group) >= min_group_size:
             final_groups_to_move.append(valid_group)
             files_to_move.update(valid_group)
-
     processed_files.update(files_to_move)
     for group in final_groups_to_move:
         group_counter += 1
-
         group_output_subdir = output_dir / f"group_{group_counter:03d}"
         group_output_subdir.mkdir(parents=True, exist_ok=True)
         print(f"Creating group directory: {group_output_subdir}")
         for file_to_move in group:
             try:
                 dest_path = group_output_subdir / file_to_move.name
-
                 if dest_path.exists():
                     print(f"  - Warning: Destination file already exists, skipping: {dest_path}")
                     continue
@@ -121,7 +109,6 @@ if __name__ == "__main__":
         print("INFO: Processing files in the current directory.")
     else:
         print(f"INFO: Processing files in: {SEARCH_DIR}")
-
     if SEARCH_DIR.resolve() == OUTPUT_DIR.resolve():
         print("ERROR: SEARCH_DIR and OUTPUT_DIR cannot be the same. Please configure them differently.")
     else:

@@ -2,7 +2,6 @@
 import colorsys
 import sys
 from pathlib import Path
-
 import regex as re
 
 HEX_RE = re.compile(r"^#([0-9a-fA-F]{6})$")

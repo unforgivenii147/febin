@@ -1,14 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+import ast
 import sys
 from pathlib import Path
-from typing import Int, Str
-
 from dh import format_size, get_files, get_size, mpf
 
 
-def _get_comments_symbol(text: Str, symbol: Str) -> list[Str]:
+def _get_comments_symbol(text: str, symbol: str) -> list[str]:
     comments: list = []
-    i: Int = 0
+    i: int = 0
     indexes: list = []
     for i in range(len(text)):
         if text[i] == symbol and len(text) > i + 2 and text[i] == text[i + 1] == text[i + 2]:
@@ -21,7 +20,7 @@ def _get_comments_symbol(text: Str, symbol: Str) -> list[Str]:
     return comments
 
 
-def _get_comments_simplequot(text: Str) -> list[str]:
+def _get_comments_simplequot(text: str) -> list[str]:
     return _get_comments_symbol(text=text, symbol="'")
 
 
@@ -48,9 +47,17 @@ def remove_comments(text: str) -> str:
 
 
 def process_file(fp):
-    data = fp.read_text()
+    data = fp.read_text(encoding="utf-8")
     result = remove_comments(data)
-    fp.write_text(result)
+    try:
+        _ = ast.parse(result)
+        fp.write_text(result, encoding="utf-8")
+    except:
+        print("result code is not valid")
+        backup_path = fp.with_suffix(fp.suffix + ".bak")
+        backup_path.write_text(data, encoding="utf-8")
+        fp.write_text(result, encoding="utf-8")
+        print(f"backup created {backup_path.name}")
 
 
 def main():
@@ -58,7 +65,9 @@ def main():
     before = get_size(cwd)
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
-
+    if len(files) == 1:
+        process_file(files[0])
+        sys.exit(0)
     mpf(process_file, files)
     diff_size = before - get_size(cwd)
     print(f"space saved : {format_size(diff_size)}")

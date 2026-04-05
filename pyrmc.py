@@ -3,7 +3,6 @@ import ast
 import sys
 from multiprocessing import Pool
 from pathlib import Path
-
 import tree_sitter_python
 from dh import DOC_TH1, clean_blank_lines, format_size, get_size
 from termcolor import cprint
@@ -34,7 +33,6 @@ def process_again(pt):
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
-
     def first_named_child(block):
         for child in block.children:
             if child.is_named:

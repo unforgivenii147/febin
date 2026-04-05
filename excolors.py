@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-
 import regex as re
 from dh import get_filez, is_binary
 from termcolor import cprint
@@ -17,21 +16,19 @@ def pf(path):
         print(f"{path.name}", end=" : ")
         cprint(f"{len(found)}", "cyan")
         return found
-    else:
-        return []
+    return []
 
 
 def main():
     cwd = Path.cwd()
     outfile = cwd / "colors"
     colorz = set()
-
     for path in get_filez(cwd):
         if not is_binary(path):
             result = pf(path)
             if result:
                 colorz.update(result)
-    colors = sorted(list(colorz))
+    colors = sorted(colorz)
     fc = len(colors)
     for c in colors:
         if len(c) == 3:
@@ -44,7 +41,6 @@ def main():
         finals.append(k)
     finals = sorted(set(finals))
     outfile.write_text("\n".join(finals), encoding="utf-8")
-
     cprint(f"{fc} colors found", "green")
 
 

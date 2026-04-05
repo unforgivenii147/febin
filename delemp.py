@@ -3,25 +3,15 @@ import gc
 import sys
 import tempfile
 from pathlib import Path
-
 from dh import format_size, get_nobinary, get_size, mpf
 from termcolor import cprint
 
 
 def process_file(path: Path) -> int:
-    """
-    Optimizes a file by removing empty lines.
-    Returns the number of lines removed.
-    Handles symlinks, .bak files, and zero-sized files.
-    Uses a temporary file for in-place modification to reduce memory usage.
-    """
     if path.is_symlink() or path.suffix == ".bak" or get_size(path) == 0:
         return 0
-
     removed_count = 0
     try:
-        # Create a temporary file in the same directory to ensure atomicity if possible
-        # and to avoid issues with cross-filesystem moves.
         temp_file_path = None
         with tempfile.NamedTemporaryFile(
             mode="w+", encoding="utf-8", delete=False, dir=path.parent, suffix=".tmp"
@@ -33,25 +23,20 @@ def process_file(path: Path) -> int:
                         temp_f.write(line)
                     else:
                         removed_count += 1
-        # If no lines were removed, clean up the temp file and return.
         if not removed_count:
             temp_file_path.unlink()
             cprint(f"[NOCHANGE] {path.name}", "green")
             return 0
-
-        # Replace the original file with the temporary file
         Path(temp_file_path).replace(path)
         print(f"[OK] {path.name}", end=" | ")
         cprint(f"{removed_count}", "cyan")
         gc.collect()
         return removed_count
-
     except OSError:
-        # Clean up the temporary file if it exists and an error occurred
         if temp_file_path and temp_file_path.exists():
             temp_file_path.unlink()
         return 0
-    except Exception as e:  # Catch any other unexpected errors
+    except Exception as e:
         if temp_file_path and temp_file_path.exists():
             temp_file_path.unlink()
         print(f"An unexpected error occurred processing {path.name}: {e}")
@@ -69,7 +54,6 @@ def main():
         sys.exit(0)
     lines_removed = 0
     results = mpf(process_file, files)
-
     for result in results:
         if result:
             lines_removed += result

@@ -4,7 +4,6 @@ import json
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
-
 import xxhash
 
 BACKUP_FILE = ".symlink_backup.json"
@@ -29,7 +28,6 @@ def find_duplicates(directory="."):
     file_count = 0
     skipped_count = 0
     cwd = Path.cwd()
-
     for path in cwd.rglob("*"):
         if path.is_symlink():
             continue

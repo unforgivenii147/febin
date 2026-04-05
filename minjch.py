@@ -3,7 +3,6 @@ import json
 import multiprocessing
 import os
 from pathlib import Path
-
 import regex as re
 from rcssmin import cssmin
 

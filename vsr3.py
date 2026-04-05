@@ -204,7 +204,6 @@ def main():
         / 'site-packages'
     )
     if not site_packages.exists():
-
         site_packages = Path(sys.prefix) / 'Lib' / 'site-packages'
     """
     site_packages = Path.cwd()

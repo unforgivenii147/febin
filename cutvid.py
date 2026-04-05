@@ -1,54 +1,42 @@
 #!/data/data/com.termux/files/usr/bin/python
 import pathlib
 import sys
-
 import cv2
 
 
 def format_time(time_str):
     h, m, s = map(int, time_str.split(":"))
-    return (h * 3600 + m * 60 + s) * 1000  # Return time in milliseconds
+    return (h * 3600 + m * 60 + s) * 1000
 
 
 def cut_video(input_file, start_time_str, duration_str):
     if not pathlib.Path(input_file).exists():
         print(f"Error: Input file '{input_file}' not found.")
         return
-
     cap = cv2.VideoCapture(input_file)
-
     if not cap.isOpened():
         print(f"Error: Could not open video file '{input_file}'.")
         return
-
     fps = cap.get(cv2.CAP_PROP_FPS)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     duration_ms = format_time(duration_str)
     start_ms = format_time(start_time_str)
-
     start_frame = int(start_ms * fps / 1000)
     duration_frames = int(duration_ms * fps / 1000)
     end_frame = start_frame + duration_frames
-
-    # Ensure end_frame does not exceed total frames
     if end_frame > total_frames:
         end_frame = total_frames
         print("Warning: Duration exceeds video length. Cutting until the end of the video.")
-
-    # Define the codec and create VideoWriter object
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # You can change the codec as needed
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     output_filename = f"cut_{pathlib.Path(input_file).name}"
     out = cv2.VideoWriter(
         output_filename, fourcc, fps, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
     )
-
     if not out.isOpened():
         print(f"Error: Could not create video writer for '{output_filename}'.")
         cap.release()
         return
-
     cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-
     frames_written = 0
     for _i in range(start_frame, end_frame):
         ret, frame = cap.read()
@@ -56,10 +44,8 @@ def cut_video(input_file, start_time_str, duration_str):
             break
         out.write(frame)
         frames_written += 1
-
     print(f"Video segment saved to '{output_filename}'")
     print(f"Frames processed: {frames_written}")
-
     cap.release()
     out.release()
     cv2.destroyAllWindows()
@@ -69,9 +55,7 @@ if __name__ == "__main__":
     if len(sys.argv) != 4:
         print("Usage: python cut_video.py <filename.mkv> <start_time_hh:mm:ss> <duration_hh:mm:ss>")
         sys.exit(1)
-
     input_filename = sys.argv[1]
     start_time_str = sys.argv[2]
     duration_str = sys.argv[3]
-
     cut_video(input_filename, start_time_str, duration_str)

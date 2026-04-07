@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 import sys
-HTML_TEMPLATE=r"""<!doctype html>
+
+HTML_TEMPLATE = r"""<!doctype html>
 <html>
   <head>
     <link rel="stylesheet" href="style.css" />
@@ -15,7 +16,6 @@ HTML_TEMPLATE=r"""<!doctype html>
   </body>
 </html>
 """
-if __name__=="__main__":
-    file_name=Path(sys.argv[1]) or Path("index.html")
-    file_name.write_text(HTML_TEMPLATE,encoding="utf-8")
-
+if __name__ == "__main__":
+    file_name = Path(sys.argv[1]) or Path("index.html")
+    file_name.write_text(HTML_TEMPLATE, encoding="utf-8")

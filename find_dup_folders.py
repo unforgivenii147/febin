@@ -3,7 +3,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 from time import perf_counter as pff
-from fastwalk import walk,walk_files
+from fastwalk import walk, walk_files
 from folder_hash import hash_folder
 from xxhash import xxh64
 from termcolor import cprint
@@ -51,17 +51,17 @@ def find_duplicate_folders(cwd):
     for ppth in walk(cwd):
         pth = Path(ppth)
         if pth.is_dir():
-            start=pff()
+            start = pff()
             folder_hash_h = hash_folder(str(pth))
-            ht=start-pff()
+            ht = start - pff()
 
-            start=pff()
+            start = pff()
             folder_hash_x = hash_folder_xx(str(pth))
-            hx=start-pff()
-            if hx<ht:
-                cprint(f"xxhash was faster {hx:.6f}:{ht:.6f}","green")
+            hx = start - pff()
+            if hx < ht:
+                cprint(f"xxhash was faster {hx:.6f}:{ht:.6f}", "green")
             else:
-                cprint(f"hhhash was faster {hx:.6f}:{ht:.6f}","cyan")
+                cprint(f"hhhash was faster {hx:.6f}:{ht:.6f}", "cyan")
             if folder_hash_h:
                 folder_hashes[str(folder_hash_h)].append(str(pth))
     return {h: paths for h, paths in folder_hashes.items() if len(paths) > 1}

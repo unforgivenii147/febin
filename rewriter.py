@@ -14,8 +14,8 @@ def process_file(fn: Path) -> bool:
         return False
     try:
         content = fn.read_text(encoding="utf-8", errors="ignore")
-        backup_file=fn.with_suffix(fn.suffix+".bak")
-        backup_file.write_text(content,encoding="utf-8")
+        backup_file = fn.with_suffix(fn.suffix + ".bak")
+        backup_file.write_text(content, encoding="utf-8")
         new_content = content
         if fn.suffix == ".py":
             try:

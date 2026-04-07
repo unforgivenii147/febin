@@ -25,13 +25,13 @@ def find_candidates(root=".", recursive=False):
     if recursive:
         for dirpath, _, filenames in os.walk(root):
             for name in filenames:
-                fullpath=os.path.join(dirpath, name)
-                if not os.path.islink(fullpath)
+                fullpath = os.path.join(dirpath, name)
+                if not os.path.islink(fullpath):
                     yield fullpath
     else:
         for name in os.listdir(root):
-            fullpath=os.path.join(root, name)
-            if not os.path.islink(fullpath)
+            fullpath = os.path.join(root, name)
+            if not os.path.islink(fullpath):
                 yield fullpath
 
 

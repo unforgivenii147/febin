@@ -3,7 +3,6 @@ import ast
 import sys
 from pathlib import Path
 
-import astunparse
 import unidecode
 from dh import format_size, get_pyfiles, get_size, is_binary, mpf
 from termcolor import cprint
@@ -20,7 +19,7 @@ def process_file(fn: Path) -> bool:
         if fn.suffix == ".py":
             try:
                 tree = ast.parse(content)
-                new_content = astunparse.unparse(tree)
+                new_content = ast.unparse(tree)
                 fn.write_text(new_content, encoding="utf-8")
                 print(f"{fn.name} rewrited.")
                 return True

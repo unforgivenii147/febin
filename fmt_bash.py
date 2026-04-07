@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+import argparse
 import os
 import subprocess
-import argparse
 import sys
 
 

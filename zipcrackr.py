@@ -6,7 +6,7 @@ import zipfile
 from pathlib import Path
 
 
-def crack_zip_wordlist(zip_file_path, wordlist_path, extract_dir="extracted_files"):
+def crack_zip(zip_file_path, wordlist_path, extract_dir="extracted_files"):
     if not os.path.exists(zip_file_path):
         print(f"خطا: فایل ZIP یافت نشد: {zip_file_path}")
         return None
@@ -63,7 +63,7 @@ def crack_zip_wordlist(zip_file_path, wordlist_path, extract_dir="extracted_file
 if __name__ == "__main__":
     zip_file = sys.argv[1]
     wordlist_file = Path.home() / "isaac" / "wordlist.txt"
-    found_wordlist = crack_zip_wordlist(zip_file, wordlist_file)
+    found_wordlist = crack_zip(zip_file, wordlist_file)
     if found_wordlist:
         print(f"\nرمز عبور کشف شده: {found_wordlist}")
     else:

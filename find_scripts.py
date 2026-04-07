@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
-from dh import is_binary, get_filez
+from dh import get_filez, is_binary
 
 
 def find_scripts_without_extension(directory):

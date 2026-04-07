@@ -1,14 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import os
 import sys
 import time
+from pathlib import Path
 
 import brotlicffi
+from dh import fsz, get_files, gsz
 from joblib import Parallel, delayed
 from loguru import logger
-
-from dh import get_files, fsz, gsz
 
 logger.remove()
 logger.add(sys.stderr, format="{time} {level} {message}", level="INFO")

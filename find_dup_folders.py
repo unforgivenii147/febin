@@ -3,10 +3,11 @@ import json
 from collections import defaultdict
 from pathlib import Path
 from time import perf_counter as pff
+
 from fastwalk import walk, walk_files
 from folder_hash import hash_folder
-from xxhash import xxh64
 from termcolor import cprint
+from xxhash import xxh64
 
 
 def is_nested(path1: Path, path2: Path) -> bool:

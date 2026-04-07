@@ -5,9 +5,8 @@ from pathlib import Path
 
 import tree_sitter_python as tsp
 from dh import STDLIB, get_filez, get_installed_pkgs, is_binary
-from tree_sitter import Language, Parser
 from termcolor import cprint
-
+from tree_sitter import Language, Parser
 
 parser = Parser()
 parser.language = Language(tsp.language())

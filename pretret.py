@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import subprocess
+import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-import sys
+
 from dh import get_filez
 
 

@@ -3,6 +3,7 @@ import sys
 from collections import Counter, deque
 from multiprocessing import Pool
 from pathlib import Path
+
 import regex as re
 from dh import get_nobinary
 

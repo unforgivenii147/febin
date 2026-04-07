@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ctypes
 import ctypes.util
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 
 class StatxTimestamp(ctypes.Structure):

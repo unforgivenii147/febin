@@ -1,9 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
+
 from pathlib import Path
+
 import htmlmin
-from fastwalk import walk_files
 from dh import mpf
+from fastwalk import walk_files
 
 
 def process_file(file: Path) -> bool:

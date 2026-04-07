@@ -2,7 +2,8 @@
 import sys
 from functools import partial
 from pathlib import Path
-from dh import unique_path, mpf
+
+from dh import mpf, unique_path
 
 
 def rename_item_to_lowercase(path: Path, dry_run: bool = False, verbose: bool = False) -> tuple[Path, Path] | None:

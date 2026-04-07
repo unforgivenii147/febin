@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+import multiprocessing as mp
+import os
+import sys
+import time
 import zipfile
 from pathlib import Path
-import os
-import time
-import sys
+
 from print_persian import print_persian as _print
-import multiprocessing as mp
 
 """
 def attempt_password2(args):
@@ -23,7 +24,6 @@ def attempt_password2(args):
     except Exception as e:
         _print(f"خطای کلی در حین تلاش با '{password_candidate}': {e}")
         return None
-
 """
 
 

@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+import gc
 import subprocess
 from pathlib import Path
+
 from dh import get_filez
-import gc
 from termcolor import cprint
 
 
@@ -29,7 +30,6 @@ def main():
         if not path.suffix.lower() == ".png":
             continue
         cprint(f"{c}/{png_num}|remained:{png_num - c}", "cyan")
-
         process_file(path)
         c += 1
         gc.collect()

@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from defusedxml.ElementTree import parse as _parse
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
+
+from defusedxml.ElementTree import parse as _parse
 
 
 def etree_to_dict(element):

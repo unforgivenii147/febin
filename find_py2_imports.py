@@ -1,15 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import tree_sitter_python as tsp
 from dh import STDLIB2, get_filez
-from tree_sitter import Language, Parser
 from rapidfuzz import fuzz
 from termcolor import cprint
-
+from tree_sitter import Language, Parser
 
 cwd = Path.cwd()
-
 parser = Parser()
 parser.language = Language(tsp.language())
 VALID = {
@@ -51,7 +50,6 @@ def process_file(fp):
                     k = k[:indx]
                 if k not in impoz and not k.startswith("_"):
                     impoz.append(k + "\n")
-
     impoz = sorted(set(impoz))
     stdlib2 = list(STDLIB2)
     for x in impoz:

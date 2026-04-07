@@ -23,7 +23,6 @@ def get_latest_version(pkg_name: str) -> str | None:
         html = response.text
     except:
         return None
-
     wheel_pattern = re.compile(rf"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\.\-_]*)\.(?:whl|tar\.gz|zip)", re.IGNORECASE)
     versions = []
     for match in wheel_pattern.finditer(html):

@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import sys
-from fastwalk import walk_files
+from pathlib import Path
+
 from dh import mpf
+from fastwalk import walk_files
 
 shebang = "#!/data/data/com.termux/files/usr/bin/python\n\n"
 

@@ -4,6 +4,7 @@ import fnmatch
 import logging
 import mmap
 from pathlib import Path
+
 from dh import is_binary
 from tqdm import tqdm
 

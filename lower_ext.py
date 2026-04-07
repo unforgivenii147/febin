@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import string
-from pathlib import Path
 import sys
-from fastwalk import walk_files
+from pathlib import Path
+
 from dh import mpf
+from fastwalk import walk_files
 
 
 def is_all_upper(str1):

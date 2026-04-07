@@ -2,8 +2,11 @@
 import json
 from collections import defaultdict
 from pathlib import Path
-from fastwalk import walk
+from time import perf_counter as pff
+from fastwalk import walk,walk_files
 from folder_hash import hash_folder
+from xxhash import xxh64
+from termcolor import cprint
 
 
 def is_nested(path1: Path, path2: Path) -> bool:
@@ -20,7 +23,7 @@ def is_nested(path1: Path, path2: Path) -> bool:
     return False
 
 
-def hash_folder(folder_path):
+def hash_folder_xx(folder_path):
     hasher = xxh64()
     files = []
     for pth in walk_files(str(folder_path)):
@@ -48,9 +51,19 @@ def find_duplicate_folders(cwd):
     for ppth in walk(cwd):
         pth = Path(ppth)
         if pth.is_dir():
-            folder_hash = hash_folder(str(pth), hash_algorithm="sha256")
-            if folder_hash:
-                folder_hashes[str(folder_hash)].append(str(pth))
+            start=pff()
+            folder_hash_h = hash_folder(str(pth))
+            ht=start-pff()
+
+            start=pff()
+            folder_hash_x = hash_folder_xx(str(pth))
+            hx=start-pff()
+            if hx<ht:
+                cprint(f"xxhash was faster {hx:.6f}:{ht:.6f}","green")
+            else:
+                cprint(f"hhhash was faster {hx:.6f}:{ht:.6f}","cyan")
+            if folder_hash_h:
+                folder_hashes[str(folder_hash_h)].append(str(pth))
     return {h: paths for h, paths in folder_hashes.items() if len(paths) > 1}
 
 

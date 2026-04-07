@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import shutil
-from pathlib import Path
 import sys
+from pathlib import Path
+
 from termcolor import cprint
 
 ALLOWED = [

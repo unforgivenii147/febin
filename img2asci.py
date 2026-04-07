@@ -2,6 +2,7 @@
 import os
 import sys
 from pathlib import Path
+
 from ascii_magic import AsciiArt
 from dh import get_files
 

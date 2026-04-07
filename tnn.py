@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+import argparse  # اضافه کردن argparse برای مدیریت بهتر آرگومان‌ها
 import sys
 from pathlib import Path
+
 import regex as re
-import argparse  # اضافه کردن argparse برای مدیریت بهتر آرگومان‌ها
 
 TAB_PATTERN = re.compile(r"\t")  # نام متغیر را کمی توصیفی‌تر کردم
 SPACE_REPLACEMENT = " " * 4  # تعریف رشته جایگزین (4 اسپیس)

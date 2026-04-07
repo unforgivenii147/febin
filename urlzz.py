@@ -3,6 +3,7 @@ import tarfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 import py7zr
 import regex as re
 from dh import BIN_EXT, TXT_EXT, get_files

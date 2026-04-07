@@ -3,6 +3,7 @@ import subprocess
 import sys
 from multiprocessing import Lock, Pool
 from pathlib import Path
+
 from fastwalk import walk_files
 
 print_lock = Lock()

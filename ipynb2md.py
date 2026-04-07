@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import nbformat
 
 if __name__ == "__main__":

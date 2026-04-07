@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import sys
+from pathlib import Path
+
 from dh import format_size, get_size
 from fastwalk import walk_parallel
 

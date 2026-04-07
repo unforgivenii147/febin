@@ -8,6 +8,7 @@ from multiprocessing import cpu_count
 from pathlib import Path
 from subprocess import getoutput
 from time import sleep
+
 import regex as re
 
 try:

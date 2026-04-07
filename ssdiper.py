@@ -2,9 +2,10 @@
 import json
 import operator
 from pathlib import Path
+
 import ssdeep
-from pbar import Pbar
 from dh import get_files
+from pbar import Pbar
 
 
 def calculate_ssdeep_hash(filepath: Path, min_file_size: int = 1):

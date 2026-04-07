@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import time
-from joblib import Parallel, delayed
-import brotlicffi
-from loguru import logger
 import sys
+import time
+
+import brotlicffi
+from joblib import Parallel, delayed
+from loguru import logger
 
 logger.remove()
 logger.add(sys.stderr, format="{time} {level} {message}", level="INFO")

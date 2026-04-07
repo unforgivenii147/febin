@@ -5,6 +5,7 @@ import tarfile
 import zipfile
 from multiprocessing import cpu_count
 from pathlib import Path
+
 import regex as re
 
 OUTPUT_FILE = "/sdcard/gitlinks.txt"

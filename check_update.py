@@ -2,6 +2,7 @@
 import json
 import sys
 import time
+
 import requests
 from dh import get_installed_packages
 from packaging.version import InvalidVersion, Version

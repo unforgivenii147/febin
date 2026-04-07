@@ -2,6 +2,7 @@
 import sys
 from multiprocessing import cpu_count
 from pathlib import Path
+
 import tree_sitter_cpp
 from dh import clean_blank_lines, format_size, get_size
 from termcolor import cprint

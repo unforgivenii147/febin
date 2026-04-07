@@ -5,6 +5,7 @@ import os
 import tokenize
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 import regex as re
 from dh import get_files
 from tqdm import tqdm

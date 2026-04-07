@@ -5,6 +5,7 @@ import os
 import sqlite3
 from pathlib import Path
 from typing import Any
+
 import regex as re
 
 OUTPUT_DIR = Path("output")

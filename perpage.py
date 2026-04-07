@@ -2,6 +2,7 @@
 import os
 from multiprocessing import Pool
 from pathlib import Path
+
 import pdfplumber
 from termcolor import cprint
 

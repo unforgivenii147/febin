@@ -2,6 +2,7 @@
 import argparse
 import shutil
 from pathlib import Path
+
 import regex as re
 
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")

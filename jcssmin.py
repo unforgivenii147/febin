@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
+
+from dh import mpf
 from fastwalk import walk_files
 from rcssmin import cssmin
-from dh import mpf
 
 
 def process_file(path) -> str:

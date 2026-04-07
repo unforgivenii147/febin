@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+from pathlib import Path
 import os
 import sys
 import time
@@ -7,9 +8,11 @@ import brotlicffi
 from joblib import Parallel, delayed
 from loguru import logger
 
+from dh import get_files, fsz, gsz
+
 logger.remove()
 logger.add(sys.stderr, format="{time} {level} {message}", level="INFO")
-CHUNK_SIZE = 1 * 1024 * 1024
+CHUNK_SIZE = 32768
 
 
 def compress_chunk(chunk_data, quality=11):
@@ -20,87 +23,76 @@ def compress_chunk(chunk_data, quality=11):
         return None
 
 
-def process_single_file(filepath, current_dir, output_base_dir, quality=11):
+def process_single_file(path, cwd):
     try:
-        relative_path = os.path.relpath(filepath, current_dir)
-        output_sub_dir = os.path.join(output_base_dir, os.path.dirname(relative_path))
-        os.makedirs(output_sub_dir, exist_ok=True)
-        compressed_filepath = os.path.join(output_sub_dir, os.path.basename(filepath) + ".br")
-        original_size = os.path.getsize(filepath)
-        logger.info(f"Processing file: {filepath} (Size: {original_size / (1024 * 1024):.2f} MB)")
+        relative_path = path.relative_to(cwd)
+        compressed_filepath = path.with_suffix(path.suffix + ".br")
+        original_size = path.stat().st_size
         chunks = []
-        with open(filepath, "rb") as f_in:
+        with path.open("rb") as f_in:
             while True:
                 chunk = f_in.read(CHUNK_SIZE)
                 if not chunk:
                     break
                 chunks.append(chunk)
         if not chunks:
-            logger.warning(f"File {filepath} is empty. Skipping compression.")
+            logger.warning(f"File {path.name} is empty. Skipping compression.")
             return {
                 "success": False,
-                "filepath": filepath,
+                "filepath": path,
                 "original_size": original_size,
                 "compressed_size": 0,
                 "reason": "empty_file",
             }
-        logger.info(f"Compressing {len(chunks)} chunks for {filepath}...")
+        logger.info(f"Compressing {len(chunks)} chunks for {path.name}...")
         compressed_chunks = Parallel(n_jobs=-1, verbose=0)(delayed(compress_chunk)(chunk, quality) for chunk in chunks)
         compressed_chunks = [c for c in compressed_chunks if c is not None]
         if not compressed_chunks:
-            logger.error(f"All chunks failed to compress for {filepath}. Original not deleted.")
+            logger.error(f"All chunks failed to compress for {path.name}. Original not deleted.")
             return {
                 "success": False,
-                "filepath": filepath,
+                "filepath": path,
                 "original_size": original_size,
                 "compressed_size": 0,
                 "reason": "chunk_compression_failed",
             }
-        with open(compressed_filepath, "wb") as f_out:
+        with compressed_filepath.open("wb") as f_out:
             f_out.writelines(compressed_chunks)
-        compressed_size = os.path.getsize(compressed_filepath)
-        if os.path.exists(compressed_filepath) and compressed_size > 0:
-            os.remove(filepath)
-            logger.info(f"Successfully compressed and deleted original: {filepath} -> {compressed_filepath}")
+        compressed_size = gsz(compressed_filepath)
+        if compressed_filepath.exists() and compressed_size > 0:
+            path.unlink()
+            logger.info(f"Successfully compressed and deleted original: {path.name} -> {compressed_filepath.name}")
             return {
                 "success": True,
-                "filepath": filepath,
+                "filepath": path,
                 "original_size": original_size,
                 "compressed_size": compressed_size,
             }
-        if os.path.exists(compressed_filepath):
-            os.remove(compressed_filepath)
-        logger.error(f"Failed to compress {filepath} (empty or invalid output). Original not deleted.")
+        if compressed_filepath.exists():
+            compressed_filepath.unlink()
+        logger.error(f"Failed to compress {path.name} (empty or invalid output). Original not deleted.")
         return {
             "success": False,
-            "filepath": filepath,
+            "filepath": path,
             "original_size": original_size,
             "compressed_size": 0,
             "reason": "invalid_compressed_output",
         }
     except Exception as e:
-        logger.error(f"An unexpected error occurred while processing {filepath}: {e}")
+        logger.error(f"An unexpected error occurred while processing {path.name}: {e}")
         return {
             "success": False,
-            "filepath": filepath,
+            "filepath": path,
             "original_size": 0,
             "compressed_size": 0,
             "reason": "unexpected_error",
         }
 
 
-def get_all_files(directory):
-    file_list = []
-    for root, _, files in os.walk(directory):
-        file_list.extend(os.path.join(root, filename) for filename in files)
-    return file_list
-
-
 def main():
-    current_dir = os.getcwd()
-    output_base_dir = os.path.join(current_dir, "compressed_files")
-    all_files = get_all_files(current_dir)
-    files_to_compress = [f for f in all_files if not f.endswith(".br") and not f.startswith(output_base_dir)]
+    cwd = Path.cwd()
+    all_files = get_files(cwd)
+    files_to_compress = [f for f in all_files if not f.suffix == ".br"]
     if not files_to_compress:
         logger.info("No files found to compress in the current directory.")
         return
@@ -111,17 +103,17 @@ def main():
     successful_compressions = 0
     total_original_size = 0
     total_compressed_size = 0
-    start_time = time.time()
+    start_time = time.perf_counter()
     for file_idx, filepath in enumerate(files_to_compress):
         logger.info(f"--- Processing file {file_idx + 1}/{len(files_to_compress)}: {filepath} ---")
-        result = process_single_file(filepath, current_dir, output_base_dir)
+        result = process_single_file(filepath, cwd)
         total_files_processed += 1
     if result["success"]:
         successful_compressions += 1
         total_original_size += result["original_size"]
         total_compressed_size += result["compressed_size"]
     logger.info(f"--- Finished file {file_idx + 1}/{len(files_to_compress)} ---")
-    end_time = time.time()
+    end_time = time.perf_counter()
     logger.info("\n" + "=" * 50)
     logger.info("Compression Summary:")
     logger.info(f"Total files scanned: {len(files_to_compress)}")

@@ -4,8 +4,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import tree_sitter_python as tsp
-from dh import STDLIB, get_files, get_installed_pkgs
+from dh import STDLIB, get_filez, get_installed_pkgs, is_binary
 from tree_sitter import Language, Parser
+from termcolor import cprint
+
 
 parser = Parser()
 parser.language = Language(tsp.language())
@@ -29,18 +31,34 @@ def process_file(fp):
 def main():
     outfile = Path("importz.txt")
     all_imports = []
+    seen = set()
     cwd = Path.cwd()
-    files = get_files(cwd, extensions=[".py"])
-    results = []
-    with ThreadPoolExecutor(max_workers=8) as ex:
-        futures = [ex.submit(process_file, f) for f in files]
-        results.extend(future.result() for future in as_completed(futures))
-    for imports in results:
-        if imports:
-            for k in imports:
-                if k not in all_imports:
-                    all_imports.append(k)
-    all_imports = sorted(set(all_imports))
+    allpyfiles = len([p for p in cwd.rglob("*.py")])
+    cprint(f"{allpyfiles} python files found", "green")
+    c = 0
+    for f in get_filez(cwd):
+        if is_binary(f):
+            continue
+        if f.suffix == ".py":
+            cprint(f"{c}/{allpyfiles} {f.name}", "cyan")
+            c += 1
+            result = process_file(f)
+            if result:
+                for k in result:
+                    if not k in seen:
+                        seen.add(k)
+                        all_imports.append(k)
+    #    with ThreadPoolExecutor(max_workers=8) as ex:
+    #        futures = [ex.submit(process_file, f) for f in files]
+    #        results.extend(future.result() for future in as_completed(futures))
+    #    for imports in results:
+    #        if imports:
+    #            for k in imports:
+    #                if k not in seen:
+    #                    seen.add(k)
+    #                    all_imports.append(k)
+
+    all_imports = sorted(all_imports)
     outfile.write_text("\n".join(all_imports), encoding="utf-8")
     content = outfile.read_text(encoding="utf-8")
     impoz = []

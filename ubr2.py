@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+from pathlib import Path
 import os
 import sys
 import time
@@ -45,7 +46,7 @@ def process_single_file(filepath, current_dir, output_base_dir, quality=11):
                 "reason": "empty_file",
             }
         logger.info(f"Compressing {len(chunks)} chunks for {filepath}...")
-        compressed_chunks = Parallel(n_jobs=-1, verbose=0)(delayed(compress_chunk)(chunk, quality) for chunk in chunks)
+        compressed_chunks = Parallel(n_jobs=-1, verbose=1)(delayed(compress_chunk)(chunk, quality) for chunk in chunks)
         compressed_chunks = [c for c in compressed_chunks if c is not None]
         if not compressed_chunks:
             logger.error(f"All chunks failed to compress for {filepath}. Original not deleted.")

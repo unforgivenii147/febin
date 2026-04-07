@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
-from dh import is_binary
+from dh import is_binary, get_filez
 
 
 def find_scripts_without_extension(directory):
     scripts_without_extension = []
-    for item in directory.rglob("*"):
+    for item in get_filez(directory):
         if item.is_symlink():
             continue
         if ".git" in item.parts:
@@ -15,9 +15,9 @@ def find_scripts_without_extension(directory):
             if is_binary(item):
                 continue
             try:
-                with Path(item).open("r", encoding="utf-8") as f:
+                with item.open("r", encoding="utf-8") as f:
                     first_line = f.readline()
-                    if first_line.strip().startswith("#!") and "python" in first_line:
+                    if first_line.strip().startswith("#!"):
                         scripts_without_extension.append(item)
             except Exception as e:
                 print(f"Could not read {item}: {e}")

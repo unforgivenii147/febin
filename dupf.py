@@ -24,7 +24,7 @@ def find_duplicates():
     cwd = Path.cwd()
     files_by_hash = defaultdict(list)
     duplicate_count = 0
-    ptp = [path for path in cwd.rglob("*") if path.is_file() and not path.is_symlink() and not should_skip(path)]
+    ptp = [path for path in cwd.rglob("*") if path.is_file() and not should_skip(path)]
     files_by_size = {}
     for p in ptp:
         try:
@@ -37,6 +37,7 @@ def find_duplicates():
     for size, paths in files_by_size.items():
         if len(paths) > 1:
             paths_to_hash.extend(paths)
+
     with ThreadPoolExecutor(max_workers=8) as executor:
         future_to_path = {executor.submit(get_hash_file, path): path for path in paths_to_hash}
         for future in as_completed(future_to_path):
@@ -49,10 +50,10 @@ def find_duplicates():
     ) in files_by_hash.items():
         if len(paths) > 1:
             duplicate_count += len(paths) - 1
-            print(f"hash {hash}:")
+            print(f"hash {hash} :")
             for file_path in paths:
                 relative_path = file_path.relative_to(cwd)
-                cprint(f"  {relative_path}", "cyan")
+                cprint(f" - {relative_path}", "cyan")
             print()
 
 

@@ -15,7 +15,7 @@ def extract_text_from_pdf(pdf_filename):
     return extracted_text
 
 
-def save_text_to_file(text, output_filename) -> None:
+def save_text_to_file(text, output_filename):
     Path(output_filename).write_text(text, encoding="utf-8")
 
 

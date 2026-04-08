@@ -53,17 +53,19 @@ def process_file(fp):
     impoz = sorted(set(impoz))
     stdlib2 = list(STDLIB2)
     for x in impoz:
+        x = x.strip().lower()
+
         if x in STDLIB2:
-            if x not in {"io", "os", "pathlib", "ast"}:
-                cprint(f"{fp.relative_to(cwd)}", "green")
+            if x not in {"io", "os", "pathlib", "ast","urllib"}:
+                cprint(f"{fp.relative_to(cwd)}", "cyan")
                 continue
         for v in stdlib2:
-            x = x.strip()
+            v = v.lower()
             ratio = fuzz.ratio(x, v)
             if ratio > 85 and len(x) > 3 and len(v) > 3:
-                if x not in {"io", "os", "pathlib"}:
-                    cprint(f"{fp.relative_to(cwd)}", "gray")
-                    cprint(f"{x} / {v} / {ratio}", "cyan")
+                if x not in {"io", "os", "pathlib","urllib","tkinter","pickle","string","queue","urllib3","configparser","copyreg","httplib2"}:
+                    cprint(f"{fp.relative_to(cwd)}", "yellow")
+                    cprint(f"{x} / {v} / {ratio}", "green")
                     continue
 
 

@@ -1,0 +1,29 @@
+#!/data/data/com.termux/files/usr/bin/python
+import asyncio
+from pyppeteer import launch
+import sys
+from pathlib import Path
+
+async def main():
+    url=sys.argv[1]
+    browser = await launch()
+    page = await browser.newPage()
+    await page.goto(url)
+    await page.screenshot({'path': 'example.png'})
+    content = await page.evaluate('document.body.textContent', force_expr=True)
+    outfile=Path(url).with_suffix(".txt")
+    with open(outfile,"w") as f:
+        f.write(content)
+    dimensions = await page.evaluate('''() => {
+        return {
+            width: document.documentElement.clientWidth,
+            height: document.documentElement.clientHeight,
+            deviceScaleFactor: window.devicePixelRatio,
+        }
+    }''')
+
+    print(dimensions)
+    # >>> {'width': 800, 'height': 600, 'deviceScaleFactor': 1}
+    await browser.close()
+
+asyncio.get_event_loop().run_until_complete(main())

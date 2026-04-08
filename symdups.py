@@ -4,7 +4,6 @@ import json
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
-
 import xxhash
 
 BACKUP_FILE = ".symlink_backup.json"

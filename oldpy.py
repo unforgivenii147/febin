@@ -2,7 +2,6 @@
 import mmap
 import tokenize
 from pathlib import Path
-
 import regex as re
 from dh import get_files
 

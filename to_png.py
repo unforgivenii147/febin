@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
-
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-
 import dh
 
 try:

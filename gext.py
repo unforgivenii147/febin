@@ -9,7 +9,6 @@ import zipfile
 from multiprocessing import get_context
 from pathlib import Path
 from typing import Any
-
 import regex as re
 
 OUTPUT_DIR = Path("output")

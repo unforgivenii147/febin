@@ -22,9 +22,7 @@ async def main():
             deviceScaleFactor: window.devicePixelRatio,
         }
     }""")
-
     print(dimensions)
-    # >>> {'width': 800, 'height': 600, 'deviceScaleFactor': 1}
     await browser.close()
 
 

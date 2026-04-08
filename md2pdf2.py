@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-
 import regex as re
 from markdown2 import markdown_path
 from pygments import highlight

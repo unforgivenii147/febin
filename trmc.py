@@ -3,7 +3,6 @@ import ast
 import sys
 from multiprocessing import Pool
 from pathlib import Path
-
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, format_size, get_files, get_size
 from termcolor import cprint

@@ -1,23 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-split_nltk.py
-Split a text file into parts up to max_chars (default 5000), preferring sentence boundaries
-(using NLTK). If a single sentence exceeds the limit, fall back to splitting by words.
-Skip the file if it appears binary or has fewer than max_chars characters.
-Output file naming: <basename>_(<counter>)<extension>  (counter starts at 1)
-Requires: nltk (pip install nltk)
-"""
-
 import sys
 from pathlib import Path
-
 import nltk
 import regex as re
 from binaryornot import is_binary
 from nltk.tokenize import sent_tokenize
 
 DEFAULT_MAX = 5000
-BINARY_SAMPLE = 4096  # bytes to sample to detect binary
+BINARY_SAMPLE = 4096
 
 
 def split_long_by_words(segment: str, max_chars: int = DEFAULT_MAX):
@@ -31,7 +21,6 @@ def split_long_by_words(segment: str, max_chars: int = DEFAULT_MAX):
             if cur:
                 parts.append(cur)
             if len(w) > max_chars:
-                # Forced break of an extremely long token
                 i = 0
                 while i < len(w):
                     slice_ = w[i : i + max_chars]
@@ -46,11 +35,10 @@ def split_long_by_words(segment: str, max_chars: int = DEFAULT_MAX):
 
 
 def chunk_text_with_nltk(text: str, max_chars: int):
-    sentences = sent_tokenize(text)  # returns list of sentence strings (no trailing whitespace)
+    sentences = sent_tokenize(text)
     chunks = []
     cur = ""
     for sent in sentences:
-        # ensure there's a single space between sentences when joining
         sent_to_add = sent
         if cur and not cur.endswith((" ", "\n")) and not sent_to_add.startswith((" ", "\n")):
             sent_to_add = " " + sent_to_add
@@ -74,7 +62,7 @@ def chunk_text_with_nltk(text: str, max_chars: int):
 
 def write_chunks(chunks, input_path: Path, out_dir: Path, encoding: str):
     stem = input_path.stem
-    ext = "".join(input_path.suffixes)  # preserve multi-suffix like .tar.gz
+    ext = "".join(input_path.suffixes)
     out_dir.mkdir(parents=True, exist_ok=True)
     for i, chunk in enumerate(chunks, start=1):
         out_name = f"{stem}_({i}){ext}"

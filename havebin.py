@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import subprocess
-
 from dh import get_ipkgs
 
 

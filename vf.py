@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-
 import regex as re
 
 whl_directory = Path()

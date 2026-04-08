@@ -2,7 +2,6 @@
 import ast
 import sys
 from pathlib import Path
-
 import unidecode
 from dh import format_size, get_pyfiles, get_size, is_binary, mpf
 from termcolor import cprint

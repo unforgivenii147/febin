@@ -7,7 +7,6 @@ import zipfile
 from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Any
-
 import regex as re
 
 OUTPUT_DIR = Path("output")

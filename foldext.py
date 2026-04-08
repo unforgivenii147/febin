@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
 from pathlib import Path
-
 from dh import unique_path
 
 NO_EXT_DIR = "no_ext"

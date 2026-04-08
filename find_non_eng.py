@@ -4,93 +4,8 @@ import os
 import sys
 from collections import Counter
 from pathlib import Path
-
 import pycld2
-
-BINARY_EXTENSIONS = {
-    ".pyc",
-    ".pyo",
-    ".so",
-    ".dll",
-    ".dylib",
-    ".exe",
-    ".bin",
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".gif",
-    ".bmp",
-    ".ico",
-    ".svg",
-    ".mp3",
-    ".mp4",
-    ".avi",
-    ".mov",
-    ".mkv",
-    ".flv",
-    ".zip",
-    ".tar",
-    ".gz",
-    ".bz2",
-    ".7z",
-    ".rar",
-    ".pdf",
-    ".doc",
-    ".docx",
-    ".xls",
-    ".xlsx",
-    ".ppt",
-    ".pptx",
-    ".woff",
-    ".woff2",
-    ".ttf",
-    ".eot",
-    ".o",
-    ".obj",
-    ".class",
-    ".jar",
-}
-TEXT_EXTENSIONS = {
-    ".txt",
-    ".md",
-    ".rst",
-    ".tex",
-    ".py",
-    ".js",
-    ".html",
-    ".htm",
-    ".css",
-    ".php",
-    ".rb",
-    ".go",
-    ".rs",
-    ".c",
-    ".cpp",
-    ".h",
-    ".hpp",
-    ".java",
-    ".kt",
-    ".scala",
-    ".json",
-    ".xml",
-    ".yaml",
-    ".yml",
-    ".toml",
-    ".ini",
-    ".cfg",
-    ".conf",
-    ".csv",
-    ".tsv",
-    ".sh",
-    ".bash",
-    ".zsh",
-    ".fish",
-    ".sql",
-    ".r",
-    ".pl",
-    ".pm",
-    ".t",
-}
+from dh import is_binary
 
 
 class LanguageDetector:
@@ -107,25 +22,7 @@ class LanguageDetector:
         }
 
     def is_text_file(self, filepath):
-        ext = filepath.suffix.lower()
-        if ext in BINARY_EXTENSIONS:
-            return False
-        if ext in TEXT_EXTENSIONS:
-            return True
-        try:
-            with Path(filepath).open("rb") as f:
-                sample = f.read(1024)
-                if not sample:
-                    return False
-                if b"\x00" in sample:
-                    return False
-                try:
-                    sample.decode("utf-8")
-                    return True
-                except UnicodeDecodeError:
-                    return False
-        except Exception:
-            return False
+        return not is_binary(filepath)
 
     def detect_language(self, filepath):
         try:
@@ -138,7 +35,7 @@ class LanguageDetector:
                     None,
                     None,
                 )
-            is_reliable, _, details = pycld2.detect(content, returnVectors=True)
+            is_reliable, _, details = pycld2.detect(content)
             if details and len(details) > 0:
                 (
                     lang_name,
@@ -195,7 +92,7 @@ class LanguageDetector:
                 self.stats["total_files"] += 1
                 if show_progress:
                     print(
-                        f"\r📊 Processing: {filepath} [Files: {self.stats['total_files']}]",
+                        f"\n{filepath} [Files: {self.stats['total_files']}]",
                         end="",
                         flush=True,
                     )
@@ -263,11 +160,6 @@ class LanguageDetector:
                     print(f"    ... and {len(files) - 10} more")
         else:
             print("\n✅ No non-English files found!")
-        print("\n" + "=" * 60)
-        english_files = sum(self.stats["languages"].get("ENGLISH", 0))
-        print(
-            f"📋 Summary: {english_files} English, {len(self.stats['non_english'])} non-English, {self.stats['skipped_binary']} binary, {self.stats['skipped_small'] + self.stats['skipped_error']} unanalyzable"
-        )
 
 
 def main():

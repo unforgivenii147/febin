@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
-
 import magic
 
 MIME_TO_EXT = {

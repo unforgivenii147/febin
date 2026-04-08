@@ -1,18 +1,40 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
-import sys
+import os
 from pathlib import Path
 
-if len(sys.argv) != 2:
-    print("Usage: python dedup_json.py <json_file>")
-    sys.exit(1)
-fname = sys.argv[1]
-with Path(fname).open(encoding="utf-8") as f:
-    data = json.load(f)
-if not isinstance(data, dict):
-    msg = "JSON must be an object (key-value pairs)"
-    raise ValueError(msg)
-unique = dict(data.items())
-with Path(fname).open("w", encoding="utf-8") as f:
-    json.dump(unique, f, ensure_ascii=False, indent=2)
-print(f"updated: {fname}")
+
+def deduplicate_json_object(data):
+    if isinstance(data, dict):
+        return {k: deduplicate_json_object(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [deduplicate_json_object(item) for item in data]
+    return data
+
+
+def deduplicate_json_list(data_list, unique_by=None):
+    if not isinstance(data_list, list):
+        raise ValueError("Input must be a list of dictionaries.")
+    seen = set()
+    new_list = []
+    for entry in data_list:
+        if not isinstance(entry, dict):
+            new_list.append(entry)
+            continue
+        if unique_by:
+            identifier = entry.get(unique_by)
+        else:
+            identifier = json.dumps(entry, sort_keys=True)
+        if identifier not in seen:
+            seen.add(identifier)
+            new_list.append(entry)
+    return new_list
+
+
+if __name__ == "__main__":
+    fn = Path(sys.argv[1])
+    with fn.open(encoding="utf-8") as f:
+        data = json.load(f)
+    cleaned_list = deduplicate_json_list(raw_data, unique_by="src")
+    with fn.open("w", encoding="utf-8") as fo:
+        json.dumps(cleaned_list, fo, ensure_ascii=False, indent=2)

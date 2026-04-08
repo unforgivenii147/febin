@@ -4,7 +4,6 @@ import json
 import os
 import re
 import time
-
 import requests
 from dh import get_installed_packages
 from packaging.version import Version

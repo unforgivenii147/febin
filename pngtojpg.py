@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
-
 from PIL import Image
 
 for root, _dirs, files in os.walk("."):

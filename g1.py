@@ -2,7 +2,6 @@
 import subprocess
 import sys
 from pathlib import Path
-
 import regex as re
 import requests
 from tqdm import tqdm

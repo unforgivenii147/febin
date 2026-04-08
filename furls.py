@@ -9,7 +9,6 @@ import tempfile
 import zipfile
 from pathlib import Path
 from time import perf_counter
-
 import regex as re
 from dh import is_valid_url
 

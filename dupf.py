@@ -2,7 +2,6 @@
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from file_hash import hash_file
 from termcolor import cprint
 
@@ -37,7 +36,6 @@ def find_duplicates():
     for size, paths in files_by_size.items():
         if len(paths) > 1:
             paths_to_hash.extend(paths)
-
     with ThreadPoolExecutor(max_workers=8) as executor:
         future_to_path = {executor.submit(get_hash_file, path): path for path in paths_to_hash}
         for future in as_completed(future_to_path):

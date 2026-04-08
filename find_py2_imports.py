@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from dh import STDLIB2, get_filez
 from rapidfuzz import fuzz
@@ -54,7 +53,6 @@ def process_file(fp):
     stdlib2 = list(STDLIB2)
     for x in impoz:
         x = x.strip().lower()
-
         if x in STDLIB2:
             if x not in {"io", "os", "pathlib", "ast", "urllib"}:
                 cprint(f"{fp.relative_to(cwd)}", "cyan")

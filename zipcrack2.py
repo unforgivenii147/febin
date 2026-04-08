@@ -5,7 +5,6 @@ import sys
 import time
 import zipfile
 from pathlib import Path
-
 from print_persian import print_persian as _print
 
 """

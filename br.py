@@ -2,7 +2,6 @@
 import mmap
 import sys
 from pathlib import Path
-
 import brotlicffi
 from dh import format_size, get_files, get_size
 from joblib import Parallel, delayed

@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import stat
 from pathlib import Path
-
 import fastwalk
 
 

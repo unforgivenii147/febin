@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 from urllib.parse import urlparse
-
 import regex as re
 
 INPUT_FILE = Path("urls.txt")

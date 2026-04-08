@@ -2,7 +2,6 @@
 import sys
 import warnings
 from pathlib import Path
-
 from pip._internal.cli.main import main as pip_main
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)

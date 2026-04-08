@@ -4,7 +4,6 @@ import os
 import shutil
 import sysconfig
 from pathlib import Path
-
 import regex as re
 from wheel.wheelfile import WheelFile
 

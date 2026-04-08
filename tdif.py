@@ -4,7 +4,6 @@ import difflib
 import sys
 from pathlib import Path
 from typing import ClassVar
-
 from textual.app import App, ComposeResult
 from textual.color import Color
 from textual.containers import Horizontal, ScrollableContainer

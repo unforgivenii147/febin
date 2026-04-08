@@ -2,7 +2,6 @@
 import json
 import sys
 from pathlib import Path
-
 import regex as re
 
 

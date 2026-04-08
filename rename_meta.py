@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 from dh import unique_path
 from fastwalk import walk_files
 from termcolor import cprint

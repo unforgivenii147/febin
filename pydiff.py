@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 from dh import get_lines
 from termcolor import cprint
 
@@ -20,7 +19,6 @@ def process_files(fp1, fp2):
         cprint(f"only in {fp2.name} :", "cyan")
         for line in only_in_second:
             cprint(f"  - {line}", "yellow")
-
     cprint(
         f"common lines: {len(common_lines)}\nonly in {fp1.name}: {len(only_in_first)}\nonly in {fp2.name}: {len(only_in_second)}",
         "blue",

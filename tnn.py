@@ -2,7 +2,6 @@
 import argparse  # اضافه کردن argparse برای مدیریت بهتر آرگومان‌ها
 import sys
 from pathlib import Path
-
 import regex as re
 
 TAB_PATTERN = re.compile(r"\t")  # نام متغیر را کمی توصیفی‌تر کردم

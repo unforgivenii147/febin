@@ -4,7 +4,6 @@ import hashlib
 import sys
 from collections.abc import Iterable
 from pathlib import Path
-
 import regex as re
 from dh import get_nobinary
 

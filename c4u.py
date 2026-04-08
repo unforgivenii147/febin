@@ -5,7 +5,6 @@ import re
 import sys
 import urllib.parse
 from pathlib import Path
-
 import regex as re
 import requests
 from packaging.version import Version

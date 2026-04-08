@@ -1,13 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
 import argparse
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
 from loguru import logger
 from xxhash import xxh64
-
 
 DEFAULT_BLOCK = 32768
 QUICK_READ = 4096

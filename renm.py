@@ -2,7 +2,6 @@
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 import regex as re
 from deep_translator import GoogleTranslator
 from dh import unique_path

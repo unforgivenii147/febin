@@ -12,6 +12,7 @@ from packaging.version import Version
 from termcolor import cprint
 from dh import get_installed_packages
 
+
 def parse_version_obj(s):
     return Version(s)
 

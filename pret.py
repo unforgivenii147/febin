@@ -51,6 +51,7 @@ def main() -> None:
         else get_files(
             cwd,
             extensions=[
+                ".md",
                 ".js",
                 ".css",
                 ".ts",
@@ -72,7 +73,7 @@ def main() -> None:
     lenbefore = len(files)
     if not files:
         print("no file found.")
-        sis.exit(0)
+        sys.exit(0)
     cprint(f"{lenbefore} files found.", "green")
     for i, file in enumerate(files, 0):
         if "node_modules" in file.parts:

@@ -33,10 +33,15 @@ def get_latest_version(pkg_name: str) -> str | None:
 
 
 def load_previous_results() -> dict[str, dict]:
+    cleaned = {}
     if os.path.exists(RESULTS_FILE):
         try:
             with open(RESULTS_FILE, encoding="utf-8") as f:
-                return json.load(f)
+                data = json.load(f)
+                for pkg in data:
+                    if pkg["latest_version"] is not None:
+                        cleaned.add(pkg)
+            return cleaned
         except json.JSONDecodeError:
             cprint(f"Warning: Corrupted results file '{RESULTS_FILE}'. Starting fresh.", "red")
             return {}

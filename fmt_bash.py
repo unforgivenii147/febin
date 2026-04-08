@@ -7,7 +7,6 @@ from pathlib import Path
 from dh import get_filez
 
 
-
 def has_shell_shebang(path):
     try:
         with open(path, "rb") as f:
@@ -17,6 +16,7 @@ def has_shell_shebang(path):
     if not first.startswith("#!"):
         return False
     return ("bash" in first) or ("sh" in first)
+
 
 def process_file(fp):
     print("Formatting: ", fp.name)
@@ -30,17 +30,18 @@ def process_file(fp):
         return False
     return True
 
+
 def main():
     cwd = Path.cwd()
-    failed=[]
+    failed = []
     for path in get_filez(cwd):
-        if not path.suffix and has_shell_shebang(path) or path.suffix==".sh":
+        if not path.suffix and has_shell_shebang(path) or path.suffix == ".sh":
             if not process_file(path):
                 failed.append(path)
     if failed:
         print(f"Finished with {len(failed)} failures: ", file=sys.stderr)
         for f in failed:
-            print("  - ",f.relative_to(cwd))
+            print("  - ", f.relative_to(cwd))
     else:
         print("All done.")
 

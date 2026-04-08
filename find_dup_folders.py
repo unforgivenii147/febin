@@ -2,7 +2,7 @@
 import json
 from collections import defaultdict
 from pathlib import Path
-from dh import get_files,get_dirs
+from dh import get_files, get_dirs
 from termcolor import cprint
 from xxhash import xxh64
 

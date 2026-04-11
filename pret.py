@@ -76,7 +76,7 @@ def main() -> None:
     cprint(f"{lenbefore} files found.", "green")
     for i, file in enumerate(files, 0):
         if "node_modules" in file.parts:
-            files.pop(i)
+            del files[i]
     lenafter = len(files)
     print(f"frocessing {lenafter} files.", end=" | ")
     cprint(f"{lenbefore - lenafter} files poped.", "cyan")

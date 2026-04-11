@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-import re
+import regex as re
 import sys
 from pathlib import Path
 from dh import fsz, get_files, gsz

@@ -1,11 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from pathlib import Path
 import requests
 import base64
-import re
+import regex as re
 import os
+from termcolor import cprint
 
-LOCAL_FONT_DIR = "/sdcard/_static"
+STATIC_DIR = "/sdcard/_static"
 
 
 def get_file_extension(url):
@@ -18,9 +20,9 @@ def is_font_url(url):
 
 
 def find_local_font(font_filename):
-    if not os.path.isdir(LOCAL_FONT_DIR):
+    if not os.path.isdir(STATIC_DIR):
         return None
-    for root, _, files in os.walk(LOCAL_FONT_DIR):
+    for root, _, files in os.walk(STATIC_DIR):
         if font_filename in files:
             return os.path.join(root, font_filename)
     return None
@@ -87,6 +89,7 @@ def get_remote_font_base64(url):
 def url_to_base64(url, base_css_path):
     cleaned_url = url.strip("'\"")
     font_filename = os.path.basename(cleaned_url)
+    cprint(f"looking for {font_filename} in {STATIC_DIR}", "cyan")
     local_path = find_local_font(font_filename)
     if local_path:
         print(f"Found local font: {font_filename} at {local_path}")

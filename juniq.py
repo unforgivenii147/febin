@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+import sys
 
 
 def deduplicate_json_object(data):
@@ -35,6 +36,7 @@ if __name__ == "__main__":
     fn = Path(sys.argv[1])
     with fn.open(encoding="utf-8") as f:
         data = json.load(f)
-    cleaned_list = deduplicate_json_list(raw_data, unique_by="src")
-    with fn.open("w", encoding="utf-8") as fo:
-        json.dumps(cleaned_list, fo, ensure_ascii=False, indent=2)
+        cleaned_list = deduplicate_json_list(data, unique_by="src")
+        if cleaned_list:
+            with fn.open("w", encoding="utf-8") as fo:
+                json.dump(cleaned_list, fo, ensure_ascii=False, indent=2)

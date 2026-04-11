@@ -2,6 +2,7 @@
 import os
 import subprocess
 from dh import get_ipkgs
+from Pathlib import Path
 
 
 def find_packages_with_bin_scripts(output_file="have_scripts.txt"):
@@ -58,7 +59,7 @@ def find_packages_with_bin_scripts(output_file="have_scripts.txt"):
                 pass
             except Exception as e:
                 print(f"\nAn unexpected error occurred while checking '{package_name}': {e}")
-        with open(output_file, "w", encoding="utf-8") as f:
+        with Path(output_file).open("w", encoding="utf-8") as f:
             f.writelines(pkg + "\n" for pkg in packages_with_scripts)
         print(f"\nSearch complete. Found {len(packages_with_scripts)} packages with 'bin' scripts.")
         print(f"List saved to '{output_file}'.")

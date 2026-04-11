@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import gc
 import subprocess
 from pathlib import Path
 from dh import get_filez
@@ -12,10 +11,9 @@ def process_file(file_path):
             ["optipng", "-o7", str(file_path)],
             check=True,
         )
-        gc.collect()
+
         return True, file_path
     except subprocess.CalledProcessError as e:
-        gc.collect()
         return False, file_path, str(e)
 
 
@@ -31,7 +29,6 @@ def main():
         cprint(f"{c}/{png_num}|remained:{png_num - c}", "cyan")
         process_file(path)
         c += 1
-        gc.collect()
 
 
 if __name__ == "__main__":

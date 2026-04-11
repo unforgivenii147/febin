@@ -4,14 +4,21 @@ from dh import mpf
 from fastwalk import walk_files
 from rcssmin import cssmin
 
+# from rjsmin import jsmin
+from dh import gext
+
 
 def process_file(path) -> str:
     try:
+        ext = gext(path)
         content = Path(path).read_text(encoding="utf-8")
-        if path.suffix == ".css" or ".min.css" in path.name:
+        if ext in {".css", ".min.css"}:
             minified = cssmin(content)
+        #        elif ext in {".js",".min.js"}:
+        #            minified=jsmin(content)
         else:
             return f"SKIP (unknown type) → {path}"
+
         if len(minified) == len(content):
             return f"[NO CHANGE] {path.name}"
         Path(path).write_text(minified, encoding="utf-8")
@@ -26,7 +33,7 @@ def collect_files() -> list:
     EXT = {".css", ".min.css"}
     for pth in walk_files(root):
         path = Path(pth)
-        if path.is_file() and path.suffix in EXT:
+        if path.is_file() and gext(path) in EXT:
             targets.append(path)
     return targets
 

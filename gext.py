@@ -10,6 +10,7 @@ from multiprocessing import get_context
 from pathlib import Path
 from typing import Any
 import regex as re
+from dh import unique_path, is_python_file
 
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
@@ -22,10 +23,6 @@ ARCHIVE_EXTENSIONS = (
     ".tar.xz",
     ".tar",
     ".zst",
-)
-ALLOWED_PYTHON_EXTENSIONS = (
-    ".py",
-    "",
 )
 
 
@@ -49,6 +46,7 @@ class EntityExtractor(ast.NodeVisitor):
         if node.end_col_offset is not None and node.end_col_offset > 0:
             last_line = code_slice[-1]
             code_slice[-1] = last_line[: node.end_col_offset]
+
         return "".join(code_slice)
 
     def _extract_and_save(
@@ -110,30 +108,14 @@ class EntityExtractor(ast.NodeVisitor):
         super().generic_visit(node)
 
 
-def get_unique_filepath(base_path: Path) -> Path:
-    if not base_path.exists():
-        return base_path
-    name = base_path.stem
-    suffix = base_path.suffix
-    i = 1
-    while True:
-        new_path = base_path.with_name(f"{name}_{i}{suffix}")
-        if not new_path.exists():
-            return new_path
-        i += 1
-
-
 def save_entity(entity: dict[str, Any]):
     filename_base = f"{entity['full_name']}.py"
-    output_path_base = OUTPUT_DIR / entity["type"] / filename_base
-    output_path_base.parent.mkdir(parents=True, exist_ok=True)
+    output_path = OUTPUT_DIR / entity["type"] / filename_base
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     content = entity["code"]
-    final_py_path = get_unique_filepath(output_path_base)
-    try:
-        Path(final_py_path).write_text(content, encoding="utf-8")
-    except Exception as e:
-        print(f"Error saving {final_py_path}: {e}")
-        return
+    if output_path.exists():
+        output_path = unique_path(output_path)
+    output_path.write_text(content, encoding="utf-8")
 
 
 def extract_entities_from_content(content: str, path: Path) -> list[dict[str, Any]]:
@@ -141,37 +123,27 @@ def extract_entities_from_content(content: str, path: Path) -> list[dict[str, An
         tree = ast.parse(content)
         extractor = EntityExtractor(content, path)
         extractor.visit(tree)
+
         return extractor.entities
     except SyntaxError:
         return []
     except Exception as e:
         print(f"Error parsing AST for {path}: {e}")
+
         return []
-
-
-def is_python_file_no_extension(path: Path) -> bool:
-    if path.suffix:
-        return False
-    try:
-        with Path(path).open(encoding="utf-8", errors="ignore") as f:
-            first_lines = "".join(f.readlines(1024))
-            if re.match(r"#!\s*/.*python", first_lines):
-                return True
-            if "def " in first_lines or "class " in first_lines or "import " in first_lines:
-                return True
-    except:
-        pass
-    return False
 
 
 def process_single_file(path: Path) -> list[dict[str, Any]]:
     try:
-        if path.suffix == ".py" or is_python_file_no_extension(path):
+        if is_python_file(path):
             content = path.read_text(encoding="utf-8", errors="ignore")
+
             return extract_entities_from_content(content, path)
+
         return []
     except Exception as e:
         print(f"Error reading file {path}: {e}")
+
         return []
 
 
@@ -181,9 +153,11 @@ def process_archive(path: Path) -> list[dict[str, Any]]:
         try:
             dctx = zstd.ZstdDecompressor()
             content = dctx.decompress(path.read_bytes()).decode("utf-8", errors="ignore")
+
             return extract_entities_from_content(content, path)
         except Exception as e:
             print(f"Error decompressing ZST file {path}: {e}")
+
             return []
     if path.suffix in {".zip", ".whl"}:
         try:
@@ -248,6 +222,7 @@ def process_archive(path: Path) -> list[dict[str, Any]]:
             pass
         except Exception as e:
             print(f"Error processing TAR archive {path}: {e}")
+
     return entities
 
 
@@ -255,6 +230,7 @@ def worker_process(path_str: str) -> list[dict[str, Any]]:
     path = Path(path_str)
     if path.name.endswith(ARCHIVE_EXTENSIONS):
         return process_archive(path)
+
     return process_single_file(path)
 
 
@@ -272,11 +248,12 @@ def main():
             if path.is_relative_to(OUTPUT_DIR):
                 continue
             is_archive = path.suffix in ARCHIVE_EXTENSIONS or any(path.name.endswith(ext) for ext in ARCHIVE_EXTENSIONS)
-            is_py = path.suffix in ALLOWED_PYTHON_EXTENSIONS or is_python_file_no_extension(path)
+            is_py = is_python_file(path)
             if is_archive or is_py:
                 files_to_process.append(str(path))
     if not files_to_process:
         print("No Python files or archives found to process.")
+
         return
     print(f"Found {len(files_to_process)} relevant files/archives. Starting multiprocessing pool...")
     all_entities = []
@@ -294,4 +271,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    SystemExit(main())

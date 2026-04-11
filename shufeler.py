@@ -6,23 +6,19 @@ import secrets
 import sys
 from pathlib import Path
 
-# تعیین حداقل حجم فایل برای استفاده از mmap (مثلاً 10 مگابایت)
-MMAP_THRESHOLD_MB = 5
-MMAP_THRESHOLD_BYTES = MMAP_THRESHOLD_MB * 1024 * 1024
+MMAP_THRESHOLD_BYTES = 2 * 1024 * 1024
 
 
 def get_line_offsets(file_path):
     offsets = []
-    with file_path.open("rb") as f:  # باز کردن در حالت باینری برای mmap
-        with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
-            offset = 0
-            while True:
-                offsets.append(offset)
-                # جستجو برای کاراکتر newline
-                newline_pos = mm.find(b"\n", offset)
-                if newline_pos == -1:
-                    break  # پایان فایل
-                offset = newline_pos + 1
+    with file_path.open("rb") as f, mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
+        offset = 0
+        while True:
+            offsets.append(offset)
+            newline_pos = mm.find(b"\n", offset)
+            if newline_pos == -1:
+                break
+            offset = newline_pos + 1
     return offsets
 
 
@@ -46,13 +42,10 @@ def weighted_shuffle_offsets(offsets):
     for i in range(n - 1, 0, -1):
         j = random.randint(0, i)
         offsets[i], offsets[j] = offsets[j], offsets[i]
-    # The second loop in the original weighted_shuffle seems to be an additional mix-up.
-    # We can keep it if desired for more "randomness" but it adds overhead.
-    # For a truly random shuffle, one pass is enough.
-    # If n > 1:
-    #     for i in range(n - 1):
-    #         swap_pos = random.randint(i + 1, n - 1)
-    #         offsets[i], offsets[swap_pos] = offsets[swap_pos], offsets[i]
+    if n > 1:
+        for i in range(n - 1):
+            swap_pos = random.randint(i + 1, n - 1)
+            offsets[i], offsets[swap_pos] = offsets[swap_pos], offsets[i]
 
 
 def enhanced_shuffle_large_file(input_file_path, output_file_path):
@@ -75,7 +68,7 @@ def enhanced_shuffle_large_file(input_file_path, output_file_path):
     crypto_shuffle_offsets(line_offsets)
     shuffle3_offsets(line_offsets)
     weighted_shuffle_offsets(line_offsets)
-    random.shuffle(line_offsets)  # Standard random.shuffle for good measure
+    random.shuffle(line_offsets)
     print("Writing shuffled lines to output file...")
     try:
         with input_path.open("rb") as infile:
@@ -85,9 +78,7 @@ def enhanced_shuffle_large_file(input_file_path, output_file_path):
                         next_offset_idx = line_offsets.index(offset) + 1 if offset in line_offsets else -1
                         if next_offset_idx < len(line_offsets):
                             end_of_line_offset = line_offsets[next_offset_idx] - 1
-                            if (
-                                end_of_line_offset < offset
-                            ):  # if next line is at same offset, means this line is last line
+                            if end_of_line_offset < offset:
                                 end_of_line_offset = file_size  # default to end of file
                         else:
                             end_of_line_offset = file_size
@@ -103,7 +94,6 @@ def enhanced_shuffle_large_file(input_file_path, output_file_path):
         return True
     except Exception as e:
         print(f"\nError writing output file: {e}", file=sys.stderr)
-        # در صورت خطا، فایل خروجی ناقص را حذف کنید
         if output_path.exists():
             output_path.unlink()
         return False
@@ -132,7 +122,7 @@ def enhanced_shuffle_small_file(input_file_path, output_file_path):
     original_count = len(lines)
     if original_count == 0:
         print("Input file is empty. Exiting.")
-        output_path.touch()  # Create an empty output file
+        output_path.touch()
         return True
     print(f"Read {original_count} lines. Shuffling lines...")
     random.shuffle(lines)

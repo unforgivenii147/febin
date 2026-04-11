@@ -16,7 +16,8 @@ try:
 except PackageNotFoundError:
     pass
 """
-    init_file.write_text(init_content, encoding="utf-8")
+    if not init_file.exists():
+        init_file.write_text(init_content, encoding="utf-8")
     readme_file = current_dir / "README.md"
     readme_content = f"""# {pkg_name}
 ## Description
@@ -30,7 +31,8 @@ Usage
 import {pkg_name}
 ```
 """
-    readme_file.write_text(readme_content, encoding="utf-8")
+    if not readme_file.exists():
+        readme_file.write_text(readme_content, encoding="utf-8")
     pyproject_file = current_dir / "pyproject.toml"
     pyproject_content = f"""[build-system]
 requires = ["setuptools>=61.0", "wheel"]
@@ -51,12 +53,14 @@ requires-python = ">=3.9"
 [tool.setuptools.packages.find]
 where = ["src"]
 """
-    pyproject_file.write_text(pyproject_content, encoding="utf-8")
+    if not pyproject_file.exists():
+        pyproject_file.write_text(pyproject_content, encoding="utf-8")
     setuppy_file = current_dir / "setup.py"
     setuppy_content = """from setuptools import setup
 setup()
 """
-    setuppy_file.write_text(setuppy_content, encoding="utf-8")
+    if not setuppy_file.exists():
+        setuppy_file.write_text(setuppy_content, encoding="utf-8")
     setupcfg_file = current_dir / "setup.cfg"
     setupcfg_content = f"""[metadata]
 name = {pkg_name}
@@ -88,7 +92,8 @@ exclude =
     .eggs
     docs/conf.py
 """
-    setupcfg_file.write_text(setupcfg_content, encoding="utf-8")
+    if not setupcfg_file.exists():
+        setupcfg_file.write_text(setupcfg_content, encoding="utf-8")
 
 
 def main():

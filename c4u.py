@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
 import html as _html
-import re
+import regex as re
 import sys
 import urllib.parse
 from pathlib import Path

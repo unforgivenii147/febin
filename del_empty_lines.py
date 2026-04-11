@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import gc
 import sys
 from pathlib import Path
 from binaryornot import is_binary
@@ -26,7 +25,6 @@ def process_file(path):
         else:
             print(f"{path.name}", end=" | ")
             cprint("NO CHANGE", "grey")
-    gc.collect()
 
 
 if __name__ == "__main__":

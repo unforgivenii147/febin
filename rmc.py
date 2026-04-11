@@ -7,7 +7,9 @@ import tree_sitter_python as tspython
 from dh import DOC_TH1, DOC_TH2, clean_blank_lines, fsz, get_pyfiles, gsz, mpf3
 from termcolor import cprint
 from tree_sitter import Language, Parser
+import regex as re
 
+doc_re = re.compile(r"DOC_TH1|DOC_TH2|#")
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
 PRESERVED: set = {
@@ -75,11 +77,13 @@ def rm_ast(content: str) -> tuple[str, int]:
     try:
         tree = ast.parse(content)
     except SyntaxError:
+        del tree
         return content
     lines = content.split("\n")
     ranges = find_docstring_ranges(tree)
     for start, end in sorted(ranges, reverse=True):
         del lines[start - 1 : end]
+    del start, end
     return "\n".join(lines), len(ranges)
 
 
@@ -117,9 +121,9 @@ def process_file(file_path: Path) -> bool:
     before = gsz(file_path)
     try:
         original = file_path.read_text(encoding="utf-8")
-        if DOC_TH1 not in original and DOC_TH2 not in original and "#!" not in original and "#" not in original:
+        if not doc_re.findall(original):
             return True
-        modified, _removed = rm_ast(original)
+        modified, removed = rm_ast(original)
         finalcode = strip_code(modified)
         wcode = clean_blank_lines(finalcode)
         try:
@@ -131,6 +135,7 @@ def process_file(file_path: Path) -> bool:
                 f"{fsz(dsz)}",
                 "blue",
             )
+            del dsz, wcode, finalcode, modified, removed
             return True
         except:
             try:
@@ -143,6 +148,7 @@ def process_file(file_path: Path) -> bool:
                     f"{fsz(diffsize)}",
                     "blue",
                 )
+                del final_code, diffsize
                 return True
             except:
                 return False
@@ -165,4 +171,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

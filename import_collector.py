@@ -4,6 +4,7 @@ import importlib.metadata
 import importlib.util
 import sys
 from pathlib import Path
+from dh import is_python_file
 
 PACKAGE_MAPPING = {
     "cv2": "opencv-python",
@@ -22,19 +23,6 @@ PACKAGE_MAPPING = {
     "jwt": "PyJWT",
     "OpenGL": "PyOpenGL",
 }
-
-
-def is_python_file(path: Path) -> bool:
-    if path.suffix == ".py":
-        return True
-    if path.is_file() and not path.suffix:
-        try:
-            with Path(path).open(encoding="utf-8") as f:
-                first_line = f.readline()
-                return "python" in first_line
-        except Exception:
-            return False
-    return False
 
 
 def get_imports_from_file(file_path):
@@ -62,14 +50,14 @@ def check_status(module_name):
 
 
 def main():
-    current_dir = Path()
-    output_file = current_dir / "importz.txt"
-    pip_script = current_dir / "install_deps.sh"
+    cwd = Path()
+    output_file = cwd / "importz.txt"
+    pip_script = cwd / "install_deps.sh"
     all_imports = set()
-    local_names = {p.stem for p in current_dir.glob("*.py")}
-    local_names.update({p.name for p in current_dir.iterdir() if p.is_dir() and (p / "__init__.py").exists()})
+    local_names = {p.stem for p in cwd.glob("*.py")}
+    local_names.update({p.name for p in cwd.iterdir() if p.is_dir() and (p / "__init__.py").exists()})
     std_libs = getattr(sys, "stdlib_module_names", set())
-    for path in current_dir.rglob("*"):
+    for path in cwd.rglob("*"):
         if is_python_file(path) and path.name not in {
             "importz.txt",
             "install_deps.sh",

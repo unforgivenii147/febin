@@ -1,16 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
-import subprocess
 import sys
 from datetime import datetime
+import subprocess
 
 
 def run(cmd):
-    return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    return subprocess.run(cmd, capture_output=True, text=True)
 
 
-def main():
+def main() -> None:
     try:
-        git_ver = run(["git", "--version"])
+        run(["git", "--version"])
     except FileNotFoundError:
         print("git not found. Please install git.", file=sys.stderr)
         sys.exit(1)

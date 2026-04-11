@@ -14,7 +14,7 @@ def process_file(fp, threshold=THRESHOLD) -> None:
 
 
 def main():
-    threshold = sys.argv[1] if len(sys.argv) > 1 else THRESHOLD
+    threshold = int(sys.argv[1]) * 1024 * 1024 if len(sys.argv) > 1 else THRESHOLD
     for path in get_filez(cwd):
         if not path.is_symlink():
             process_file(path, threshold)

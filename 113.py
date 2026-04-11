@@ -3,7 +3,6 @@ import lzma
 import tempfile
 import time
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -22,7 +21,6 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
             temp_path = Path(temp_file.name)
             temp_file.write(data)
             temp_file.flush()
-
         temp_path.rename(final_path)
         logger.debug(f"Atomically written to: {final_path}")
         return True
@@ -91,7 +89,6 @@ def compress_file(file_path: Path, delete_delay: float = 0.5) -> bool:
             logger.info(f"  {original_size} → {compressed_size} bytes ({reduction:.1f}% reduction)")
             return True
         logger.warning(f"Compressed but couldn't delete original: {file_path}")
-
         return True
     except lzma.LZMAError as e:
         logger.error(f"LZMA error compressing {file_path}: {e}")
@@ -111,7 +108,6 @@ def compress_file(file_path: Path, delete_delay: float = 0.5) -> bool:
 def calculate_directory_size(path: Path = Path()) -> tuple[int, int]:
     total_size = 0
     file_count = 0
-
     for file_path in path.rglob("*"):
         if file_path.is_file() and not file_path.is_symlink():
             if any(part.startswith(".") for part in file_path.parts):
@@ -128,7 +124,6 @@ def calculate_directory_size(path: Path = Path()) -> tuple[int, int]:
 def scan_files(directory: Path) -> list[Path]:
     files_to_compress = []
     logger.info(f"Scanning directory: {directory}")
-
     for file_path in directory.rglob("*"):
         if file_path.is_file() and not file_path.is_symlink():
             if any(part.startswith(".") for part in file_path.parts):

@@ -1,21 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 import shutil
 import subprocess
-from pathlib import Path
-from dh import unique_path
+from loguru import logger
+from dh import unique_path, get_files
 
-EXTENSIONS = {
-    ".js",
-    ".css",
-    ".html",
-    ".json",
-    ".mjs",
-    ".cjs",
-    ".ts",
-    ".jsx",
-    ".tsx",
-}
-EXCLUDE_PATTERNS = {".py", ".ipynb"}
+
+EXT = [".js", ".css", ".html", ".json", ".mjs", ".cjs", ".ts", ".jsx", ".tsx", ".tsm", ".jsm"]
+EXCLUDE_PATTERNS = {}
 
 
 def should_format(file_path: Path) -> bool:
@@ -28,9 +21,7 @@ def get_files_to_format(cwd: str = ".") -> list[Path]:
     root = Path(cwd).resolve()
     files: list[Path] = []
     for path in root.rglob("*"):
-        if path.is_dir():
-            continue
-        if "error" in path.parts:
+        if path.is_dir() or "error" in path.parts:
             continue
         if should_format(path):
             files.append(path)
@@ -40,74 +31,47 @@ def get_files_to_format(cwd: str = ".") -> list[Path]:
 def move_to_error_folder(file_path: Path) -> None:
     error_dir = file_path.parent / "error"
     error_dir.mkdir(exist_ok=True)
-    dest = error_dir / file_path.name
-    dest = unique_path(dest)
+    dest = unique_path(error_dir / file_path.name)
     shutil.move(str(file_path), str(dest))
-    print(f"  ❌ Moved to error folder: {dest}")
 
 
 def format_file(file_path: Path) -> tuple[Path, bool, str | None]:
     try:
-        result = subprocess.run(
-            [
-                "prettier",
-                "--write",
-                str(file_path),
-            ],
-            capture_output=True,
-            text=True,
-            timeout=900,
-        )
+        result = subprocess.run(["prettier", "--write", str(file_path)], capture_output=True, text=True, timeout=900)
         if result.returncode == 0:
             return file_path, True, None
-        return (
-            file_path,
-            False,
-            result.stderr or result.stdout or "Unknown error",
-        )
-    except subprocess.TimeoutExpired:
-        return (
-            file_path,
-            False,
-            "Timeout: formatting took too long",
-        )
-    except FileNotFoundError:
-        return (
-            file_path,
-            False,
-            "Prettier not found. Install with: npm install -g prettier",
-        )
+        return file_path, False, result.stderr or result.stdout or "Unknown error"
     except Exception as e:
         return file_path, False, str(e)
 
 
+def process_file_wrapper(file_path: Path):
+    path, success, error_msg = format_file(file_path)
+    if not success:
+        move_to_error_folder(path)
+    return success, path, error_msg
+
+
 def main():
     cwd = Path.cwd()
-    print(f"📁 Scanning directory: {cwd}")
-    files = get_files_to_format(cwd)
+    files = get_files(cwd, extensions=EXT)
     if not files:
-        print("ℹ️  No files found to format")
         return
-    print(f"📝 Found {len(files)} files\n")
+    logger.info(f"{len(files)} files found0")
     success_count = 0
     error_count = 0
-    for file_path in files:
-        path, success, error_msg = format_file(file_path)
-        if success:
-            print(f"  ✅ Formatted: {path}")
-            success_count += 1
-        else:
-            print(f"  ❌ Error formatting: {path}")
-            print(f"     Reason: {error_msg}")
-            move_to_error_folder(path)
-            error_count += 1
-    print("\n" + "=" * 60)
-    print("📈 Summary:")
-    print(f"   ✅ Successfully formatted: {success_count}")
-    print(f"   ❌ Errors encountered: {error_count}")
-    print(f"   📁 Total processed: {len(files)}")
-    print("=" * 60)
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        futures = {executor.submit(process_file_wrapper, f): f for f in files}
+        for future in as_completed(futures):
+            success, path, error_msg = future.result()
+            if success:
+                logger.info(f"✅ Formatted: {path.name}")
+                success_count += 1
+            else:
+                logger.info(f"❌ Error: {path.name} | Reason: {error_msg}")
+                error_count += 1
+    logger.info(f"\nSummary: {success_count} success, {error_count} errors.")
 
 
 if __name__ == "__main__":
-    main()
+    SystemExit(main())

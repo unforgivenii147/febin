@@ -10,7 +10,7 @@ from termcolor import cprint
 def process_file(path):
     print(f"running {path.name}")
     try:
-        cmd = f"python {path!s}"
+        cmd = f"python -I {path!s}"
         _, _, _ = run_command(cmd)
     except:
         print("error")
@@ -18,7 +18,6 @@ def process_file(path):
 
 def main() -> None:
     cwd = Path.cwd()
-    before = get_size(cwd)
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_pyfiles(cwd)
     if not files:
@@ -31,15 +30,10 @@ def main() -> None:
         pending = deque()
         for f in files:
             pending.append(p.apply_async(process_file, (f,)))
-            if len(pending) > 16:
+            if len(pending) > 8:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diffsize = before - get_size(cwd)
-    cprint(
-        f"{format_size(diffsize)}",
-        "cyan",
-    )
 
 
 if __name__ == "__main__":

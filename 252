@@ -17,7 +17,5 @@ def main():
             pending.popleft().get()
     diff_size = before - get_size(cwd)
     print(f"space saved : {format_size(diff_size)}")
-
-
 if __name__ == "__main__":
     main()

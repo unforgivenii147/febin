@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from typing import List, Set, Tuple
 
-EXCLUDED_NAMES: Set[str] = {
+EXCLUDED_NAMES: set[str] = {
     "tmp",
     "cache",
     "bin",

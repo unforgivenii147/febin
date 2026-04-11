@@ -2,15 +2,15 @@
 import contextlib
 import json
 import os
-import re
+import regex as re
 import time
 import requests
 from dh import get_installed_packages
 from packaging.version import Version
 from termcolor import cprint
 
-MAX_WORKERS = 4
-TIMEOUT = 15
+MAX_WORKERS = 8
+TIMEOUT = 10
 RESULTS_FILE = "/sdcard/c4u.json"
 
 
@@ -32,15 +32,10 @@ def get_latest_version(pkg_name: str) -> str | None:
 
 
 def load_previous_results() -> dict[str, dict]:
-    cleaned = {}
     if os.path.exists(RESULTS_FILE):
         try:
             with open(RESULTS_FILE, encoding="utf-8") as f:
-                data = json.load(f)
-                for pkg in data:
-                    if pkg["latest_version"] is not None:
-                        cleaned.add(pkg)
-            return cleaned
+                return json.load(f)
         except json.JSONDecodeError:
             cprint(f"Warning: Corrupted results file '{RESULTS_FILE}'. Starting fresh.", "red")
             return {}
@@ -54,7 +49,6 @@ def save_results(results: dict[str, dict]):
 
 if __name__ == "__main__":
     start_time = time.time()
-    cprint("--- Checking for PyPI package updates ---", "blue")
     installed_packages = get_installed_packages()
     total_packages = len(installed_packages)
     cprint(f"Found {total_packages} installed packages.", "blue")
@@ -64,12 +58,15 @@ if __name__ == "__main__":
     for pkg_name, installed_version in installed_packages.items():
         if pkg_name in previous_results:
             prev_data = previous_results[pkg_name]
+            if prev_data.get("latest_version") and prev_data.get("latest_version") == "null":
+                packages_to_check.append((pkg_name, installed_version))
+                continue
             if prev_data.get("installed_version") == installed_version:
                 current_results[pkg_name] = prev_data
                 continue
         packages_to_check.append((pkg_name, installed_version))
-    cprint(f"Will check {len(packages_to_check)} packages for updates (remaining or changed).", "blue")
-    updatable_pkgs_info: list[tuple[str, str, str]] = []  # این خط باید خارج از حلقه بالا باشد
+    cprint(f"Will check {len(packages_to_check)} packages.", "blue")
+    updatable_pkgs_info: list[tuple[str, str, str]] = []
     for i, (pkg_name, installed_version) in enumerate(packages_to_check):
         latest_version_str = get_latest_version(pkg_name)
         current_results[pkg_name] = {

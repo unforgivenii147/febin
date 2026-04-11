@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import os
-import re
+import regex as re
 import urllib
 from pathlib import Path
 import lxml.html

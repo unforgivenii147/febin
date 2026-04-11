@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
 from pathlib import Path
-from dh import unique_path
+from dh import unique_path, gext
 
 NO_EXT_DIR = "no_ext"
 
@@ -13,7 +13,7 @@ def folderize_by_extension():
             continue
         if path.is_file() and not path.is_symlink():
             _name = path.stem
-            ext = path.suffix.lower().lstrip(".")
+            ext = gext(path).lstrip(".") if gext(path) else ""
             target_dir = ext or NO_EXT_DIR
             target_path = base_dir / target_dir
             if not target_path.exists():
@@ -21,7 +21,7 @@ def folderize_by_extension():
             dest_path = target_path / path.name
             if dest_path.exists():
                 dest_path = unique_path(dest_path)
-            shutil.move(path, dest_path)
+            shutil.move(str(path), str(dest_path))
 
 
 if __name__ == "__main__":

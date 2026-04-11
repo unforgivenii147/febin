@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import gc
 import sys
 import tempfile
 from pathlib import Path
@@ -30,7 +29,6 @@ def process_file(path: Path) -> int:
         Path(temp_file_path).replace(path)
         print(f"[OK] {path.name}", end=" | ")
         cprint(f"{removed_count}", "cyan")
-        gc.collect()
         return removed_count
     except OSError:
         if temp_file_path and temp_file_path.exists():

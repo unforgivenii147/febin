@@ -32,10 +32,9 @@ def merge_files(root):
             content = read_file(path)
             if content is None:
                 continue
-            fo.write(f"########### {path} ##########\n\n\n")
             fo.write(content)
             if i != len(files):
-                fo.write("\n\n\n")
+                fo.write("\n")
             print(f"Added: {path}")
     print(f"\nsaved as: {OUTPUT_FILE}")
 

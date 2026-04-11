@@ -7,10 +7,7 @@ if __name__ == "__main__":
     cwd = Path.cwd()
     dirz = []
     otherz = []
-    for path in sorted(
-        cwd.glob("*"),
-        key=lambda e: e.stat().st_size,
-    ):
+    for path in sorted(cwd.glob("*"), key=lambda e: e.stat().st_size, reverse=True):
         if path.is_dir():
             dirz.append(path)
         else:

@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import gc
 from pathlib import Path
 from dh import get_nobinary
 
@@ -12,7 +11,6 @@ def delete_multiline_string_from_files(search_string) -> None:
         if search_string in content:
             new_content = content.replace(search_string, "")
         path.write_text(new_content, encoding="utf-8")
-    gc.collect()
 
 
 def read_string_to_delete(filename="/sdcard/lic"):

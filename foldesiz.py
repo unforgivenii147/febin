@@ -99,7 +99,7 @@ def main():
         print("No files found.")
         return
     num_folders = calculate_optimal_folders(files)
-    num_folders = 4
+    num_folders = 10
     folders = create_range_folders(base_dir, files, num_folders)
     distribute_files(files, folders, base_dir)
     print("Folderization complete!")

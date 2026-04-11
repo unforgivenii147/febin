@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import pathlib
-import re
+import regex as re
 
 
 def refactor_file(file_path):

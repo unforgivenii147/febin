@@ -65,7 +65,7 @@ def write_chunks(chunks, input_path: Path, out_dir: Path, encoding: str):
     ext = "".join(input_path.suffixes)
     out_dir.mkdir(parents=True, exist_ok=True)
     for i, chunk in enumerate(chunks, start=1):
-        out_name = f"{stem}_({i}){ext}"
+        out_name = f"{stem}_{i}{ext}"
         out_path = out_dir / out_name
         out_path.write_text(chunk, encoding=encoding)
         print(f"Wrote {out_path} ({len(chunk)} chars)")

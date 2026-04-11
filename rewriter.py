@@ -2,9 +2,10 @@
 import ast
 import sys
 from pathlib import Path
-import unidecode
-from dh import format_size, get_pyfiles, get_size, is_binary, mpf
+import unidecodedata
+from dh import get_files, is_binary
 from termcolor import cprint
+from pbar import Pbar
 
 
 def process_file(fn: Path) -> bool:
@@ -26,7 +27,7 @@ def process_file(fn: Path) -> bool:
                 cprint(f"{fn.name} ast parse error", "cyan")
                 return False
         else:
-            new_content = unidecode.normalize(content)
+            new_content = unidecodedata.normalize("NFKD", content)
             fn.write_text(new_content, encoding="utf-8")
     except:
         return False
@@ -34,16 +35,12 @@ def process_file(fn: Path) -> bool:
 
 def main() -> None:
     cwd = Path.cwd()
-    before = get_size(cwd)
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_pyfiles(cwd)
-    if len(files) == 1:
-        process_file(files[0])
-        sys.exit(0)
-    _ = mpf(process_file, files)
-    diffsize = before - get_size(cwd)
-    print(f"space change: {format_size(diffsize)}")
+    with Pbar("") as pbar:
+        for path in pbar.wrap(files):
+            process_file(path)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-import re
+import regex as re
 from packaging.version import Version
 
 

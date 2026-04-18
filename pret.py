@@ -16,6 +16,7 @@ from termcolor import cprint
 CHUNK_SIZE = 32768
 MAX_WORKERS: int = 8
 MAX_IN_FLIGHT = 8
+SKIP_DIRS = {".git"}
 
 
 def atomic_write(data: bytes, final_path: Path) -> bool:

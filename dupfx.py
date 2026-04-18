@@ -98,7 +98,12 @@ def main() -> None:
         action="store_true",
         help="Don't delete; just show what would be done.",
     )
-    p.add_argument("--follow-symlinks", default=False, action="store_true", help="Follow symlinks to files.")
+    p.add_argument(
+        "--follow-symlinks",
+        default=False,
+        action="store_true",
+        help="Follow symlinks to files.",
+    )
     p.add_argument(
         "--min-size",
         type=int,

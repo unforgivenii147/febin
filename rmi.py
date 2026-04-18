@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+from dh import get_nobinary
+
 
 INVISIBLE_CHARS = {
     "\u200b",
@@ -31,16 +33,25 @@ def clean_text(text: str) -> str:
     return cleaned
 
 
-def main():
-    text = Path(sys.argv[1]).read_text(encoding="utf-8", errors="ignore")
+def process_file(fp):
+    text = fp.read_text(encoding="utf-8", errors="ignore")
     cleaned = clean_text(text)
     removed = len(text) - len(cleaned)
     if removed:
         print(f"{removed} invisible characters removed")
+        fp.write_text(cleaned, encoding="utf-8")
+        return
     else:
         print("No invisible characters found")
-    Path(sys.argv[1]).write_text(cleaned, encoding="utf-8")
-    print("done")
+        return
+
+
+def main():
+    cwd = Path.cwd()
+    args = sys.argv[1:]
+    files = [Path(p) for p in args] if args else get_nobinary(cwd)
+    for f in files:
+        process_file(f)
 
 
 if __name__ == "__main__":

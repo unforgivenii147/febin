@@ -30,7 +30,10 @@ def get_latest_version(pkg_name: str) -> str | None:
         cprint(f"/sdcard/whl/json/{pkg_name}.html created")
     except:
         return None
-    wheel_pattern = re.compile(rf"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\.\-_]*)\.(?:whl|tar\.gz|zip)", re.IGNORECASE)
+    wheel_pattern = re.compile(
+        rf"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\.\-_]*)\.(?:whl|tar\.gz|zip)",
+        re.IGNORECASE,
+    )
     versions = []
     print(html[:-100])
     for match in wheel_pattern.finditer(html):
@@ -49,7 +52,10 @@ def load_previous_results() -> dict[str, dict]:
             with pathlib.Path(RESULTS_FILE).open(encoding="utf-8") as f:
                 return json.load(f)
         except json.JSONDecodeError:
-            cprint(f"Warning: Corrupted results file '{RESULTS_FILE}'. Starting fresh.", "red")
+            cprint(
+                f"Warning: Corrupted results file '{RESULTS_FILE}'. Starting fresh.",
+                "red",
+            )
             return {}
     return {}
 
@@ -70,7 +76,10 @@ if __name__ == "__main__":
     for pkg_name, installed_version in installed_packages.items():
         if pkg_name in previous_results:
             prev_data = previous_results[pkg_name]
-            if prev_data.get("latest_version") and prev_data.get("latest_version") == "null":
+            if (
+                prev_data.get("latest_version")
+                and prev_data.get("latest_version") == "null"
+            ):
                 packages_to_check.append((pkg_name, installed_version))
                 continue
             if prev_data.get("installed_version") == installed_version:
@@ -91,7 +100,9 @@ if __name__ == "__main__":
                 installed_ver = Version(installed_version)
                 latest_ver = Version(latest_version_str)
                 if installed_ver < latest_ver:
-                    updatable_pkgs_info.append((pkg_name, installed_version, latest_version_str))
+                    updatable_pkgs_info.append(
+                        (pkg_name, installed_version, latest_version_str)
+                    )
                     cprint(
                         f"[{i + 1}/{len(packages_to_check)}] {pkg_name}: {installed_version} -> {latest_version_str} (Updatable!)",
                         "green",
@@ -107,7 +118,10 @@ if __name__ == "__main__":
                     "yellow",
                 )
         else:
-            cprint(f"[{i + 1}/{len(packages_to_check)}] {pkg_name}: Could not get latest version from PyPI.", "yellow")
+            cprint(
+                f"[{i + 1}/{len(packages_to_check)}] {pkg_name}: Could not get latest version from PyPI.",
+                "yellow",
+            )
         if (i + 1) % 10 == 0 or (i + 1) == len(packages_to_check):
             save_results(current_results)
             cprint("Results saved periodically.", "blue")
@@ -120,6 +134,8 @@ if __name__ == "__main__":
             "yellow",
         )
     else:
-        cprint("All installed packages are up to date or could not be checked.", "green")
+        cprint(
+            "All installed packages are up to date or could not be checked.", "green"
+        )
     end_time = time.time()
     cprint(f"\nFinished in {end_time - start_time:.2f} seconds.", "blue")

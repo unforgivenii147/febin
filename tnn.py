@@ -13,7 +13,10 @@ def replace_tabs_in_file(file_path: Path):
     try:
         content = file_path.read_text(encoding="utf-8")
     except UnicodeDecodeError:
-        print(f"Error: Could not decode {file_path.name} with UTF-8. Skipping.", file=sys.stderr)
+        print(
+            f"Error: Could not decode {file_path.name} with UTF-8. Skipping.",
+            file=sys.stderr,
+        )
         return
     except OSError as e:
         print(f"Error reading {file_path.name}: {e}. Skipping.", file=sys.stderr)
@@ -38,7 +41,10 @@ def main():
         help="Specific files to process. If none, all *.py files in current directory and subdirectories are processed.",
     )
     parser.add_argument(
-        "-v", "--verbose", action="store_true", help="Show verbose output (e.g., skip messages for files without tabs)."
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Show verbose output (e.g., skip messages for files without tabs).",
     )
     args = parser.parse_args()
     if args.files:

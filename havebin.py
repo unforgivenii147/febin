@@ -50,7 +50,12 @@ def find_packages_with_bin_scripts(output_file="have_scripts.txt"):
                             )
                             and not any(
                                 exclude_part in line
-                                for exclude_part in ["__pycache__", ".dist-info", ".egg-info", ".pth"]
+                                for exclude_part in [
+                                    "__pycache__",
+                                    ".dist-info",
+                                    ".egg-info",
+                                    ".pth",
+                                ]
                             )
                         ):
                             found_script_in_bin = True

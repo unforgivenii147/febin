@@ -48,7 +48,11 @@ async def fetch_pkg(session: aiohttp.ClientSession, pkg_name: str):
             else:
                 href, filename = others[-1]
                 version = extract_version(filename)
-            return {"pkg_name": pkg_name, "latest_version": version, "url_of_latest_version": href}
+            return {
+                "pkg_name": pkg_name,
+                "latest_version": version,
+                "url_of_latest_version": href,
+            }
     except Exception as e:
         return {"pkg_name": pkg_name, "error": str(e)}
 

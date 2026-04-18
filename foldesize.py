@@ -13,11 +13,13 @@ def get_all_files_in_root_only(root_path):
             if path.is_file() and not path.is_symlink():
                 try:
                     size = path.stat().st_size
-                    files_info.append({
-                        "path": path,
-                        "name": path.name,
-                        "size": size,
-                    })
+                    files_info.append(
+                        {
+                            "path": path,
+                            "name": path.name,
+                            "size": size,
+                        }
+                    )
                 except OSError as e:
                     print(f"Error accessing {path}: {e}")
     except Exception as e:
@@ -104,7 +106,9 @@ def organize_files_in_root(
             folders.append(current_folder)
         files_per_folder = 500
     else:
-        files_per_folder = calculate_optimal_files_per_folder(stats["count"], target_folders)
+        files_per_folder = calculate_optimal_files_per_folder(
+            stats["count"], target_folders
+        )
         num_folders = math.ceil(stats["count"] / files_per_folder)
         folders = []
         for i in range(num_folders):
@@ -140,7 +144,9 @@ def organize_files_in_root(
             created_folders.append(folder_name)
             print(f"\n  Folder {idx}/{len(folders)}: {folder_name}")
             print(f"    Files: {len(folder_files)}")
-            print(f"    Size range: {convert_size(min_size)} - {convert_size(max_size)}")
+            print(
+                f"    Size range: {convert_size(min_size)} - {convert_size(max_size)}"
+            )
             print(f"    Total size: {convert_size(total_size)}")
             for file_info in folder_files:
                 src = file_info["path"]

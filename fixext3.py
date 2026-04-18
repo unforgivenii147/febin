@@ -120,7 +120,11 @@ def get_current_extension(filepath: Path) -> str | None:
     return filepath.suffix.lower()
 
 
-def find_files_recursively(directory: Path, ignored_dirs: list[str] | None = None, follow_symlinks: bool = False):
+def find_files_recursively(
+    directory: Path,
+    ignored_dirs: list[str] | None = None,
+    follow_symlinks: bool = False,
+):
     if ignored_dirs is None:
         ignored_dirs = [".git", "__pycache__", "node_modules", ".venv", "venv"]
     for item in directory.rglob("*"):
@@ -157,9 +161,23 @@ def detect_and_fix_mismatches(
         detected_ext = get_file_extension_from_type(file_type_desc)
         is_generic_text = any(
             text_type in file_type_desc.lower()
-            for text_type in ["ascii text", "utf-8 unicode text", "iso-8859 text", "plain text"]
+            for text_type in [
+                "ascii text",
+                "utf-8 unicode text",
+                "iso-8859 text",
+                "plain text",
+            ]
         )
-        if is_generic_text and current_ext in {".txt", ".log", ".csv", ".md", ".ini", ".cfg", ".yml", ".yaml"}:
+        if is_generic_text and current_ext in {
+            ".txt",
+            ".log",
+            ".csv",
+            ".md",
+            ".ini",
+            ".cfg",
+            ".yml",
+            ".yaml",
+        }:
             continue
         if not detected_ext:
             continue

@@ -72,7 +72,9 @@ def main() -> None:
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = (
-        [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".ttf", ".woff", ".woff2", ".bin", ".otf"])
+        [Path(arg) for arg in args]
+        if args
+        else get_files(cwd, extensions=[".ttf", ".woff", ".woff2", ".bin", ".otf"])
     )
     if not files:
         print("no files found")

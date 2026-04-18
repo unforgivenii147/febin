@@ -40,7 +40,11 @@ def chunk_text_with_nltk(text: str, max_chars: int):
     cur = ""
     for sent in sentences:
         sent_to_add = sent
-        if cur and not cur.endswith((" ", "\n")) and not sent_to_add.startswith((" ", "\n")):
+        if (
+            cur
+            and not cur.endswith((" ", "\n"))
+            and not sent_to_add.startswith((" ", "\n"))
+        ):
             sent_to_add = " " + sent_to_add
         if len(cur) + len(sent_to_add) <= max_chars:
             cur += sent_to_add
@@ -79,10 +83,16 @@ def main():
     try:
         text = inp.read_text(encoding="utf-8")
     except Exception as exc:
-        print(f"Failed to read input file with encoding {args.encoding}: {exc}", file=sys.stderr)
+        print(
+            f"Failed to read input file with encoding {args.encoding}: {exc}",
+            file=sys.stderr,
+        )
         sys.exit(2)
     if len(text) < DEFAULT_MAX:
-        print(f"File has fewer than {DEFAULT_MAX} characters ({len(text)}). Skipping.", file=sys.stderr)
+        print(
+            f"File has fewer than {DEFAULT_MAX} characters ({len(text)}). Skipping.",
+            file=sys.stderr,
+        )
         sys.exit(0)
     chunks = chunk_text_with_nltk(text, DEFAULT_MAX)
     if not chunks:

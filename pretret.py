@@ -29,7 +29,21 @@ def main():
     files = (
         [Path(f) for f in args]
         if args
-        else get_filez(cwd, exts=[".html", ".htm", ".js", ".jsx", ".ts", ".tsx", ".css", ".md", ".jsm", ".scss"])
+        else get_filez(
+            cwd,
+            exts=[
+                ".html",
+                ".htm",
+                ".js",
+                ".jsx",
+                ".ts",
+                ".tsx",
+                ".css",
+                ".md",
+                ".jsm",
+                ".scss",
+            ],
+        )
     )
     with ThreadPoolExecutor(8) as executor:
         futures = [executor.submit(process_file, fp) for fp in files]

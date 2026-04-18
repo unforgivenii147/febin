@@ -25,7 +25,10 @@ def copy_lines_to_clipboard(path: str, start_line: int | None = None, end_line: 
         start_index = start_line - 1
         end_index = total_lines if end_line is None else end_line
         if not (0 <= start_index < total_lines):
-            print(f"Error: Start line ({start_line}) is out of bounds. File has {total_lines} lines.", file=sys.stderr)
+            print(
+                f"Error: Start line ({start_line}) is out of bounds. File has {total_lines} lines.",
+                file=sys.stderr,
+            )
             sys.exit(1)
         if not (0 <= end_index <= total_lines):
             print(
@@ -41,16 +44,27 @@ def copy_lines_to_clipboard(path: str, start_line: int | None = None, end_line: 
         print("No content selected to copy.", file=sys.stderr)
         sys.exit(0)
     try:
-        process = subprocess.Popen(["termux-clipboard-set"], stdin=subprocess.PIPE, text=True, stderr=subprocess.PIPE)
+        process = subprocess.Popen(
+            ["termux-clipboard-set"],
+            stdin=subprocess.PIPE,
+            text=True,
+            stderr=subprocess.PIPE,
+        )
         _stdout, stderr = process.communicate(input=content_to_copy)
         if process.returncode != 0:
             print(f"Error: Failed to copy to clipboard. STDERR: {stderr}", file=sys.stderr)
             sys.exit(1)
     except FileNotFoundError:
-        print("Error: 'termux-clipboard-set' command not found. Is Termux:API installed?", file=sys.stderr)
+        print(
+            "Error: 'termux-clipboard-set' command not found. Is Termux:API installed?",
+            file=sys.stderr,
+        )
         sys.exit(1)
     except Exception as e:
-        print(f"An unexpected error occurred while copying to clipboard: {e}", file=sys.stderr)
+        print(
+            f"An unexpected error occurred while copying to clipboard: {e}",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
 
@@ -91,7 +105,8 @@ def main():
                 total_lines = len(f.readlines())
             if not (1 <= start_line <= total_lines):
                 print(
-                    f"Error: Start line ({start_line}) is out of bounds. File has {total_lines} lines.", file=sys.stderr
+                    f"Error: Start line ({start_line}) is out of bounds. File has {total_lines} lines.",
+                    file=sys.stderr,
                 )
                 sys.exit(1)
         except OSError as e:

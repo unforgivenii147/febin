@@ -61,8 +61,13 @@ def get_remote_font_base64(url):
         response = requests.get(url, timeout=15, stream=True)
         response.raise_for_status()
         content_type = response.headers.get("content-type", "").split(";")[0]
-        if not content_type.lower().startswith("font") and "svg" not in content_type.lower():
-            print(f"Warning: Content-Type '{content_type}' for {url} doesn't look like a font. Proceeding anyway.")
+        if (
+            not content_type.lower().startswith("font")
+            and "svg" not in content_type.lower()
+        ):
+            print(
+                f"Warning: Content-Type '{content_type}' for {url} doesn't look like a font. Proceeding anyway."
+            )
         ext = get_file_extension(url)
         if ext == ".eot":
             content_type = "application/vnd.ms-fontobject"
@@ -114,7 +119,9 @@ def make_css_standalone(input_css_path, output_css_path):
     except Exception as e:
         print(f"Error reading input CSS file {input_css_path}: {e}")
         return
-    import_pattern = re.compile(r'@import\s+(?:url\()?(["\'])(.*?)\1\)?;', re.IGNORECASE)
+    import_pattern = re.compile(
+        r'@import\s+(?:url\()?(["\'])(.*?)\1\)?;', re.IGNORECASE
+    )
     font_url_pattern = re.compile(r'url\((["\']?)([^)"\'\s]+?)\1?\)', re.IGNORECASE)
     processed_content = content
     import_urls_to_process = []
@@ -140,7 +147,9 @@ def make_css_standalone(input_css_path, output_css_path):
                         imported_css = Path(fetch_url).read_text(encoding="utf-8")
                         import_source_ref = fetch_url
                     else:
-                        print(f"Warning: Local import file not found: {fetch_url}. Skipping.")
+                        print(
+                            f"Warning: Local import file not found: {fetch_url}. Skipping."
+                        )
                         continue
                 else:
                     response = requests.get(current_import_url, timeout=15)
@@ -157,13 +166,19 @@ def make_css_standalone(input_css_path, output_css_path):
                 if os.path.normpath(sub_import_url) not in processed_imports:
                     queue.append(sub_import_url)
                 imported_css = imported_css.replace(sub_match.group(0), "", 1)
-            processed_content += f"\n/* Imported from: {import_source_ref} */\n{imported_css}\n"
+            processed_content += (
+                f"\n/* Imported from: {import_source_ref} */\n{imported_css}\n"
+            )
         except FileNotFoundError:
-            print(f"Could not import local file {current_import_url} (resolved to {fetch_url}): File not found.")
+            print(
+                f"Could not import local file {current_import_url} (resolved to {fetch_url}): File not found."
+            )
         except requests.exceptions.RequestException as e:
             print(f"Could not import remote CSS from {current_import_url}: {e}")
         except Exception as e:
-            print(f"An unexpected error occurred while processing import {current_import_url}: {e}")
+            print(
+                f"An unexpected error occurred while processing import {current_import_url}: {e}"
+            )
 
     def replace_font_urls_in_content(match):
         url_part = match.group(2)
@@ -176,7 +191,9 @@ def make_css_standalone(input_css_path, output_css_path):
         print(f"Failed to process font URL: {url_part}. Keeping original.")
         return match.group(0)
 
-    processed_content = font_url_pattern.sub(replace_font_urls_in_content, processed_content)
+    processed_content = font_url_pattern.sub(
+        replace_font_urls_in_content, processed_content
+    )
     try:
         output_dir = Path(output_css_path).parent
         if output_dir:

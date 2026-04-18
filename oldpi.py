@@ -8,22 +8,31 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dh import get_files
 from tqdm import tqdm
 import regex as re
+
 SIZE_THRESHOLD = 1 * 1024 * 1024
 OLD_PRINT_RE = re.compile(r"(?m)^[ \t]*print[ \t]+[^(\n]")
+
+
 def _open_source(filepath: str):
     size = Path(filepath).stat().st_size
     f = Path(filepath).open("rb")
     if size > SIZE_THRESHOLD:
         return mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
     return f
+
+
 def _read_text(filepath: str) -> str | None:
     try:
         with Path(filepath).open(encoding="utf-8", errors="ignore") as f:
             return f.read()
     except Exception:
         return None
+
+
 def _has_rich_print_import(text: str) -> bool:
     return "from rich import print" in text
+
+
 def regex_flag(filepath: str) -> bool:
     text = _read_text(filepath)
     if not text:
@@ -31,6 +40,8 @@ def regex_flag(filepath: str) -> bool:
     if _has_rich_print_import(text):
         return False
     return bool(OLD_PRINT_RE.search(text))
+
+
 def tokenizer_confirm(filepath: str) -> str | None:
     try:
         src = _open_source(filepath)
@@ -53,6 +64,8 @@ def tokenizer_confirm(filepath: str) -> str | None:
             if j < len(tokens) and tokens[j].string != "(":
                 return line
     return None
+
+
 def autofix_file(filepath: str) -> bool:
     try:
         with Path(filepath).open(encoding="utf-8") as f:
@@ -75,6 +88,8 @@ def autofix_file(filepath: str) -> bool:
         return changed
     except Exception:
         return False
+
+
 def process_file(filepath: str, autofix: bool) -> tuple[str, str] | None:
     if not regex_flag(filepath):
         return None
@@ -84,6 +99,8 @@ def process_file(filepath: str, autofix: bool) -> tuple[str, str] | None:
     if autofix:
         autofix_file(filepath)
     return filepath, confirmed
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Regex + tokenizer detection of Python 2 print")
     parser.add_argument("path", nargs="?", default=".")
@@ -108,5 +125,7 @@ def main() -> None:
             if result:
                 path, line = result
                 print(f"{path}\n  {line}")
+
+
 if __name__ == "__main__":
     main()

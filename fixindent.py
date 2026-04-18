@@ -10,7 +10,19 @@ def fix_python_indentation(input_file_path, output_file_path=None, indent_size=4
     fixed_lines = []
     current_indent_level = 0
     # لیست کلماتی که شروع یک بلوک جدید را نشان می‌دهند و به تورفتگی نیاز دارند
-    block_starters = ["def", "class", "if", "for", "while", "with", "try", "except", "finally", "elif", "else"]
+    block_starters = [
+        "def",
+        "class",
+        "if",
+        "for",
+        "while",
+        "with",
+        "try",
+        "except",
+        "finally",
+        "elif",
+        "else",
+    ]
     block_enders = ["return", "break", "continue", "pass", "raise"]
     with Path(input_file_path).open(encoding="utf-8") as f:
         lines = f.readlines()

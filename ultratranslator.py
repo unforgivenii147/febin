@@ -85,7 +85,9 @@ def translate_python_file(source: str) -> str:
         if start > prev_end:
             lines_between = source.splitlines()[prev_end[0] - 1 : start[0]]
             if len(lines_between) > 1:
-                result.extend(line_content + "\n" for line_content in lines_between[:-1])
+                result.extend(
+                    line_content + "\n" for line_content in lines_between[:-1]
+                )
                 result.append(lines_between[-1][: start[1]])
             elif lines_between:
                 result.append(lines_between[0][prev_end[1] : start[1]])
@@ -153,7 +155,11 @@ def process_files(directory: str) -> None:
             continue
         print("  Translating content...")
         try:
-            translated = translate_python_file(original, fp) if suffix == ".py" else translate_text(original)
+            translated = (
+                translate_python_file(original, fp)
+                if suffix == ".py"
+                else translate_text(original)
+            )
             if translated.strip() != original.strip():
                 safe_overwrite(fp, translated)
                 print("  ✓ Successfully translated and saved")

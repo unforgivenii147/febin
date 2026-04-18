@@ -82,7 +82,10 @@ def fsz(sz: float) -> str:
 
 
 def get_files(
-    path: str | Path, include_hidden: bool = True, recursive: bool = True, extensions: list[str] | None = None
+    path: str | Path,
+    include_hidden: bool = True,
+    recursive: bool = True,
+    extensions: list[str] | None = None,
 ) -> list[Path]:
     path = Path(path)
     out = []

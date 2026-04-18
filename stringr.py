@@ -14,12 +14,10 @@ outfile = cwd / "all_strings.txt"
 def process_file(fp):
     if not fp.exists() or not is_binary(fp):
         return
-    print(f"processing {fp.name}")
     cmd = f"strings {fp!s}"
     _code, txt, _err = run_command(cmd)
     with open(outfile, "a", encoding="utf-8") as f:
-        f.write(f"\n#### {fp.relative_to(cwd)} ####\n")
-        f.write(txt)
+        f.write(f"{txt}\n")
     return
 
 

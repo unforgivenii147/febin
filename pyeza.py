@@ -273,7 +273,9 @@ def print_entries(entries: list[Entry], args) -> None:
                 "mtime": e.stat.st_mtime,
                 "git": e.git,
                 "type": (
-                    "dir" if stat.S_ISDIR(e.stat.st_mode) else ("link" if stat.S_ISLNK(e.stat.st_mode) else "file")
+                    "dir"
+                    if stat.S_ISDIR(e.stat.st_mode)
+                    else ("link" if stat.S_ISLNK(e.stat.st_mode) else "file")
                 ),
             }
             for e in entries

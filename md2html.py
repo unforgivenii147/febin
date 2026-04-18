@@ -54,7 +54,9 @@ def read_markdown_file(file_path):
 
 def convert_markdown(md_path: str) -> str:
     if not md_path:
-        msg = "Markdown file path cannot be empty. Please provide a valid .md file path."
+        msg = (
+            "Markdown file path cannot be empty. Please provide a valid .md file path."
+        )
         raise ValueError(msg)
     markdown_text = read_markdown_file(md_path)
     markdown_text = convert_latex_format(markdown_text)

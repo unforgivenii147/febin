@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 import argparse
 import regex as re
+
 try:
     from termcolor import colored
 except ImportError:
@@ -19,20 +20,28 @@ REGEX_RULES = [
     r"-REWARD_HI",
 ]
 EXTENSIONS = {".srt", ".mkv", ".mp4", ".avi"}
+
+
 def common_prefix(strings):
     return os.path.commonprefix(strings)
+
+
 def common_suffix(strings):
     return os.path.commonprefix([s[::-1] for s in strings])[::-1]
+
 
 def apply_regex(name):
     for rule in REGEX_RULES:
         name = re.sub(rule, "", name, flags=re.IGNORECASE)
     return re.sub(r"\.+", ".", name).strip(". ")
 
+
 def collect_files(path, recursive):
     if recursive:
         return [p for p in path.rglob("*") if p.suffix.lower() in EXTENSIONS]
     return [p for p in path.iterdir() if p.is_file() and p.suffix.lower() in EXTENSIONS]
+
+
 def main():
     ap = argparse.ArgumentParser(description="Clean repeated words from filenames")
     ap.add_argument(
@@ -89,5 +98,7 @@ def main():
                 "yellow",
             )
         )
+
+
 if __name__ == "__main__":
     main()

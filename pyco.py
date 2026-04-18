@@ -21,7 +21,10 @@ def clean_pyc_and_pycache():
         ).with_suffix(".py")
         pyfile_parentdir = path.parent.parent / pyfile_samedir.name
         if not pyfile_samedir.exists() and not pyfile_parentdir.exists():
-            cprint(f"{pyfile_samedir} {pyfile_parentdir} does not exists so {path.name} is lonely pyc", "cyan")
+            cprint(
+                f"{pyfile_samedir} {pyfile_parentdir} does not exists so {path.name} is lonely pyc",
+                "cyan",
+            )
             continue
         if pyfile_parentdir.exists() or pyfile_samedir.exists():
             sz = path.stat().st_size

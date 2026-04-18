@@ -41,9 +41,17 @@ REPLACEMENTS: Dict[Tuple[str, str], Tuple[Optional[str], str, str]] = {
     ("os", "path.realpath"): ("pathlib", "Path", "lambda p: Path(p).resolve()"),
     ("os", "path.basename"): ("pathlib", "Path", "lambda p: Path(p).name"),
     ("os", "path.dirname"): ("pathlib", "Path", "lambda p: Path(p).parent"),
-    ("os", "path.splitext"): ("pathlib", "Path", "lambda p: (Path(p).stem, Path(p).suffix)"),
+    ("os", "path.splitext"): (
+        "pathlib",
+        "Path",
+        "lambda p: (Path(p).stem, Path(p).suffix)",
+    ),
     ("os", "path.splitext")[::-1]: None,  # skip duplicate key
-    ("os", "path.split"): ("pathlib", "Path", "lambda p: (str(Path(p).parent), Path(p).name)"),
+    ("os", "path.split"): (
+        "pathlib",
+        "Path",
+        "lambda p: (str(Path(p).parent), Path(p).name)",
+    ),
     ("os", "path.getmtime"): ("pathlib", "Path", "lambda p: Path(p).stat().st_mtime"),
     ("os", "path.getsize"): ("pathlib", "Path", "lambda p: Path(p).stat().st_size"),
     ("os", "path.relpath"): (
@@ -56,14 +64,26 @@ REPLACEMENTS: Dict[Tuple[str, str], Tuple[Optional[str], str, str]] = {
         "Path",
         "lambda paths: Path(os.path.commonpath(paths))",
     ),  # keep os for now (hard to replace)
-    ("os", "path.samefile"): ("pathlib", "Path", "lambda p1, p2: Path(p1).samefile(Path(p2))"),
+    ("os", "path.samefile"): (
+        "pathlib",
+        "Path",
+        "lambda p1, p2: Path(p1).samefile(Path(p2))",
+    ),
     ("os", "path.expanduser"): ("pathlib", "Path", "lambda p: Path(p).expanduser()"),
     ("os", "path.expandvars"): ("pathlib", "Path", "lambda p: Path(p).expandvars()"),
     ("os", "path.normpath"): ("pathlib", "Path", "lambda p: Path(p).resolve()"),  # ≈
-    ("os", "path.normcase"): ("pathlib", "Path", "lambda p: Path(p).resolve().as_posix()"),  # not exact
+    ("os", "path.normcase"): (
+        "pathlib",
+        "Path",
+        "lambda p: Path(p).resolve().as_posix()",
+    ),  # not exact
     # os (non-pathlib)
     ("os", "makedirs"): ("shutil", "Path", "lambda p, *a, **k: Path(p).mkdir(*a, **k)"),
-    ("os", "mkdir"): ("pathlib", "Path", "lambda p: Path(p).mkdir(parents=False, exist_ok=False)"),
+    ("os", "mkdir"): (
+        "pathlib",
+        "Path",
+        "lambda p: Path(p).mkdir(parents=False, exist_ok=False)",
+    ),
     ("os", "rmdir"): ("pathlib", "Path", "lambda p: Path(p).rmdir()"),
     ("os", "remove"): ("pathlib", "Path", "lambda p: Path(p).unlink()"),
     ("os", "rename"): ("pathlib", "Path", "lambda src, dst: Path(src).rename(dst)"),
@@ -75,12 +95,20 @@ REPLACEMENTS: Dict[Tuple[str, str], Tuple[Optional[str], str, str]] = {
         "lambda top: ((str(p), [d.name for d in p.iterdir() if d.is_dir()], [f.name for f in p.iterdir() if f.is_file()]) for p in Path(top).rglob('*') if p.is_dir())",
     ),  # simplified
     ("os", "stat"): ("pathlib", "Path", "lambda p: Path(p).stat()"),
-    ("os", "chdir"): ("pathlib", "Path", "lambda p: os.chdir(p)"),  # os.chdir still needed
+    ("os", "chdir"): (
+        "pathlib",
+        "Path",
+        "lambda p: os.chdir(p)",
+    ),  # os.chdir still needed
     ("os", "getcwd"): ("pathlib", None, "lambda: Path.cwd()"),  # Path.cwd() is enough
     ("os", "environ"): ("os", None, "os.environ"),  # keep os for env
     ("os", "chmod"): ("pathlib", "Path", "lambda p, mode: Path(p).chmod(mode)"),
     ("os", "chown"): ("pathlib", "Path", "lambda p, uid, gid: Path(p).chown(uid, gid)"),
-    ("os", "symlink"): ("pathlib", "Path", "lambda src, dst: Path(dst).symlink_to(src)"),
+    ("os", "symlink"): (
+        "pathlib",
+        "Path",
+        "lambda src, dst: Path(dst).symlink_to(src)",
+    ),
     ("os", "readlink"): ("pathlib", "Path", "lambda p: str(Path(p).readlink())"),
     ("os", "unlink"): ("pathlib", "Path", "lambda p: Path(p).unlink()"),
     ("os", "rename"): ("pathlib", "Path", "lambda src, dst: Path(src).rename(dst)"),
@@ -142,15 +170,23 @@ class OsUsageFinder(ast.NodeVisitor):
 def rewrite_os_to_pathlib(source: str, tree: ast.AST) -> str:
     # Step 1: Replace `os.path.join(...)` with `Path(...) / ...`
     #   os.path.join(a, b, c) → Path(a) / b / c
-    source = re.sub(r"\bos\.path\.join\s*\(\s*([^)]*)\s*\)", lambda m: _join_replacer(m.group(1)), source)
+    source = re.sub(
+        r"\bos\.path\.join\s*\(\s*([^)]*)\s*\)",
+        lambda m: _join_replacer(m.group(1)),
+        source,
+    )
     # Step 2: Replace function calls like os.getcwd() → Path.cwd()
     #   os.getcwd() → Path.cwd()
     source = re.sub(r"\bos\.getcwd\s*\(\s*\)", "Path.cwd()", source)
     # Step 3: Replace os.listdir() → list(Path().iterdir()) or Path().iterdir()
     #   os.listdir() → list(Path().iterdir())
     source = re.sub(r"\bos\.listdir\s*\(\s*\)", "list(Path().iterdir())", source)
-    source = re.sub(r'\bos\.listdir\s*\(\s*"([^"]+)"\s*\)', r'list(Path("\1").iterdir())', source)
-    source = re.sub(r"\bos\.listdir\s*\(\s*\'([^\']+)\'\s*\)", r'list(Path("\1").iterdir())', source)
+    source = re.sub(
+        r'\bos\.listdir\s*\(\s*"([^"]+)"\s*\)', r'list(Path("\1").iterdir())', source
+    )
+    source = re.sub(
+        r"\bos\.listdir\s*\(\s*\'([^\']+)\'\s*\)", r'list(Path("\1").iterdir())', source
+    )
     # Step 4: Replace os.path.exists, .isdir, etc.
     #   os.path.exists(p) → Path(p).exists()
     for attr in [
@@ -211,20 +247,42 @@ def rewrite_os_to_pathlib(source: str, tree: ast.AST) -> str:
                     )
                 elif os_attr[1] == "mkdir":
                     source = re.sub(
-                        r"\bos\.mkdir\s*\(\s*([^)]+)\s*\)", r"Path(\1).mkdir(parents=False, exist_ok=False)", source
+                        r"\bos\.mkdir\s*\(\s*([^)]+)\s*\)",
+                        r"Path(\1).mkdir(parents=False, exist_ok=False)",
+                        source,
                     )
                 elif os_attr[1] == "rmdir":
-                    source = re.sub(r"\bos\.rmdir\s*\(\s*([^)]+)\s*\)", r"Path(\1).rmdir()", source)
+                    source = re.sub(
+                        r"\bos\.rmdir\s*\(\s*([^)]+)\s*\)", r"Path(\1).rmdir()", source
+                    )
                 elif os_attr[1] == "remove":
-                    source = re.sub(r"\bos\.remove\s*\(\s*([^)]+)\s*\)", r"Path(\1).unlink()", source)
+                    source = re.sub(
+                        r"\bos\.remove\s*\(\s*([^)]+)\s*\)",
+                        r"Path(\1).unlink()",
+                        source,
+                    )
                 elif os_attr[1] == "rename":
-                    source = re.sub(r"\bos\.rename\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)", r"Path(\1).rename(\2)", source)
+                    source = re.sub(
+                        r"\bos\.rename\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)",
+                        r"Path(\1).rename(\2)",
+                        source,
+                    )
                 elif os_attr[1] == "replace":
-                    source = re.sub(r"\bos\.replace\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)", r"Path(\1).replace(\2)", source)
+                    source = re.sub(
+                        r"\bos\.replace\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)",
+                        r"Path(\1).replace(\2)",
+                        source,
+                    )
                 elif os_attr[1] == "stat":
-                    source = re.sub(r"\bos\.stat\s*\(\s*([^)]+)\s*\)", r"Path(\1).stat()", source)
+                    source = re.sub(
+                        r"\bos\.stat\s*\(\s*([^)]+)\s*\)", r"Path(\1).stat()", source
+                    )
                 elif os_attr[1] == "chmod":
-                    source = re.sub(r"\bos\.chmod\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)", r"Path(\1).chmod(\2)", source)
+                    source = re.sub(
+                        r"\bos\.chmod\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)",
+                        r"Path(\1).chmod(\2)",
+                        source,
+                    )
                 elif os_attr[1] == "chown":
                     source = re.sub(
                         r"\bos\.chown\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^)]+)\s*\)",
@@ -233,14 +291,28 @@ def rewrite_os_to_pathlib(source: str, tree: ast.AST) -> str:
                     )
                 elif os_attr[1] == "symlink":
                     source = re.sub(
-                        r"\bos\.symlink\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)", r"Path(\2).symlink_to(\1)", source
+                        r"\bos\.symlink\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)",
+                        r"Path(\2).symlink_to(\1)",
+                        source,
                     )
                 elif os_attr[1] == "readlink":
-                    source = re.sub(r"\bos\.readlink\s*\(\s*([^)]+)\s*\)", r"str(Path(\1).readlink())", source)
+                    source = re.sub(
+                        r"\bos\.readlink\s*\(\s*([^)]+)\s*\)",
+                        r"str(Path(\1).readlink())",
+                        source,
+                    )
                 elif os_attr[1] == "unlink":
-                    source = re.sub(r"\bos\.unlink\s*\(\s*([^)]+)\s*\)", r"Path(\1).unlink()", source)
+                    source = re.sub(
+                        r"\bos\.unlink\s*\(\s*([^)]+)\s*\)",
+                        r"Path(\1).unlink()",
+                        source,
+                    )
                 elif os_attr[1] == "scandir":
-                    source = re.sub(r"\bos\.scandir\s*\(\s*([^)]*)\s*\)", r"Path(\1).iterdir()", source)
+                    source = re.sub(
+                        r"\bos\.scandir\s*\(\s*([^)]*)\s*\)",
+                        r"Path(\1).iterdir()",
+                        source,
+                    )
     # Step 6: Add `from pathlib import Path` if needed (simple heuristic)
     #   We'll just try to add it if os.path.* or Path(...) used
     if "Path(" in source and "from pathlib import Path" not in source:
@@ -286,7 +358,9 @@ def _make_pathlib_call(attr: str) -> str:
         "getmtime": lambda p: f"Path({p}).stat().st_mtime",
         "getsize": lambda p: f"Path({p}).stat().st_size",
         "relpath": lambda p: f"Path({p}).resolve().relative_to(Path('.').resolve())",
-        "samefile": lambda p: f"Path({p}).exists() and Path({p}).samefile(Path({p}))",  # simplified
+        "samefile": lambda p: (
+            f"Path({p}).exists() and Path({p}).samefile(Path({p}))"
+        ),  # simplified
         "expanduser": lambda p: f"Path({p}).expanduser()",
         "expandvars": lambda p: f"Path({p}).expandvars()",
         "normpath": lambda p: f"str(Path({p}).resolve())",  # approximate

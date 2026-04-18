@@ -13,7 +13,9 @@ def encode_local_file_to_base64(file_path):
         with Path(file_path).open("rb") as f:
             return base64.b64encode(f.read()).decode("utf-8")
     except FileNotFoundError:
-        print(f"Internal Error: encode_local_file_to_base64 called with non-existent file: {file_path}")
+        print(
+            f"Internal Error: encode_local_file_to_base64 called with non-existent file: {file_path}"
+        )
         return None
     except Exception as e:
         print(f"Error encoding file {file_path}: {e}")
@@ -38,12 +40,16 @@ def find_local_resource(resource_name, base_html_dir):
             return potential_path
         path_relative_to_html_dir = os.path.join(base_html_dir, resource_name)
         if Path(path_relative_to_html_dir).exists():
-            print(f"Found resource '{resource_name}' relative to HTML dir: {path_relative_to_html_dir}")
+            print(
+                f"Found resource '{resource_name}' relative to HTML dir: {path_relative_to_html_dir}"
+            )
             return path_relative_to_html_dir
         if resource_name.startswith("/"):
             path_stripped_slash = os.path.join(base_html_dir, resource_name.lstrip("/"))
             if Path(path_stripped_slash).exists():
-                print(f"Found resource '{resource_name}' (stripped slash) relative to HTML dir: {path_stripped_slash}")
+                print(
+                    f"Found resource '{resource_name}' (stripped slash) relative to HTML dir: {path_stripped_slash}"
+                )
                 return path_stripped_slash
         fallback_search_dirs = [
             Path.cwd(),
@@ -54,10 +60,14 @@ def find_local_resource(resource_name, base_html_dir):
             abs_fallback_dir = Path(fallback_dir).resolve()
             potential_path = os.path.join(abs_fallback_dir, resource_name)
             if Path(potential_path).exists():
-                print(f"Found resource '{resource_name}' in fallback dir {abs_fallback_dir}: {potential_path}")
+                print(
+                    f"Found resource '{resource_name}' in fallback dir {abs_fallback_dir}: {potential_path}"
+                )
                 return potential_path
             if resource_name.startswith("/"):
-                potential_path_stripped = os.path.join(abs_fallback_dir, resource_name.lstrip("/"))
+                potential_path_stripped = os.path.join(
+                    abs_fallback_dir, resource_name.lstrip("/")
+                )
                 if Path(potential_path_stripped).exists():
                     print(
                         f"Found resource '{resource_name}' (stripped slash) in fallback dir {abs_fallback_dir}: {potential_path_stripped}"
@@ -78,7 +88,9 @@ def make_html_standalone(path):
             if local_img_path:
                 encoded_img = encode_local_file_to_base64(local_img_path)
                 if encoded_img:
-                    img_tag["src"] = f"data:{get_mime_type(local_img_path)};base64,{encoded_img}"
+                    img_tag["src"] = (
+                        f"data:{get_mime_type(local_img_path)};base64,{encoded_img}"
+                    )
             else:
                 print(f"Warning: Image resource '{src}' not found, removing tag.")
                 img_tag.decompose()
@@ -91,16 +103,26 @@ def make_html_standalone(path):
                     print(f"Processing CSS file: {local_css_path}")
                     try:
                         css_content = Path(local_css_path).read_text(encoding="utf-8")
-                        font_url_matches = re.findall(r'url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]?\s*\)', css_content)
+                        font_url_matches = re.findall(
+                            r'url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]?\s*\)', css_content
+                        )
                         for font_url in font_url_matches:
-                            if not font_url.startswith(("http://", "https://", "data:")):
-                                local_font_path = find_local_resource(font_url, Path(local_css_path).parent)
+                            if not font_url.startswith(
+                                ("http://", "https://", "data:")
+                            ):
+                                local_font_path = find_local_resource(
+                                    font_url, Path(local_css_path).parent
+                                )
                                 if local_font_path:
-                                    encoded_font = encode_local_file_to_base64(local_font_path)
+                                    encoded_font = encode_local_file_to_base64(
+                                        local_font_path
+                                    )
                                     if encoded_font:
                                         mime_type = get_mime_type(local_font_path)
                                         css_content = re.sub(
-                                            re.escape(f"url({font_url})").replace("\\(", "\\(").replace("\\)", "\\)"),
+                                            re.escape(f"url({font_url})")
+                                            .replace("\\(", "\\(")
+                                            .replace("\\)", "\\)"),
                                             f"url('data:{mime_type};base64,{encoded_font}')",
                                             css_content,
                                             flags=re.IGNORECASE,
@@ -116,12 +138,16 @@ def make_html_standalone(path):
                         print(f"Error processing CSS file {local_css_path}: {e}")
                         link_tag.decompose()
                 else:
-                    print(f"Warning: CSS resource '{href}' not found, removing link tag.")
+                    print(
+                        f"Warning: CSS resource '{href}' not found, removing link tag."
+                    )
                     link_tag.decompose()
     for style_tag in soup.find_all("style"):
         style_content = style_tag.string
         if style_content:
-            font_url_matches = re.findall(r'url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]?\s*\)', style_content)
+            font_url_matches = re.findall(
+                r'url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]?\s*\)', style_content
+            )
             for font_url in font_url_matches:
                 if not font_url.startswith(("http://", "https://", "data:")):
                     local_font_path = find_local_resource(font_url, base_html_dir)
@@ -130,7 +156,9 @@ def make_html_standalone(path):
                         if encoded_font:
                             mime_type = get_mime_type(local_font_path)
                             style_content = re.sub(
-                                re.escape(f"url({font_url})").replace("\\(", "\\(").replace("\\)", "\\)"),
+                                re.escape(f"url({font_url})")
+                                .replace("\\(", "\\(")
+                                .replace("\\)", "\\)"),
                                 f"url('data:{mime_type};base64,{encoded_font}')",
                                 style_content,
                                 flags=re.IGNORECASE,
@@ -153,7 +181,9 @@ def make_html_standalone(path):
                     print(f"Error reading script content from {local_script_path}: {e}")
                     script_tag.decompose()
             else:
-                print(f"Warning: Local script resource '{src}' not found, removing tag.")
+                print(
+                    f"Warning: Local script resource '{src}' not found, removing tag."
+                )
                 script_tag.decompose()
         elif not src:
             pass

@@ -47,7 +47,10 @@ class PackageRepacker:
                                     if site_pkg.exists() and site_pkg.is_dir():
                                         if site_pkg not in site_packages_dirs:
                                             site_packages_dirs.append(site_pkg)
-                                            logger.info("Found virtualenv site-packages: %s", site_pkg)
+                                            logger.info(
+                                                "Found virtualenv site-packages: %s",
+                                                site_pkg,
+                                            )
                 for site_pkg in search_path.rglob("site-packages"):
                     if site_pkg.is_dir() and site_pkg not in site_packages_dirs:
                         site_packages_dirs.append(site_pkg)
@@ -110,7 +113,10 @@ class PackageRepacker:
             platform_tag = "any"
             root_is_purelib = "true"
         else:
-            logger.info("Detected C extensions for %s; generating platform-specific tags.", package_name)
+            logger.info(
+                "Detected C extensions for %s; generating platform-specific tags.",
+                package_name,
+            )
             root_is_purelib = "false"
             try:
                 from packaging.tags import sys_tags
@@ -119,7 +125,12 @@ class PackageRepacker:
                 python_tag = best_tag.interpreter
                 abi_tag = best_tag.abi
                 platform_tag = best_tag.platform
-                logger.debug("Using 'packaging' lib. Tags: %s-%s-%s", python_tag, abi_tag, platform_tag)
+                logger.debug(
+                    "Using 'packaging' lib. Tags: %s-%s-%s",
+                    python_tag,
+                    abi_tag,
+                    platform_tag,
+                )
             except ImportError:
                 logger.warning("`packaging` library not found. (Install with: pip install packaging)")
                 logger.warning("Falling back to best-guess tags based on current system.")

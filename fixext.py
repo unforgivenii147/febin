@@ -49,7 +49,20 @@ def check_files(directory):
         for name in files:
             file_path = os.path.join(root, name)
             ext = os.path.splitext(name)[1].lower()
-            if ext in {".eot", ".svg", ".woff2", ".woff", ".ttf", ".c", ".md", ".py", ".pdf", ".html", ".js", ".css"}:
+            if ext in {
+                ".eot",
+                ".svg",
+                ".woff2",
+                ".woff",
+                ".ttf",
+                ".c",
+                ".md",
+                ".py",
+                ".pdf",
+                ".html",
+                ".js",
+                ".css",
+            }:
                 continue
             mime = get_file_mime(file_path)
             print(f"{name} --> {mime}")
@@ -61,12 +74,14 @@ def check_files(directory):
                     new_name = os.path.splitext(name)[0] + new_ext
                     new_path = os.path.join(root, new_name)
                     new_path = safe_rename(file_path, new_path)
-                    mismatched_files.append((
-                        file_path,
-                        ext,
-                        mime,
-                        new_path,
-                    ))
+                    mismatched_files.append(
+                        (
+                            file_path,
+                            ext,
+                            mime,
+                            new_path,
+                        )
+                    )
     return mismatched_files
 
 

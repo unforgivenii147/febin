@@ -32,12 +32,21 @@ def colorize(
 ) -> str:
     if not enable:
         return text
-    return text[:start] + ANSI_HIGHLIGHT + ANSI_BOLD + text[start:end] + ANSI_RESET + text[end:]
+    return (
+        text[:start]
+        + ANSI_HIGHLIGHT
+        + ANSI_BOLD
+        + text[start:end]
+        + ANSI_RESET
+        + text[end:]
+    )
 
 
 def matches_any_glob(path: str, patterns: Iterable[str]) -> bool:
     basename = Path(path).name
-    return any(fnmatch.fnmatch(path, p) or fnmatch.fnmatch(basename, p) for p in patterns)
+    return any(
+        fnmatch.fnmatch(path, p) or fnmatch.fnmatch(basename, p) for p in patterns
+    )
 
 
 def search_file_text_mode(
@@ -68,10 +77,12 @@ def search_file_text_mode(
                         idx = hay.find(needle, start)
                         if idx == -1:
                             break
-                        spans.append((
-                            idx,
-                            idx + len(needle),
-                        ))
+                        spans.append(
+                            (
+                                idx,
+                                idx + len(needle),
+                            )
+                        )
                         start = idx + max(1, len(needle))
                 if spans:
                     matches.append((lineno, line, spans))

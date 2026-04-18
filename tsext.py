@@ -34,7 +34,10 @@ def extract_python_code_elements(filepath):
                 class_name_node = child.child_by_field_name("name")
                 if class_name_node:
                     classes.append(class_name_node.text.decode("utf-8"))
-            elif child.type == "assignment" and node.type not in {"import_statement", "import_from_statement"}:
+            elif child.type == "assignment" and node.type not in {
+                "import_statement",
+                "import_from_statement",
+            }:
                 # Simple heuristic for constants: uppercase names at module level
                 target = child.child_by_field_name("name")
                 if (

@@ -25,7 +25,9 @@ def shift_content(text: str, shift_ms: int) -> str:
 
     def repl(m):
         start, end = m.groups()
-        return f"{from_ms(to_ms(start) + shift_ms)} --> {from_ms(to_ms(end) + shift_ms)}"
+        return (
+            f"{from_ms(to_ms(start) + shift_ms)} --> {from_ms(to_ms(end) + shift_ms)}"
+        )
 
     return TIMESTAMP_RE.sub(repl, text)
 
@@ -38,7 +40,9 @@ def process_file(path: Path, shift_ms: int):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Shift SRT subtitles inplace (batch folder supported)")
+    ap = argparse.ArgumentParser(
+        description="Shift SRT subtitles inplace (batch folder supported)"
+    )
     ap.add_argument(
         "path",
         nargs="?",

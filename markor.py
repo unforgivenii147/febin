@@ -54,7 +54,9 @@ class GUIFramework:
     def show_file_picker(self, initial_path: str | None = None) -> str | None:
         if initial_path is None:
             initial_path = str(Path.home())
-        return input(f"Enter file path (starting from {initial_path}): ").strip() or None
+        return (
+            input(f"Enter file path (starting from {initial_path}): ").strip() or None
+        )
 
     def show_toast(self, message: str):
         print(f"[Toast] {message}")
@@ -238,12 +240,16 @@ class Document:
         return {
             "name": self.file_path.name,
             "path": str(self.file_path),
-            "size_bytes": (self.file_path.stat().st_size if self.file_path.exists() else 0),
+            "size_bytes": (
+                self.file_path.stat().st_size if self.file_path.exists() else 0
+            ),
             "format": self.format_type,
             "words": self.get_word_count(),
             "characters": self.get_char_count(),
             "lines": self.get_line_count(),
-            "last_modified": (self.last_modified.isoformat() if self.last_modified else None),
+            "last_modified": (
+                self.last_modified.isoformat() if self.last_modified else None
+            ),
         }
 
 
@@ -260,7 +266,11 @@ class FileManager:
         format_type: str = "markdown",
         parent_dir: str | None = None,
     ) -> Document:
-        file_path = self.root_path / f"{name}.md" if parent_dir is None else self.root_path / parent_dir / f"{name}.md"
+        file_path = (
+            self.root_path / f"{name}.md"
+            if parent_dir is None
+            else self.root_path / parent_dir / f"{name}.md"
+        )
         doc = Document(
             str(file_path),
             format_type=format_type,
@@ -307,7 +317,9 @@ class FileManager:
                 "name": file_path.name,
                 "path": str(file_path.relative_to(self.root_path)),
                 "size": file_path.stat().st_size,
-                "modified": datetime.fromtimestamp(file_path.stat().st_mtime).isoformat(),
+                "modified": datetime.fromtimestamp(
+                    file_path.stat().st_mtime
+                ).isoformat(),
             }
             for file_path in search_path.glob(pattern)
             if file_path.is_file() and file_path.suffix in {".md", ".txt", ".json"}
@@ -319,7 +331,9 @@ class FileManager:
         name: str,
         parent_dir: str | None = None,
     ) -> bool:
-        folder_path = self.root_path / parent_dir / name if parent_dir else self.root_path / name
+        folder_path = (
+            self.root_path / parent_dir / name if parent_dir else self.root_path / name
+        )
         folder_path.mkdir(parents=True, exist_ok=True)
         return True
 
@@ -415,8 +429,12 @@ class TextEditor:
             "text",
             "json",
         ]
-        format_type = formats[format_choice] if 0 <= format_choice < len(formats) else "markdown"
-        self.current_document = self.file_manager.create_document(name, format_type=format_type)
+        format_type = (
+            formats[format_choice] if 0 <= format_choice < len(formats) else "markdown"
+        )
+        self.current_document = self.file_manager.create_document(
+            name, format_type=format_type
+        )
         self.gui.show_toast(f"Created: {name}")
 
     def open_document(self):
@@ -430,7 +448,9 @@ class TextEditor:
         doc_names = [doc["name"] for doc in docs]
         choice = self.gui.show_menu("Open Document", doc_names)
         if 0 <= choice < len(docs):
-            self.current_document = self.file_manager.open_document(docs[choice]["path"])
+            self.current_document = self.file_manager.open_document(
+                docs[choice]["path"]
+            )
             if self.current_document:
                 self.gui.show_toast(f"Opened: {docs[choice]['name']}")
 
@@ -445,7 +465,9 @@ class TextEditor:
         doc_names = [doc["name"] for doc in recent]
         choice = self.gui.show_menu("Recent Documents", doc_names)
         if 0 <= choice < len(recent):
-            self.current_document = self.file_manager.open_document(recent[choice]["path"])
+            self.current_document = self.file_manager.open_document(
+                recent[choice]["path"]
+            )
             if self.current_document:
                 self.gui.show_toast(f"Opened: {recent[choice]['name']}")
 
@@ -474,7 +496,9 @@ class TextEditor:
         result_names = [r["name"] for r in results]
         choice = self.gui.show_menu("Search Results", result_names)
         if 0 <= choice < len(results):
-            self.current_document = self.file_manager.open_document(results[choice]["path"])
+            self.current_document = self.file_manager.open_document(
+                results[choice]["path"]
+            )
 
     def manage_folders(self):
         menu_items = [
@@ -537,7 +561,10 @@ class TextEditor:
         print(f"Editing: {self.current_document.file_path.name}")
         print(f"Current content ({self.current_document.get_line_count()} lines):")
         print(f"{'=' * 50}")
-        print(self.current_document.content[:500] + ("..." if len(self.current_document.content) > 500 else ""))
+        print(
+            self.current_document.content[:500]
+            + ("..." if len(self.current_document.content) > 500 else "")
+        )
         print(f"{'=' * 50}")
         edit_choice = self.gui.show_menu(
             "Edit Options",

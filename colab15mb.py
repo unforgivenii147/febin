@@ -3,10 +3,11 @@ import os
 import site
 import tarfile
 from pathlib import Path
+
 from google.colab import files
 
 
-def get_size(path):
+def gsz(path):
     total = 0
     for root, _dirs, files in os.walk(path):
         for f in files:
@@ -23,7 +24,7 @@ def compress_small_site_packages(max_size_mb=15):
         for item in os.listdir(site_packages_dir):
             item_path = os.path.join(site_packages_dir, item)
             if Path(item_path).is_dir():
-                get_size_mb = get_size(item_path) / (1024 * 1024)
+                get_size_mb = gsz(item_path) / (1024 * 1024)
                 if get_size_mb <= max_size_mb:
                     print(f"Including folder {item} ({get_size_mb:.2f} MB)")
                     for (

@@ -23,7 +23,7 @@ class LineProcessor:
     def get_file_size(self, file_path: Path) -> int:
         return file_path.stat().st_size
 
-    def format_size(self, size_bytes: int) -> str:
+    def fsz(self, size_bytes: int) -> str:
         for unit in ["B", "KB", "MB", "GB", "TB"]:
             if size_bytes < 1024.0:
                 return f"{size_bytes:.2f} {unit}"
@@ -42,7 +42,7 @@ class MmapReader(LineProcessor):
         skip_empty: bool = False,
     ) -> Generator[str, None, None]:
         get_size = self.get_file_size(file_path)
-        self.log(f"Reading {file_path} ({self.format_size(get_size)})")
+        self.log(f"Reading {file_path} ({self.fsz(get_size)})")
         try:
             with Path(file_path).open("rb") as f:
                 if get_size > 1024 * 1024:
@@ -255,7 +255,7 @@ class FileSorter(LineProcessor):
                     skip_empty,
                 )
             )
-            self.log(f"Original file: {original_lines} lines, {self.format_size(original_size)}")
+            self.log(f"Original file: {original_lines} lines, {self.fsz(original_size)}")
             lines = list(
                 self.reader.read_lines(
                     input_path,
@@ -296,10 +296,10 @@ class FileSorter(LineProcessor):
                 "output_file": str(output_path),
                 "original_lines": original_lines,
                 "original_size_bytes": original_size,
-                "original_size": self.format_size(original_size),
+                "original_size": self.fsz(original_size),
                 "final_lines": len(lines),
                 "after_bytes": after,
-                "after": self.format_size(after),
+                "after": self.fsz(after),
                 "duplicate_lines": (unique_count if unique else 0),
                 "size_reduction": (original_size - after if original_size > 0 else 0),
                 "size_reduction_pct": (((original_size - after) / original_size * 100) if original_size > 0 else 0),
@@ -323,7 +323,7 @@ class FileSorter(LineProcessor):
         print(f"Original size: {stats['original_size']}")
         print(f"Final size: {stats['after']}")
         if stats["size_reduction"] > 0:
-            print(f"Size reduction: {self.format_size(stats['size_reduction'])} ({stats['size_reduction_pct']:.1f}%)")
+            print(f"Size reduction: {self.fsz(stats['size_reduction'])} ({stats['size_reduction_pct']:.1f}%)")
         print()
         print(f"Processing time: {stats['processing_time']:.2f} seconds")
         print(f"Speed: {stats['lines_per_second']:,.0f} lines/second")
@@ -373,7 +373,7 @@ class FileAnalyzer(LineProcessor):
         return {
             "file": str(file_path),
             "size_bytes": get_size,
-            "size": self.format_size(get_size),
+            "size": self.fsz(get_size),
             "total_lines": len(lines),
             "unique_lines": len(line_counts),
             "duplicate_lines": duplicate_count,

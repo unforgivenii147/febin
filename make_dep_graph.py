@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
 import os
-import regex as re
 import sys
 from pathlib import Path
+
+import regex as re
 
 
 def get_installed_packages_dependencies():

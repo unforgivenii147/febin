@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+import subprocess
 import sys
 from datetime import datetime
-import subprocess
 
 
 def run(cmd):

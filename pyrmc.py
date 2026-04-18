@@ -3,8 +3,9 @@ import ast
 import sys
 from multiprocessing import Pool
 from pathlib import Path
+
 import tree_sitter_python
-from dh import DOC_TH1, clean_blank_lines, format_size, get_size
+from dh import DOC_TH1, clean_blank_lines, fsz, gsz
 from termcolor import cprint
 from tree_sitter import Language, Parser
 
@@ -33,6 +34,7 @@ def process_again(pt):
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:
@@ -113,11 +115,11 @@ def main() -> None:
     files = get_files(cwd, extensions=[".py"])
     if not files:
         sys.exit("No Python files found")
-    before = get_size(cwd)
+    before = gsz(cwd)
     with Pool(8) as pool:
         pool.map(remove_comments_and_docstrings, files)
-    diffsize = before - get_size(cwd)
-    cprint(f"{format_size(diffsize)}", "cyan")
+    diffsize = before - gsz(cwd)
+    cprint(f"{fsz(diffsize)}", "cyan")
 
 
 if __name__ == "__main__":

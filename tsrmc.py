@@ -2,8 +2,9 @@
 import ast
 from multiprocessing import get_context
 from pathlib import Path
+
 import tree_sitter_python as tspython
-from dh import clean_blank_lines, format_size, get_size
+from dh import clean_blank_lines, fsz, gsz
 from fastwalk import walk_files
 from termcolor import cprint
 from tree_sitter import Language, Parser, Query, QueryCursor
@@ -143,7 +144,7 @@ def process_file(fp):
 if __name__ == "__main__":
     dir_path = Path.cwd()
     files = [Path(p) for p in walk_files(dir_path) if Path(p).is_file() and Path(p).suffix == ".py"]
-    before = get_size(dir_path)
+    before = gsz(dir_path)
     results = []
     nproc = 8
     with get_context("spawn").Pool(
@@ -151,7 +152,7 @@ if __name__ == "__main__":
         initializer=ts_remover_initializer,
     ) as pool:
         results = pool.map(process_file, files)
-    after = get_size(dir_path)
+    after = gsz(dir_path)
     size_diff = before - after
     changed = sum(1 for r in results if r and r[0] == "changed")
     errors = [r for r in results if r and r[0] == "error"]
@@ -161,4 +162,4 @@ if __name__ == "__main__":
         print("Files with errors:")
         for _, fn, *_ in errors:
             print(f"  {fn}")
-    print(f"dir size reduced: {format_size(size_diff)}")
+    print(f"dir size reduced: {fsz(size_diff)}")

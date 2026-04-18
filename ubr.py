@@ -2,9 +2,11 @@
 import mmap
 import sys
 from pathlib import Path
+
 import brotlicffi
-from dh import format_size, get_files, get_size
 from termcolor import cprint
+
+from dhh import fsz, get_files, gsz
 
 CHUNK_SIZE = 32768
 N_JOBS = -1
@@ -44,7 +46,7 @@ def process_file(fp):
     fp = Path(fp)
     if not fp.exists() or fp.suffix != ".br":
         return
-    before = get_size(fp)
+    before = gsz(fp)
     outfile = Path(str(fp).replace(".br", ""))
     try:
         data = fp.read_bytes()
@@ -60,7 +62,7 @@ def process_file(fp):
     elif outfile.exists():
         outfile.unlink()
         return
-    after = get_size(outfile)
+    after = gsz(outfile)
     ratio = round(((after - before) / after) * 100, 3)
     cprint(f"{outfile.name}", "green", end=" | ")
     cprint(f"{ratio}", "cyan")
@@ -70,13 +72,13 @@ def process_file(fp):
 
 def main():
     root_dir = Path.cwd()
-    before = get_size(root_dir)
+    before = gsz(root_dir)
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_files(root_dir, recursive=True)
     for f in files:
         process_file(f)
-    diff_size = before - get_size(root_dir)
-    print(f"{format_size(diff_size)}")
+    diff_size = before - gsz(root_dir)
+    print(f"{fsz(diff_size)}")
 
 
 if __name__ == "__main__":

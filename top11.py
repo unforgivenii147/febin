@@ -1,13 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import operator
 from pathlib import Path
-from dh import format_size, get_files
 
-ROOT_DIR = Path.cwd()
+from dhh import fsz, get_files, gsz
+
+cwd = Path.cwd()
 
 
 def get_sizes():
-    return [(file_path.relative_to(ROOT_DIR), file_path.stat().st_size) for file_path in get_files(ROOT_DIR)]
+    return [(file_path.relative_to(cwd), file_path.stat().st_size) for file_path in get_files(cwd)]
 
 
 def main() -> None:
@@ -31,7 +32,7 @@ def main() -> None:
         path_str = str(file_path)
         if len(path_str) > max_path_len:
             path_str = "..." + path_str[-(max_path_len - 3) :]
-        size_str = format_size(size)
+        size_str = fsz(size)
         print(f"{i:<4} {path_str:<{max_path_len}} {size_str:>12}")
     total_files = len(sizez)
     print("-" * (max_path_len + 20))
@@ -40,7 +41,7 @@ def main() -> None:
         print(f"Showing top 10 out of {total_files} files")
 
 
-def alternative_version_with_details() -> None:
+def m2() -> None:
     sizez = get_sizes()
     if not sizez:
         print("No files found.")
@@ -50,8 +51,8 @@ def alternative_version_with_details() -> None:
     print("\nTOP 10 LARGEST FILES (Detailed View)")
     print("=" * 70)
     for i, (file_path, size) in enumerate(top_files, 1):
-        size_str = format_size(size)
-        print(f"{i:2d}. {size_str:>10} - {file_path}")
+        size_str = fsz(size)
+        print(f"{i:2d}. {size_str:>10} - {file_path.relative_to(cwd)}")
 
 
 if __name__ == "__main__":

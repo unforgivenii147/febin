@@ -2,8 +2,9 @@
 import ast
 import sys
 from pathlib import Path
+
 import tree_sitter_python as tspython
-from dh import clean_blank_lines, format_size, get_pyfiles, get_size, mpf
+from dh import clean_blank_lines, get_pyfiles, mpf
 from tree_sitter import Language, Parser, Query, QueryCursor
 
 QUERY_STRING = """
@@ -85,14 +86,14 @@ def process_file(fp):
 
 def main():
     cwd = Path.cwd()
-    before = get_size(".")
+    before = gsz(".")
     args = sys.argv[1:]
     files = [Path(p) for p in args] if args else get_pyfiles(cwd)
     print(f"Processing {len(files)} files using QueryCursor...")
     mpf(process_file, files)
-    diff_size = before - get_size(".")
+    diff_size = before - gsz(".")
     if diff_size != 0:
-        print(format_size(diff_size))
+        print(fsz(diff_size))
 
 
 if __name__ == "__main__":

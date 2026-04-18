@@ -1,12 +1,14 @@
-#!/data/data/com.termux/files/usr/bin/python3
-import os
+#!/data/data/com.termux/files/usr/bin/python
 import shutil
 import sys
 import time
+from pathlib import Path
+
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
-DEST_DIR = os.path.expanduser("~/tmp/tgz")
+TEMPDIR = Path("/data/data/com.termux/files/usr/tmp")
+DEST_DIR = Path("~/tmp/tgz").expanduser()
 ALLOWED_EXTENSIONS = (
     ".tar.gz",
     ".whl",
@@ -16,43 +18,39 @@ ALLOWED_EXTENSIONS = (
 )
 
 
-def copy_if_match(src_path) -> None:
-    if src_path.endswith(ALLOWED_EXTENSIONS):
+def copy_if_match(src: Path) -> None:
+    if src.suffix in ALLOWED_EXTENSIONS or any(str(src).endswith(ext) for ext in ALLOWED_EXTENSIONS):
         try:
-            os.makedirs(DEST_DIR, exist_ok=True)
-            dest = os.path.join(
-                DEST_DIR,
-                os.path.basename(src_path),
-            )
-            shutil.copy2(src_path, dest)
-            print(src_path)
+            DEST_DIR.mkdir(parents=True, exist_ok=True)
+            dest = DEST_DIR / src.name
+            shutil.copy2(src, dest)
+            print(src.relative_to(TEMPDIR))
         except Exception as e:
-            print(f"Failed to copy {src_path}: {e}")
+            print(f"Failed to copy {src.relative_to(TEMPDIR)}: {e}")
 
 
-def startup_scan(fpath) -> None:
-    for root, _dirs, files in os.walk(fpath):
-        for f in files:
-            full_path = os.path.join(root, f)
-            copy_if_match(full_path)
+def startup_scan(root: Path) -> None:
+    for path in root.rglob("*"):
+        if path.is_file():
+            copy_if_match(path)
 
 
 class CopyEventHandler(FileSystemEventHandler):
     def on_created(self, event) -> None:
         if not event.is_directory:
-            copy_if_match(event.src_path)
+            copy_if_match(Path(event.src_path))
 
     def on_modified(self, event) -> None:
         if not event.is_directory:
-            copy_if_match(event.src_path)
+            copy_if_match(Path(event.src_path))
 
 
 if __name__ == "__main__":
-    path = sys.argv[1] if len(sys.argv) > 1 else "/data/data/com.termux/files/usr/tmp"
-    startup_scan(path)
+    watch_path = Path(sys.argv[1]).expanduser() if len(sys.argv) > 1 else TEMPDIR
+    startup_scan(watch_path)
     event_handler = CopyEventHandler()
     observer = Observer()
-    observer.schedule(event_handler, path, recursive=True)
+    observer.schedule(event_handler, str(watch_path), recursive=True)
     observer.start()
     try:
         while True:

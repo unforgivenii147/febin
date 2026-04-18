@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import get_context
 from pathlib import Path
+
 from bs4 import BeautifulSoup
-from dh import format_size, get_files, get_random_name, get_size
+from dh import get_files, get_random_name, mpf3
 from termcolor import cprint
 
 
@@ -51,14 +51,7 @@ def main():
             extensions=[".html", ".htm"],
         )
     )
-    before = get_size(cwd)
-    pool = get_context("spawn").Pool(8)
-    for _ in pool.imap_unordered(process_file, files):
-        pass
-    pool.close()
-    pool.join()
-    diffsize = before - get_size(cwd)
-    cprint(f"space change : {format_size(diffsize)}", "blue")
+    mpf3(process_file, files)
 
 
 if __name__ == "__main__":

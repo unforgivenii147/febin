@@ -2,8 +2,9 @@
 import sys
 from multiprocessing import get_context
 from pathlib import Path
+
 import tree_sitter_cpp as tscpp
-from dh import clean_blank_lines, format_size, get_files, get_size
+from dh import clean_blank_lines, get_files
 from tree_sitter import Language, Parser, Query, QueryCursor
 
 ts_remover = None
@@ -97,10 +98,10 @@ if __name__ == "__main__":
         if args
         else get_files(cwd, extensions=[".js", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".hh"])
     )
-    before = get_size(cwd)
+    before = gsz(cwd)
     with get_context("spawn").Pool(processes=8, initializer=ts_remover_initializer) as pool:
         results = pool.map(process_file, files)
-    diffsize = before - get_size(cwd)
+    diffsize = before - gsz(cwd)
     changed = sum(1 for r in results if r[0] == "changed")
     errors = [r for r in results if r[0] == "error"]
     nochg = sum(1 for r in results if r[0] == "nochange")
@@ -109,4 +110,4 @@ if __name__ == "__main__":
         print("\nErrors in:")
         for _, fn, *_ in errors:
             print(f"  - {fn}")
-    print(f"Size reduced: {format_size(diffsize)}")
+    print(f"Size reduced: {fsz(diffsize)}")

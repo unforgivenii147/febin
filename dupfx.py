@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import argparse
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+
 from loguru import logger
 from xxhash import xxh64
 
@@ -70,7 +71,7 @@ def iter_files(root: Path, recursive: bool, follow_symlinks: bool, min_size: int
                     continue
 
 
-def choose_keep(files, policy="first"):
+def choose_keep(files, policy="oldest"):
     if policy == "first":
         return min(files, key=str)
     if policy == "oldest":
@@ -81,6 +82,7 @@ def choose_keep(files, policy="first"):
 
 
 def main() -> None:
+    cwd = Path.cwd()
     p = argparse.ArgumentParser(description="Find and delete duplicate files by content.")
     p.add_argument(
         "-r",
@@ -112,7 +114,6 @@ def main() -> None:
     )
     args = p.parse_args()
     root = Path.cwd()
-    logger.info(f"Scanning {root} (recursive={args.recursive}) ...")
     size_groups = defaultdict(list)
     total_files = 0
     for f in iter_files(root, args.recursive, args.follow_symlinks, args.min_size):
@@ -129,7 +130,7 @@ def main() -> None:
         f"Found {sum(len(v) for v in candidates_by_size.values())} files in {len(candidates_by_size)} size-groups to examine.",
     )
     quick_groups = defaultdict(list)
-    with ThreadPoolExecutor(max_workers=8) as ex:
+    with ThreadPoolExecutor(max_workers=16) as ex:
         futures = {}
         for files in candidates_by_size.values():
             for fpath in files:
@@ -144,10 +145,10 @@ def main() -> None:
                 logger.info(f"Skipping {fpath}: {e}")
     need_full = [group for group in quick_groups.values() if len(group) > 1]
     if not need_full:
-        logger.info("No duplicates after quick-hash stage.")
+        logger.info("No dups")
         return
     full_groups = defaultdict(list)
-    with ThreadPoolExecutor(max_workers=8) as ex:
+    with ThreadPoolExecutor(max_workers=16) as ex:
         futures = {}
         for group in need_full:
             for fpath in group:
@@ -174,7 +175,7 @@ def main() -> None:
                 continue
             to_delete.append(ps)
     if not to_delete:
-        logger.info("No duplicates to delete.")
+        logger.info("No dups")
         return
     logger.info(f"Planned deletions: {len(to_delete)} files.")
     for p in to_delete:
@@ -187,12 +188,15 @@ def main() -> None:
     for p in to_delete:
         try:
             p.unlink()
-            logger.info(f"Deleted: {p}")
+            logger.info(f"Deleted: {p.relative_to(cwd)}")
             removed += 1
         except Exception as e:
-            logger.info(f"Failed to delete {p}: {e}")
+            logger.info(f"Failed to delete {p.relative_to(cwd)}: {e}")
             failed += 1
-    logger.info(f"Done. Removed: {removed}. Failed: {failed}.")
+    if failed:
+        logger.info(f"Removed: {removed}. Failed: {failed}.")
+    else:
+        logger.debug(f"Removed: {removed}")
 
 
 if __name__ == "__main__":

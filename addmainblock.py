@@ -3,8 +3,10 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-from dh import format_size, get_files, get_size
+
 from termcolor import cprint
+
+from dhh import fsz, get_files, gsz
 
 MAINBLOCK = r'if __name__ == "__main__":'
 MAX_QUEUE = 16
@@ -36,7 +38,7 @@ def process_file(filepath):
 
 def main():
     cwd = Path.cwd()
-    before = get_size(cwd)
+    before = gsz(cwd)
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
     if len(files) == 1:
@@ -50,8 +52,8 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(cwd)
-    cprint(f"space saved : {format_size(diff_size)}", "cyan")
+    diff_size = before - gsz(cwd)
+    cprint(f"space saved : {fsz(diff_size)}", "cyan")
 
 
 if __name__ == "__main__":

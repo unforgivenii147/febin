@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import Path
 import shutil
 import subprocess
-from loguru import logger
-from dh import unique_path, get_files
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
+from dh import get_files, unique_path
+from loguru import logger
 
 EXT = [".js", ".css", ".html", ".json", ".mjs", ".cjs", ".ts", ".jsx", ".tsx", ".tsm", ".jsm"]
 EXCLUDE_PATTERNS = {}
@@ -57,7 +57,7 @@ def main():
     files = get_files(cwd, extensions=EXT)
     if not files:
         return
-    logger.info(f"{len(files)} files found0")
+    logger.info(f"{len(files)} files found")
     success_count = 0
     error_count = 0
     with ThreadPoolExecutor(max_workers=8) as executor:
@@ -74,4 +74,4 @@ def main():
 
 
 if __name__ == "__main__":
-    SystemExit(main())
+    raise SystemExit(main())

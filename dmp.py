@@ -2,21 +2,17 @@
 import argparse
 import sys
 from pathlib import Path
-from typing import List, Set, Tuple
 
 EXCLUDED_NAMES: set[str] = {
     "tmp",
     "cache",
     "bin",
-    "Android",
     ".git",
     "etc",
     "config",
     "var",
-    "venv",
-    "node_modules",
 }
-EXCLUDED_PATH_COMPONENTS: Set[str] = {
+EXCLUDED_PATH_COMPONENTS: set[str] = {
     ".git",
     "tmp",
     "etc",
@@ -34,15 +30,13 @@ def is_excluded(path: Path, root_path: Path) -> bool:
             return True
     except ValueError:
         pass
-    if path.name.startswith("mc") and path.parent.name == "tmp":
-        return True
-    return False
+    return bool(path.name.startswith("mc") and path.parent.name == "tmp")
 
 
-def delete_empty_dirs_iterative(root: Path, dry_run: bool = False, verbose: bool = False) -> Tuple[int, List[Path]]:
+def delete_empty_dirs_iterative(root: Path, dry_run: bool = False, verbose: bool = False) -> tuple[int, list[Path]]:
     removed_count: int = 0
-    removed_dirs_list: List[Path] = []
-    dirs_to_visit: List[Path] = [d for d in root.rglob("*") if d.is_dir()]
+    removed_dirs_list: list[Path] = []
+    dirs_to_visit: list[Path] = [d for d in root.rglob("*") if d.is_dir()]
     dirs_to_visit.sort(key=lambda p: len(p.parts), reverse=True)
     if root.is_dir():
         dirs_to_visit.append(root)

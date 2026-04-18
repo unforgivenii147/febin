@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import argparse
+import sys
+from pathlib import Path
 
 
 def get_unique_name(path: Path, base_name: str) -> str:
@@ -23,7 +24,7 @@ def remove_string_from_names(
     string_to_remove: str,
     dry_run: bool = False,
     recursive: bool = False,
-    current_path: Path = Path("."),
+    current_path: Path = Path(),
 ) -> int:
     renamed_count = 0
     try:
@@ -97,7 +98,7 @@ def replace_string_in_names(
     str2: str,
     dry_run: bool = False,
     recursive: bool = False,
-    current_path: Path = Path("."),
+    current_path: Path = Path(),
 ) -> int:
     renamed_count = 0
     try:
@@ -165,7 +166,7 @@ def rename_by_template(
     template: str,
     dry_run: bool = False,
     recursive: bool = False,
-    current_path: Path = Path("."),
+    current_path: Path = Path(),
 ) -> int:
     renamed_count = 0
     try:
@@ -289,10 +290,10 @@ def main() -> None:
             print(f"\nOperation completed. {count} items processed.")
     except KeyboardInterrupt:
         print("\nOperation cancelled by user.")
-        exit(1)
+        sys.exit(1)
     except Exception as e:
         print(f"An error occurred: {e}")
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

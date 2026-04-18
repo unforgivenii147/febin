@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import asyncio
-from pyppeteer import launch
 import sys
 from pathlib import Path
+
+from pyppeteer import launch
 
 
 async def main():

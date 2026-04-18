@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import regex as re
 import sys
 from pathlib import Path
+
+import regex as re
 from dh import fsz, get_files, gsz
 from joblib import Parallel, delayed
 from loguru import logger

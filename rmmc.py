@@ -3,14 +3,15 @@ import ast
 import sys
 from multiprocessing import get_context
 from pathlib import Path
+
 import regex as re
-from dh import format_size, get_nobinary, get_size, is_binary
+from dh import get_nobinary, is_binary
 
 
 def process_file(file_path: Path) -> None:
     if is_binary(file_path):
         return
-    before = get_size(file_path)
+    before = gsz(file_path)
     file_path.read_text(encoding="utf-8")
     orig = re.sub(r"#.*", "")
     orig = re.sub(r"\n\n*", "\n")
@@ -18,21 +19,21 @@ def process_file(file_path: Path) -> None:
         try:
             ast.parse(orig)
             file_path.write_text(orig, encoding="utf-8")
-            after = get_size(file_path)
+            after = gsz(file_path)
             print(f"{file_path.name} ", end=" ")
-            print(format_size(before - after))
+            print(fsz(before - after))
         except:
             return
     else:
         file_path.write_text(orig, encoding="utf-8")
-        after = get_size(file_path)
+        after = gsz(file_path)
         print(f"{file_path.name} ", end=" ")
-        print(format_size(before - after))
+        print(fsz(before - after))
 
 
 def main():
     cwd = Path.cwd()
-    before = get_size(cwd)
+    before = gsz(cwd)
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_nobinary(cwd)
     p = get_context("spawn").Pool(8)
@@ -40,8 +41,8 @@ def main():
         p.apply_async(process_file, (f,))
     p.close()
     p.join()
-    diff_size = before - get_size(cwd)
-    print(f"space change: {format_size(diff_size)}")
+    diff_size = before - gsz(cwd)
+    print(f"space change: {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

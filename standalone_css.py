@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import base64
+import os
 import sys
 from pathlib import Path
-import requests
-import base64
+
 import regex as re
-import os
+import requests
 from termcolor import cprint
 
 STATIC_DIR = "/sdcard/_static"
@@ -20,7 +21,7 @@ def is_font_url(url):
 
 
 def find_local_font(font_filename):
-    if not os.path.isdir(STATIC_DIR):
+    if not Path(STATIC_DIR).is_dir():
         return None
     for root, _, files in os.walk(STATIC_DIR):
         if font_filename in files:
@@ -30,8 +31,7 @@ def find_local_font(font_filename):
 
 def get_local_font_base64(local_path):
     try:
-        with open(local_path, "rb") as f:
-            content = f.read()
+        content = Path(local_path).read_bytes()
         ext = get_file_extension(local_path)
         content_type = ""
         if ext == ".eot":
@@ -58,7 +58,7 @@ def get_local_font_base64(local_path):
 
 def get_remote_font_base64(url):
     try:
-        response = requests.get(url, stream=True)
+        response = requests.get(url, timeout=15, stream=True)
         response.raise_for_status()
         content_type = response.headers.get("content-type", "").split(";")[0]
         if not content_type.lower().startswith("font") and "svg" not in content_type.lower():
@@ -88,7 +88,7 @@ def get_remote_font_base64(url):
 
 def url_to_base64(url, base_css_path):
     cleaned_url = url.strip("'\"")
-    font_filename = os.path.basename(cleaned_url)
+    font_filename = Path(cleaned_url).name
     cprint(f"looking for {font_filename} in {STATIC_DIR}", "cyan")
     local_path = find_local_font(font_filename)
     if local_path:
@@ -96,8 +96,8 @@ def url_to_base64(url, base_css_path):
         return get_local_font_base64(local_path)
     full_url = cleaned_url
     if not cleaned_url.startswith(("http://", "https://", "//")):
-        base_dir = os.path.dirname(os.path.abspath(base_css_path))
-        full_url = os.path.normpath(os.path.join(base_dir, cleaned_url))
+        base_dir = Path(Path(base_css_path).resolve()).parent
+        full_url = os.path.normpath(Path(base_dir) / cleaned_url)
         if not full_url.startswith(("http://", "https://", "//")):
             full_url = f"file:///{full_url}"
     print(f"Attempting to fetch remote font: {full_url}")
@@ -105,10 +105,9 @@ def url_to_base64(url, base_css_path):
 
 
 def make_css_standalone(input_css_path, output_css_path):
-    input_css_path = os.path.abspath(input_css_path)
+    input_css_path = Path(input_css_path).resolve()
     try:
-        with open(input_css_path, "r", encoding="utf-8") as f:
-            content = f.read()
+        content = Path(input_css_path).read_text(encoding="utf-8")
     except FileNotFoundError:
         print(f"Error: Input CSS file not found at {input_css_path}")
         return
@@ -124,7 +123,7 @@ def make_css_standalone(input_css_path, output_css_path):
         import_urls_to_process.append(import_url)
         processed_content = processed_content.replace(match.group(0), "", 1)
     processed_imports = set()
-    queue = import_urls_to_process[:]
+    queue = import_urls_to_process.copy()
     while queue:
         current_import_url = queue.pop(0)
         normalized_import_url = os.path.normpath(current_import_url)
@@ -134,23 +133,22 @@ def make_css_standalone(input_css_path, output_css_path):
         print(f"Processing imported CSS: {current_import_url}")
         try:
             if not current_import_url.startswith(("http://", "https://", "//")):
-                base_dir = os.path.dirname(os.path.abspath(input_css_path))
-                fetch_url = os.path.normpath(os.path.join(base_dir, current_import_url))
+                base_dir = Path(Path(input_css_path).resolve()).parent
+                fetch_url = os.path.normpath(Path(base_dir) / current_import_url)
                 if not fetch_url.startswith(("http://", "https://", "//")):
-                    if os.path.exists(fetch_url):
-                        with open(fetch_url, "r", encoding="utf-8") as f_import:
-                            imported_css = f_import.read()
+                    if Path(fetch_url).exists():
+                        imported_css = Path(fetch_url).read_text(encoding="utf-8")
                         import_source_ref = fetch_url
                     else:
                         print(f"Warning: Local import file not found: {fetch_url}. Skipping.")
                         continue
                 else:
-                    response = requests.get(current_import_url)
+                    response = requests.get(current_import_url, timeout=15)
                     response.raise_for_status()
                     imported_css = response.text
                     import_source_ref = current_import_url
             else:
-                response = requests.get(current_import_url)
+                response = requests.get(current_import_url, timeout=15)
                 response.raise_for_status()
                 imported_css = response.text
                 import_source_ref = current_import_url
@@ -174,19 +172,16 @@ def make_css_standalone(input_css_path, output_css_path):
         if base64_data:
             if quote_style:
                 return f"url({quote_style}{base64_data}{quote_style})"
-            else:
-                return f'url("{base64_data}")'
-        else:
-            print(f"Failed to process font URL: {url_part}. Keeping original.")
-            return match.group(0)
+            return f'url("{base64_data}")'
+        print(f"Failed to process font URL: {url_part}. Keeping original.")
+        return match.group(0)
 
     processed_content = font_url_pattern.sub(replace_font_urls_in_content, processed_content)
     try:
-        output_dir = os.path.dirname(output_css_path)
+        output_dir = Path(output_css_path).parent
         if output_dir:
-            os.makedirs(output_dir, exist_ok=True)
-        with open(output_css_path, "w", encoding="utf-8") as f:
-            f.write(processed_content)
+            Path(output_dir).mkdir(exist_ok=True, parents=True)
+        Path(output_css_path).write_text(processed_content, encoding="utf-8")
         print(f"Standalone CSS file created at: {output_css_path}")
     except Exception as e:
         print(f"Error writing output CSS file {output_css_path}: {e}")

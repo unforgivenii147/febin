@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import regex as re
 from dh import get_files, mpf, unique_path
 from fontTools.ttLib import TTFont
@@ -55,12 +56,12 @@ def process_file(fn):
         cprint("name not found", "magenta")
         return 1
     ext = fn.suffix.lower()
-    new_path = Path(fn.parent / f"{family}-{style}{ext}")
-    if new_path.exists():
-        new_path = unique_path(new_path)
+    new_path = fn.parent / f"{family}-{style}{ext}"
     if fn.name == new_path.name:
         cprint("no change", "blue")
         return 0
+    if new_path.exists():
+        new_path = unique_path(new_path)
     fn.rename(new_path)
     print(f"{fn.name} -> ", end="")
     cprint(f"{new_path.name}", "green")

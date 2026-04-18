@@ -2,6 +2,7 @@
 import json
 import sys
 import time
+
 import requests
 from dh import get_installed_packages
 from packaging.version import InvalidVersion, Version
@@ -10,7 +11,7 @@ from packaging.version import InvalidVersion, Version
 def check_package_on_pypi(package_name: str, current_version: str) -> str | None:
     try:
         # Add delay to be nice to PyPI
-        time.sleep(0.1)
+        time.sleep(0.01)
         url = f"https://pypi.org/pypi/{package_name}/json"
         response = requests.get(url, timeout=5)
         if response.status_code == 200:
@@ -51,7 +52,7 @@ def is_venv() -> bool:
     return hasattr(sys, "real_prefix") or (hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix)
 
 
-def main():
+def main() -> None:
     # Check if running in virtual environment
     if not is_venv():
         print("⚠️  Warning: Not running in a virtual environment!")
@@ -77,7 +78,7 @@ def main():
         # Show progress
         progress = f"[{i:3d}/{total_packages:3d}]"
         # Check PyPI
-        latest_version = check_package_on_pypi(package, current_version)
+        latest_version = check_package_on_pypi(package.lower(), current_version)
         if latest_version is None:
             print(f"{progress} {package:<30} : ⚠️  not found on PyPI")
             errors.append(package)
@@ -93,7 +94,7 @@ def main():
             ))
         elif status == "newer":
             print(
-                f"{progress} {package:<30} : ⚠️  current version ({current_version}) is newer than PyPI ({latest_version})"
+                f"{progress} {package:<30} : ⚠️  current version ({current_version}) is newer than PyPI ({latest_version})",
             )
             errors.append(package)
         else:

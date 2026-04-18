@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/env python
-from pathlib import Path
 import sys
-from dh import get_filez, fsz
+from pathlib import Path
+
+from dh import fsz, get_filez
 
 THRESHOLD = 1024 * 1024
 cwd = Path.cwd()

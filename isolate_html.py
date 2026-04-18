@@ -3,6 +3,7 @@ import base64
 import os
 import sys
 from pathlib import Path
+
 import regex as re
 from bs4 import BeautifulSoup
 

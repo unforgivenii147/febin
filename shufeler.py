@@ -71,25 +71,27 @@ def enhanced_shuffle_large_file(input_file_path, output_file_path):
     random.shuffle(line_offsets)
     print("Writing shuffled lines to output file...")
     try:
-        with input_path.open("rb") as infile:
-            with mmap.mmap(infile.fileno(), 0, access=mmap.ACCESS_READ) as mm:
-                with output_path.open("wb") as outfile:  # باز کردن در حالت باینری برای نوشتن
-                    for i, offset in enumerate(line_offsets):
-                        next_offset_idx = line_offsets.index(offset) + 1 if offset in line_offsets else -1
-                        if next_offset_idx < len(line_offsets):
-                            end_of_line_offset = line_offsets[next_offset_idx] - 1
-                            if end_of_line_offset < offset:
-                                end_of_line_offset = file_size  # default to end of file
-                        else:
-                            end_of_line_offset = file_size
-                        actual_end_of_line = mm.find(b"\n", offset)
-                        if actual_end_of_line == -1:  # Last line, no newline
-                            line_data = mm[offset:file_size]
-                        else:
-                            line_data = mm[offset : actual_end_of_line + 1]  # Include newline
-                        outfile.write(line_data)
-                        if (i + 1) % 100000 == 0:
-                            print(f"  {i + 1}/{original_line_count} lines written...", end="\r")
+        with (
+            input_path.open("rb") as infile,
+            mmap.mmap(infile.fileno(), 0, access=mmap.ACCESS_READ) as mm,
+            output_path.open("wb") as outfile,
+        ):
+            for i, offset in enumerate(line_offsets):
+                next_offset_idx = line_offsets.index(offset) + 1 if offset in line_offsets else -1
+                if next_offset_idx < len(line_offsets):
+                    end_of_line_offset = line_offsets[next_offset_idx] - 1
+                    if end_of_line_offset < offset:
+                        end_of_line_offset = file_size  # default to end of file
+                else:
+                    end_of_line_offset = file_size
+                actual_end_of_line = mm.find(b"\n", offset)
+                if actual_end_of_line == -1:  # Last line, no newline
+                    line_data = mm[offset:file_size]
+                else:
+                    line_data = mm[offset : actual_end_of_line + 1]  # Include newline
+                outfile.write(line_data)
+                if (i + 1) % 100000 == 0:
+                    print(f"  {i + 1}/{original_line_count} lines written...", end="\r")
         print(f"\nSuccessfully wrote {original_line_count} shuffled lines to: {output_file_path}")
         return True
     except Exception as e:
@@ -112,7 +114,7 @@ def enhanced_shuffle_small_file(input_file_path, output_file_path):
     except MemoryError:
         print(
             f"MemoryError: File '{input_file_path}' is too large to load into memory. "
-            "Consider increasing MMAP_THRESHOLD_MB or using a system with more RAM.",
+            "Consider increasing 1mb or using a system with more RAM.",
             file=sys.stderr,
         )
         return False
@@ -178,13 +180,13 @@ def main():
     output_path = input_path
     success = False
     if file_size > MMAP_THRESHOLD_BYTES:
-        print(f"File size ({file_size / (1024 * 1024):.2f} MB) exceeds {MMAP_THRESHOLD_MB} MB. Using mmap strategy.")
+        print(f"File size ({file_size / (1024 * 1024):.2f} MB) exceeds {1} MB. Using mmap strategy.")
         success = enhanced_shuffle_large_file(input_path, output_path)
     else:
-        print(f"File size ({file_size / (1024 * 1024):.2f} MB) is within {MMAP_THRESHOLD_MB} MB. Loading into memory.")
-        success = enhanced_shuffle_small_file(input_path, output_path)
-    if not success:
-        sys.exit(1)
+        for i in range(100):
+            success = enhanced_shuffle_small_file(input_path, output_path)
+            if not success:
+                sys.exit(1)
 
 
 if __name__ == "__main__":

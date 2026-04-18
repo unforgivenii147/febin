@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import os
-import regex as re
 import urllib
 from pathlib import Path
+
 import lxml.html
 import pypdf
+import regex as re
 
 
 class Section:

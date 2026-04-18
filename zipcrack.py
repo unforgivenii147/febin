@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import multiprocessing as mp
-import os
 import sys
 import time
 import zipfile
 from pathlib import Path
+
 from print_persian import print_persian as _print
 
 """
@@ -47,7 +47,7 @@ def crack_zip_password_multiprocess(zip_file_path, password_list_path, extract_d
     if not Path(password_list_path).exists():
         return None
     try:
-        with Path(password_list_pat).open(encoding="utf-8", errors="ignore") as p_list:
+        with Path(password_list_path).open(encoding="utf-8", errors="ignore") as p_list:
             passwords = [p.strip() for p in p_list if p.strip()]
         total_passwords = len(passwords)
         start_time = time.time()
@@ -68,7 +68,7 @@ def crack_zip_password_multiprocess(zip_file_path, password_list_path, extract_d
         elapsed_time = end_time - start_time
         if found_password:
             try:
-                os.makedirs(extract_dir, exist_ok=True)
+                Path(extract_dir).mkdir(exist_ok=True, parents=True)
                 with zipfile.ZipFile(zip_file_path, "r") as zf_final:
                     zf_final.extractall(path=extract_dir, pwd=found_password.encode("utf-8"))
             except Exception as e:

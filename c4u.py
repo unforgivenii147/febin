@@ -1,15 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
 import html as _html
-import regex as re
 import sys
 import urllib.parse
 from pathlib import Path
+
 import regex as re
 import requests
 from packaging.version import Version
 from termcolor import cprint
-from dh import get_installed_packages
+
+
+def save_output(content, pkg):
+    with open(f"/sdcard/whl/json/{pkg}", "w") as f:
+        f.write(content)
 
 
 def parse_version_obj(s):
@@ -73,7 +77,8 @@ def extract_latest_version_link(html_text):
 def get_latest_pkg_version(pkg_name):
     try:
         url = f"https://mirror-pypi.runflare.com/{pkg_name}/json"
-        html = requests.get(url, timeout=15).text
+        html = requests.get(url, timeout=50).text
+        save_output(html, pkg_name)
     except:
         return None
     wheel_pattern = re.compile(rf"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\.\-_]*)\.(?:whl|tar\.gz|zip)", re.IGNORECASE)
@@ -82,20 +87,18 @@ def get_latest_pkg_version(pkg_name):
         version_str = match.group(1)
         with contextlib.suppress(BaseException):
             versions.append(Version(version_str))
-    latest_version_link = get_latest_version_link(html)
+    latest_version_link = get_latest_pkg_version(html)
     if latest_version_link:
-        with Path("/sdcard/latest_versions").open("a", encoding="utf-8") as f:
+        with Path("/sdcard/pkgs_links").open("a", encoding="utf-8") as f:
             f.write(f"\n{latest_version_link}\n")
     return max(versions) if versions else None
 
 
 if __name__ == "__main__":
-    installed = get_installed_packages()
-    updatable: list = []
-    for pkg, version in installed.items():
+    try:
+        pkg = sys.argv[1]
         latest_version = get_latest_pkg_version(pkg)
-        if str(version).strip() != str(latest_version).strip():
-            cprint(f"{pkg} : {version}", "green", end=" | ")
-            cprint(f"{latest_version}", "cyan")
-        else:
-            cprint(f"{pkg} : {version} | {latest_version}", "white")
+        cprint(f"{pkg} : ", "green", end=" | ")
+        cprint(f"{latest_version}", "cyan")
+    except:
+        pass

@@ -1,15 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 import operator
-import sys
 from pathlib import Path
-import tree_sitter_python as tspython
-from dh import DOC_TH1, DOC_TH2, clean_blank_lines, fsz, get_pyfiles, gsz
-from tree_sitter import Language, Parser
-from pbar import Pbar
-import regex as re
 
-doc_re = re.compile(r"""(DOC_TH1|DOC_TH2|#)""")
+import tree_sitter_python as tspython
+from dh import clean_blank_lines, get_pyfiles
+from pbar import Pbar
+from tree_sitter import Language, Parser
+
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
 PRESERVED: set = {
@@ -17,6 +15,14 @@ PRESERVED: set = {
     "# type",
     "# fmt",
 }
+
+
+def have_doc(code):
+    tree = ast.parse(code)
+    doc = ast.get_docstring(tree)
+    has_doc = doc is not None
+    has_comment = "#" in code
+    return has_doc or has_comment
 
 
 def should_preserve_comment(content):
@@ -77,13 +83,11 @@ def rm_ast(content: str) -> tuple[str, int]:
     try:
         tree = ast.parse(content)
     except SyntaxError:
-        del tree
         return content
     lines = content.split("\n")
     ranges = find_docstring_ranges(tree)
     for start, end in sorted(ranges, reverse=True):
         del lines[start - 1 : end]
-    del start, end
     return "\n".join(lines), len(ranges)
 
 
@@ -118,30 +122,24 @@ def find_docstring_ranges(node) -> list[tuple[int, int]]:
 
 
 def process_file(file_path: Path) -> bool:
-    try:
-        original = file_path.read_text(encoding="utf-8")
-        if not doc_re.findall(original):
-            del original
-            return True
+    original = file_path.read_text(encoding="utf-8")
+    if have_doc(original):
         modified, _removed = rm_ast(original)
         finalcode = strip_code(modified)
         wcode = clean_blank_lines(finalcode)
         try:
             _ = ast.parse(wcode)
             file_path.write_text(wcode, encoding="utf-8")
-            del modified, _removed, final_code, wcode
             return True
         except:
             try:
                 _ = ast.parse(modified)
                 finalcode = clean_blank_lines(modified)
                 file_path.write_text(finalcode, encoding="utf-8")
-                del final_code
                 return True
             except:
                 return False
-    except:
-        return False
+    return None
 
 
 def main():

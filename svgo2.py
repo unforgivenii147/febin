@@ -4,8 +4,10 @@ import sys
 import tempfile
 from multiprocessing import Pool
 from pathlib import Path
-from dh import format_size, get_files, get_size, move_file
+
 from termcolor import cprint
+
+from dhh import fsz, get_files, gsz, move_file
 
 MAX_QUEUE = 16
 
@@ -42,7 +44,7 @@ def process_file(in_file):
 
 def main() -> None:
     cwd = Path.cwd()
-    before = get_size(cwd)
+    before = gsz(cwd)
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".svg"])
     if not files:
@@ -57,9 +59,9 @@ def main() -> None:
             pass
         p.close()
         p.join()
-        after = get_size(cwd)
+        after = gsz(cwd)
         cprint(
-            f"{format_size(before - after)}",
+            f"{fsz(before - after)}",
             "cyan",
         )
 

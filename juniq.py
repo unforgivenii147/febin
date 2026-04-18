@@ -1,31 +1,28 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
-import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def deduplicate_json_object(data):
     if isinstance(data, dict):
         return {k: deduplicate_json_object(v) for k, v in data.items()}
-    elif isinstance(data, list):
+    if isinstance(data, list):
         return [deduplicate_json_object(item) for item in data]
     return data
 
 
 def deduplicate_json_list(data_list, unique_by=None):
     if not isinstance(data_list, list):
-        raise ValueError("Input must be a list of dictionaries.")
+        msg = "Input must be a list of dictionaries."
+        raise ValueError(msg)
     seen = set()
     new_list = []
     for entry in data_list:
         if not isinstance(entry, dict):
             new_list.append(entry)
             continue
-        if unique_by:
-            identifier = entry.get(unique_by)
-        else:
-            identifier = json.dumps(entry, sort_keys=True)
+        identifier = entry.get(unique_by) if unique_by else json.dumps(entry, sort_keys=True)
         if identifier not in seen:
             seen.add(identifier)
             new_list.append(entry)

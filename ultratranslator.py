@@ -6,6 +6,7 @@ import tempfile
 import tokenize
 from multiprocessing import get_context
 from pathlib import Path
+
 import regex as re
 from deep_translator import GoogleTranslator
 from dh import DOC_TH1, DOC_TH2

@@ -1,11 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
+
 import regex as re
 
 HTML_EXTS = {".html", ".htm", ".svg", ".xml"}
 SKIP_TAGS = ("pre", "code")
 SKIP_OPEN_RE = re.compile(r"<\s*(pre|code)\b", re.IGNORECASE)
 SKIP_CLOSE_RE = re.compile(r"<\s*/\s*(pre|code)\s*>", re.IGNORECASE)
+cwd = Path.cwd()
 
 
 def split_tags_preserve_indent(line: str) -> str:
@@ -49,11 +51,11 @@ def format_file(path: Path):
         "\n".join(formatted) + "\n",
         encoding="utf-8",
     )
-    print(f"[+] Processed: {path}")
+    print(f"[+] Processed: {path.relative_to(cwd)}")
 
 
 def main():
-    for file in Path.cwd().rglob("*"):
+    for file in cwd.rglob("*"):
         if file.is_file() and file.suffix.lower() in HTML_EXTS:
             format_file(file)
 

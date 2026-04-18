@@ -3,13 +3,12 @@ import ast
 import operator
 import sys
 from pathlib import Path
+
 import tree_sitter_python as tspython
-from dh import DOC_TH1, DOC_TH2, clean_blank_lines, fsz, get_pyfiles, gsz, mpf3
+from dh import clean_blank_lines, fsz, get_pyfiles, gsz
 from termcolor import cprint
 from tree_sitter import Language, Parser
-import regex as re
 
-doc_re = re.compile(r"DOC_TH1|DOC_TH2|#")
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
 PRESERVED: set = {
@@ -17,6 +16,14 @@ PRESERVED: set = {
     "# type",
     "# fmt",
 }
+
+
+def havedoc(code):
+    tree = ast.parse(code)
+    doc = ast.get_docstring(tree)
+    has_doc = doc is not None
+    has_comment = "#" in code
+    return has_doc or has_comment
 
 
 def should_preserve_comment(content):
@@ -83,7 +90,6 @@ def rm_ast(content: str) -> tuple[str, int]:
     ranges = find_docstring_ranges(tree)
     for start, end in sorted(ranges, reverse=True):
         del lines[start - 1 : end]
-    del start, end
     return "\n".join(lines), len(ranges)
 
 
@@ -119,11 +125,9 @@ def find_docstring_ranges(node) -> list[tuple[int, int]]:
 
 def process_file(file_path: Path) -> bool:
     before = gsz(file_path)
-    try:
-        original = file_path.read_text(encoding="utf-8")
-        if not doc_re.findall(original):
-            return True
-        modified, removed = rm_ast(original)
+    original = file_path.read_text(encoding="utf-8")
+    if havedoc(original):
+        modified, _removed = rm_ast(original)
         finalcode = strip_code(modified)
         wcode = clean_blank_lines(finalcode)
         try:
@@ -135,40 +139,21 @@ def process_file(file_path: Path) -> bool:
                 f"{fsz(dsz)}",
                 "blue",
             )
-            del dsz, wcode, finalcode, modified, removed
             return True
         except:
-            try:
-                _ = ast.parse(modified)
-                finalcode = clean_blank_lines(modified)
-                file_path.write_text(finalcode, encoding="utf-8")
-                diffsize = before - gsz(file_path)
-                print(f"{file_path.name}", end=" ")
-                cprint(
-                    f"{fsz(diffsize)}",
-                    "blue",
-                )
-                del final_code, diffsize
-                return True
-            except:
-                return False
-    except:
-        return False
+            print("ast parse error")
+            return False
+    return None
 
 
 def main():
     cwd = Path.cwd()
-    before = gsz(cwd)
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_pyfiles(cwd)
-    numfiles = len(files)
-    if numfiles == 1:
-        process_file(files[0])
-        sys.exit(0)
-    mpf3(process_file, files)
-    diff_size = before - gsz(cwd)
-    print(f"space saved : {fsz(diff_size)}")
+    print(f"{len(files)} files found.")
+    for f in files:
+        process_file(f)
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()

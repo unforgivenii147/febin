@@ -1,4 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
+import pathlib
+
 import regex as re
 from packaging.version import Version
 
@@ -21,7 +23,7 @@ def extract_upgradable_packages(results_file_path: str) -> list[tuple[str, str]]
         r"^(?P<package_name>[a-zA-Z0-9\-_.]+)\s*:\s*(?P<installed_version>\S+)\s*->\s*(?P<latest_version>\S+)\s*\(Updatable!\)$"
     )
     try:
-        with open(results_file_path, encoding="utf-8") as f:
+        with pathlib.Path(results_file_path).open(encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -58,7 +60,7 @@ def extract_upgradable_packages(results_file_path: str) -> list[tuple[str, str]]
 
 def save_to_requirements_file(packages: list[tuple[str, str]], output_file_path: str):
     try:
-        with open(output_file_path, "w", encoding="utf-8") as f:
+        with pathlib.Path(output_file_path).open("w", encoding="utf-8") as f:
             for pkg_name, latest_version in packages:
                 f.write(f"{pkg_name}=={latest_version}\n")
         print(f"\nSuccessfully saved upgradable packages to '{output_file_path}'.")

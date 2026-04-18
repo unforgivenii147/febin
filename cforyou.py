@@ -1,17 +1,23 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
 import json
-import os
-import regex as re
+import pathlib
 import time
+
+import regex as re
 import requests
 from dh import get_installed_packages
 from packaging.version import Version
 from termcolor import cprint
 
 MAX_WORKERS = 8
-TIMEOUT = 10
+TIMEOUT = 15
 RESULTS_FILE = "/sdcard/c4u.json"
+
+
+def save_output(text, pkg):
+    with open(f"/sdcard/whl/json/{pkg}.html", "w") as f:
+        f.write(text)
 
 
 def get_latest_version(pkg_name: str) -> str | None:
@@ -20,21 +26,27 @@ def get_latest_version(pkg_name: str) -> str | None:
         response = requests.get(url, timeout=TIMEOUT)
         response.raise_for_status()
         html = response.text
+        save_output(html, pkg_name)
+        cprint(f"/sdcard/whl/json/{pkg_name}.html created")
     except:
         return None
     wheel_pattern = re.compile(rf"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\.\-_]*)\.(?:whl|tar\.gz|zip)", re.IGNORECASE)
     versions = []
+    print(html[:-100])
     for match in wheel_pattern.finditer(html):
         version_str = match.group(1)
         with contextlib.suppress(BaseException):
             versions.append(Version(version_str))
-    return str(max(versions)) if versions else None
+    max_ver = str(max(versions)) if versions else None
+    if max_ver is not None:
+        print(f"{pkg_name}:{max_ver}")
+    return max_ver
 
 
 def load_previous_results() -> dict[str, dict]:
-    if os.path.exists(RESULTS_FILE):
+    if pathlib.Path(RESULTS_FILE).exists():
         try:
-            with open(RESULTS_FILE, encoding="utf-8") as f:
+            with pathlib.Path(RESULTS_FILE).open(encoding="utf-8") as f:
                 return json.load(f)
         except json.JSONDecodeError:
             cprint(f"Warning: Corrupted results file '{RESULTS_FILE}'. Starting fresh.", "red")
@@ -43,7 +55,7 @@ def load_previous_results() -> dict[str, dict]:
 
 
 def save_results(results: dict[str, dict]):
-    with open(RESULTS_FILE, "w", encoding="utf-8") as f:
+    with pathlib.Path(RESULTS_FILE).open("w", encoding="utf-8") as f:
         json.dump(results, f, indent=4)
 
 

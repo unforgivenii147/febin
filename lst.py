@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import datetime
 from pathlib import Path
-from dh import format_size, get_size
+
+from dh import fsz, gsz
 from termcolor import cprint
 
 if __name__ == "__main__":
@@ -14,7 +15,7 @@ if __name__ == "__main__":
         if path.is_symlink():
             sz = " symlink "
         elif path.is_file() or path.is_dir():
-            sz = str(format_size(get_size(path)))
+            sz = str(fsz(gsz(path)))
             match len(sz):
                 case 3:
                     sz = "      " + sz

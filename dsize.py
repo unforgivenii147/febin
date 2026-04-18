@@ -22,7 +22,7 @@ def fetch_content_length(url: str) -> int | None:
         return int(length) if length else None
 
 
-def format_size(size_bytes: int) -> str:
+def fsz(size_bytes: int) -> str:
     units = ["B", "KB", "MB", "GB", "TB"]
     size = float(size_bytes)
     for unit in units:
@@ -38,7 +38,7 @@ def process_url(url: str) -> str:
         print(f"{url[:25]}:{size / (1024 * 1024)} mb")
         if size is None:
             return f"{url}\tUnknown"
-        return f"{url}\t{format_size(size)}"
+        return f"{url}\t{fsz(size)}"
     except Exception as exc:
         return f"{url}\tError: {exc}"
 

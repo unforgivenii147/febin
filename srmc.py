@@ -2,7 +2,8 @@
 import ast
 import sys
 from pathlib import Path
-from dh import format_size, get_files, get_size, mpf
+
+from dhh import fsz, get_files, gsz, mpf
 
 
 def _get_comments_symbol(text: str, symbol: str) -> list[str]:
@@ -62,15 +63,15 @@ def process_file(fp):
 
 def main():
     cwd = Path.cwd()
-    before = get_size(cwd)
+    before = gsz(cwd)
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
     mpf(process_file, files)
-    diff_size = before - get_size(cwd)
-    print(f"space saved : {format_size(diff_size)}")
+    diff_size = before - gsz(cwd)
+    print(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

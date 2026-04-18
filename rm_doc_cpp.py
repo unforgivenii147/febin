@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import regex as re
 
 
@@ -12,6 +13,7 @@ class RegexCommentRemover:
         )
 
     def remove_comments(self, source: str):
+
         def replacer(match):
             s = match.group(0)
             if s.startswith("/"):
@@ -92,7 +94,7 @@ if __name__ == "__main__":
     nochg = sum(1 for r in results if r[0] == "nochange")
     total_comments = sum(r[2] for r in results if r[0] == "changed")
 
-    def format_size(size):
+    def fsz(size):
         for unit in ["B", "KB", "MB", "GB"]:
             if size < 1024.0:
                 return f"{size:.2f} {unit}"
@@ -108,5 +110,5 @@ if __name__ == "__main__":
             print(f"  - {fn}")
         if len(errors) > 10:
             print(f"  ... and {len(errors) - 10} more")
-    print(f"Size reduced: {format_size(before - after)}")
+    print(f"Size reduced: {fsz(before - after)}")
     print(f"{'=' * 60}")

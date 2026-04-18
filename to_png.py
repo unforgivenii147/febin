@@ -1,8 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-import dh
+
+from dh import IMG_EXT, is_image
+
+from dhh import fsz, gsz
 
 try:
     import cv2
@@ -25,7 +27,7 @@ IGNORED_DIRS = {
 
 def convert_file(file_path: str) -> bool:
     path = Path(file_path)
-    if not path.is_file() or path.suffix.lower() not in dh.IMG_EXT:
+    if not path.is_file() or path.suffix.lower() not in IMG_EXT:
         print(f"Skipping: {path.name} (Unsupported format or not a file)")
         return False
     if path.suffix.lower() == ".png":
@@ -89,11 +91,11 @@ def convert_file(file_path: str) -> bool:
 
 
 def main() -> None:
-    start_size = dh.get_size(".")
+    start_size = gsz(".")
     files = [
         f
         for f in Path().rglob("*")
-        if f.is_file() and not any(part in IGNORED_DIRS for part in f.parts) and dh.is_image(f)
+        if f.is_file() and not any(part in IGNORED_DIRS for part in f.parts) and is_image(f)
     ]
     if not files:
         print("No image files detected.")
@@ -103,11 +105,11 @@ def main() -> None:
         results = list(executor.map(convert_file, files))
     changed_count = sum(1 for r in results if r)
     print(f"Done. {changed_count} files modified.")
-    result = dh.get_size(".") - start_size
+    result = gsz(".") - start_size
     if result < 0:
-        print(f"size reduced: - {dh.format_size(abs(result))} ")
+        print(f"size reduced: - {fsz(result)} ")
     else:
-        print(f"size increased: + {dh.format_size(abs(result))} ")
+        print(f"size increased: + {fsz(result)} ")
 
 
 if __name__ == "__main__":

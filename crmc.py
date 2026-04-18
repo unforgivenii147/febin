@@ -2,8 +2,9 @@
 import sys
 from multiprocessing import cpu_count
 from pathlib import Path
+
 import tree_sitter_cpp
-from dh import clean_blank_lines, format_size, get_size
+from dh import clean_blank_lines, fsz, gsz
 from termcolor import cprint
 from tree_sitter import Language, Parser
 
@@ -63,15 +64,15 @@ def collect_cpp_files(root: Path) -> list[Path]:
 
 def main() -> None:
     root = Path().cwd().resolve()
-    before = get_size(root)
+    before = gsz(root)
     files = collect_cpp_files(root)
     if not files:
         sys.exit("No C++ files found")
     with Pool(cpu_count()) as pool:
         pool.map(remove_comments_cpp, files)
-    after = get_size(root)
+    after = gsz(root)
     difsize = before - after
-    cprint(f"{format_size(difsize)}", "cyan")
+    cprint(f"{fsz(difsize)}", "cyan")
 
 
 if __name__ == "__main__":

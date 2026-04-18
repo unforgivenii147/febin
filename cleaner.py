@@ -1,15 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import regex as re
 from dh import get_files, mpf
 
 
 def process_file(path):
     ansi_tmux_re = re.compile(
-        rb"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])|"
-        rb"\x08|\x0C|\x0F|\x18|\x1C|"
-        rb"\(\d+[a-z]\(B|\(0[Bqtxl]\(B"
+        rb"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])|\x08|\x0C|\x0F|\x18|\x1C|\(\d+[a-z]\(B|\(0[Bqtxl]\(B"
     )
     status_re = re.compile(
         rb"\b\d{4}[MGB]\b|"

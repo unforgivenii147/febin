@@ -2,10 +2,12 @@
 import mmap
 import sys
 from pathlib import Path
+
 import brotlicffi
-from dh import format_size, get_files, get_size
 from joblib import Parallel, delayed
 from termcolor import cprint
+
+from dhh import fsz, get_files, gsz
 
 CHUNK_SIZE = 32768
 QUALITY = 11
@@ -41,13 +43,13 @@ def process_file(fp):
     fp = Path(fp)
     if not fp.exists() or fp.suffix == ".br":
         return
-    before = get_size(fp)
+    before = gsz(fp)
     outfile = Path(str(fp) + ".br")
     if parallel_compress(fp, outfile):
         fp.unlink()
     elif outfile.exists():
         outfile.unlink()
-    after = get_size(outfile)
+    after = gsz(outfile)
     ratio = (after / before) * 100
     cprint(f"{outfile.name}", "green", end=" | ")
     cprint(f"{ratio:.3f}", "cyan")
@@ -57,13 +59,13 @@ def process_file(fp):
 
 def main():
     cwd = Path.cwd()
-    before = get_size(cwd)
+    before = gsz(cwd)
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_files(cwd, recursive=True)
     for f in files:
         process_file(f)
-    diff_size = before - get_size(cwd)
-    print(f"{format_size(diff_size)}")
+    diff_size = before - gsz(cwd)
+    print(f"{fsz(diff_size)}")
 
 
 if __name__ == "__main__":

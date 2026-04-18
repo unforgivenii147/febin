@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 import tree_sitter_python as tsp
 from dh import STDLIB, get_filez, get_installed_pkgs, is_binary
 from termcolor import cprint
@@ -31,7 +31,7 @@ def main():
     all_imports = []
     seen = set()
     cwd = Path.cwd()
-    allpyfiles = len([p for p in cwd.rglob("*.py")])
+    allpyfiles = len(list(cwd.rglob("*.py")))
     cprint(f"{allpyfiles} python files found", "green")
     c = 0
     for f in get_filez(cwd):
@@ -43,7 +43,7 @@ def main():
             result = process_file(f)
             if result:
                 for k in result:
-                    if not k in seen:
+                    if k not in seen:
                         seen.add(k)
                         all_imports.append(k)
     all_imports = sorted(all_imports)

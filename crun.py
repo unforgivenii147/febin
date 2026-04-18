@@ -1,8 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dh import format_size, get_size, run_command
+
 from fastwalk import walk_files
+
+from dhh import fsz, gsz, mpf3, run_command
 
 
 def process_file(fp):
@@ -20,7 +22,7 @@ def process_file(fp):
 
 def main():
     cwd = Path().cwd()
-    start_size = get_size(cwd)
+    start_size = gsz(cwd)
     files = []
     for pth in walk_files(cwd):
         path = Path(pth)
@@ -29,13 +31,8 @@ def main():
             ".cpp",
         }:
             files.append(path)
-    pool = Pool(8)
-    for _ in pool.imap_unordered(process_file, files):
-        pass
-    pool.close()
-    pool.join()
-    after = get_size(cwd)
-    print(f"{format_size(abs(after - start_size))}")
+    mpf3(process_file, files)
+    print(f"{fsz(start_size - gsz(cwd))}")
 
 
 if __name__ == "__main__":

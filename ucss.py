@@ -4,6 +4,7 @@ import hashlib
 import mimetypes
 import sys
 from pathlib import Path
+
 import regex as re
 from dh import MIME_TO_EXT
 

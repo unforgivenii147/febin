@@ -3,6 +3,7 @@ import base64
 import hashlib
 import sys
 from pathlib import Path
+
 from loguru import logger
 
 
@@ -32,7 +33,7 @@ def calculate_file_hash(filepath: Path) -> str:
         return ""
 
 
-def get_size(filepath: Path) -> int:
+def gsz(filepath: Path) -> int:
     try:
         return filepath.stat().st_size
     except Exception as e:
@@ -88,7 +89,7 @@ def update_record_file(record_path: Path, dist_info_dir) -> bool:
             logger.warning("Missing file: %s", relative_path)
             continue
         new_hash = calculate_file_hash(full_path)
-        new_size = get_size(full_path)
+        new_size = gsz(full_path)
         if new_hash:
             new_lines.append(f"{relative_path},{new_hash},{new_size}")
         else:
@@ -115,7 +116,7 @@ def update_record_self_hash(record_path: Path):
         with Path(record_path).open(encoding="utf-8") as f:
             lines = f.readlines()
         record_hash = calculate_file_hash(record_path)
-        record_size = get_size(record_path)
+        record_size = gsz(record_path)
         if lines:
             last_line = lines[-1].strip()
             parts = last_line.split(",")

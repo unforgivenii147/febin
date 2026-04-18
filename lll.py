@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import datetime
 from pathlib import Path
-from dh import format_size, get_size
+
+from dh import fsz, gsz
 
 EXCLUDED = {".mypy_cache", ".ruff_cache", ".git", "__pycache__"}
 if __name__ == "__main__":
@@ -19,7 +20,7 @@ if __name__ == "__main__":
         elif path.is_symlink():
             sz = " \033[05;95msymlink "
         else:
-            sz = str(format_size(get_size(path)))
+            sz = str(fsz(gsz(path)))
             if len(sz) == 7:
                 sz = "  " + sz
             if len(sz) == 8:

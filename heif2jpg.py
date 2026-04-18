@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import pillow_heif as ph
-from dh import get_size
 from fastwalk import walk_files
 
 
@@ -18,7 +18,7 @@ def process_file(fp):
 
 def main():
     cwd = Path().cwd()
-    start_size = get_size(cwd)
+    start_size = gsz(cwd)
     files = []
     for pth in walk_files(cwd):
         path = Path(pth)
@@ -31,8 +31,8 @@ def main():
     pool.imap_unordered(process_file, files)
     pool.close()
     pool.join()
-    after = get_size(cwd)
-    print(f"{fornat_size(abs(after - start_size))}")
+    after = gsz(cwd)
+    print(f"{fornat_size(after - start_size)}")
 
 
 if __name__ == "__main__":

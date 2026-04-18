@@ -2,9 +2,11 @@
 import ast
 import sys
 from pathlib import Path
+
 import regex as re
-from dh import format_size, get_files, get_size
 from termcolor import cprint
+
+from dhh import fsz, get_files, gsz
 
 
 def rm_doc(content: str) -> tuple[str, int]:
@@ -127,7 +129,7 @@ def process_file(file_path: Path) -> None:
 
 def main():
     cwd = Path.cwd()
-    before = get_size(cwd)
+    before = gsz(cwd)
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
     with Pool(8) as pool:
@@ -138,8 +140,8 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(cwd)
-    print(f"space saved : {format_size(diff_size)}")
+    diff_size = before - gsz(cwd)
+    print(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

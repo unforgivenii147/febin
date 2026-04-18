@@ -4,7 +4,8 @@ import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
-from dh import format_size, get_size
+
+from dh import fsz, gsz
 from fastwalk import walk_files
 from termcolor import cprint
 
@@ -43,9 +44,9 @@ def format_file(file_path):
         if size_diff == 0:
             print("[NO CHANGE]")
         elif size_diff > 0:
-            print(f"[OK] + {format_size(size_diff)}")
+            print(f"[OK] + {fsz(size_diff)}")
         elif size_diff < 0:
-            print(f"[OK] - {format_size(size_diff)}")
+            print(f"[OK] - {fsz(size_diff)}")
         del res
         del size_diff
         del after
@@ -66,7 +67,7 @@ def format_file(file_path):
 def main() -> None:
     cfiles: list = []
     cwd = Path.cwd()
-    before = get_size(cwd)
+    before = gsz(cwd)
     args = sys.argv[1:]
     if args:
         cfiles = [Path(arg) for arg in args]
@@ -91,9 +92,9 @@ def main() -> None:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    after = get_size(cwd)
+    after = gsz(cwd)
     diffsize = after - before
-    print(f"space change: {format_size(diffsize)}")
+    print(f"space change: {fsz(diffsize)}")
 
 
 if __name__ == "__main__":

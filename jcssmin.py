@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from pathlib import Path
-from dh import mpf
-from fastwalk import walk_files
-from rcssmin import cssmin
 
 # from rjsmin import jsmin
-from dh import gext
+from dh import get_files, gext, mpf
+from rcssmin import cssmin
 
 
 def process_file(path) -> str:
@@ -18,7 +17,6 @@ def process_file(path) -> str:
         #            minified=jsmin(content)
         else:
             return f"SKIP (unknown type) → {path}"
-
         if len(minified) == len(content):
             return f"[NO CHANGE] {path.name}"
         Path(path).write_text(minified, encoding="utf-8")
@@ -27,22 +25,15 @@ def process_file(path) -> str:
         return f"[ERROR] ({path}): {e}"
 
 
-def collect_files() -> list:
-    targets = []
-    root = Path.cwd()
-    EXT = {".css", ".min.css"}
-    for pth in walk_files(root):
-        path = Path(pth)
-        if path.is_file() and gext(path) in EXT:
-            targets.append(path)
-    return targets
-
-
 def main() -> None:
-    files = collect_files()
+    cwd = Path.cwd()
+    files = get_files(cwd, extensions=[".css", ".min.css"])
     if not files:
         print("No CSS files found.")
         return
+    if len(files) == 1:
+        process_file(files[0])
+        sys.exit(0)
     print(f"Found {len(files)} files. Starting multiprocessing...")
     for k in mpf(process_file, files):
         print(k)

@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dh import format_size
 
 
 def main():
@@ -13,7 +12,7 @@ def main():
         total_size += f.stat().st_size
         count += 1
     print(f"Total number of .{ext} files: {count}")
-    print(f"Total size of .{ext} files: {format_size(total_size)}")
+    print(f"Total size of .{ext} files: {fsz(total_size)}")
 
 
 if __name__ == "__main__":

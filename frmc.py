@@ -2,8 +2,11 @@
 import ast
 import sys
 from pathlib import Path
-from dh import SOURCE_CODE_EXT, clean_blank_lines, format_size, get_nobinary, get_size, is_binary, mpf
+
+from dh import SOURCE_CODE_EXT, clean_blank_lines, get_nobinary, is_binary
 from termcolor import cprint
+
+from dhh import fsz, gsz, mpf3
 
 
 def process_file(fp):
@@ -14,7 +17,7 @@ def process_file(fp):
     if is_binary(fp) or fp.suffix in SOURCE_CODE_EXT:
         print(f"[skip] {fp.name} is binary or source code")
         return
-    before: int = get_size(fp)
+    before: int = gsz(fp)
     lines = fp.read_text(encoding="utf-8").splitlines(keepends=True)
     print(f"{fp.name}", end="|")
     if not lines:
@@ -40,9 +43,9 @@ def process_file(fp):
         try:
             _ = ast.parse(code)
             fp.write_text(code, encoding="utf-8")
-            diffsize = before - get_size(fp)
+            diffsize = before - gsz(fp)
             cprint(
-                f"{format_size(diffsize)}|removed :{removed}|inline :{inline}",
+                f"{fsz(diffsize)}|removed :{removed}|inline :{inline}",
                 "yellow",
             )
         except:
@@ -50,9 +53,9 @@ def process_file(fp):
             return
     else:
         fp.write_text(code, encoding="utf-8")
-        diffsize = before - get_size(fp)
+        diffsize = before - gsz(fp)
         cprint(
-            f"{format_size(diffsize)}|removed :{removed}|inline :{inline}",
+            f"{fsz(diffsize)}|removed :{removed}|inline :{inline}",
             "yellow",
         )
 
@@ -67,11 +70,11 @@ def main() -> None:
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-    before = get_size(cwd)
-    _ = mpf(process_file, files)
-    diffsize = before - get_size(cwd)
+    before = gsz(cwd)
+    _ = mpf3(process_file, files)
+    diffsize = before - gsz(cwd)
     cprint(
-        f"{format_size(diffsize)}",
+        f"{fsz(diffsize)}",
         "cyan",
     )
 

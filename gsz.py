@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import sys
+
 import requests
 
 
@@ -51,7 +52,7 @@ def get_branch_size(repo: str, branch: str) -> int:
     raise RuntimeError(msg)
 
 
-def format_size(kb: int) -> str:
+def fsz(kb: int) -> str:
     mb = kb / 1024
     return f"{kb} KB ({mb:.2f} MB)"
 
@@ -71,10 +72,10 @@ def main() -> None:
             branches = get_branches(repo)
             for branch in branches:
                 size_kb = get_branch_size(repo, branch)
-                print(f"Branch '{branch}': {format_size(size_kb)}")
+                print(f"Branch '{branch}': {fsz(size_kb)}")
         else:
             size_kb = get_repo_size(repo)
-            print(f"Repository '{repo}' size: {format_size(size_kb)}")
+            print(f"Repository '{repo}' size: {fsz(size_kb)}")
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)

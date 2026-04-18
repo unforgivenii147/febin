@@ -2,9 +2,9 @@
 import json
 import operator
 from pathlib import Path
+
 import ssdeep
 from dh import get_files
-from pbar import Pbar
 
 
 def calculate_ssdeep_hash(filepath: Path, min_file_size: int = 1):
@@ -32,11 +32,10 @@ def calculate_ssdeep_hash(filepath: Path, min_file_size: int = 1):
 
 def compare_files(file_paths: list[Path], similarity_threshold: int = 70):
     file_hashes = {}
-    with Pbar("processing...") as pbar:
-        for filepath in pbar.wrap(file_paths):
-            file_hash = calculate_ssdeep_hash(filepath)
-            if file_hash:
-                file_hashes[str(filepath)] = file_hash
+    for filepath in file_paths:
+        file_hash = calculate_ssdeep_hash(filepath)
+        if file_hash:
+            file_hashes[str(filepath)] = file_hash
     similarities = []
     cwd = Path.cwd()
     filepaths_list = list(file_hashes.keys())
@@ -72,7 +71,7 @@ def save_to_json(data, filename="simz.json"):
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-    MIN_SIMILARITY_THRESHOLD = 70
+    MIN_SIMILARITY_THRESHOLD = 50
     OUTPUT_JSON_FILE = "simz.json"
     files = get_files(cwd)
     if not files:

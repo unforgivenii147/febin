@@ -3,13 +3,12 @@ import sys
 from pathlib import Path
 
 
-def create_python_project(pkg_name):
-    current_dir = Path.cwd()
+def create_initpy(current_dir, pkg_name):
     src_dir = current_dir / "src"
     pkg_dir = src_dir / pkg_name
     pkg_dir.mkdir(parents=True, exist_ok=True)
     init_file = pkg_dir / "__init__.py"
-    init_content = """__version__ = "1.4.7"
+    init_content = r"""__version__ = (1, 4, 7)
 from importlib.metadata import PackageNotFoundError,version
 try:
     __version__ = version(__name__)
@@ -18,8 +17,11 @@ except PackageNotFoundError:
 """
     if not init_file.exists():
         init_file.write_text(init_content, encoding="utf-8")
+
+
+def create_readme(current_dir, pkg_name):
     readme_file = current_dir / "README.md"
-    readme_content = f"""# {pkg_name}
+    readme_content = rf"""# {pkg_name}
 ## Description
 A Python package named {pkg_name}.
 ## Installation
@@ -33,8 +35,11 @@ import {pkg_name}
 """
     if not readme_file.exists():
         readme_file.write_text(readme_content, encoding="utf-8")
+
+
+def create_pyproject(current_dir, pkg_name):
     pyproject_file = current_dir / "pyproject.toml"
-    pyproject_content = f"""[build-system]
+    pyproject_content = rf"""[build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 [project]
@@ -55,50 +60,43 @@ where = ["src"]
 """
     if not pyproject_file.exists():
         pyproject_file.write_text(pyproject_content, encoding="utf-8")
+
+
+def create_setuppy(current_dir, pkg_name):
     setuppy_file = current_dir / "setup.py"
-    setuppy_content = """from setuptools import setup
-setup()
+    setuppy_content = rf"""from pathlib import Path
+from setuptools import setup, find_packages
+import re
+here = Path(__file__).parent
+version_re = re.compile(r"__version__ = (\(.*?\))")
+version = "1.4.7"
+for line in Path("src/{pkg_name}/__init__.py").read_text().splitlines():
+    match = version_re.search(line)
+    if match:
+        version = eval(match.group(1))
+        break
+setup(
+    name="{pkg_name}",
+    version=".".join(map(str, version)),
+    description=f"python pkg named {pkg_name}",
+    packages=find_packages(),
+)
 """
     if not setuppy_file.exists():
         setuppy_file.write_text(setuppy_content, encoding="utf-8")
-    setupcfg_file = current_dir / "setup.cfg"
-    setupcfg_content = f"""[metadata]
-name = {pkg_name}
-version = 1.4.7
-author = unforgivenii147
-author_email = adnanonagh@gmail.com
-platforms = any
-classifiers =
-    Development Status :: 4 - Beta
-    Programming Language :: Python
-[options]
-zip_safe = False
-packages = find_namespace:
-include_package_data = True
-package_dir =
-    =src
-[options.packages.find]
-where = src
-exclude =
-    tests
-[options.entry_points]
-[flake8]
-max_line_length = 120
-extend_ignore = E203, W503
-exclude =
-    .tox
-    build
-    dist
-    .eggs
-    docs/conf.py
-"""
-    if not setupcfg_file.exists():
-        setupcfg_file.write_text(setupcfg_content, encoding="utf-8")
+
+
+def create_python_project(pkg_name):
+    cwd = Path.cwd()
+    create_initpy(cwd, pkg_name)
+    create_readme(cwd, pkg_name)
+    create_pyproject(cwd, pkg_name)
+    create_setuppy(cwd, pkg_name)
 
 
 def main():
     if len(sys.argv) != 2:
-        sys.exit * (1)
+        sys.exit(1)
     pkg = sys.argv[1]
     create_python_project(pkg)
 

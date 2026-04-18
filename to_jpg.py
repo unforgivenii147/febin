@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 from pathlib import Path
-from dh import format_size, get_size, is_image, mpf, unique_path
+
+from dh import fsz, gsz, is_image, mpf, unique_path
 
 try:
     import cv2
@@ -84,7 +85,7 @@ def main() -> None:
     p = argparse.ArgumentParser(description="jpg")
     p.add_argument("files", nargs="*")
     args = p.parse_args()
-    before = get_size(".")
+    before = gsz(".")
     if args.files:
         files = [Path(f) for f in args.files if Path(f).is_file() and is_image(f)]
     else:
@@ -98,8 +99,8 @@ def main() -> None:
         return
     print(f"converting {len(files)} files...")
     mpf(process_file, files)
-    diffsize = before - get_size(".")
-    print(f"{format_size(diffsize)}")
+    diffsize = before - gsz(".")
+    print(f"{fsz(diffsize)}")
 
 
 if __name__ == "__main__":

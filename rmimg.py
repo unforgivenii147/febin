@@ -3,13 +3,15 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+
 from bs4 import BeautifulSoup
-from dh import format_size, get_files, get_size
 from termcolor import cprint
+
+from dhh import fsz, get_files, gsz
 
 
 def process_file(file_path: Path) -> None:
-    before = get_size(file_path)
+    before = gsz(file_path)
     try:
         html = file_path.read_text(encoding="utf-8")
         soup = BeautifulSoup(html, "html.parser")
@@ -24,22 +26,22 @@ def process_file(file_path: Path) -> None:
                 del tag["style"]
         clean_html = str(soup)
         file_path.write_text(clean_html, encoding="utf-8")
-        after = get_size(file_path)
+        after = gsz(file_path)
         print(f"{file_path.name}", end=" ")
         diffsize = before - after
         if diffsize == 0:
             cprint("NO CHANGE", "yellow")
         elif diffsize > 0:
-            cprint(f" + {format_size(diffsize)}")
+            cprint(f" + {fsz(diffsize)}")
         elif diffsize < 0:
-            cprint(f" - {format_size(diffsize)}")
+            cprint(f" - {fsz(diffsize)}")
     except:
         pass
 
 
 def main():
     cwd = Path.cwd()
-    before = get_size(cwd)
+    before = gsz(cwd)
     args = sys.argv[1:]
     if args:
         files = [Path(f) for f in args]
@@ -63,8 +65,8 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(cwd)
-    print(f"space saved : {format_size(diff_size)}")
+    diff_size = before - gsz(cwd)
+    print(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

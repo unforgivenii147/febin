@@ -2,6 +2,7 @@
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
+
 import tree_sitter_python as tsp
 from tree_sitter import Language, Parser
 
@@ -10,8 +11,13 @@ parser.language = Language(tsp.language())
 OUT_DIR = Path("output")
 OUT_DIR.mkdir(exist_ok=True)
 VALID = {
-    "function_definition",
-    "class_definition",
+    """
+(expression_statement
+  (assignment_expression
+    (=( _ )@name value:value )
+  )
+  (#match? @name "^[A-Z_][A-Z0-9_]*$")
+)"""
 }
 
 
@@ -25,19 +31,15 @@ def extract_functions_and_classes(src: bytes, tree):
 
     def traverse(node):
         if node.type in VALID:
-            # Get the node's text
             node_text = get_node_text(src, node)
-            # Add decorators if present
             decorators = []
             prev_node = node.prev_sibling
             while prev_node and prev_node.type == "decorator":
                 decorators.append(get_node_text(src, prev_node))
                 prev_node = prev_node.prev_sibling
-            # Combine decorators with the definition
             if decorators:
                 node_text = "\n".join(reversed(decorators)) + "\n" + node_text
             definitions.append(node_text)
-        # Continue traversing children
         for child in node.children:
             traverse(child)
 
@@ -71,12 +73,12 @@ def format_definition_with_metadata(
     return "\n".join(lines)
 
 
-# Dictionary to store definitions by folder path
 folder_definitions = defaultdict(list)
 processed_files_count = 0
 folders_found = set()
 total_definitions = 0
-for py in Path().rglob("*.py"):
+cwd = Path.cwd()
+for py in cwd.rglob("*.py"):
     # Skip hidden directories and site-packages
     if any(part.startswith(".") for part in py.parts) or "site-packages" in py.parts:
         continue
@@ -84,6 +86,7 @@ for py in Path().rglob("*.py"):
     if OUT_DIR in py.parents:
         continue
     try:
+        print(f"processing ... {py}")
         src = py.read_bytes()
         tree = parser.parse(src)
         definitions = extract_functions_and_classes(src, tree)

@@ -1,10 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import tree_sitter_rust
-from dh import clean_blank_lines, format_size, get_size
+from dh import clean_blank_lines
 from termcolor import cprint
 from tree_sitter import Language, Parser
+
+from dhh import fsz, gsz
 
 EXCLUDE_PREFIXES = (b"#!/",)
 parser = Parser()
@@ -57,12 +60,12 @@ def main() -> None:
     files = collect_rs_files(root)
     if not files:
         sys.exit("No Rust files found")
-    before = get_size(root)
+    before = gsz(root)
     for f in files:
         process_file(f)
-    after = get_size(root)
+    after = gsz(root)
     difsize = before - after
-    cprint(f"{format_size(difsize)}", "cyan")
+    cprint(f"{fsz(difsize)}", "cyan")
 
 
 if __name__ == "__main__":

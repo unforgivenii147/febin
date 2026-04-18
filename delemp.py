@@ -2,12 +2,15 @@
 import sys
 import tempfile
 from pathlib import Path
-from dh import format_size, get_nobinary, get_size, mpf
+
+from dh import get_nobinary, mpf
 from termcolor import cprint
+
+from dhh import fsz, gsz
 
 
 def process_file(path: Path) -> int:
-    if path.is_symlink() or path.suffix == ".bak" or get_size(path) == 0:
+    if path.is_symlink() or path.suffix == ".bak" or gsz(path) == 0:
         return 0
     removed_count = 0
     try:
@@ -44,7 +47,7 @@ def process_file(path: Path) -> int:
 def main():
     files = []
     cwd = Path.cwd()
-    before = get_size(cwd)
+    before = gsz(cwd)
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_nobinary(cwd)
     if len(files) == 1:
@@ -59,10 +62,10 @@ def main():
         f"total removed : {lines_removed}",
         "green",
     )
-    diffsize = before - get_size(cwd)
+    diffsize = before - gsz(cwd)
     print("space freed: ", end="")
     cprint(
-        f"{format_size(diffsize)}",
+        f"{fsz(diffsize)}",
         "cyan",
     )
 

@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import sys
 from pathlib import Path
 
 
 def fix_python_indentation(input_file_path, output_file_path=None, indent_size=4):
-    if not os.path.exists(input_file_path):
+    if not Path(input_file_path).exists():
         print(f"خطا: فایل ورودی یافت نشد: {input_file_path}")
         return False
     fixed_lines = []
@@ -13,7 +12,7 @@ def fix_python_indentation(input_file_path, output_file_path=None, indent_size=4
     # لیست کلماتی که شروع یک بلوک جدید را نشان می‌دهند و به تورفتگی نیاز دارند
     block_starters = ["def", "class", "if", "for", "while", "with", "try", "except", "finally", "elif", "else"]
     block_enders = ["return", "break", "continue", "pass", "raise"]
-    with open(input_file_path, encoding="utf-8") as f:
+    with Path(input_file_path).open(encoding="utf-8") as f:
         lines = f.readlines()
     for i, line in enumerate(lines):
         stripped_line = line.strip()
@@ -32,7 +31,7 @@ def fix_python_indentation(input_file_path, output_file_path=None, indent_size=4
             pass
     final_output_path = output_file_path or input_file_path
     try:
-        with open(final_output_path, "w", encoding="utf-8") as f:
+        with Path(final_output_path).open("w", encoding="utf-8") as f:
             f.writelines(fixed_lines)
         print(f"فایل با موفقیت اصلاح شد: {final_output_path}")
         return True

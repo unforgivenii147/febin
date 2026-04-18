@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+import subprocess
 import sys
 from pathlib import Path
-import subprocess
+
 from dh import MIME2EXT
 from termcolor import cprint
 
@@ -36,9 +37,9 @@ def safe_rename(old_path, new_path):
         new_path = f"{base}_{counter}{ext}"
         counter += 1
     cprint(f"{old_path} -> {new_path} ?")
-    ans = input()
-    if ans.lower() == "y":
-        Path(old_path).rename(new_path)
+    #    ans = input()
+    #    if ans.lower() == "y":
+    Path(old_path).rename(new_path)
     return new_path
 
 
@@ -48,7 +49,7 @@ def check_files(directory):
         for name in files:
             file_path = os.path.join(root, name)
             ext = os.path.splitext(name)[1].lower()
-            if ext == ".css":
+            if ext in {".eot", ".svg", ".woff2", ".woff", ".ttf", ".c", ".md", ".py", ".pdf", ".html", ".js", ".css"}:
                 continue
             mime = get_file_mime(file_path)
             print(f"{name} --> {mime}")

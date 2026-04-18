@@ -11,7 +11,7 @@ def get_files(directory: Path, extensions: list[str]) -> list[Path]:
     return found_files
 
 
-def get_size(path: Path) -> int:
+def gsz(path: Path) -> int:
     total_size = 0
     if path.is_file():
         total_size = path.stat().st_size
@@ -23,7 +23,7 @@ def get_size(path: Path) -> int:
     return total_size
 
 
-def format_size(size: int) -> str:
+def fsz(size: int) -> str:
     power = 2**10
     n = 0
     power_labels = {0: "", 1: "K", 2: "M", 3: "G", 4: "T"}
@@ -63,7 +63,7 @@ def add_main_block_if_missing(filepath: Path):
 
 def main():
     cwd = Path.cwd()
-    initial_directory_size = get_size(cwd)
+    initial_directory_size = gsz(cwd)
     args = sys.argv[1:]
     files_to_process = []
     if args:
@@ -101,14 +101,14 @@ def main():
         print(f"An error occurred during multiprocessing: {e}. Falling back to sequential processing.")
         for f in files_to_process:
             add_main_block_if_missing(f)
-    final_directory_size = get_size(cwd)
+    final_directory_size = gsz(cwd)
     space_saved = initial_directory_size - final_directory_size
     try:
         from termcolor import cprint
 
-        cprint(f"Operation complete. Space saved: {format_size(space_saved)}", "cyan")
+        cprint(f"Operation complete. Space saved: {fsz(space_saved)}", "cyan")
     except ImportError:
-        print(f"Operation complete. Space saved: {format_size(space_saved)}")
+        print(f"Operation complete. Space saved: {fsz(space_saved)}")
 
 
 if __name__ == "__main__":

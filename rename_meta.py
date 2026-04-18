@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from dh import unique_path
 from fastwalk import walk_files
 from termcolor import cprint
@@ -46,8 +47,8 @@ def process_file(fp) -> bool | None:
 
 
 def main() -> None:
-    Path.cwd()
-    for pth in walk_files(dir):
+    cwd = Path.cwd()
+    for pth in walk_files(cwd):
         path = Path(pth)
         if path.is_file() and (path.name == "METADATA" or path.suffix == ".metadata"):
             process_file(path)

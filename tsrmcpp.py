@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
+
 import tree_sitter_cpp as tscpp
 from dh import clean_blank_lines, run_command
 from termcolor import cprint
@@ -81,7 +82,7 @@ def process_file(fp):
         file_path.write_text(code, encoding="utf-8")
         return
     after = file_path.stat().st_size
-    reduced = abs(before - after)
+    reduced = before - after
     cprint(
         f"[OK] {file_path.name} - removed {removed} comments, reduced {reduced} bytes",
         "cyan",

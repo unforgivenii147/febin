@@ -8,14 +8,6 @@ def get_current_folder_name():
     return Path(Path.cwd()).name
 
 
-def get_user_folder_name(default_name):
-    while True:
-        user_input = input(f"Enter folder name (default: {default_name}): ").strip()
-        if not user_input:
-            return default_name
-        return user_input
-
-
 def folder_exists_in_db(cursor, folder_name):
     cursor.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
@@ -95,23 +87,16 @@ def main():
     default_name = get_current_folder_name()
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    while folder_exists_in_db(cursor, folder_name):
-        print(f"Folder name '{folder_name}' already exists in database!")
-        folder_name = input("Please enter a different name: ").strip()
-        if not folder_name:
-            folder_name = default_name + "_new"
-            print(f"Using '{folder_name}' as default")
+    if folder_exists_in_db(cursor, folder_name):
+        folder_name = default_name + "_new"
     create_folder_table(cursor, folder_name)
-    print(f"\nScanning current directory: {Path.cwd()}")
-    print("Reading file contents (limited to 1MB per file)...")
     files = get_files_in_current_dir()
     if not files:
         print("No files found in current directory!")
     else:
-        print(f"\nFound {len(files)} files:")
         insert_files(cursor, folder_name, files)
         conn.commit()
-        print(f"\n✅ Successfully added {len(files)} files to table '{folder_name}'")
+    conn.close()
 
 
 if __name__ == "__main__":

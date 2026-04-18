@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from dh import get_nobinary
 
 
@@ -15,6 +16,9 @@ def process_file(fp):
             cleaned = line[indx:]
             if '"' in cleaned:
                 end_indx = cleaned.index('"')
+                cleaned = cleaned[:end_indx]
+            elif ")" in cleaned:
+                end_indx = cleaned.index(")")
                 cleaned = cleaned[:end_indx]
             nl.append(cleaned)
     if found:

@@ -3,7 +3,7 @@ import operator
 from pathlib import Path
 
 
-def get_size(path: Path) -> int:
+def gsz(path: Path) -> int:
     if path.is_file():
         return path.stat().st_size
     return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
@@ -12,7 +12,7 @@ def get_size(path: Path) -> int:
 def list_and_sort_by_size(path: Path = Path()):
     items = []
     for p in path.glob("*"):
-        size = get_size(p)
+        size = gsz(p)
         items.append({"name": p.name, "size": size})
     items.sort(key=operator.itemgetter("size"), reverse=False)
     return items

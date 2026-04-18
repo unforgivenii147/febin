@@ -2,7 +2,7 @@
 import shutil
 import sys
 from pathlib import Path
-from dh import format_size
+
 from termcolor import cprint
 
 
@@ -45,7 +45,7 @@ def clean_pyc_and_pycache():
         sys.exit(0)
     print(f"files removed: {files_removed}")
     print(f"dirs  removed: {dirs_removed}")
-    print(f"Total size: {format_size(total_size)}")
+    print(f"Total size: {fsz(total_size)}")
 
 
 if __name__ == "__main__":

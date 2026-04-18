@@ -8,6 +8,7 @@ from multiprocessing import cpu_count
 from pathlib import Path
 from subprocess import getoutput
 from time import sleep
+
 import regex as re
 
 try:
@@ -192,8 +193,7 @@ def remove_empty_rules(css: str) -> str:
 
 def condense_zero_units(css: str) -> str:
     return re.sub(
-        r"([\s:])(0)(px|em|%|in|q|ch|cm|mm|pc|pt|ex|rem|s|ms|"
-        r"deg|grad|rad|turn|vw|vh|vmin|vmax|fr)",
+        r"([\s:])(0)(px|em|%|in|q|ch|cm|mm|pc|pt|ex|rem|s|ms|deg|grad|rad|turn|vw|vh|vmin|vmax|fr)",
         r"\1\2",
         css,
     )

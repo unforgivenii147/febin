@@ -1,13 +1,46 @@
 #!/data/data/com.termux/files/usr/bin/python
 import datetime
+from os import scandir as _scandir
 from pathlib import Path
-from dh import format_size, get_size
+
+
+def fsz(sz: float) -> str:
+    sz = abs(int(sz))
+    units = ("", "K", "M", "G", "T")
+    if sz == 0:
+        return "0 B"
+    i = min(int(int(sz).bit_length() - 1) // 10, len(units) - 1)
+    sz /= 1024**i
+    return f"{int(sz)} {units[i]}B"
+
+
+def gsz(path: str | Path) -> int:
+    path = Path(path)
+    total_size = 0
+    if not path.exists():
+        return 0
+    if path.is_file():
+        try:
+            total_size = path.stat().st_size
+        except OSError:
+            return 0
+    elif path.is_dir():
+        for entry in _scandir(path):
+            try:
+                if entry.is_file():
+                    total_size += entry.stat().st_size
+                elif entry.is_dir():
+                    total_size += gsz(entry.path)
+            except OSError:
+                continue
+    return total_size
+
 
 if __name__ == "__main__":
     cwd = Path.cwd()
     dirz = []
     otherz = []
-    for path in sorted(cwd.glob("*"), key=lambda e: e.stat().st_size, reverse=True):
+    for path in sorted(cwd.glob("*"), key=lambda e: e.stat().st_size, reverse=False):
         if path.is_dir():
             dirz.append(path)
         else:
@@ -18,7 +51,7 @@ if __name__ == "__main__":
             sz = " \033[05;95msymlink "
             print(f"\033[05;95m{f.name[:24]:25}\033[0m", end=" ")
         else:
-            sz = str(format_size(get_size(f)))
+            sz = str(fsz(gsz(f)))
             match len(sz):
                 case 3:
                     sz = "      " + sz
@@ -37,7 +70,7 @@ if __name__ == "__main__":
         print(f"\033[05;93m{ctime}\033[0m")
     for dr in dirz:
         ctime = datetime.datetime.fromtimestamp(dr.stat().st_ctime).strftime("%H:%M")
-        sz = str(format_size(get_size(dr)))
+        sz = str(fsz(gsz(dr)))
         if len(sz) == 7:
             sz = "  " + sz
         if len(sz) == 8:

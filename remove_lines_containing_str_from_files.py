@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dh import format_size, get_nobinary, get_size
+
+from dh import get_nobinary
 
 STRTOFIND = [
     "dist-info",
@@ -29,7 +30,7 @@ def clean_file(path: str) -> None:
 
 def main() -> None:
     root = Path.cwd()
-    isz = get_size(root)
+    isz = gsz(root)
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_nobinary(root)
     if len(files) == 1:
@@ -40,9 +41,9 @@ def main() -> None:
         p.apply_async(clean_file, (f,))
     pool.close()
     pool.join()
-    esz = get_size(root)
+    esz = gsz(root)
     diffsize = isz - esz
-    print(f"space freed : {format_size(diffsize)}")
+    print(f"space freed : {fsz(diffsize)}")
 
 
 if __name__ == "__main__":

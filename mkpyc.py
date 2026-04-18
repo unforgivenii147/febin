@@ -4,7 +4,8 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-from dh import format_size, get_files, get_size
+
+from dhh import fsz, get_files, gsz
 
 MAX_QUEUE = 16
 
@@ -20,7 +21,7 @@ def process_file(fp):
 
 def main():
     cwd = Path.cwd()
-    before = get_size(cwd)
+    before = gsz(cwd)
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
     with get_context("spawn").Pool(8) as pool:
@@ -31,8 +32,8 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    diff_size = before - get_size(cwd)
-    print(f"space changed : {format_size(diff_size)}")
+    diff_size = before - gsz(cwd)
+    print(f"space changed : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

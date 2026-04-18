@@ -9,24 +9,23 @@ from pathlib import Path
 def get_all_files_in_root_only(root_path):
     files_info = []
     try:
-        for item in os.listdir(root_path):
-            filepath = os.path.join(root_path, item)
-            if Path(filepath).is_file() and not Path(filepath).is_symlink():
+        for path in root_path.rglob("*"):
+            if path.is_file() and not path.is_symlink():
                 try:
-                    size = Path(filepath).stat().st_size
+                    size = path.stat().st_size
                     files_info.append({
-                        "path": filepath,
-                        "name": item,
+                        "path": path,
+                        "name": path.name,
                         "size": size,
                     })
                 except OSError as e:
-                    print(f"Error accessing {filepath}: {e}")
+                    print(f"Error accessing {path}: {e}")
     except Exception as e:
         print(f"Error scanning directory: {e}")
     return files_info
 
 
-def convert_size(size_bytes):
+def format_size1(size_bytes):
     if size_bytes == 0:
         return "0B"
     units = ["B", "KB", "MB", "GB", "TB"]

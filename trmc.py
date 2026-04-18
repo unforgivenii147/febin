@@ -3,8 +3,9 @@ import ast
 import sys
 from multiprocessing import Pool
 from pathlib import Path
+
 import tree_sitter_python as tspython
-from dh import clean_blank_lines, format_size, get_files, get_size
+from dh import clean_blank_lines, get_files
 from termcolor import cprint
 from tree_sitter import Language, Parser
 
@@ -54,9 +55,9 @@ def process_file(fp):
             ast.parse(result)
             file_path.write_text(result, encoding="utf-8")
             after = file_path.stat().st_size
-            sr = int(abs(before - after))
+            sr = before - after
             cprint(
-                f"[OK] {file_path.name} {format_size(sr)}",
+                f"[OK] {file_path.name} {fsz(sr)}",
                 "cyan",
             )
             return
@@ -76,7 +77,7 @@ def process_file(fp):
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-    before = get_size(cwd)
+    before = gsz(cwd)
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
     pool = Pool(8)
@@ -84,8 +85,8 @@ if __name__ == "__main__":
         pass
     pool.close()
     pool.join()
-    sres = before - get_size(cwd)
+    sres = before - gsz(cwd)
     cprint(
-        f"dir size reduced: {format_size(sres)}",
+        f"dir size reduced: {fsz(sres)}",
         "cyan",
     )

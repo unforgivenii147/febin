@@ -1,34 +1,32 @@
 #!/data/data/com.termux/files/usr/bin/python
-import string
 import sys
-from collections import deque
-from multiprocessing import Pool
 from pathlib import Path
+
 from bs4 import BeautifulSoup
-from dh import format_size, get_files, get_size
+from dh import get_random_name
 from termcolor import cprint
+
+from dhh import get_files, mpf3
 
 MAX_QUEUE = 16
 
 
 def save_script(str1):
     fn = "js/"
-    if not Path("js").exists():
-        Path("js").mkdir()
-    for _i in range(10):
-        fn += random.choice(string.ascii_lowercase)
+    fn += get_random_name(10)
     fn += ".js"
-    if Path(fn).exists():
+    fn = Path(fn)
+    if fn.exists():
         cprint(f"[{fn}] exists.", "red")
         return False
-    if not Path(fn).exists():
-        Path(fn).write_text("\n".join(list(str1)), encoding="utf-8")
+    if not fn.exists():
+        fn.write_text("\n".join(list(str1)), encoding="utf-8")
         cprint(f"{[fn]} created.", "cyan")
     return True
 
 
 def process_file(fp):
-    html_content = Path(fp).read_text(encoding="utf-8")
+    html_content = fp.read_text(encoding="utf-8")
     soup = BeautifulSoup(html_content, "html.parser")
     scripts = soup.find_all("script")
     if scripts:
@@ -42,20 +40,12 @@ def process_file(fp):
 
 
 def main():
+    if not Path("js").exists():
+        Path("js").mkdir()
     cwd = Path.cwd()
-    before = get_size(cwd)
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".html", "htm"])
-    with Pool(8) as pool:
-        pending = deque()
-        for f in files:
-            pending.append(pool.apply_async(process_file, (f,)))
-            if len(pending) > MAX_QUEUE:
-                pending.popleft().get()
-        while pending:
-            pending.popleft().get()
-    diff_size = before - get_size(cwd)
-    print(f"space saved : {format_size(diff_size)}")
+    mpf3(process_file, files)
 
 
 if __name__ == "__main__":

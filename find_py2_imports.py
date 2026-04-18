@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import tree_sitter_python as tsp
 from dh import STDLIB2, get_filez
 from rapidfuzz import fuzz
@@ -53,15 +54,18 @@ def process_file(fp):
     stdlib2 = list(STDLIB2)
     for x in impoz:
         x = x.strip().lower()
-        if x in STDLIB2:
-            if x not in {"io", "os", "pathlib", "ast", "urllib"}:
-                cprint(f"{fp.relative_to(cwd)}", "cyan")
-                continue
+        if x in STDLIB2 and x not in {"io", "os", "pathlib", "ast", "urllib"}:
+            cprint(f"{fp.relative_to(cwd)}", "cyan")
+            continue
         for v in stdlib2:
             v = v.lower()
             ratio = fuzz.ratio(x, v)
-            if ratio > 85 and len(x) > 3 and len(v) > 3:
-                if x not in {
+            if (
+                ratio > 85
+                and len(x) > 3
+                and len(v) > 3
+                and x
+                not in {
                     "io",
                     "os",
                     "pathlib",
@@ -74,10 +78,11 @@ def process_file(fp):
                     "configparser",
                     "copyreg",
                     "httplib2",
-                }:
-                    cprint(f"{fp.relative_to(cwd)}", "yellow")
-                    cprint(f"{x} / {v} / {ratio}", "green")
-                    continue
+                }
+            ):
+                cprint(f"{fp.relative_to(cwd)}", "yellow")
+                cprint(f"{x} / {v} / {ratio}", "green")
+                continue
 
 
 def main():

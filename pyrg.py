@@ -1,19 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
-from __future__ import annotations
 import argparse
 import fnmatch
 import operator
-import os
-import stat
 import sys
+from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import TYPE_CHECKING
-import regex as re
-from dh import is_binary
 
-if TYPE_CHECKING:
-    from collections.abc import Iterable
+import regex as re
+from dh import get_files, is_binary
+
 IGNORED_DIRS = {
     ".git",
     ".hg",
@@ -21,7 +17,7 @@ IGNORED_DIRS = {
     "node_modules",
     "__pycache__",
 }
-BINARY_CHUNK = 4096 * 8
+BINARY_CHUNK = 32768
 DEFAULT_THREADS = 8
 ANSI_BOLD = "\033[1m"
 ANSI_RESET = "\033[0m"
@@ -42,54 +38,6 @@ def colorize(
 def matches_any_glob(path: str, patterns: Iterable[str]) -> bool:
     basename = Path(path).name
     return any(fnmatch.fnmatch(path, p) or fnmatch.fnmatch(basename, p) for p in patterns)
-
-
-def collect_files(
-    roots: Iterable[str],
-    include_hidden: bool = False,
-    include_globs: list[str] | None = None,
-    exclude_globs: list[str] | None = None,
-    follow_symlinks: bool = False,
-    max_filesize: int | None = None,
-) -> Iterable[str]:
-    include_globs = include_globs or []
-    exclude_globs = exclude_globs or []
-    for root in roots:
-        if Path(root).is_file():
-            yield root
-            continue
-        for (
-            dirpath,
-            dirnames,
-            filenames,
-        ) in os.walk(root, followlinks=follow_symlinks):
-            dirnames[:] = [
-                d
-                for d in dirnames
-                if (include_hidden or not d.startswith("."))
-                and d not in IGNORED_DIRS
-                and not matches_any_glob(
-                    os.path.join(dirpath, d),
-                    exclude_globs,
-                )
-            ]
-            for fn in filenames:
-                if not include_hidden and fn.startswith("."):
-                    continue
-                full = os.path.join(dirpath, fn)
-                if matches_any_glob(full, exclude_globs):
-                    continue
-                if include_globs and not matches_any_glob(full, include_globs):
-                    continue
-                try:
-                    st = os.stat(full)
-                    if not stat.S_ISREG(st.st_mode):
-                        continue
-                    if max_filesize and st.st_size > max_filesize:
-                        continue
-                except Exception:
-                    continue
-                yield full
 
 
 def search_file_text_mode(
@@ -233,6 +181,7 @@ def build_argparser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    cwd = Path.cwd()
     args = build_argparser().parse_args(argv)
     pattern = args.pattern_e or args.pattern
     if not pattern:
@@ -258,16 +207,7 @@ def main(argv: list[str] | None = None) -> int:
             return 2
     include_globs = args.glob or []
     exclude_globs = args.exclude or []
-    candidates = list(
-        collect_files(
-            args.paths,
-            include_hidden=args.hidden,
-            include_globs=include_globs,
-            exclude_globs=exclude_globs,
-            follow_symlinks=args.follow,
-            max_filesize=args.max_filesize,
-        )
-    )
+    candidates = get_files(cwd, include_hidden=True)
     if not candidates:
         return 0
     color = not args.no_color and sys.stdout.isatty()

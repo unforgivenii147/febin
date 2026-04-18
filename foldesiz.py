@@ -3,6 +3,7 @@ import operator
 import os
 import shutil
 from pathlib import Path
+
 from dh import unique_path
 from fastwalk import walk_files
 
@@ -43,7 +44,7 @@ def create_range_folders(base_dir, files, num_folders):
         if folder_files:
             min_size, max_size = min(folder_files), max(folder_files)
 
-            def format_size(size):
+            def fsz(size):
                 if size < 1000:
                     return f"{size}B"
                 if size < 1_000_000:
@@ -52,7 +53,7 @@ def create_range_folders(base_dir, files, num_folders):
                     return f"{size // 1_000_000}M"
                 return f"{size // 1_000_000_000}G"
 
-            folder_name = f"{format_size(min_size)}-{format_size(max_size)}"
+            folder_name = f"{fsz(min_size)}-{fsz(max_size)}"
             folder_ranges.append((min_size, max_size, folder_name))
             folder_path = os.path.join(base_dir, folder_name)
             Path(folder_path).mkdir(exist_ok=True, parents=True)
@@ -99,7 +100,7 @@ def main():
         print("No files found.")
         return
     num_folders = calculate_optimal_folders(files)
-    num_folders = 10
+    #    num_folders = 10
     folders = create_range_folders(base_dir, files, num_folders)
     distribute_files(files, folders, base_dir)
     print("Folderization complete!")

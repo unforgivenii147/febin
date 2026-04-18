@@ -6,6 +6,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 import requests
 
 CHUNK_SIZE = 5 * 1024 * 1024

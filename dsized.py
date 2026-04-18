@@ -24,7 +24,7 @@ def fetch_content_length(url: str) -> int | None:
         return int(length) if length else None
 
 
-def format_size(size_bytes: int) -> str:
+def fsz(size_bytes: int) -> str:
     units = ["B", "KB", "MB", "GB", "TB"]
     size = float(size_bytes)
     for unit in units:
@@ -49,7 +49,7 @@ def process_url(url: str, download_dir: Path | None = None) -> str:
         size = fetch_content_length(url)
         if size is None:
             return f"{url}\tUnknown"
-        size_str = format_size(size)
+        size_str = fsz(size)
         print(f"URL: {url}, Size: {size_str}")
         if download_dir and size <= MAX_DOWNLOAD_SIZE:
             user_input = input(f"Do you want to download this file (size: {size_str})? (y/n): ").strip().lower()

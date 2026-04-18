@@ -2,6 +2,7 @@
 import math
 import threading
 from pathlib import Path
+
 import requests
 
 
@@ -15,7 +16,7 @@ class MultiPartDownloader:
         self.support_resume = False
         self.existing_size = 0
 
-    def get_size(self):
+    def gsz(self):
         response = requests.head(
             self.url,
             headers=self.headers,
@@ -49,7 +50,7 @@ class MultiPartDownloader:
 
     def download(self):
         if not self.get_size:
-            self.get_size()
+            self.gsz()
         if not self.support_resume:
             print("Server does not support resume. Downloading in single part...")
             self.num_threads = 1

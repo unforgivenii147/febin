@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import subprocess
 from pathlib import Path
+
 from dh import get_filez
 from termcolor import cprint
 
@@ -11,7 +12,6 @@ def process_file(file_path):
             ["optipng", "-o7", str(file_path)],
             check=True,
         )
-
         return True, file_path
     except subprocess.CalledProcessError as e:
         return False, file_path, str(e)
@@ -24,7 +24,7 @@ def main():
     for path in get_filez(cwd):
         if path.is_symlink():
             continue
-        if not path.suffix.lower() == ".png":
+        if path.suffix.lower() != ".png":
             continue
         cprint(f"{c}/{png_num}|remained:{png_num - c}", "cyan")
         process_file(path)

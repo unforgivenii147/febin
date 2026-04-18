@@ -2,6 +2,7 @@
 import subprocess
 from collections.abc import Iterable
 from pathlib import Path
+
 import regex as re
 
 REQUIREMENTS_FILE = Path("requirements.txt")

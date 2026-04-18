@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import tree_sitter_cpp
 import tree_sitter_python
 import tree_sitter_rust
@@ -28,6 +29,7 @@ def get_parser(lang):
 
 
 def _collect_python_docstrings(node, deletions):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:

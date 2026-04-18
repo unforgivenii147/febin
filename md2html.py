@@ -3,6 +3,7 @@ import os
 import shutil
 import sys
 from pathlib import Path
+
 import markdown
 import regex as re
 from bs4 import BeautifulSoup

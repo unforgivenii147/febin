@@ -5,6 +5,7 @@ import tarfile
 import tempfile
 import time
 from pathlib import Path
+
 import zstandard as zstd
 
 
@@ -12,7 +13,7 @@ def get_dir_size(path):
     return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
 
 
-def get_size(path):
+def gsz(path):
     return path.stat().st_size if path.exists() else 0
 
 

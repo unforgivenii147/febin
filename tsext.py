@@ -1,0 +1,121 @@
+#!/data/data/com.termux/files/usr/bin/python
+import os
+import pathlib
+
+import tree_sitter_python as tsp
+from tree_sitter import Language, Parser
+
+PY_LANGUAGE = Language(tsp.language())
+parser = Parser(PY_LANGUAGE)
+
+
+def extract_python_code_elements(filepath):
+    try:
+        with pathlib.Path(filepath).open("rb") as f:
+            tree = parser.parse(f.read())
+    except Exception as e:
+        print(f"Error parsing file {filepath}: {e}")
+        return [], [], []
+    functions = []
+    classes = []
+    constants = []
+    imports = []
+    # Use a stack for depth-first traversal to handle nested structures
+    nodes_to_visit = [tree.root_node]
+    while nodes_to_visit:
+        node = nodes_to_visit.pop(0)  # Use pop(0) for BFS, pop() for DFS
+        # Traverse children
+        for child in node.children:
+            if child.type == "function_definition":
+                func_name_node = child.child_by_field_name("name")
+                if func_name_node:
+                    functions.append(func_name_node.text.decode("utf-8"))
+            elif child.type == "class_definition":
+                class_name_node = child.child_by_field_name("name")
+                if class_name_node:
+                    classes.append(class_name_node.text.decode("utf-8"))
+            elif child.type == "assignment" and node.type not in {"import_statement", "import_from_statement"}:
+                # Simple heuristic for constants: uppercase names at module level
+                target = child.child_by_field_name("name")
+                if (
+                    target and target.text.decode("utf-8").isupper() and len(target.text.decode("utf-8")) > 1
+                ):  # Avoid single uppercase letters like 'A'
+                    # Check if it's a simple assignment, not tuple unpacking etc.
+                    if child.named_child_count == 2:  # Should have a name and a value
+                        constants.append(target.text.decode("utf-8"))
+            elif child.type == "import_statement":
+                imports.extend(
+                    import_node.text.decode("utf-8")
+                    for import_node in child.children
+                    if import_node.type == "dotted_name"
+                )
+            elif child.type == "import_from_statement":
+                module_name_node = child.child_by_field_name("module_name")
+                if module_name_node:
+                    module_name = module_name_node.text.decode("utf-8")
+                    for import_spec_node in child.children:
+                        if import_spec_node.type == "import_spec":
+                            for name_node in import_spec_node.children:
+                                if name_node.type == "dotted_name":
+                                    imports.append(f"{module_name}.{name_node.text.decode('utf-8')}")
+                                elif name_node.type == "aliased_import":
+                                    aliased_name_node = name_node.child_by_field_name("name")
+                                    if aliased_name_node:
+                                        imports.append(f"{module_name}.{aliased_name_node.text.decode('utf-8')}")
+            # Recursively visit children
+            # Append children to nodes_to_visit if they are not leaf nodes or have relevant types
+            if child.children:
+                nodes_to_visit.append(child)
+    return functions, classes, constants, imports
+
+
+def process_directory(start_dir, output_dir):
+    all_functions = {}
+    all_classes = {}
+    all_constants = {}
+    all_imports = set()
+    if not pathlib.Path(output_dir).exists():
+        pathlib.Path(output_dir).mkdir(parents=True)
+        print(f"Created output directory: {output_dir}")
+    imports_output_path = os.path.join(output_dir, "imports.py")
+    for path in get_pyfiles(start_dir):
+        functions, classes, constants, imports = extract_python_code_elements(path)
+        if functions:
+            all_functions[relative_path] = functions
+        if classes:
+            all_classes[relative_path] = classes
+        if constants:
+            all_constants[relative_path] = constants
+        all_imports.update(imports)
+    with pathlib.Path(os.path.join(output_dir, "functions.txt")).open("w", encoding="utf-8") as f:
+        for file, funcs in all_functions.items():
+            f.write(f"# File: {file}\n")
+            f.writelines(f"{func}\n" for func in funcs)
+            f.write("\n")
+    with pathlib.Path(os.path.join(output_dir, "classes.txt")).open("w", encoding="utf-8") as f:
+        for file, cls in all_classes.items():
+            f.write(f"# File: {file}\n")
+            f.writelines(f"{c}\n" for c in cls)
+            f.write("\n")
+    with pathlib.Path(os.path.join(output_dir, "constants.txt")).open("w", encoding="utf-8") as f:
+        for file, consts in all_constants.items():
+            f.write(f"# File: {file}\n")
+            f.writelines(f"{const}\n" for const in consts)
+            f.write("\n")
+    with pathlib.Path(imports_output_path).open("w", encoding="utf-8") as f:
+        if all_imports:
+            f.write("# Extracted Imports\n\n")
+            f.writelines(f"import {imp}\n" for imp in sorted(all_imports))
+        else:
+            f.write("# No imports found.\n")
+    print(f"\nExtraction complete. Results saved to '{output_dir}'.")
+    print(f"Imports saved to '{imports_output_path}'.")
+
+
+if __name__ == "__main__":
+    current_directory = "."
+    output_directory = "output"
+    if not pathlib.Path(output_directory).exists():
+        pathlib.Path(output_directory).mkdir(parents=True)
+    print("Starting code element extraction...")
+    process_directory(current_directory, output_directory)

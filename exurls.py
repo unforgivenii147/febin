@@ -4,6 +4,7 @@ import os
 import sys
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -35,21 +36,15 @@ def split_internal_external(base_url, links):
     return internal, external
 
 
-def save_links(out_dir, name, links):
-    path = os.path.join(out_dir, name)
-    with Path(path).open("w", encoding="utf-8") as f:
-        f.writelines(link + "\n" for link in links)
+def save_links(name, links):
+    path = Path(name)
+    content = "\n".join(links)
+    path.write_text(content, encoding="utf-8")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Extract and save all URLs from a webpage")
     parser.add_argument("url", nargs="?", help="Target URL")
-    parser.add_argument(
-        "-o",
-        "--out",
-        default="output",
-        help="Output directory (default: output)",
-    )
     args = parser.parse_args()
     url = args.url or input("Enter URL: ").strip()
     if not url.startswith(("http://", "https://")):
@@ -58,7 +53,6 @@ def main():
             file=sys.stderr,
         )
         sys.exit(1)
-    Path(args.out).mkdir(exist_ok=True, parents=True)
     try:
         links = extract_links(url)
     except Exception as e:
@@ -68,13 +62,13 @@ def main():
         )
         sys.exit(1)
     internal, external = split_internal_external(url, links)
-    save_links(args.out, "all_links.txt", links)
-    save_links(args.out, "internal_links.txt", internal)
-    save_links(args.out, "external_links.txt", external)
-    print(f"Total links     : {len(links)}")
-    print(f"Internal links  : {len(internal)}")
-    print(f"External links  : {len(external)}")
-    print(f"Saved to folder : {args.out}")
+    if internal and external:
+        save_links("internal.txt", internal)
+        save_links("external.txt", external)
+        save_links("all_links.txt", links)
+        return
+    save_links("all_links.txt", links)
+    print(f"Total links     : {len(links)}: {internal} + {external}")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-import nltk
+
 import regex as re
 from binaryornot import is_binary
 from nltk.tokenize import sent_tokenize

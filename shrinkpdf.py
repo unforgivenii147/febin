@@ -1,26 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import subprocess
 import sys
 from pathlib import Path
 
-
-def human_size(num_bytes: int) -> str:
-    for unit in ("B", "KB", "MB", "GB"):
-        if num_bytes < 1024:
-            return f"{num_bytes:.2f} {unit}"
-        num_bytes /= 1024
-    return f"{num_bytes:.2f} TB"
-
-
-def run(cmd: list[str]) -> None:
-    try:
-        subprocess.run(cmd, check=True)
-    except subprocess.CalledProcessError as e:
-        print(
-            f"[ERROR] Command failed: {' '.join(cmd)}",
-            file=sys.stderr,
-        )
-        sys.exit(e.returncode)
+from dhh import fsz, gsz, run_command
 
 
 def main() -> None:
@@ -42,7 +24,7 @@ def main() -> None:
         sys.exit(1)
     temp_gs = input_path.with_name(f"temp_gs_{input_path.name}")
     size_before = input_path.stat().st_size
-    print(f"Before : {human_size(size_before)}")
+    print(f"Before : {fsz(size_before)}")
     gs_cmd = [
         "gs",
         "-sDEVICE=pdfwrite",
@@ -62,14 +44,14 @@ def main() -> None:
         f"-sOutputFile={temp_gs}",
         str(input_path),
     ]
-    run(gs_cmd)
+    run_command(gs_cmd)
     size_after = temp_gs.stat().st_size
-    print(f"After  : {human_size(size_after)}")
+    print(f"After  : {fsz(size_after)}")
     diff = size_before - size_after
     sign = "-" if diff >= 0 else "+"
     if size_after < size_before:
         temp_gs.replace(input_path)
-        print(f"Saved  : {sign}{human_size(abs(diff))}")
+        print(f"Saved  : {sign}{fsz(diff)}")
     else:
         print("original file is smaller")
         temp_gs.unlink(missing_ok=True)

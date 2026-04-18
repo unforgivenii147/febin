@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import sys
 import time
 from pathlib import Path
+
 import brotlicffi
-from dh import fsz, get_files, gsz
+from dh import get_files, gsz
 from joblib import Parallel, delayed
 from loguru import logger
 
@@ -90,7 +90,7 @@ def process_single_file(path, cwd):
 def main():
     cwd = Path.cwd()
     all_files = get_files(cwd)
-    files_to_compress = [f for f in all_files if not f.suffix == ".br"]
+    files_to_compress = [f for f in all_files if f.suffix != ".br"]
     if not files_to_compress:
         logger.info("No files found to compress in the current directory.")
         return

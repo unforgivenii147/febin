@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-import warnings
+# import warnings
 from pathlib import Path
+
 from pip._internal.cli.main import main as pip_main
 
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+# warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 def display_packages(
@@ -16,6 +17,7 @@ def display_packages(
     print(f"\n{title}:")
     for pkg, version in sorted(packages.items()):
         print(f"  - {pkg} (version: {version})")
+
     print(f"\nTotal: {len(packages)} package(s)")
 
 
@@ -28,6 +30,7 @@ def find_matching_packages(pattern: str, packages: dict[str, str]) -> dict[str, 
 
 def get_pkgs():
     pkgfile = Path("/sdcard/pip.freeze")
+    #    if get_file_age(pkgfile):
     pkgfile_content = pkgfile.read_text(encoding="utf-8")
     packages = {}
     for line in pkgfile_content.splitlines():

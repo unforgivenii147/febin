@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
+
 import regex as re
-from dh import format_size, get_nobinary, get_size
+from dh import get_nobinary
 from termcolor import cprint
 
 LIC_FILE = Path("/sdcard/lic")
@@ -38,14 +39,14 @@ def remove_patterns_from_content(content: str, patterns: list[str]) -> str:
 
 def process_file(file_path, patterns) -> tuple:
     path = Path(file_path)
-    before = get_size(path)
+    before = gsz(path)
     original_content = path.read_text(encoding="utf-8")
     cleaned_content = remove_patterns_from_content(original_content, patterns)
     if len(cleaned_content) != len(original_content):
         path.write_text(cleaned_content, encoding="utf-8")
         cprint(f"{path.name} updated", "green", end=" | ")
-        ds = before - get_size(path)
-        cprint(f"{format_size(ds)}")
+        ds = before - gsz(path)
+        cprint(f"{fsz(ds)}")
         del before, ds, cleaned_content, original_content, path
 
 

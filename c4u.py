@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import contextlib
 import html as _html
 import sys

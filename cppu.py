@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 import sys
 from collections import deque

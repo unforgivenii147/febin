@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 from collections import deque
 from collections.abc import Callable, Iterable
 from contextlib import suppress as _suppress

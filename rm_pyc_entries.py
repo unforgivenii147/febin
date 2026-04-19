@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import sysconfig
 from pathlib import Path
 

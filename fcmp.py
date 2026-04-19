@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from filecmp import dircmp
 from pathlib import Path

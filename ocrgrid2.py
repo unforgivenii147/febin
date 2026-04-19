@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import itertools
 import time
 from pathlib import Path

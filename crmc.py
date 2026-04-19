@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from multiprocessing import cpu_count
 from pathlib import Path

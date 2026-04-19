@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import compileall
 import sys
 from collections import deque

@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed

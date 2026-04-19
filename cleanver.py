@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 from pathlib import Path
 

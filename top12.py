@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import heapq
 import os
 from pathlib import Path

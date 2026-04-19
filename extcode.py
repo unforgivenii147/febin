@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 from pathlib import Path
 
 import tree_sitter_python as tsp

@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 

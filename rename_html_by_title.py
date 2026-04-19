@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import os
 import unicodedata
 from html.parser import HTMLParser

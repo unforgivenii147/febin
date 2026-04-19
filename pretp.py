@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import concurrent.futures
 import os
 import subprocess

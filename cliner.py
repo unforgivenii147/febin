@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import mmap
 from multiprocessing import cpu_count
 from pathlib import Path

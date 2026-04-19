@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import regex as re
 import requests
 from dh import get_installed_packages

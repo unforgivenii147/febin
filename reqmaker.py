@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 from collections.abc import Iterable
 from pathlib import Path

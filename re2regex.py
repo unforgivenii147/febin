@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path

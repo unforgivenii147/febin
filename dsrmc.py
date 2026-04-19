@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import multiprocessing as mp
 import os
 import sys

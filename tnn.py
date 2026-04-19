@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import argparse  # اضافه کردن argparse برای مدیریت بهتر آرگومان‌ها
 import sys
 from pathlib import Path

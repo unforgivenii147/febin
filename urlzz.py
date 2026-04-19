@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import tarfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed

@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/python
+
 from pathlib import Path
 
 OLD = {
@@ -17,11 +18,11 @@ def fix_file(path: Path) -> bool:
     lines = text.splitlines(keepends=False)
     if not lines:
         return False
-    nl=[]
+    nl = []
     if not lines[0].startswith("#!"):
-        nl.append(New)
+        nl.append(NEW)
         nl.extend(lines)
-        path.write_text("\n".join(nl) + "\n" ,encoding="utf-8")
+        path.write_text("\n".join(nl) + "\n", encoding="utf-8")
         return True
     if any(lines[0] == p for p in OLD):
         lines[0] = NEW
@@ -35,7 +36,7 @@ def fix_file(path: Path) -> bool:
 
 def main() -> None:
     fixed = 0
-    cwd =Path.cwd()
+    cwd = Path.cwd()
     for file in cwd.rglob("*.py"):
         if fix_file(file):
             fixed += 1

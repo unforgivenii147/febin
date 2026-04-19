@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path

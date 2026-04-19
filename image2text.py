@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from collections import deque
 from multiprocessing import get_context

@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -35,7 +34,7 @@ def extract_functions_and_classes(src: bytes, tree):
         if node.type in VALID:
             name = get_node_name(node)
             node_text = get_node_text(src, node)
-            # Add decorators if present
+
             decorators = []
             prev_node = node.prev_sibling
             while prev_node and prev_node.type == "decorator":
@@ -63,16 +62,14 @@ def get_relative_path(file_path: Path, base_path: Path) -> Path:
         return file_path
 
 
-# Dictionary to store definitions by folder path
 folder_definitions = defaultdict(lambda: defaultdict(list))
 processed_files_count = 0
 folders_found = set()
 total_definitions = 0
 for py in Path().rglob("*.py"):
-    # Skip hidden directories and site-packages
     if any(part.startswith(".") for part in py.parts) or "site-packages" in py.parts:
         continue
-    # Skip files in the output directory
+
     if OUT_DIR in py.parents:
         continue
     try:
@@ -80,11 +77,10 @@ for py in Path().rglob("*.py"):
         tree = parser.parse(src)
         definitions = extract_functions_and_classes(src, tree)
         if definitions:
-            # Get the folder containing the Python file
             folder_path = py.parent
             relative_folder = get_relative_path(folder_path, Path())
             folders_found.add(str(relative_folder))
-            # Store definitions by file
+
             folder_definitions[relative_folder][py.name] = {
                 "definitions": definitions,
                 "path": py,
@@ -93,19 +89,19 @@ for py in Path().rglob("*.py"):
             total_definitions += len(definitions)
     except Exception as e:
         print(f"⚠️  Error processing {py}: {e}")
-# Write collected definitions to folder-specific files
+
 for (
     folder,
     files_dict,
 ) in folder_definitions.items():
     if not files_dict:
         continue
-    # Create output file path: output/foldername/definitions.py
+
     out_file = OUT_DIR / folder / "definitions.py"
     out_file.parent.mkdir(parents=True, exist_ok=True)
-    # Build content with better organization
+
     content_parts = []
-    # Add table of contents
+
     content_parts.extend(("#" + "=" * 78, "# TABLE OF CONTENTS", "#" + "=" * 78, ""))
     for file_name, file_data in sorted(files_dict.items()):
         content_parts.append(f"# File: {file_name}")
@@ -118,7 +114,7 @@ for (
             content_parts.append(f"#   Classes: {def_counts['class']}")
         content_parts.append("")
     content_parts.extend(("#" + "=" * 78, "# DEFINITIONS", "#" + "=" * 78, ""))
-    # Add actual definitions
+
     for file_name, file_data in sorted(files_dict.items()):
         content_parts.extend((
             f"\n# {'=' * 76}",
@@ -126,7 +122,7 @@ for (
             f"# Path: {file_data['path']}",
             f"# {'=' * 76}\n",
         ))
-        # Group by type (classes first, then functions)
+
         classes = [d for d in file_data["definitions"] if d["type"] == "class"]
         functions = [d for d in file_data["definitions"] if d["type"] == "function"]
         if classes:
@@ -152,18 +148,18 @@ for (
                     content_parts.append(f"# Function: {func['name']}")
                 content_parts.append(func["text"])
         content_parts.append("\n" + "#" + "=" * 78 + "\n")
-    # Combine all content
+
     content = "\n".join(content_parts)
-    # Add header
+
     header = f"""#!/usr/bin/env python
-# Auto-generated definitions file
-# Folder: {folder}
-# Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-# Files processed: {len(files_dict)}
-# Total definitions: {sum(len(f["definitions"]) for f in files_dict.values())}
+
+
+
+
+
 """
     out_file.write_text(header + content)
-    # Statistics
+
     total_defs_in_folder = sum(len(f["definitions"]) for f in files_dict.values())
     print(f"✅ saved: {out_file}")
     print(f"   📊 {len(files_dict)} files, {total_defs_in_folder} definitions")

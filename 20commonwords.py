@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import sys
 from collections import Counter
 from pathlib import Path

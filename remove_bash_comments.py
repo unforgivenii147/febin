@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import argparse
 import os
 import subprocess
@@ -14,7 +13,7 @@ except ImportError:
 
 class BashCommentRemover:
     def __init__(self) -> None:
-        # Try to find or build the bash grammar
+
         self.parser = self._setup_parser()
         if not self.parser:
             print("Error: Failed to setup tree-sitter bash grammar")
@@ -22,19 +21,16 @@ class BashCommentRemover:
 
     def _setup_parser(self) -> Parser | None:
         try:
-            # Try to import bash language directly (if installed)
             try:
                 from tree_sitter_bash import language
 
                 bash_language = Language(language())
             except ImportError:
-                # If not installed, try to build it from npm
                 print("Tree-sitter bash grammar not found. Attempting to install...")
                 import subprocess
                 import tempfile
 
                 with tempfile.TemporaryDirectory() as tmpdir:
-                    # Install tree-sitter-bash via npm
                     subprocess.run(
                         [
                             "npm",
@@ -46,7 +42,7 @@ class BashCommentRemover:
                         capture_output=True,
                         check=False,
                     )
-                    # Build the grammar
+
                     build_result = subprocess.run(
                         [
                             "npx",
@@ -61,7 +57,7 @@ class BashCommentRemover:
                     if build_result.returncode != 0:
                         print(f"Failed to build bash grammar: {build_result.stderr}")
                         return None
-                    # Load the built grammar
+
                     so_file = Path(tmpdir) / "tree-sitter-bash.so"
                     if so_file.exists():
                         bash_language = Language(str(so_file), "bash")
@@ -79,7 +75,7 @@ class BashCommentRemover:
         try:
             tree = self.parser.parse(bytes(content, "utf8"))
             root_node = tree.root_node
-            # Collect comment nodes to remove
+
             comments_to_remove = []
 
             def collect_comments(node):
@@ -91,10 +87,10 @@ class BashCommentRemover:
             collect_comments(root_node)
             if not comments_to_remove:
                 return content, False
-            # Remove comments from content
+
             lines = content.splitlines(True)  # Keep line endings
             modified_lines = lines.copy()
-            # Sort comments in reverse order to avoid index shifting
+
             comments_to_remove.sort(
                 key=lambda n: n.start_point[0],
                 reverse=True,
@@ -103,21 +99,18 @@ class BashCommentRemover:
                 start_line, start_col = comment.start_point
                 end_line, end_col = comment.end_point
                 if start_line == end_line:
-                    # Single line comment
                     line = modified_lines[start_line]
                     modified_lines[start_line] = line[:start_col] + line[end_col:]
                 else:
-                    # Multi-line comment (unlikely in bash, but handle anyway)
-                    # Remove from start line
                     modified_lines[start_line] = modified_lines[start_line][:start_col]
-                    # Remove middle lines
+
                     for line_num in range(start_line + 1, end_line):
                         modified_lines[line_num] = ""
-                    # Remove from end line
+
                     modified_lines[end_line] = modified_lines[end_line][end_col:]
-            # Clean up empty lines (optional - you might want to keep them)
+
             modified_content = "".join(modified_lines)
-            # Remove multiple consecutive empty lines
+
             import re
 
             modified_content = re.sub(
@@ -131,14 +124,14 @@ class BashCommentRemover:
             return content, False
 
     def validate_syntax(self, content: str) -> bool:
-        # Try using tree-sitter first
+
         try:
             tree = self.parser.parse(bytes(content, "utf8"))
             if tree.root_node.has_error:
                 return False
         except:
             pass
-        # Try using shfmt if available (more thorough)
+
         try:
             result = subprocess.run(
                 ["shfmt", "-f"],
@@ -148,7 +141,6 @@ class BashCommentRemover:
                 check=False,
             )
             if result.returncode != 0:
-                # Try with bash -n as fallback
                 result = subprocess.run(
                     ["bash", "-n"],
                     input=content,
@@ -159,7 +151,6 @@ class BashCommentRemover:
                 return result.returncode == 0
             return True
         except FileNotFoundError:
-            # shfmt not installed, rely on tree-sitter
             try:
                 tree = self.parser.parse(bytes(content, "utf8"))
                 return not tree.root_node.has_error
@@ -172,25 +163,22 @@ class BashCommentRemover:
         dry_run: bool = False,
     ) -> tuple[bool, int, int]:
         try:
-            # Read file
             original_content = Path(filepath).read_text(encoding="utf-8")
             original_size = len(original_content.encode("utf-8"))
-            # Check if it looks like a bash script (even without extension)
+
             if filepath.suffix not in {
                 ".sh",
                 ".bash",
             }:
-                # Check shebang
                 if not original_content.startswith("#!/bin/bash") and not original_content.startswith(
                     "#!/usr/bin/env bash"
                 ):
-                    # Skip non-bash files
                     return (
                         True,
                         original_size,
                         original_size,
                     )
-            # Remove comments
+
             modified_content, was_modified = self.remove_comments(original_content)
             if not was_modified:
                 return (
@@ -198,7 +186,7 @@ class BashCommentRemover:
                     original_size,
                     original_size,
                 )
-            # Validate syntax
+
             if not self.validate_syntax(modified_content):
                 print(f"  ⚠️  Syntax error detected in {filepath}, skipping")
                 return (
@@ -208,7 +196,6 @@ class BashCommentRemover:
                 )
             new_size = len(modified_content.encode("utf-8"))
             if not dry_run:
-                # Write modified content
                 Path(filepath).write_text(modified_content, encoding="utf-8")
                 print(f"  ✓ Processed: {filepath} ({original_size} -> {new_size} bytes)")
             else:
@@ -234,19 +221,17 @@ class BashCommentRemover:
                 total_original += orig
                 total_new += new
         elif path.is_dir() and recursive:
-            # Process all files in directory recursively
             bash_files = []
             for root, _, files in os.walk(path):
                 for file in files:
                     filepath = Path(root) / file
-                    # Check if it's a bash script
+
                     if filepath.suffix in {
                         ".sh",
                         ".bash",
                     }:
                         bash_files.append(filepath)
                     else:
-                        # Check for shebang
                         try:
                             with Path(filepath).open(encoding="utf-8") as f:
                                 first_line = f.readline()
@@ -293,9 +278,9 @@ def main():
         help="Skip syntax validation (not recommended)",
     )
     args = parser.parse_args()
-    # Initialize comment remover
+
     remover = BashCommentRemover()
-    # Determine files to process
+
     paths_to_process = []
     if args.files:
         for file_arg in args.files:
@@ -305,7 +290,6 @@ def main():
                 continue
             paths_to_process.append(path)
     else:
-        # Process current directory
         paths_to_process.append(Path.cwd())
         args.recursive = True
     total_success = 0
@@ -322,7 +306,7 @@ def main():
             total_success += success
             total_original += orig
             total_new += new
-    # Report size change
+
     if total_success > 0:
         print(f"\n{'=' * 50}")
         print("Summary:")

@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import os
 import subprocess
 from multiprocessing import cpu_count

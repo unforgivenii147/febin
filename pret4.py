@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import shutil
 import subprocess
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -20,7 +19,6 @@ def get_files_to_format(cwd: str = ".") -> list[Path]:
 
 def format_file(file_path: Path) -> tuple[Path, bool, str | None]:
     try:
-        # Optimization: Use check=True and capture_output
         result = subprocess.run(
             ["prettier", "--write", str(file_path)],
             capture_output=True,

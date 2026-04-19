@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import pathlib
 
 import regex as re
@@ -7,18 +6,11 @@ from packaging.version import Version
 
 def extract_upgradable_packages(results_file_path: str) -> list[tuple[str, str]]:
     upgradable_packages = []
-    # این الگو فرض می‌کند که فرمت خطوط دقیقاً "PackageName : InstalledVersion | LatestVersion" است.
-    # LatestVersion ممکن است شامل حروف بتا (b) یا RC باشد.
-    # همچنین در نظر می‌گیرد که خطوطی که "Updatable!" دارند، با رنگ سبز چاپ می‌شوند
-    # و خطوطی که نیازی به آپدیت ندارند، سفید هستند.
-    # ما باید خطوطی را که در آن‌ها InstalledVersion < LatestVersion است را پیدا کنیم.
-    # الگویی که فقط خطوط سبزرنگ (قابل ارتقاء) را می‌گیرد:
-    # (?P<package_name>[a-zA-Z0-9\-_.]+)\s*:\s*(?P<installed_version>\S+)\s*->\s*(?P<latest_version>\S+)\s*\(Updatable!\)
-    # این روش قوی‌تر است زیرا به رنگ یا متن "Updatable!" وابسته نیست.
+
     package_pattern = re.compile(
         r"^(?P<package_name>[a-zA-Z0-9\-_.]+)\s*:\s*(?P<installed_version>[^|]+?)\s*\|\s*(?P<latest_version>\S+)$"
     )
-    # الگو باید به شکل زیر باشد:
+
     updatable_pattern_with_arrow = re.compile(
         r"^(?P<package_name>[a-zA-Z0-9\-_.]+)\s*:\s*(?P<installed_version>\S+)\s*->\s*(?P<latest_version>\S+)\s*\(Updatable!\)$"
     )
@@ -34,7 +26,7 @@ def extract_upgradable_packages(results_file_path: str) -> list[tuple[str, str]]
                     latest_version = match.group("latest_version")
                     upgradable_packages.append((package_name, latest_version))
                     continue  # به خط بعدی می‌رویم
-                # و سپس خودمان مقایسه نسخه انجام دهیم.
+
                 match = package_pattern.match(line)
                 if match:
                     package_name = match.group("package_name")

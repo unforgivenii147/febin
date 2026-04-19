@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/python
+#!/usr/bin/env python3
 from pathlib import Path
 
 OLD = {
@@ -9,14 +9,20 @@ OLD = {
     "#!/usr/bin/env python",
     "#!/usr/bin/env python3",
 }
-NEW = "#!/data/data/com.termux/files/usr/bin/python"
+NEW = "#!/data/data/com.termux/files/usr/bin/python\n"
 
 
 def fix_file(path: Path) -> bool:
     text = path.read_text(encoding="utf-8", errors="ignore")
-    lines = text.splitlines()
+    lines = text.splitlines(keepends=False)
     if not lines:
         return False
+    nl=[]
+    if not lines[0].startswith("#!"):
+        nl.append(New)
+        nl.extend(lines)
+        path.write_text("\n".join(nl) + "\n" ,encoding="utf-8")
+        return True
     if any(lines[0] == p for p in OLD):
         lines[0] = NEW
         path.write_text(
@@ -29,7 +35,8 @@ def fix_file(path: Path) -> bool:
 
 def main() -> None:
     fixed = 0
-    for file in Path().rglob("*.py"):
+    cwd =Path.cwd()
+    for file in cwd.rglob("*.py"):
         if fix_file(file):
             fixed += 1
             print(f"Updated: {file}")

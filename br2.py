@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import sys
 import time
 from pathlib import Path

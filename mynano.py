@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import pathlib
 import readline
 import rlcompleter
@@ -56,7 +55,7 @@ class BasicEditor(App):
     def action_open_file(self) -> None:
         log = self.query_one(TextLog)
         editor = self.query_one(TextEditor)
-        # Use readline to get filename with completion
+
         try:
             filename = input("Enter filename to open: ")
             if filename:
@@ -78,7 +77,6 @@ class BasicEditor(App):
         editor = self.query_one(TextEditor)
         if not self.filename:
             try:
-                # Use readline to get filename with completion
                 filename = input("Enter filename to save as: ")
                 if filename:
                     self.filename = filename
@@ -123,7 +121,6 @@ class BasicEditor(App):
 
 
 if __name__ == "__main__":
-    # Pass filename from command line arguments if provided
     initial_filename = sys.argv[1] if len(sys.argv) > 1 else None
     app = BasicEditor(filename=initial_filename)
     app.run()

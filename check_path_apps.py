@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import os
 from collections import defaultdict
 from pathlib import Path

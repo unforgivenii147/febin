@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 import re
 import difflib

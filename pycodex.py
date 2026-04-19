@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import argparse
 import json
 import logging
@@ -296,13 +295,13 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Extract from a single file
+
   python script.py -f document.html
-  # Extract from all HTML files in a directory
+
   python script.py -p /path/to/documents
-  # Extract from a URL
+
   python script.py -u https://example.com/page.html
-  # Extract from current directory (default)
+
   python script.py
         """,
     )

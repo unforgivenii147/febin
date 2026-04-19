@@ -7,12 +7,10 @@ from pathlib import Path
 
 from joblib import Parallel, delayed
 
-# --- Configuration ---
 OUTPUT_DIR = Path("output")
 OUTPUT_FILE = OUTPUT_DIR / "const.py"
 LOG_FILE = OUTPUT_DIR / "error.log"
 PYTHON_FILES_TO_PROCESS = "**/*.py"  # پردازش تمام فایل‌های پایتون
-# --- Setup Logging ---
 OUTPUT_DIR.mkdir(exist_ok=True)
 logging.basicConfig(
     filename=LOG_FILE,
@@ -21,9 +19,7 @@ logging.basicConfig(
 )
 
 
-# --- Functions ---
 def get_file_hash(filepath: Path) -> str:
-    """Hashes the content of a file."""
     hasher = hashlib.sha256()
     with open(filepath, "rb") as f:
         while chunk := f.read(4096):
@@ -32,16 +28,11 @@ def get_file_hash(filepath: Path) -> str:
 
 
 def extract_constants(filepath: Path) -> list[tuple[str, str, str]]:
-    """
-    Extracts constant definitions (name, value, type) from a Python file.
-    Uses AST to parse the file.
-    """
     constants = []
     try:
         with open(filepath, "r", encoding="utf-8") as f:
             tree = ast.parse(f.read(), filename=str(filepath))
         for node in ast.walk(tree):
-            # Constants are typically uppercase assignments at module level
             if isinstance(node, ast.Assign):
                 # Check if all targets are simple names (not attributes or subscripts)
                 is_simple_assign = all(isinstance(t, ast.Name) for t in node.targets)
@@ -108,12 +99,9 @@ def main():
         if file_hash not in processed_hashes:
             processed_hashes.add(file_hash)
             for name, value, ctype in constants:
-                # Store all constants found in this unique filecontent
                 if file_hash not in all_constants_by_hash:
                     all_constants_by_hash[file_hash] = []
-                # Deduplicate within the same file content based on name and value representation
-                # Overwrite if a constant with the same name and value is found again in the same file
-                # This is a basic deduplication strategy. More advanced logic might be needed.
+
                 constant_repr = f"{name} = {value}"
                 found = False
                 for idx, (existing_name, existing_value, existing_type) in enumerate(all_constants_by_hash[file_hash]):

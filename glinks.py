@@ -1,14 +1,15 @@
-#!/data/data/com.termux/files/usr/bin/python
 import os
 import subprocess
 import tarfile
 import zipfile
-from multiprocessing import cpu_count
 from pathlib import Path
+from multiprocessing import get_context, cpu_count
+from collections import deque
 
 import regex as re
+from dh import mpf3o
 
-OUTPUT_FILE = "/sdcard/gitlinks.txt"
+OUTPUT_FILE = "gitlinks.txt"
 ARCHIVE_EXTENSIONS = (
     ".zip",
     ".whl",
@@ -18,7 +19,7 @@ ARCHIVE_EXTENSIONS = (
     ".txz",
 )
 GIT_REGEX = re.compile(
-    r'(?:https?://|git@|git://)[^\s\'"]+\b',
+    r"^(?:(?:https?://|git://|git@)[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)+(?:/[^\s]*)?|git@[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*:(?:/[^\s]*)?)$",
     re.IGNORECASE,
 )
 
@@ -147,13 +148,14 @@ def main() -> None:
     files = collect_files()
     print(f"Found {len(files)} files. Using {cpu_count()} CPU cores...")
     found = set()
-    with Pool(cpu_count()) as pool:
-        for urls in pool.imap_unordered(worker, files):
+    with get_context("spawn").Pool(8) as pool:
+        for urls in pool.map(worker, files):
             if urls:
                 found |= urls
     with Path(OUTPUT_FILE).open("a", encoding="utf-8") as fp:
         fp.write("\n")
         fp.writelines(url + "\n" for url in sorted(found))
+
     print(f"\nExtracted {len(found)} unique git URLs → {OUTPUT_FILE}")
 
 

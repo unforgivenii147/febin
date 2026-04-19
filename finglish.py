@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import unicodedata
 from pathlib import Path
 
@@ -35,7 +34,6 @@ def custom_persian_to_finglish(text):
         "ل": "l",
         "م": "m",
         "ن": "n",
-        # 'و' and 'ی' handled by special logic
         "ه": "h",
     }
     words = text.split(" ")
@@ -69,13 +67,13 @@ def convert_filenames_with_pathlib(directory="."):
         if filepath.is_file():
             original_filename_stem = filepath.stem
             original_extension = filepath.suffix
-            # Normalize the filename stem
+
             normalized_stem = unicodedata.normalize("NFKD", original_filename_stem)
-            # Apply custom Persian to Finglish conversion
+
             finglish_stem = custom_persian_to_finglish(normalized_stem)
-            # Clean up potential multiple underscores and leading/trailing ones
+
             finglish_stem_cleaned = "_".join(filter(None, finglish_stem.split("_")))
-            # Construct the new filename
+
             new_filename = finglish_stem_cleaned + original_extension
             if new_filename != filepath.name:
                 new_filepath = filepath.with_name(new_filename)

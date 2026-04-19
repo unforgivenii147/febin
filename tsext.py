@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import os
 import pathlib
 
@@ -20,11 +19,11 @@ def extract_python_code_elements(filepath):
     classes = []
     constants = []
     imports = []
-    # Use a stack for depth-first traversal to handle nested structures
+
     nodes_to_visit = [tree.root_node]
     while nodes_to_visit:
         node = nodes_to_visit.pop(0)  # Use pop(0) for BFS, pop() for DFS
-        # Traverse children
+
         for child in node.children:
             if child.type == "function_definition":
                 func_name_node = child.child_by_field_name("name")
@@ -38,12 +37,10 @@ def extract_python_code_elements(filepath):
                 "import_statement",
                 "import_from_statement",
             }:
-                # Simple heuristic for constants: uppercase names at module level
                 target = child.child_by_field_name("name")
                 if (
                     target and target.text.decode("utf-8").isupper() and len(target.text.decode("utf-8")) > 1
                 ):  # Avoid single uppercase letters like 'A'
-                    # Check if it's a simple assignment, not tuple unpacking etc.
                     if child.named_child_count == 2:  # Should have a name and a value
                         constants.append(target.text.decode("utf-8"))
             elif child.type == "import_statement":
@@ -65,8 +62,7 @@ def extract_python_code_elements(filepath):
                                     aliased_name_node = name_node.child_by_field_name("name")
                                     if aliased_name_node:
                                         imports.append(f"{module_name}.{aliased_name_node.text.decode('utf-8')}")
-            # Recursively visit children
-            # Append children to nodes_to_visit if they are not leaf nodes or have relevant types
+
             if child.children:
                 nodes_to_visit.append(child)
     return functions, classes, constants, imports

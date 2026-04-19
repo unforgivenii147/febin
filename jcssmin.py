@@ -1,8 +1,6 @@
-#!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
 
-# from rjsmin import jsmin
 from dh import get_files, gext, mpf
 from rcssmin import cssmin
 
@@ -13,8 +11,7 @@ def process_file(path) -> str:
         content = Path(path).read_text(encoding="utf-8")
         if ext in {".css", ".min.css"}:
             minified = cssmin(content)
-        #        elif ext in {".js",".min.js"}:
-        #            minified=jsmin(content)
+
         else:
             return f"SKIP (unknown type) → {path}"
         if len(minified) == len(content):

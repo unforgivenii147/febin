@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import base64
 import os
 import sys

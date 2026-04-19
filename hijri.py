@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import datetime
 
 from dh import georgian_to_hijri

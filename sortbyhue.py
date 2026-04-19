@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import colorsys
 import sys
 from pathlib import Path

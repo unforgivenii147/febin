@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import json
 import os
 import subprocess
@@ -19,7 +18,7 @@ class GitHubRepoCreator:
 
     def _load_github_token(self) -> str:
         print(f"🔑 Loading GitHub token from {self.env_file}")
-        # Load environment variables from ~/.env
+
         if self.env_file.exists():
             load_dotenv(self.env_file)
             token = os.getenv("GITHUB_TOKEN")
@@ -35,7 +34,7 @@ class GitHubRepoCreator:
             sys.exit(1)
 
     def _get_github_username(self) -> str:
-        # Try to get from git config first
+
         success, username, _ = self._run_cmd([
             "git",
             "config",
@@ -44,7 +43,7 @@ class GitHubRepoCreator:
         ])
         if success and username:
             return username
-        # If not in git config, try to get from GitHub API using token
+
         print("👤 Attempting to get username from GitHub API...")
         cmd = [
             "curl",
@@ -61,7 +60,6 @@ class GitHubRepoCreator:
                 user_data = json.loads(output)
                 username = user_data.get("login")
                 if username:
-                    # Save to git config for future use
                     self._run_cmd([
                         "git",
                         "config",
@@ -96,15 +94,15 @@ class GitHubRepoCreator:
 
     def _check_prerequisites(self):
         print("\n🔍 Checking prerequisites...")
-        # Check git
+
         if not self._run_cmd(["git", "--version"])[0]:
             print("❌ Git is not installed")
             sys.exit(1)
-        # Check curl
+
         if not self._run_cmd(["curl", "--version"])[0]:
             print("❌ curl is not installed")
             sys.exit(1)
-        # Check if python-dotenv is installed
+
         try:
             print("✅ python-dotenv is installed")
         except ImportError:
@@ -115,7 +113,7 @@ class GitHubRepoCreator:
 
     def _initialize_git(self):
         print(f"\n📁 Initializing git repository: {self.repo_name}")
-        # Check if already a git repo
+
         success, _, _ = self._run_cmd(["git", "rev-parse", "--git-dir"])
         if success:
             print("⚠️  Already a git repository")
@@ -123,19 +121,19 @@ class GitHubRepoCreator:
             if response != "y":
                 print("Continuing with existing repository...")
                 return
-            # Remove existing git
+
             import shutil
 
             shutil.rmtree(
                 self.current_dir / ".git",
                 ignore_errors=True,
             )
-        # Initialize git
+
         success, _, stderr = self._run_cmd(["git", "init"])
         if not success:
             print(f"❌ Failed to initialize git: {stderr}")
             sys.exit(1)
-        # Create main branch
+
         success, _, stderr = self._run_cmd(["git", "checkout", "-b", "main"])
         if not success:
             print(f"❌ Failed to create main branch: {stderr}")
@@ -175,12 +173,12 @@ class GitHubRepoCreator:
 
     def _create_github_repo(self) -> bool:
         print(f"\n🌐 Creating GitHub repository: {self.github_username}/{self.repo_name}")
-        # Check if repo already exists
+
         if self._check_repo_exists():
             print("⚠️  Repository already exists on GitHub")
             response = input("Push to existing repo? (y/N): ").lower()
             return response == "y"
-        # Prepare API request
+
         api_url = "https://api.github.com/user/repos"
         data = {
             "name": self.repo_name,
@@ -188,14 +186,13 @@ class GitHubRepoCreator:
             "auto_init": False,
             "description": f"Repository created from {self.repo_name} on {datetime.now().strftime('%Y-%m-%d')}",
         }
-        # Create temp file with JSON data
+
         import tempfile
 
         with tempfile.NamedTemporaryFile(encoding="utf-8", mode="w", suffix=".json", delete=False) as f:
             json.dump(data, f)
             temp_file = f.name
         try:
-            # Use curl to create repository
             cmd = [
                 "curl",
                 "-s",
@@ -210,11 +207,11 @@ class GitHubRepoCreator:
                 f"@{temp_file}",
             ]
             success, stdout, stderr = self._run_cmd(cmd)
-            # Clean up temp file
+
             Path(temp_file).unlink()
             if not success:
                 print(f"❌ Failed to create repository: {stderr}")
-                # Try to parse error message
+
                 try:
                     error_data = json.loads(stdout)
                     if "message" in error_data:
@@ -222,7 +219,7 @@ class GitHubRepoCreator:
                 except:
                     pass
                 sys.exit(1)
-            # Parse response to confirm creation
+
             try:
                 response_data = json.loads(stdout)
                 clone_url = response_data.get("clone_url", "")
@@ -239,12 +236,11 @@ class GitHubRepoCreator:
 
     def _setup_remote(self):
         print("\n🔗 Configuring remote...")
-        # Use HTTPS URL without token (we'll authenticate with token during push)
+
         remote_url = f"https://github.com/{self.github_username}/{self.repo_name}.git"
-        # Check if remote exists
+
         success, remotes, _ = self._run_cmd(["git", "remote"])
         if "origin" in remotes.split("\n"):
-            # Update existing remote
             success, _, stderr = self._run_cmd([
                 "git",
                 "remote",
@@ -257,7 +253,6 @@ class GitHubRepoCreator:
             else:
                 print(f"⚠️  Could not update remote: {stderr}")
         else:
-            # Add new remote
             success, _, stderr = self._run_cmd([
                 "git",
                 "remote",
@@ -272,17 +267,17 @@ class GitHubRepoCreator:
 
     def _commit_changes(self):
         print("\n💾 Committing changes...")
-        # Add all files
+
         success, _, stderr = self._run_cmd(["git", "add", "-A"])
         if not success:
             print(f"❌ Failed to add files: {stderr}")
             sys.exit(1)
-        # Check if there's anything to commit
+
         success, _, _ = self._run_cmd(["git", "diff", "--cached", "--quiet"])
         if success:
             print("ℹ️  No changes to commit")
             return False
-        # Commit with timestamp
+
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         success, _, stderr = self._run_cmd([
             "git",
@@ -298,11 +293,11 @@ class GitHubRepoCreator:
 
     def _push_to_github(self):
         print("\n🚀 Pushing to GitHub...")
-        # Create a temporary remote with token for push
+
         auth_remote_url = (
             f"https://{self.github_username}:{self.github_token}@github.com/{self.github_username}/{self.repo_name}.git"
         )
-        # Set remote with token temporarily
+
         self._run_cmd([
             "git",
             "remote",
@@ -310,7 +305,7 @@ class GitHubRepoCreator:
             "origin",
             auth_remote_url,
         ])
-        # Push to GitHub
+
         success, _, stderr = self._run_cmd([
             "git",
             "push",
@@ -318,7 +313,7 @@ class GitHubRepoCreator:
             "origin",
             "main",
         ])
-        # Reset remote to clean URL (without token)
+
         clean_url = f"https://github.com/{self.github_username}/{self.repo_name}.git"
         self._run_cmd([
             "git",
@@ -337,7 +332,7 @@ class GitHubRepoCreator:
         print("✅ Successfully pushed to GitHub")
 
     def run(self):
-        # Print header
+
         print("=" * 60)
         print("🚀 GITHUB REPOSITORY CREATOR")
         print("=" * 60)
@@ -346,7 +341,7 @@ class GitHubRepoCreator:
         print(f"👤 Username:  {self.github_username}")
         print(f"🔑 Token source: {self.env_file}")
         print("=" * 60)
-        # Execute steps
+
         self._check_prerequisites()
         self._initialize_git()
         self._setup_gitignore()
@@ -354,7 +349,7 @@ class GitHubRepoCreator:
             self._setup_remote()
             self._commit_changes()
             self._push_to_github()
-            # Print success message
+
             print("\n" + "=" * 60)
             print("✅ SUCCESS! Repository is live on GitHub")
             print(f"📍 https://github.com/{self.github_username}/{self.repo_name}")

@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import shutil
 import subprocess
 import sys

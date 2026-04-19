@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
 input_file = "/data/data/com.termux/files/home/.local/share/mc/history"

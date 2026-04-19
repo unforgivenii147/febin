@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
 
@@ -9,7 +8,7 @@ def fix_python_indentation(input_file_path, output_file_path=None, indent_size=4
         return False
     fixed_lines = []
     current_indent_level = 0
-    # لیست کلماتی که شروع یک بلوک جدید را نشان می‌دهند و به تورفتگی نیاز دارند
+
     block_starters = [
         "def",
         "class",

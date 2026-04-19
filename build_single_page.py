@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import base64
 import hashlib
 import mimetypes
@@ -87,10 +86,7 @@ def process_html(path: Path):
             fpath = extract_base64(src)
             if fpath:
                 img["src"] = str(fpath.relative_to(OUTPUT_DIR))
-    #        elif src.startswith("http") and DOWNLOAD_REMOTE:
-    #            fpath = download_external(src)
-    #            if fpath:
-    #                img["src"] = str(fpath.relative_to(OUTPUT_DIR))
+
     bg_re = re.compile(r'url\("(data:.*?)"\)')
     for tag in soup.find_all(style=True):
         m = bg_re.search(tag["style"])
@@ -109,9 +105,7 @@ def process_html(path: Path):
         href = link["href"]
         if href.startswith("http") and DOWNLOAD_REMOTE:
             print(href)
-    #            fpath = download_external(href)
-    #            if fpath:
-    #                link["href"] = str(fpath.relative_to(OUTPUT_DIR))
+
     out_path = OUTPUT_DIR / path.relative_to(cwd)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(str(soup), encoding="utf-8")

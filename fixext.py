@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import os
 import subprocess
 import sys
@@ -37,8 +36,7 @@ def safe_rename(old_path, new_path):
         new_path = f"{base}_{counter}{ext}"
         counter += 1
     cprint(f"{old_path} -> {new_path} ?")
-    #    ans = input()
-    #    if ans.lower() == "y":
+
     Path(old_path).rename(new_path)
     return new_path
 

@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import argparse
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed

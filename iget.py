@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import math
 import threading
 from pathlib import Path

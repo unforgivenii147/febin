@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import json
 import sys
 import time
@@ -10,15 +9,13 @@ from packaging.version import InvalidVersion, Version
 
 def check_package_on_pypi(package_name: str, current_version: str) -> str | None:
     try:
-        # Add delay to be nice to PyPI
         time.sleep(0.01)
         url = f"https://pypi.org/pypi/{package_name}/json"
         response = requests.get(url, timeout=5)
         if response.status_code == 200:
             data = response.json()
             return data["info"]["version"]
-            # Handle pre-releases if needed
-            # You could add logic here to check for pre-releases if current version is pre-release
+
         if response.status_code == 404:
             return None  # Package not found on PyPI
         return None
@@ -40,7 +37,6 @@ def compare_versions(current: str, latest: str) -> str:
             return "newer"  # Current is newer than latest (unusual)
         return "current"
     except InvalidVersion:
-        # If version parsing fails, do string comparison
         if current == latest:
             return "current"
         if current < latest:
@@ -53,7 +49,7 @@ def is_venv() -> bool:
 
 
 def main() -> None:
-    # Check if running in virtual environment
+
     if not is_venv():
         print("⚠️  Warning: Not running in a virtual environment!")
         response = input("Continue anyway? (y/N): ")
@@ -62,28 +58,27 @@ def main() -> None:
             return
     print("📦 Checking for package updates on PyPI...")
     print("(Results will appear as each package is checked)\n")
-    # Get installed packages
+
     installed = get_installed_packages()
     total_packages = len(installed)
     print(f"Processing {total_packages} packages:\n")
-    # Statistics
+
     updates_found = []
     errors = []
     up_to_date = 0
-    # Check each package
+
     for i, (
         package,
         current_version,
     ) in enumerate(sorted(installed.items()), 1):
-        # Show progress
         progress = f"[{i:3d}/{total_packages:3d}]"
-        # Check PyPI
+
         latest_version = check_package_on_pypi(package.lower(), current_version)
         if latest_version is None:
             print(f"{progress} {package:<30} : ⚠️  not found on PyPI")
             errors.append(package)
             continue
-        # Compare versions
+
         status = compare_versions(current_version, latest_version)
         if status == "update":
             print(f"{progress} {package:<30} : 📦 update available from {current_version} to {latest_version}")
@@ -100,7 +95,7 @@ def main() -> None:
         else:
             print(f"{progress} {package:<30} : ✅ already latest version ({current_version})")
             up_to_date += 1
-    # Print summary
+
     print("\n" + "=" * 60)
     print("SUMMARY")
     print("=" * 60)
@@ -118,7 +113,7 @@ def main() -> None:
             latest,
         ) in updates_found:
             print(f"  {package:<30} {current} -> {latest}")
-        # Show upgrade command
+
         print("\n💡 To upgrade all packages, run:")
         packages_to_upgrade = [p[0] for p in updates_found]
         print(f"   python -m pip install --upgrade {' '.join(packages_to_upgrade)}")

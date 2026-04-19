@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import datetime
 from os import scandir as _scandir
 from pathlib import Path

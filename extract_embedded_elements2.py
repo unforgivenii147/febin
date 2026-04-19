@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import base64
 import mimetypes
 from pathlib import Path
@@ -7,22 +6,17 @@ import regex as re
 import requests
 from bs4 import BeautifulSoup
 
-# =============================
-# CONFIG
-# =============================
+
 cwd = Path.cwd()
 INPUT_DIR = cwd
 OUTPUT_DIR = cwd / "output"
 ASSETS_DIR = cwd / "output" / "assets"
 DOWNLOAD_REMOTE = False  # set False to skip external URLs (CDN, https://...)
 TIMEOUT = 10  # request timeout for external asset download
-# Ensure dirs exist
+
 ASSETS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-# =============================
-# UTIL: Save an asset with proper extension
-# =============================
 def save_asset(content: bytes, mime_type: str, file_hint="asset"):
     ext = mimetypes.guess_extension(mime_type) or ""
     counter = 0
@@ -36,9 +30,6 @@ def save_asset(content: bytes, mime_type: str, file_hint="asset"):
     return fpath
 
 
-# =============================
-# UTIL: Extract base64 data
-# =============================
 def extract_base64_data(data_url, file_hint="asset"):
     m = re.match(r"data:(.*?);base64,(.*)", data_url, re.DOTALL)
     if not m:
@@ -48,9 +39,6 @@ def extract_base64_data(data_url, file_hint="asset"):
     return save_asset(content, mime_type, file_hint)
 
 
-# =============================
-# UTIL: Download external assets (CSS, JS, fonts…)
-# =============================
 def download_external_url(url, file_hint="remote"):
     try:
         print("Downloading:", url)
@@ -63,25 +51,18 @@ def download_external_url(url, file_hint="remote"):
         return None
 
 
-# =============================
-# MAIN EXTRACTOR
-# =============================
 def process_file(path: Path):
     html = path.read_text(encoding="utf-8", errors="ignore")
     soup = BeautifulSoup(html, "html.parser")
     file_prefix = path.stem
-    # -----------------------------
-    # 1) Inline <style> blocks
-    # -----------------------------
+
     for i, style_tag in enumerate(soup.find_all("style")):
         if not style_tag.string:
             continue
         css = style_tag.string
         fpath = save_asset(css.encode("utf-8"), "text/css", f"{file_prefix}_style{i}")
         style_tag.replace_with(f'<link rel="stylesheet" href="{fpath.relative_to(OUTPUT_DIR)}">')
-    # -----------------------------
-    # 2) Inline <script> blocks
-    # -----------------------------
+
     for i, script in enumerate(soup.find_all("script")):
         if script.get("src"):
             src = script.get("src")
@@ -93,9 +74,7 @@ def process_file(path: Path):
         js = script.string or ""
         fpath = save_asset(js.encode("utf-8"), "application/javascript", f"{file_prefix}_script{i}")
         script.replace_with(f'<script src="{fpath.relative_to(OUTPUT_DIR)}"></script>')
-    # -----------------------------
-    # 3) IMG: data URLs → extract
-    # -----------------------------
+
     for img in soup.find_all("img"):
         src = img.get("src", "")
         if src.startswith("data:"):
@@ -106,9 +85,7 @@ def process_file(path: Path):
             fpath = download_external_url(src, f"{file_prefix}_img_remote")
             if fpath:
                 img["src"] = str(fpath.relative_to(OUTPUT_DIR))
-    # -----------------------------
-    # 4) Inline CSS background images
-    # -----------------------------
+
     bg_re = re.compile(r'url\("(data:.*?)"\)')
     for tag in soup.find_all(style=True):
         style = tag["style"]
@@ -118,18 +95,14 @@ def process_file(path: Path):
             fpath = extract_base64_data(data_url, f"{file_prefix}_bg")
             if fpath:
                 tag["style"] = style.replace(data_url, str(fpath.relative_to(OUTPUT_DIR)))
-    # -----------------------------
-    # 5) Inline SVGs → extract
-    # -----------------------------
+
     for i, svg in enumerate(soup.find_all("svg")):
         svg_str = str(svg)
         fpath = save_asset(svg_str.encode("utf-8"), "image/svg+xml", f"{file_prefix}_svg{i}")
         new_tag = soup.new_tag("img")
         new_tag["src"] = str(fpath.relative_to(OUTPUT_DIR))
         svg.replace_with(new_tag)
-    # -----------------------------
-    # 6) CSS @font-face base64 fonts
-    # -----------------------------
+
     for style in soup.find_all("style"):
         if not style.string:
             continue
@@ -140,27 +113,20 @@ def process_file(path: Path):
             if fpath:
                 new_css = new_css.replace(f, str(fpath.relative_to(OUTPUT_DIR)))
         style.string.replace_with(new_css)
-    # -----------------------------
-    # 7) External CSS/JS in <link>
-    # -----------------------------
+
     for link in soup.find_all("link", href=True):
         href = link["href"]
         if href.startswith("http") and DOWNLOAD_REMOTE:
             fpath = download_external_url(href, f"{file_prefix}_css_remote")
             if fpath:
                 link["href"] = str(fpath)
-    # -----------------------------
-    # Save updated HTML
-    # -----------------------------
+
     output_html_path = OUTPUT_DIR / path.relative_to(INPUT_DIR)
     output_html_path.parent.mkdir(parents=True, exist_ok=True)
     output_html_path.write_text(str(soup), encoding="utf-8")
     print("Processed:", path)
 
 
-# =============================
-# RUN
-# =============================
 if __name__ == "__main__":
     for path in cwd.rglob("*"):
         if path.suffix.lower() in {".html", ".htm"} and "output" not in path.parts:

@@ -1,4 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
 import datetime
 import json
 import os

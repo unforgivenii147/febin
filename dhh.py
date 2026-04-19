@@ -92,14 +92,16 @@ def mpf3(
     num_processes: int = 8,
     context_method: str = "spawn",
 ) -> None:
+    results = []
     with get_context(context_method).Pool(num_processes) as p:
         pending = deque()
         for item in items:
             pending.append(p.apply_async(func, (item,)))
-            if len(pending) >= max_in_flight:
-                pending.popleft().get()
+            if len(pending) >= 8:
+                results.append(pending.popleft().get())
         while pending:
-            pending.popleft().get()
+            results.append(pending.popleft().get())
+    return results
 
 
 def mpf(process_function: Callable, files: list[Path], **kwargs):

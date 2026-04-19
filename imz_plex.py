@@ -35,9 +35,7 @@ def load_known_packages():
         try:
             with Path(PIP_LIST_PATH).open(encoding="utf-8") as f:
                 KNOWN_PACKAGES = {
-                    line.strip().split("==")[0].split(">")[0].split("<")[0].lower()
-                    for line in f
-                    if line.strip()
+                    line.strip().split("==")[0].split(">")[0].split("<")[0].lower() for line in f if line.strip()
                 }
         except Exception:
             pass
@@ -118,9 +116,7 @@ def handle_compressed_file(archive_path):
                             "utf-8",
                             errors="ignore",
                         )
-                        imports = extract_imports_from_ast(
-                            content
-                        ) or extract_imports_regex(content)
+                        imports = extract_imports_from_ast(content) or extract_imports_regex(content)
                         for imp in imports:
                             all_imports[imp] += 1
         elif path.suffix in {".tar.gz", ".tgz"}:
@@ -133,9 +129,7 @@ def handle_compressed_file(archive_path):
                                 "utf-8",
                                 errors="ignore",
                             )
-                            imports = extract_imports_from_ast(
-                                content
-                            ) or extract_imports_regex(content)
+                            imports = extract_imports_from_ast(content) or extract_imports_regex(content)
                             for imp in imports:
                                 all_imports[imp] += 1
         elif path.suffix == ".tar.xz":
@@ -148,9 +142,7 @@ def handle_compressed_file(archive_path):
                                 "utf-8",
                                 errors="ignore",
                             )
-                            imports = extract_imports_from_ast(
-                                content
-                            ) or extract_imports_regex(content)
+                            imports = extract_imports_from_ast(content) or extract_imports_regex(content)
                             for imp in imports:
                                 all_imports[imp] += 1
         elif path.suffix == ".tar.bz2":
@@ -163,9 +155,7 @@ def handle_compressed_file(archive_path):
                                 "utf-8",
                                 errors="ignore",
                             )
-                            imports = extract_imports_from_ast(
-                                content
-                            ) or extract_imports_regex(content)
+                            imports = extract_imports_from_ast(content) or extract_imports_regex(content)
                             for imp in imports:
                                 all_imports[imp] += 1
         elif path.suffix == ".tar.zst":
@@ -189,9 +179,7 @@ def handle_compressed_file(archive_path):
                                     "utf-8",
                                     errors="ignore",
                                 )
-                                imports = extract_imports_from_ast(
-                                    content
-                                ) or extract_imports_regex(content)
+                                imports = extract_imports_from_ast(content) or extract_imports_regex(content)
                                 for imp in imports:
                                     all_imports[imp] += 1
             except ImportError:
@@ -207,9 +195,7 @@ def handle_compressed_file(archive_path):
                     text=True,
                 )
                 for line in result.stdout.splitlines():
-                    if ".py" in line or (
-                        "python" in line.lower() and "bin" not in line.lower()
-                    ):
+                    if ".py" in line or ("python" in line.lower() and "bin" not in line.lower()):
                         pass
             except:
                 pass
@@ -241,9 +227,7 @@ def walk_directory(root_path):
 
 def generate_requirements(imports_count):
     filtered = {
-        pkg: count
-        for pkg, count in imports_count.items()
-        if pkg in KNOWN_PACKAGES and pkg not in STDLIB_MODULES
+        pkg: count for pkg, count in imports_count.items() if pkg in KNOWN_PACKAGES and pkg not in STDLIB_MODULES
     }
     sorted_imports = sorted(
         filtered.items(),
@@ -261,9 +245,7 @@ def generate_requirements(imports_count):
                 f.write(f"{norm_pkg}\n")
             else:
                 f.write(f"{norm_pkg}\n")
-    print(
-        f"Generated requirements.txt with {len(sorted_imports)} packages (stdlib excluded)"
-    )
+    print(f"Generated requirements.txt with {len(sorted_imports)} packages (stdlib excluded)")
     print("Top 10 most used packages:")
     for pkg, count in sorted_imports[:10]:
         print(f"  {pkg}: {count} files")
@@ -274,9 +256,7 @@ def main():
     print(f"Loaded {len(KNOWN_PACKAGES)} packages from pip.txt")
     print("Scanning current directory...")
     imports_count = walk_directory(".")
-    print(
-        f"Found {sum(imports_count.values())} total imports across {len(imports_count)} packages"
-    )
+    print(f"Found {sum(imports_count.values())} total imports across {len(imports_count)} packages")
     generate_requirements(imports_count)
 
 

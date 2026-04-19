@@ -65,13 +65,11 @@ def main():
             "Unknown",
             pkg_version,
         }:
-            outdated_pkgs.append(
-                (
-                    pkg_name,
-                    pkg_version,
-                    latest_version,
-                )
-            )
+            outdated_pkgs.append((
+                pkg_name,
+                pkg_version,
+                latest_version,
+            ))
     if outdated_pkgs:
         print("Outdated packages found:")
         for (

@@ -101,8 +101,7 @@ def process_file(filepath):
                 for lookback in range(3):
                     possible = doc_start - lookback
                     if possible >= 0 and (
-                        lines[possible].lstrip().startswith(DOC_TH1)
-                        or lines[possible].lstrip().startswith(DOC_TH2)
+                        lines[possible].lstrip().startswith(DOC_TH1) or lines[possible].lstrip().startswith(DOC_TH2)
                     ):
                         docstring_line = possible
                         break
@@ -110,15 +109,10 @@ def process_file(filepath):
                     continue
                 doc_lines = []
                 line_idx = docstring_line
-                quote_type = (
-                    DOC_TH1 if lines[line_idx].lstrip().startswith(DOC_TH1) else DOC_TH2
-                )
+                quote_type = DOC_TH1 if lines[line_idx].lstrip().startswith(DOC_TH1) else DOC_TH2
                 while True:
                     doc_lines.append(lines[line_idx])
-                    if (
-                        lines[line_idx].rstrip().endswith(quote_type)
-                        and line_idx != docstring_line
-                    ):
+                    if lines[line_idx].rstrip().endswith(quote_type) and line_idx != docstring_line:
                         break
                     line_idx += 1
                 doc_block = "\n".join(doc_lines)
@@ -129,9 +123,7 @@ def process_file(filepath):
                     flags=re.MULTILINE,
                 ).strip()
                 translated_doc_body = translate_docstring(doc_body)
-                translated_doc_block = (
-                    f"{quote_type}\n{translated_doc_body}\n{quote_type}"
-                )
+                translated_doc_block = f"{quote_type}\n{translated_doc_body}\n{quote_type}"
                 start = docstring_line + offset_map.get(docstring_line, 0)
                 end = line_idx + 1 + offset_map.get(line_idx, 0)
                 translated_lines = translated_doc_block.splitlines()

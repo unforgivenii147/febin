@@ -33,9 +33,7 @@ def check_for_updates(package_name, ver):
         print(f"Could not determine version for {package_name}")
         return False
     if latest_version > installed_version:
-        print(
-            f"Update available for {package_name}: {installed_version} -> {latest_version}"
-        )
+        print(f"Update available for {package_name}: {installed_version} -> {latest_version}")
         return True
     print(f"{package_name} is up to date: {installed_version}")
     return False

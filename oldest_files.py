@@ -14,6 +14,8 @@ def main():
     cwd = Path.cwd()
     files = []
     opt = sys.argv[1] if len(sys.argv) > 1 else "-g"
+    N = int(sys.argv[2].strip()) if len(sys.argv) > 2 else 20
+
     if opt == "-g":
         for p in cwd.glob("*"):
             if any(part in EXCLUDED_DIRS for part in p.parts):
@@ -29,11 +31,11 @@ def main():
             if p.is_file():
                 files.append(p)
 
-    files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
+    files.sort(key=lambda f: f.stat().st_ctime, reverse=True)
 
     print("\nTop 10 oldest files (excluding .git & __pycache__):\n")
-    for f in files[:1000]:
-        mtime = f.stat().st_mtime
+    for f in files[:N]:
+        mtime = f.stat().st_ctime
         print(f"{format_time(mtime)}  -  {f.relative_to(cwd)}")
 
 

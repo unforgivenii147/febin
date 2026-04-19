@@ -181,12 +181,8 @@ def rewrite_os_to_pathlib(source: str, tree: ast.AST) -> str:
     # Step 3: Replace os.listdir() → list(Path().iterdir()) or Path().iterdir()
     #   os.listdir() → list(Path().iterdir())
     source = re.sub(r"\bos\.listdir\s*\(\s*\)", "list(Path().iterdir())", source)
-    source = re.sub(
-        r'\bos\.listdir\s*\(\s*"([^"]+)"\s*\)', r'list(Path("\1").iterdir())', source
-    )
-    source = re.sub(
-        r"\bos\.listdir\s*\(\s*\'([^\']+)\'\s*\)", r'list(Path("\1").iterdir())', source
-    )
+    source = re.sub(r'\bos\.listdir\s*\(\s*"([^"]+)"\s*\)', r'list(Path("\1").iterdir())', source)
+    source = re.sub(r"\bos\.listdir\s*\(\s*\'([^\']+)\'\s*\)", r'list(Path("\1").iterdir())', source)
     # Step 4: Replace os.path.exists, .isdir, etc.
     #   os.path.exists(p) → Path(p).exists()
     for attr in [
@@ -252,9 +248,7 @@ def rewrite_os_to_pathlib(source: str, tree: ast.AST) -> str:
                         source,
                     )
                 elif os_attr[1] == "rmdir":
-                    source = re.sub(
-                        r"\bos\.rmdir\s*\(\s*([^)]+)\s*\)", r"Path(\1).rmdir()", source
-                    )
+                    source = re.sub(r"\bos\.rmdir\s*\(\s*([^)]+)\s*\)", r"Path(\1).rmdir()", source)
                 elif os_attr[1] == "remove":
                     source = re.sub(
                         r"\bos\.remove\s*\(\s*([^)]+)\s*\)",
@@ -274,9 +268,7 @@ def rewrite_os_to_pathlib(source: str, tree: ast.AST) -> str:
                         source,
                     )
                 elif os_attr[1] == "stat":
-                    source = re.sub(
-                        r"\bos\.stat\s*\(\s*([^)]+)\s*\)", r"Path(\1).stat()", source
-                    )
+                    source = re.sub(r"\bos\.stat\s*\(\s*([^)]+)\s*\)", r"Path(\1).stat()", source)
                 elif os_attr[1] == "chmod":
                     source = re.sub(
                         r"\bos\.chmod\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)",
@@ -358,9 +350,7 @@ def _make_pathlib_call(attr: str) -> str:
         "getmtime": lambda p: f"Path({p}).stat().st_mtime",
         "getsize": lambda p: f"Path({p}).stat().st_size",
         "relpath": lambda p: f"Path({p}).resolve().relative_to(Path('.').resolve())",
-        "samefile": lambda p: (
-            f"Path({p}).exists() and Path({p}).samefile(Path({p}))"
-        ),  # simplified
+        "samefile": lambda p: f"Path({p}).exists() and Path({p}).samefile(Path({p}))",  # simplified
         "expanduser": lambda p: f"Path({p}).expanduser()",
         "expandvars": lambda p: f"Path({p}).expandvars()",
         "normpath": lambda p: f"str(Path({p}).resolve())",  # approximate

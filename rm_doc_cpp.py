@@ -102,9 +102,7 @@ if __name__ == "__main__":
         return f"{size:.2f} TB"
 
     print(f"\n{'=' * 60}")
-    print(
-        f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}"
-    )
+    print(f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}")
     print(f"Total comment markers removed: ~{total_comments}")
     if errors:
         print("\nErrors in:")

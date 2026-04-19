@@ -28,9 +28,7 @@ def merge_python_files():
     current_dir = Path.cwd()
     folder_name = Path(current_dir).name
     output_filename = f"{folder_name}.py"
-    py_files = [
-        f for f in os.listdir(current_dir) if f.endswith(".py") and f != output_filename
-    ]
+    py_files = [f for f in os.listdir(current_dir) if f.endswith(".py") and f != output_filename]
     py_files.sort()
     with Path(output_filename).open("w", encoding="utf-8") as outfile:
         for py_file in py_files:

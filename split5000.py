@@ -40,11 +40,7 @@ def chunk_text_with_nltk(text: str, max_chars: int):
     cur = ""
     for sent in sentences:
         sent_to_add = sent
-        if (
-            cur
-            and not cur.endswith((" ", "\n"))
-            and not sent_to_add.startswith((" ", "\n"))
-        ):
+        if cur and not cur.endswith((" ", "\n")) and not sent_to_add.startswith((" ", "\n")):
             sent_to_add = " " + sent_to_add
         if len(cur) + len(sent_to_add) <= max_chars:
             cur += sent_to_add

@@ -34,9 +34,7 @@ def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
         output_dir = "output"
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        with open(
-            os.path.join(output_dir, f"{pkg_name}_debug.html"), "w", encoding="utf-8"
-        ) as f:
+        with open(os.path.join(output_dir, f"{pkg_name}_debug.html"), "w", encoding="utf-8") as f:
             f.write(response.text)
         soup = BeautifulSoup(response.text, "html.parser")
         links = soup.find_all("a")
@@ -72,26 +70,18 @@ def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
                     break
                 elif href.endswith(".zip"):
                     preferred_url = urljoin(mirror_url, href)
-                elif (
-                    href.endswith(".whl") and not preferred_url
-                ):  # Only set if no .zip or .tar.gz found yet
+                elif href.endswith(".whl") and not preferred_url:  # Only set if no .zip or .tar.gz found yet
                     preferred_url = urljoin(mirror_url, href)
         if not preferred_url:
-            output_data["error"] = (
-                "Could not find a preferred file type (.tar.gz, .zip, or .whl)."
-            )
+            output_data["error"] = "Could not find a preferred file type (.tar.gz, .zip, or .whl)."
             return output_data
         # Extract version from the preferred URL
-        version_match = re.search(
-            r"([\w.-]+?)-(\d+\.\d+(\.\d+)?(-\w+)?).*\.(tar\.gz|zip|whl)", preferred_url
-        )
+        version_match = re.search(r"([\w.-]+?)-(\d+\.\d+(\.\d+)?(-\w+)?).*\.(tar\.gz|zip|whl)", preferred_url)
         if version_match:
             output_data["latest_version"] = version_match.group(2)
         else:
             # Fallback: try to extract from the href attribute of the last link tag if regex fails
-            version_match_fallback = re.search(
-                r"-(\d+\.\d+(\.\d+)?(-\w+)?)\.", latest_url
-            )
+            version_match_fallback = re.search(r"-(\d+\.\d+(\.\d+)?(-\w+)?)\.", latest_url)
             if version_match_fallback:
                 output_data["latest_version"] = version_match_fallback.group(1)
             else:

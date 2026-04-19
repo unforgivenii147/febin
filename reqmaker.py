@@ -42,9 +42,7 @@ def save_to_requirements(packages: Iterable[str]) -> None:
     existing = read_existing_requirements()
     merged = sorted(existing | set(packages))
     REQUIREMENTS_FILE.write_text("\n".join(merged) + "\n", encoding="utf-8")
-    print(
-        f"✔️ Saved {len(packages)} new package(s). Total: {len(merged)} in requirements.txt"
-    )
+    print(f"✔️ Saved {len(packages)} new package(s). Total: {len(merged)} in requirements.txt")
 
 
 def main() -> None:

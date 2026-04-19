@@ -4,6 +4,7 @@ from pathlib import Path
 import regex as re
 from dh import get_nobinary
 from termcolor import cprint
+from dhh import gsz, fsz
 
 LIC_FILE = Path("/sdcard/lic")
 MIN_BLANK_LINES = 3

@@ -21,9 +21,7 @@ def parse_version_obj(s):
 
 
 def extract_links(html_text):
-    pattern = re.compile(
-        r'<a\s+[^>]*href=(["\'])(?P<href>.*?)\1[^>]*>(?P<text>.*?)</a>', re.I | re.S
-    )
+    pattern = re.compile(r'<a\s+[^>]*href=(["\'])(?P<href>.*?)\1[^>]*>(?P<text>.*?)</a>', re.I | re.S)
     for m in pattern.finditer(html_text):
         href = _html.unescape(m.group("href")).strip()
         text = _html.unescape(re.sub(r"<[^>]+>", "", m.group("text"))).strip()

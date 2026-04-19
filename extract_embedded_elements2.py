@@ -78,9 +78,7 @@ def process_file(path: Path):
             continue
         css = style_tag.string
         fpath = save_asset(css.encode("utf-8"), "text/css", f"{file_prefix}_style{i}")
-        style_tag.replace_with(
-            f'<link rel="stylesheet" href="{fpath.relative_to(OUTPUT_DIR)}">'
-        )
+        style_tag.replace_with(f'<link rel="stylesheet" href="{fpath.relative_to(OUTPUT_DIR)}">')
     # -----------------------------
     # 2) Inline <script> blocks
     # -----------------------------
@@ -93,9 +91,7 @@ def process_file(path: Path):
                     script["src"] = str(fpath.relative_to(OUTPUT_DIR))
             continue
         js = script.string or ""
-        fpath = save_asset(
-            js.encode("utf-8"), "application/javascript", f"{file_prefix}_script{i}"
-        )
+        fpath = save_asset(js.encode("utf-8"), "application/javascript", f"{file_prefix}_script{i}")
         script.replace_with(f'<script src="{fpath.relative_to(OUTPUT_DIR)}"></script>')
     # -----------------------------
     # 3) IMG: data URLs → extract
@@ -121,17 +117,13 @@ def process_file(path: Path):
             data_url = m.group(1)
             fpath = extract_base64_data(data_url, f"{file_prefix}_bg")
             if fpath:
-                tag["style"] = style.replace(
-                    data_url, str(fpath.relative_to(OUTPUT_DIR))
-                )
+                tag["style"] = style.replace(data_url, str(fpath.relative_to(OUTPUT_DIR)))
     # -----------------------------
     # 5) Inline SVGs → extract
     # -----------------------------
     for i, svg in enumerate(soup.find_all("svg")):
         svg_str = str(svg)
-        fpath = save_asset(
-            svg_str.encode("utf-8"), "image/svg+xml", f"{file_prefix}_svg{i}"
-        )
+        fpath = save_asset(svg_str.encode("utf-8"), "image/svg+xml", f"{file_prefix}_svg{i}")
         new_tag = soup.new_tag("img")
         new_tag["src"] = str(fpath.relative_to(OUTPUT_DIR))
         svg.replace_with(new_tag)

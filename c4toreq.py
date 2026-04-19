@@ -44,9 +44,7 @@ def extract_upgradable_packages(results_file_path: str) -> list[tuple[str, str]]
                         installed_ver = Version(installed_version_str)
                         latest_ver = Version(latest_version_str)
                         if installed_ver < latest_ver:
-                            upgradable_packages.append(
-                                (package_name, latest_version_str)
-                            )
+                            upgradable_packages.append((package_name, latest_version_str))
                     except Exception as e:
                         print(
                             f"Warning: Could not parse versions for {package_name} (installed: '{installed_version_str}', latest: '{latest_version_str}'). Error: {e}"

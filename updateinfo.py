@@ -46,7 +46,9 @@ def update_pyproject_toml(file_path: Path) -> bool:
         content = file_path.read_text(encoding="utf-8")
         original_content = content
         if "[project]" in content:
-            author_pattern = r'(authors\s*=\s*\[\s*\{[^}]*name\s*=\s*["\'][^"\']*["\'][^}]*email\s*=\s*["\'][^"\']*["\'][^}]*\})'
+            author_pattern = (
+                r'(authors\s*=\s*\[\s*\{[^}]*name\s*=\s*["\'][^"\']*["\'][^}]*email\s*=\s*["\'][^"\']*["\'][^}]*\})'
+            )
 
             def replace_author(match):
                 author_block = match.group(1)

@@ -4,9 +4,9 @@ import os
 import sys
 from pathlib import Path
 
+from loguru import logger
 import regex as re
 import requests
-from termcolor import cprint
 
 STATIC_DIR = "/sdcard/_static"
 
@@ -49,10 +49,10 @@ def get_local_font_base64(local_path):
         encoded_string = base64.b64encode(content).decode("utf-8")
         return f"data:{content_type};charset=utf-8;base64,{encoded_string}"
     except FileNotFoundError:
-        print(f"Error: Local font file not found at {local_path}")
+        logger.info(f"Error: Local font file not found at {local_path}")
         return None
     except Exception as e:
-        print(f"An error occurred reading local font {local_path}: {e}")
+        logger.info(f"An error occurred reading local font {local_path}: {e}")
         return None
 
 
@@ -61,11 +61,8 @@ def get_remote_font_base64(url):
         response = requests.get(url, timeout=15, stream=True)
         response.raise_for_status()
         content_type = response.headers.get("content-type", "").split(";")[0]
-        if (
-            not content_type.lower().startswith("font")
-            and "svg" not in content_type.lower()
-        ):
-            print(
+        if not content_type.lower().startswith("font") and "svg" not in content_type.lower():
+            logger.info(
                 f"Warning: Content-Type '{content_type}' for {url} doesn't look like a font. Proceeding anyway."
             )
         ext = get_file_extension(url)
@@ -84,20 +81,20 @@ def get_remote_font_base64(url):
         encoded_string = base64.b64encode(response.content).decode("utf-8")
         return f"data:{content_type};charset=utf-8;base64,{encoded_string}"
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching remote font {url}: {e}")
+        logger.info(f"Error fetching remote font {url}: {e}")
         return None
     except Exception as e:
-        print(f"An unexpected error occurred for remote font {url}: {e}")
+        logger.info(f"An unexpected error occurred for remote font {url}: {e}")
         return None
 
 
 def url_to_base64(url, base_css_path):
     cleaned_url = url.strip("'\"")
     font_filename = Path(cleaned_url).name
-    cprint(f"looking for {font_filename} in {STATIC_DIR}", "cyan")
+    logger.debug(f"looking for {font_filename} in {STATIC_DIR}")
     local_path = find_local_font(font_filename)
     if local_path:
-        print(f"Found local font: {font_filename} at {local_path}")
+        logger.info(f"Found local font: {font_filename} at {local_path}")
         return get_local_font_base64(local_path)
     full_url = cleaned_url
     if not cleaned_url.startswith(("http://", "https://", "//")):
@@ -105,7 +102,7 @@ def url_to_base64(url, base_css_path):
         full_url = os.path.normpath(Path(base_dir) / cleaned_url)
         if not full_url.startswith(("http://", "https://", "//")):
             full_url = f"file:///{full_url}"
-    print(f"Attempting to fetch remote font: {full_url}")
+    logger.info(f"Attempting to fetch remote font: {full_url}")
     return get_remote_font_base64(full_url)
 
 
@@ -114,14 +111,12 @@ def make_css_standalone(input_css_path, output_css_path):
     try:
         content = Path(input_css_path).read_text(encoding="utf-8")
     except FileNotFoundError:
-        print(f"Error: Input CSS file not found at {input_css_path}")
+        logger.info(f"Error: Input CSS file not found at {input_css_path}")
         return
     except Exception as e:
-        print(f"Error reading input CSS file {input_css_path}: {e}")
+        logger.info(f"Error reading input CSS file {input_css_path}: {e}")
         return
-    import_pattern = re.compile(
-        r'@import\s+(?:url\()?(["\'])(.*?)\1\)?;', re.IGNORECASE
-    )
+    import_pattern = re.compile(r'@import\s+(?:url\()?(["\'])(.*?)\1\)?;', re.IGNORECASE)
     font_url_pattern = re.compile(r'url\((["\']?)([^)"\'\s]+?)\1?\)', re.IGNORECASE)
     processed_content = content
     import_urls_to_process = []
@@ -137,7 +132,7 @@ def make_css_standalone(input_css_path, output_css_path):
         if normalized_import_url in processed_imports:
             continue
         processed_imports.add(normalized_import_url)
-        print(f"Processing imported CSS: {current_import_url}")
+        logger.info(f"Processing imported CSS: {current_import_url}")
         try:
             if not current_import_url.startswith(("http://", "https://", "//")):
                 base_dir = Path(Path(input_css_path).resolve()).parent
@@ -147,9 +142,7 @@ def make_css_standalone(input_css_path, output_css_path):
                         imported_css = Path(fetch_url).read_text(encoding="utf-8")
                         import_source_ref = fetch_url
                     else:
-                        print(
-                            f"Warning: Local import file not found: {fetch_url}. Skipping."
-                        )
+                        logger.info(f"Warning: Local import file not found: {fetch_url}. Skipping.")
                         continue
                 else:
                     response = requests.get(current_import_url, timeout=15)
@@ -166,19 +159,13 @@ def make_css_standalone(input_css_path, output_css_path):
                 if os.path.normpath(sub_import_url) not in processed_imports:
                     queue.append(sub_import_url)
                 imported_css = imported_css.replace(sub_match.group(0), "", 1)
-            processed_content += (
-                f"\n/* Imported from: {import_source_ref} */\n{imported_css}\n"
-            )
+            processed_content += f"\n/* Imported from: {import_source_ref} */\n{imported_css}\n"
         except FileNotFoundError:
-            print(
-                f"Could not import local file {current_import_url} (resolved to {fetch_url}): File not found."
-            )
+            logger.info(f"Could not import local file {current_import_url} (resolved to {fetch_url}): File not found.")
         except requests.exceptions.RequestException as e:
-            print(f"Could not import remote CSS from {current_import_url}: {e}")
+            logger.info(f"Could not import remote CSS from {current_import_url}: {e}")
         except Exception as e:
-            print(
-                f"An unexpected error occurred while processing import {current_import_url}: {e}"
-            )
+            logger.info(f"An unexpected error occurred while processing import {current_import_url}: {e}")
 
     def replace_font_urls_in_content(match):
         url_part = match.group(2)
@@ -188,20 +175,18 @@ def make_css_standalone(input_css_path, output_css_path):
             if quote_style:
                 return f"url({quote_style}{base64_data}{quote_style})"
             return f'url("{base64_data}")'
-        print(f"Failed to process font URL: {url_part}. Keeping original.")
+        logger.info(f"Failed to process font URL: {url_part}. Keeping original.")
         return match.group(0)
 
-    processed_content = font_url_pattern.sub(
-        replace_font_urls_in_content, processed_content
-    )
+    processed_content = font_url_pattern.sub(replace_font_urls_in_content, processed_content)
     try:
         output_dir = Path(output_css_path).parent
         if output_dir:
             Path(output_dir).mkdir(exist_ok=True, parents=True)
         Path(output_css_path).write_text(processed_content, encoding="utf-8")
-        print(f"Standalone CSS file created at: {output_css_path}")
+        logger.info(f"Standalone CSS file created at: {output_css_path}")
     except Exception as e:
-        print(f"Error writing output CSS file {output_css_path}: {e}")
+        logger.info(f"Error writing output CSS file {output_css_path}: {e}")
 
 
 if __name__ == "__main__":

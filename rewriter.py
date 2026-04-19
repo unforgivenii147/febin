@@ -6,6 +6,8 @@ from pathlib import Path
 from dh import get_files, is_binary
 from pbar import Pbar
 from termcolor import cprint
+from unidecode import unidecode_expect_ascii as uea
+import unicodedata
 
 
 def process_file(fn: Path, backup=False) -> bool:
@@ -28,7 +30,8 @@ def process_file(fn: Path, backup=False) -> bool:
                 cprint(f"{fn.name} ast parse error", "cyan")
                 return False
         else:
-            new_content = unidecodedata.normalize("NFKD", content)
+            new_content = unicodedata.normalize("NFKD", content)
+            new_content = uea(new_content)
             fn.write_text(new_content, encoding="utf-8")
     except:
         return False

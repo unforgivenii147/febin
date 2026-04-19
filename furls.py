@@ -469,11 +469,7 @@ def main():
     )
     args = parser.parse_args()
     max_bytes = int(args.max_mb * 1024 * 1024)
-    exts = (
-        {e.strip().lower() for e in args.extensions.split(",") if e.strip()}
-        if args.extensions
-        else None
-    )
+    exts = {e.strip().lower() for e in args.extensions.split(",") if e.strip()} if args.extensions else None
     found = set()
     for root, dirs, files in os.walk(".", topdown=True, followlinks=False):
         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]

@@ -74,14 +74,12 @@ def check_files(directory):
                     new_name = os.path.splitext(name)[0] + new_ext
                     new_path = os.path.join(root, new_name)
                     new_path = safe_rename(file_path, new_path)
-                    mismatched_files.append(
-                        (
-                            file_path,
-                            ext,
-                            mime,
-                            new_path,
-                        )
-                    )
+                    mismatched_files.append((
+                        file_path,
+                        ext,
+                        mime,
+                        new_path,
+                    ))
     return mismatched_files
 
 

@@ -111,18 +111,12 @@ def extract_from_ast(code: str, path_hint: str | None = None) -> dict[str, set[s
                     result["imports"].add(base)
         elif isinstance(node, ast.Call):
             if isinstance(node.func, ast.Name) and node.func.id == "__import__":
-                if (
-                    node.args
-                    and isinstance(node.args[0], ast.Constant)
-                    and isinstance(node.args[0].value, str)
-                ):
+                if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
                     result["dynamic"].add(node.args[0].value.split(".", 1)[0])
             elif isinstance(node.func, ast.Attribute):
                 val = node.func
                 if (
-                    isinstance(val.value, ast.Name)
-                    and val.value.id == "importlib"
-                    and val.attr == "import_module"
+                    isinstance(val.value, ast.Name) and val.value.id == "importlib" and val.attr == "import_module"
                 ) and (
                     node.args
                     and isinstance(
@@ -138,9 +132,7 @@ def extract_from_ast(code: str, path_hint: str | None = None) -> dict[str, set[s
     return result
 
 
-def process_py_file_content(
-    code: str, path_hint: str | None = None
-) -> dict[str, list[str]]:
+def process_py_file_content(code: str, path_hint: str | None = None) -> dict[str, list[str]]:
     d = extract_from_ast(code, path_hint)
     return {k: sorted(v) for k, v in d.items()}
 
@@ -312,11 +304,7 @@ def build_project_module_map(sources: list[str]) -> dict[str, list[str]]:
         rel = os.path.normpath(fp).lstrip("./")
         parts = rel.split(os.sep)
         if parts[-1] == "__init__.py":
-            mod = (
-                ".".join(parts[:-1])
-                if parts[:-1]
-                else (parts[-2] if len(parts) > 1 else "")
-            )
+            mod = ".".join(parts[:-1]) if parts[:-1] else (parts[-2] if len(parts) > 1 else "")
         else:
             mod = ".".join(parts)[:-3] if rel.endswith(".py") else ".".join(parts)
         if not mod:
@@ -422,20 +410,13 @@ def scan_sources(ignore_dirs: set[str]) -> list[str]:
         for f in files:
             fp = os.path.join(root, f)
             lower = f.lower()
-            if (
-                lower.endswith(
-                    (".py", ".ipynb", ".whl", ".zip", ".tar.gz", ".tgz", ".tar.xz")
-                )
-                or Path(fp).suffix == ""
-            ):
+            if lower.endswith((".py", ".ipynb", ".whl", ".zip", ".tar.gz", ".tgz", ".tar.xz")) or Path(fp).suffix == "":
                 out.append(fp)
     return out
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(
-        description="Offline requirements.txt generator (static + heuristics)."
-    )
+    p = argparse.ArgumentParser(description="Offline requirements.txt generator (static + heuristics).")
     p.add_argument(
         "--ignore",
         nargs="*",
@@ -489,9 +470,7 @@ def main() -> None:
     set(project_map.keys())
     project_top_only = {k.split(".", 1)[0] for k in project_map}
     cache_path = Path(args.cache_file)
-    cache = (
-        {} if args.no_cache else (load_json(cache_path) if cache_path.exists() else {})
-    )
+    cache = {} if args.no_cache else (load_json(cache_path) if cache_path.exists() else {})
     if args.clear_cache:
         try:
             if cache_path.exists():

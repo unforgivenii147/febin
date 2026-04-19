@@ -6,11 +6,7 @@ from bs4 import BeautifulSoup
 
 def find_html_files(cwd: str = ".") -> list[Path]:
     root_path = Path(cwd).resolve()
-    html_files = [
-        file_path
-        for file_path in root_path.rglob("*.html")
-        if file_path.name != "template.html"
-    ]
+    html_files = [file_path for file_path in root_path.rglob("*.html") if file_path.name != "template.html"]
     for file_path in root_path.rglob("*.htm"):
         html_files.append(file_path)
     return sorted(html_files)
@@ -28,11 +24,7 @@ def extract_common_structure(html_files: list[Path]) -> dict:
                 if soup.head:
                     meta_tags.extend(str(meta) for meta in soup.head.find_all("meta"))
                     link_tags.extend(str(link) for link in soup.head.find_all("link"))
-                    script_tags.extend(
-                        str(script)
-                        for script in soup.head.find_all("script")
-                        if script.get("src")
-                    )
+                    script_tags.extend(str(script) for script in soup.head.find_all("script") if script.get("src"))
                 if soup.body and soup.body.get("class"):
                     body_classes.extend(soup.body.get("class"))
         except Exception as e:
@@ -225,14 +217,12 @@ if __name__ == "__main__":
         import subprocess
         import sys
 
-        subprocess.check_call(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "beautifulsoup4",
-            ]
-        )
+        subprocess.check_call([
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "beautifulsoup4",
+        ])
         from bs4 import BeautifulSoup
     main()

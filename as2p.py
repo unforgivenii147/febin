@@ -19,19 +19,13 @@ def refactor_file(file_path):
             r"[f.name for f in pathlib.Path(\g<1>).iterdir()]",
             content,
         )
-        content = re.sub(
-            r"os\.remove\(([^)]+)\)", r"pathlib.Path(\g<1>).unlink()", content
-        )
-        content = re.sub(
-            r"os\.path\.splitext\(([^)]+)\)", r"(\1.stem, \1.suffix)", content
-        )
+        content = re.sub(r"os\.remove\(([^)]+)\)", r"pathlib.Path(\g<1>).unlink()", content)
+        content = re.sub(r"os\.path\.splitext\(([^)]+)\)", r"(\1.stem, \1.suffix)", content)
         if "import os" in content and "import pathlib" not in content:
             lines = content.splitlines()
             import_path = -1
             for i, line in enumerate(lines):
-                if line.strip().startswith("import ") or line.strip().startswith(
-                    "from "
-                ):
+                if line.strip().startswith("import ") or line.strip().startswith("from "):
                     import_path = i
             if import_path != -1:
                 lines.insert(import_path + 1, "import pathlib")

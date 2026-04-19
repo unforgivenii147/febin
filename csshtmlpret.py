@@ -127,10 +127,7 @@ def _prioritify(
     ) = css_props_text_as_list
     priority_integer, group_integer = 9999, 0
     for css_property in sorted_css_properties:
-        if (
-            css_property.lower()
-            == line_of_css.split(":", maxsplit=1)[0].lower().strip()
-        ):
+        if css_property.lower() == line_of_css.split(":", maxsplit=1)[0].lower().strip():
             priority_integer = sorted_css_properties.index(css_property)
             group_integer = groups_by_alphabetic_order[priority_integer]
             break
@@ -146,13 +143,8 @@ def _props_grouper(props, pgs):
         strict=False,
     )
     props_pg = sorted(props_pg, key=lambda item: item[0][1])
-    props_by_groups = (
-        list(item[1])
-        for item in itertools.groupby(props_pg, key=lambda item: item[0][1])
-    )
-    props_by_groups = (
-        sorted(item, key=lambda item: item[0][0]) for item in props_by_groups
-    )
+    props_by_groups = (list(item[1]) for item in itertools.groupby(props_pg, key=lambda item: item[0][1]))
+    props_by_groups = (sorted(item, key=lambda item: item[0][0]) for item in props_by_groups)
     props = []
     for group in props_by_groups:
         group = (item[1] for item in group)
@@ -285,11 +277,7 @@ def split_long_selectors(css: str) -> str:
 
 
 def simple_replace(css: str) -> str:
-    return (
-        css.replace("}\n#", "}\n\n#")
-        .replace("}\n.", "}\n\n.")
-        .replace("}\n*", "}\n\n*")
-    )
+    return css.replace("}\n#", "}\n\n#").replace("}\n.", "}\n\n.").replace("}\n*", "}\n\n*")
 
 
 def css_prettify(
@@ -363,9 +351,7 @@ def walk2list(
         Path(os.path.join(r, f)).resolve()
         for r, d, fs in oswalk
         for f in fs
-        if not f.startswith(() if showhidden else ".")
-        and not f.endswith(omit)
-        and f.endswith(target)
+        if not f.startswith(() if showhidden else ".") and not f.endswith(omit) and f.endswith(target)
     ]
 
 

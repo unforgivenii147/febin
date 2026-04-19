@@ -54,14 +54,12 @@ def is_python_file(path: str | Path) -> bool:
             return True
         for line in lines:
             if line and (not line.startswith("#")):
-                return line.startswith(
-                    (
-                        "import ",
-                        "from ",
-                        "class ",
-                        "def ",
-                    )
-                )
+                return line.startswith((
+                    "import ",
+                    "from ",
+                    "class ",
+                    "def ",
+                ))
     return False
 
 
@@ -143,9 +141,7 @@ def format_single_file(file_path, args) -> bool:
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(
-        description="Fast Python API-based formatter (Lazy Loading)"
-    )
+    p = argparse.ArgumentParser(description="Fast Python API-based formatter (Lazy Loading)")
     p.add_argument(
         "-b",
         "--black",

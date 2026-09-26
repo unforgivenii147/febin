@@ -2,6 +2,7 @@
 
 import argparse
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -36,7 +37,7 @@ def fsz(size_bytes: int) -> str:
 
 
 def download_file(url: str, dest_dir: Path) -> None:
-    filename = Path(urllib.request.urlparse(url).path).name or "downloaded_file"
+    filename = Path(urllib.parse.urlparse(url).path).name or "downloaded_file"
     dest_file = dest_dir / filename
     try:
         urllib.request.urlretrieve(url, dest_file)

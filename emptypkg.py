@@ -1,10 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+import csv
+import os
 import sysconfig
 from pathlib import Path
 
 
-def is_empty_package(dist_info_path) -> bool:
+def is_empty_package(dist_info_path: str | Path) -> bool:
+    """Return True when a ``.dist-info`` RECORD lists no payload files."""
     record_file = os.path.join(dist_info_path, "RECORD")
     if not Path(record_file).is_file():
         return False
@@ -20,7 +23,7 @@ def is_empty_package(dist_info_path) -> bool:
                     rel_path,
                 )
             ).resolve()
-            if not abs_path.startswith(Path(dist_info_path).resolve() + os.sep):
+            if not str(abs_path).startswith(str(Path(dist_info_path).resolve()) + os.sep):
                 return False
     return True
 

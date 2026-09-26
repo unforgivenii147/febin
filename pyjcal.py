@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 from datetime import datetime
 
 
@@ -273,7 +274,7 @@ class JalaliCalendar:
         language: str = "en",
         show_header: bool = True,
     ) -> str:
-        output = []
+        output: list[Any] = []
         if show_header:
             if language == "fa":
                 month_name = JalaliDate.JALALI_MONTHS_FA[self.month - 1]
@@ -418,7 +419,7 @@ def jdate(fmt: str | None = None, language: str = "en") -> str:
     if fmt is None:
         fmt = "%A %d %B %Y %H:%M:%S"
     if language == "fa":
-        return JalaliDateFormatter.format_fa(jdate, now, fmt)
+        return JalaliDateFormatter.format_fa(jdate, fmt)
     return JalaliDateFormatter.format(jdate, now, fmt)
 
 

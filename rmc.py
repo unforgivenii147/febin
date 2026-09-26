@@ -85,8 +85,7 @@ def rm_ast(content: str) -> tuple[str, int]:
     try:
         tree = ast.parse(content)
     except SyntaxError:
-        del tree
-        return content
+        return content, 0
     lines = content.split("\n")
     ranges = find_docstring_ranges(tree)
     for start, end in sorted(ranges, reverse=True):
@@ -141,10 +140,10 @@ def process_file(file_path: Path) -> bool:
                 "blue",
             )
             return True
-        except:
+        except SyntaxError:
             print("ast parse error")
             return False
-    return None
+    return False
 
 
 def main():

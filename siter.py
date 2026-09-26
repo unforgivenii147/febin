@@ -308,25 +308,25 @@ class WheelBuilder:
 
 
 def find_site_packages() -> list[Path]:
-    candidates = []
+    candidates: list[Path] = []
     import site
 
     for sp in site.getsitepackages():
-        p = Path(sp)
-        if p.exists():
-            candidates.append(p)
+        sp_path = Path(sp)
+        if sp_path.exists():
+            candidates.append(sp_path)
     user_site = site.getusersitepackages()
     if user_site:
-        p = Path(user_site)
-        if p.exists():
-            candidates.append(p)
+        user_site_path = Path(user_site)
+        if user_site_path.exists():
+            candidates.append(user_site_path)
     cwd = Path.cwd()
     for pattern in [".venv", "venv", "env"]:
         for venv in cwd.rglob(pattern):
             if venv.is_dir():
-                for sp in venv.rglob("site-packages"):
-                    if sp.is_dir() and sp not in candidates:
-                        candidates.append(sp)
+                for venv_sp in venv.rglob("site-packages"):
+                    if venv_sp.is_dir() and venv_sp not in candidates:
+                        candidates.append(venv_sp)
     return sorted(set(candidates))
 
 

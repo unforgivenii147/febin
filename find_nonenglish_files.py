@@ -3,6 +3,7 @@
 import os
 import sys
 from collections import Counter, defaultdict
+from typing import Any
 from pathlib import Path
 
 import pycld2
@@ -65,11 +66,12 @@ def get_file_sample(
     return sample
 
 
-def analyze_directory(directory: str = ".", show_all: bool = False) -> dict:
-    directory = Path(directory).resolve()
-    print(f"🔍 Scanning directory: {directory}")
+def analyze_directory(directory: str = ".", show_all: bool = False) -> dict[str, Any]:
+    """Scan ``directory`` and classify text files by detected language."""
+    root_dir = Path(directory).resolve()
+    print(f"🔍 Scanning directory: {root_dir}")
     print("=" * 70)
-    results = {
+    results: dict[str, Any] = {
         "total_files": 0,
         "checked_files": 0,
         "skipped_small": 0,
@@ -81,10 +83,10 @@ def analyze_directory(directory: str = ".", show_all: bool = False) -> dict:
         "language_stats": Counter(),
         "directory_stats": defaultdict(lambda: {"total": 0, "non_english": 0}),
     }
-    for root, dirs, files in os.walk(directory):
+    for root, dirs, files in os.walk(root_dir):
         dirs[:] = [d for d in dirs if not d.startswith(".") and d not in {"__pycache__", "node_modules"}]
         current_dir = Path(root)
-        rel_dir = current_dir.relative_to(directory)
+        rel_dir = current_dir.relative_to(root_dir)
         for file in files:
             filepath = current_dir / file
             if filepath.suffix.lower() not in SUPPORTED_EXTENSIONS:

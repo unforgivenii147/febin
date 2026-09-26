@@ -34,7 +34,8 @@ def has_late_import(path: str) -> bool:
     return False
 
 
-def find_files(root: str) -> list[str]:
+def find_files(root: str | Path) -> list[str]:
+    """Return files below ``root`` that perform imports inside functions."""
     results = []
     for dirpath, _, filenames in os.walk(root):
         for name in filenames:

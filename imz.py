@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import argparse
 import ast
 import contextlib
@@ -77,7 +79,7 @@ def load_mapping(path: str) -> dict[str, str]:
 
 
 def extract_from_ast(code: str, path_hint: str | None = None) -> dict[str, set[str]]:
-    result = {
+    result: dict[str, Any] = {
         "imports": set(),
         "star_modules": set(),
         "dynamic": set(),
@@ -174,7 +176,7 @@ def process_noext_python_script(path: Path) -> dict[str, list[str]]:
 
 
 def process_ipynb(path: Path) -> dict[str, list[str]]:
-    out = {
+    out: dict[str, Any] = {
         "imports": [],
         "star_modules": [],
         "dynamic": [],
@@ -240,7 +242,7 @@ def process_tar_file(path: Path) -> dict[str, list[str]]:
     stars = set()
     dyn = set()
     rel = set()
-    mode = "r:xz" if str(path).endswith(".xz") else "r:gz"
+    mode: Any = "r:xz" if str(path).endswith(".xz") else "r:gz"
     try:
         with tarfile.open(path, mode) as t:
             for m in t.getmembers():
@@ -340,7 +342,7 @@ def trace_star_module(module: str, project_map: dict[str, list[str]]) -> set[str
                     for target in node.targets:
                         if isinstance(target, ast.Name) and target.id == "__all__":
                             val = node.value
-                            names = []
+                            names: list[Any] = []
                             if isinstance(
                                 val,
                                 (

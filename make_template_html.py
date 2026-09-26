@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+from typing import Any
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -14,9 +15,9 @@ def find_html_files(cwd: str = ".") -> list[Path]:
 
 def extract_common_structure(html_files: list[Path]) -> dict:
     body_classes = []
-    meta_tags = []
-    link_tags = []
-    script_tags = []
+    meta_tags: list[Any] = []
+    link_tags: list[Any] = []
+    script_tags: list[Any] = []
     for file_path in html_files:
         try:
             with Path(file_path).open(encoding="utf-8") as f:

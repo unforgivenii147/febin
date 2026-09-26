@@ -12,7 +12,7 @@ COMMENT_AND_DOCSTRING_REGEX = re.compile(
     re.MULTILINE | re.DOTALL,
 )
 DOCSTRING_START_REGEX = re.compile(r"^\s*('''|\"{3}).*?(\1)\s*", re.MULTILINE | re.DOTALL)
-MAX_WORKERS = os.cpu_count() - 1 or 1
+MAX_WORKERS = (os.cpu_count() or 2) - 1 or 1
 
 
 def strip_comments_and_docstrings(file_path_str):

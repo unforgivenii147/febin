@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import os
 import shutil
 import tarfile
@@ -10,7 +11,7 @@ from pathlib import Path
 TARGET_FILES = {"METADATA", "PKGINFO", "PKG-INFO"}
 PREFIX = "Requires-Dist:"
 LOG_FILE = "/sdcard/reqdist.txt"
-removed_lines_accumulator = []
+removed_lines_accumulator: list[Any] = []
 
 
 def clean_text(text: str) -> tuple[str, list[str]]:
@@ -75,6 +76,8 @@ def process_tar(path: str) -> None:
 
 
 def dispatch_archive(path: str | Path) -> None:
+    """Route an archive to the matching cleanup routine."""
+    path = str(path)
     name = path.lower()
     if name.endswith(".whl"):
         print(f"processing ... {path}")

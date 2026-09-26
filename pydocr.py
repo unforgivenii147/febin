@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
+from typing import Any
 import importlib
 import inspect
 import os
@@ -52,7 +53,8 @@ def extract_ast_docs(src: str) -> tuple[str, list, list]:
     return module_doc, functions, classes
 
 
-def extract_from_file(py_path: str) -> tuple[str, str, str, list, list]:
+def extract_from_file(py_path: str) -> tuple[str, list[Any], list[Any]] | None:
+    """Return (module docstring, functions, classes) or None when empty."""
     try:
         src = Path(py_path).read_text(encoding="utf-8")
     except Exception:

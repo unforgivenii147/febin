@@ -93,10 +93,14 @@ def mpf3(
     max_in_flight: int = 8,
     num_processes: int = 8,
     context_method: str = "spawn",
-) -> None:
-    results = []
+) -> list[Any]:
+    """Map ``func`` over ``items`` in a process pool, bounding in-flight tasks.
+
+    Returns the list of results in submission order.
+    """
+    results: list[Any] = []
     with get_context(context_method).Pool(num_processes) as p:
-        pending = deque()
+        pending: deque[Any] = deque()
         for item in items:
             pending.append(p.apply_async(func, (item,)))
             if len(pending) >= 8:
@@ -207,7 +211,23 @@ def gsz(path: str | Path) -> int:
     return total_size
 
 
+def is_python_file(path: str | Path) -> bool:
+    """Return True if ``path`` is a Python file (by suffix or shebang)."""
+    path = Path(path)
+    if path.suffix == ".py":
+        return True
+    if path.suffix == "":
+        try:
+            with path.open("rb") as handle:
+                head = handle.read(64)
+        except OSError:
+            return False
+        return b"#!" in head and b"python" in head
+    return False
+
+
 def get_pyfiles(path: str | Path) -> list[Path]:
+    """Collect ``.py`` files plus extension-less Python scripts under ``path``."""
     path = Path(path)
     pyfiles: list[Path] = []
     if path.is_file() and (path.suffix == ".py"):

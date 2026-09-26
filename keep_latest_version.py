@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import operator
 import os
 from pathlib import Path
@@ -10,7 +11,7 @@ from packaging.version import Version
 wheel_pattern = re.compile(r"^(?P<name>.+)-(?P<version>\d+(\.\d+)+).*\.metadata$")
 files = [f for f in os.listdir(".") if (f.endswith((".metadata", ".whl")))]
 print(f"{len(files)} files found.")
-packages = {}
+packages: dict[Any, Any] = {}
 for f in files:
     matchz = wheel_pattern.match(f)
     if not matchz:

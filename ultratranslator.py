@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import ast
 import io
 import shutil
@@ -78,7 +79,7 @@ def translate_python_file(source: str) -> str:
     if docstrings:
         print(f"  Found {len(docstrings)} non-English docstrings")
     tokens = list(tokenize.generate_tokens(io.StringIO(source).readline))
-    result = []
+    result: list[Any] = []
     prev_end = (1, 0)
     translated_count = 0
     for i, token in enumerate(tokens):
@@ -154,7 +155,7 @@ def process_files(directory: str) -> None:
             continue
         print("  Translating content...")
         try:
-            translated = translate_python_file(original, fp) if suffix == ".py" else translate_text(original)
+            translated = translate_python_file(original) if suffix == ".py" else translate_text(original)
             if translated.strip() != original.strip():
                 safe_overwrite(fp, translated)
                 print("  ✓ Successfully translated and saved")

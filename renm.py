@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -18,7 +19,7 @@ def is_english(text):
     return not non_english_pattern.search(text)
 
 
-translation_cache = {}
+translation_cache: dict[Any, Any] = {}
 
 
 def translate_name(name):

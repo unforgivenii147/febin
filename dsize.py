@@ -36,9 +36,9 @@ def fsz(size_bytes: int) -> str:
 def process_url(url: str) -> str:
     try:
         size = fetch_content_length(url)
-        print(f"{url[:25]}:{size / (1024 * 1024)} mb")
         if size is None:
             return f"{url}\tUnknown"
+        print(f"{url[:25]}:{size / (1024 * 1024)} mb")
         return f"{url}\t{fsz(size)}"
     except Exception as exc:
         return f"{url}\tError: {exc}"

@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
 import ast
+import os
 from pathlib import Path
 
 output_dir = Path("output")
@@ -23,26 +24,27 @@ def is_constant(node):
     return isinstance(node, ast.Assign) and all(isinstance(t, ast.Name) for t in node.targets)
 
 
-def write_to_file(file_path, content) -> None:
+def write_to_file(file_path: Path, content: str) -> None:
+    """Append ``content`` to ``file_path``."""
     with Path(file_path).open("a", encoding="utf-8") as f:
         f.write(content + "\n\n")
 
 
 for root, _, files in os.walk("."):
-    for file in files:
-        if file.endswith(".py") and not file.startswith("output"):
-            file_path = Path(root) / file
-            content = Path(file_path).read_text(encoding="utf-8")
+    for file_name in files:
+        if file_name.endswith(".py") and not file_name.startswith("output"):
+            src_path = Path(root) / file_name
+            content = src_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
-                    func_code = ast.get_source(tree, node)
+                    func_code = ast.get_source_segment(content, node) or ""
                     write_to_file(func_file, func_code)
                 elif isinstance(node, ast.ClassDef):
-                    class_code = ast.get_source(tree, node)
+                    class_code = ast.get_source_segment(content, node) or ""
                     write_to_file(classes_file, class_code)
                 elif is_constant(node):
-                    const_code = ast.get_source(tree, node)
+                    const_code = ast.get_source_segment(content, node) or ""
                     write_to_file(const_file, const_code)
 with Path(init_file).open("w", encoding="utf-8") as f:
     f.write("from .func import *\n")

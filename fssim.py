@@ -124,11 +124,12 @@ def write_matrix(
         for f1 in files:
             row = [f1]
             for f2 in files:
+                score: int | str
                 if f1 == f2:
                     score = 100
                 else:
-                    score = ssdeep.compare(hashes[f1], hashes[f2])
-                    score = score if score >= threshold else ""
+                    raw_score = ssdeep.compare(hashes[f1], hashes[f2])
+                    score = raw_score if raw_score >= threshold else ""
                 row.append(score)
             writer.writerow(row)
             table.append(row)

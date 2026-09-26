@@ -103,11 +103,12 @@ def remove_comments_and_docstrings(path: Path) -> None:
         cprint(f"[FAIL] {path.name} -> {e}", "cyan")
 
 
-def get_files(cwd, extensions=None) -> list[Path]:
+def get_files(cwd: Path, extensions: list[str] | None = None) -> list[Path]:
+    """Return the Python files to process for ``cwd``."""
     if extensions is None:
         extensions = [".py"]
     if cwd.is_file() and cwd.suffix == ".py":
-        return [root]
+        return [cwd]
     return [p for p in cwd.rglob("*.py") if p.is_file()]
 
 

@@ -20,14 +20,14 @@ import shutil
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 # -----------------------------
 # Safe import & pattern mapping
 # -----------------------------
 # Mapping: (module, attr) → (replacement_module, replacement_import, new_call)
 # If replacement_module is None → inline replacement (no import change)
-REPLACEMENTS: Dict[Tuple[str, str], Tuple[Optional[str], str, str]] = {
+REPLACEMENTS: Dict[Tuple[str, str], Tuple[Optional[str], Optional[str], str]] = {
     # os.path
     ("os", "path.join"): (
         "pathlib",
@@ -46,7 +46,6 @@ REPLACEMENTS: Dict[Tuple[str, str], Tuple[Optional[str], str, str]] = {
         "Path",
         "lambda p: (Path(p).stem, Path(p).suffix)",
     ),
-    ("os", "path.splitext")[::-1]: None,  # skip duplicate key
     ("os", "path.split"): (
         "pathlib",
         "Path",
@@ -205,8 +204,7 @@ def rewrite_os_to_pathlib(source: str, tree: ast.AST) -> str:
         "normcase",
     ]:
         pattern = rf"\bos\.path\.{attr}\s*\(\s*([^)]*)\s*\)"
-        repl = _make_pathlib_call(attr)
-        source = re.sub(pattern, repl, source)
+        source = re.sub(pattern, _make_pathlib_call(attr), source)
     # Step 5: Replace os.makedirs, os.mkdir, etc.
     for os_attr, (mod, imp, repl) in REPLACEMENTS.items():
         if mod is None and imp == "Path" and "lambda" in repl:
@@ -334,7 +332,7 @@ def _join_replacer(args: str) -> str:
     return " / ".join([f"Path({parts[0]})"] + parts[1:])
 
 
-def _make_pathlib_call(attr: str) -> str:
+def _make_pathlib_call(attr: str) -> Callable[[Any], str]:
     """Return replacement lambda for os.path.attr"""
     # Map common cases to simple Path() calls
     mapping = {

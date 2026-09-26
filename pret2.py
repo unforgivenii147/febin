@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import shutil
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -22,11 +23,11 @@ EXT = [
     ".tsm",
     ".jsm",
 ]
-EXCLUDE_PATTERNS = {}
+EXCLUDE_PATTERNS: dict[Any, Any] = {}
 
 
 def should_format(file_path: Path) -> bool:
-    if file_path.suffix not in EXTENSIONS:
+    if file_path.suffix not in EXT:
         return False
     gc.collect()
     return all(not file_path.name.endswith(p) for p in EXCLUDE_PATTERNS)

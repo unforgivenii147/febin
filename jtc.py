@@ -7,7 +7,8 @@ from dh import run_command
 from fastwalk import walk_files
 
 
-def process_file(path) -> bool:
+def process_file(path: Path) -> bool:
+    """Rewrite ``path`` with just-the-code output; return True on success."""
     try:
         cmd = f"just-the-code -s --language=python {path!s}"
         ret, new_code, _stderr = run_command(cmd)
@@ -23,9 +24,11 @@ def process_file(path) -> bool:
     except Exception as e:
         print(f"Error processing {path.name}: {e}")
         return False
+    return False
 
 
-def walk_directory(root) -> list[str]:
+def walk_directory(root: str | Path) -> list[Path]:
+    """Return every ``.py`` file below ``root``."""
     files = []
     for pth in walk_files(root):
         path = Path(pth)

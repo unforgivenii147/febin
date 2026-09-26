@@ -2,6 +2,7 @@
 
 import mmap
 import tokenize
+from multiprocessing import get_context
 from pathlib import Path
 
 import regex as re

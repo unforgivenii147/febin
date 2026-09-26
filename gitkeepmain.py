@@ -106,7 +106,11 @@ def reset_to_last_commit() -> bool:
     return True
 
 
-def alternative_reset_method() -> None:
+def alternative_reset_method() -> bool:
+    """Reset the repository using a sequence of git commands.
+
+    Returns True when every command succeeded.
+    """
     print("Using alternative reset method...")
     commands = [
         "git branch backup-before-cleanup",
@@ -114,12 +118,15 @@ def alternative_reset_method() -> None:
         "git reflog expire --expire=now --all",
         "git gc --prune=now --aggressive",
     ]
+    ok = True
     for cmd in commands:
         print(f"Running: {cmd}")
         result = run_git_command(cmd, check=False)
         if not result or result.returncode != 0:
             print(f"Warning: Command failed: {cmd}")
+            ok = False
     print("✓ Alternative reset completed")
+    return ok
 
 
 def create_backup() -> bool | None:

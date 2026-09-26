@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+from typing import Any
 import argparse
 import difflib
 import sys
@@ -57,7 +58,7 @@ class DiffPanel(ScrollableContainer):
     def __init__(
         self,
         title: str,
-        lines: list[tuple[str, str, int]],
+        lines: list[tuple[str, str, int | None]],
     ) -> None:
         super().__init__()
         self.panel_title = title
@@ -133,10 +134,10 @@ class DiffViewerApp(App):
         super().__init__()
         self.file1 = Path(file1)
         self.file2 = Path(file2)
-        self.left_lines = []
-        self.right_lines = []
+        self.left_lines: list[tuple[str, str, int | None]] = []
+        self.right_lines: list[tuple[str, str, int | None]] = []
         self.search_term = ""
-        self.search_results = []
+        self.search_results: list[Any] = []
 
     def read_file(self, filepath: Path) -> list[str]:
         try:

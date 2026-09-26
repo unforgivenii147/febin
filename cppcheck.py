@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import sys
 from collections import deque
 from multiprocessing import get_context
@@ -12,7 +13,8 @@ c_files = {".c", ".h", ".inc"}
 cpp_files = {".cpp", ".cc", ".cxx", ".hpp", ".hpp11", ".hh", ".hxx"}
 
 
-def validate_cpp(path: Path) -> tuple[bool, str]:
+def validate_cpp(path: Path) -> tuple[Path, int, str, str]:
+    """Syntax-check a C/C++ file, returning (path, returncode, stdout, stderr)."""
     cmd = ""
     if path.suffix in c_files:
         cmd = "clang -fsyntax-only str(path)"
@@ -46,7 +48,7 @@ if __name__ == "__main__":
     )
     results = []
     with get_context("spawn").Pool(8) as pool:
-        pending = deque()
+        pending: deque[Any] = deque()
         for f in files:
             pending.append(pool.apply_async(validate_cpp, (f,)))
             if len(pending) > 8:

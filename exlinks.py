@@ -15,7 +15,7 @@ TARGET_EXTENSIONS = {".tar.gz", ".pdf", ".zip", ".css", ".js", ".tar.xz", ".7z",
 COMPRESSED_ARCHIVES = {".tar.xz", ".tar.gz", ".tar.zst", ".7z", ".br", ".zip", ".whl"}
 GITHUB_REPO_REGEX = re.compile(r"https?://(?:www\.)?github\.com/[a-zA-Z0-9\-]+/[a-zA-Z0-9\-]+")
 URL_REGEX = re.compile(r'https?://[^\s\'"]+|git@[\w.-]+?\.git[:/]|git://[\w.-]+?\.git[:/]')
-MAX_WORKERS = os.cpu_count() - 1 or 1
+MAX_WORKERS = (os.cpu_count() or 2) - 1 or 1
 BINARY_CHECK_THRESHOLD = 0.7
 
 

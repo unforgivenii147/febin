@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import ast
 from pathlib import Path
 
@@ -7,7 +8,7 @@ from dh import STDLIB, get_files
 
 
 def extract_imports_from_py(code: str, base_path: Path | None = None) -> set[str]:
-    results = set()
+    results: set[Any] = set()
     try:
         tree = ast.parse(code)
     except Exception:

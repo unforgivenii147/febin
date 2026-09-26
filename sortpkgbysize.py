@@ -9,7 +9,7 @@ def sort_packages_by_size(filename: str):
     with Path(filename).open(newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         rows = list(reader)
-        fieldnames = reader.fieldnames
+        fieldnames = list(reader.fieldnames or [])
     if "Installed-Size" not in fieldnames:
         print("Error: 'Installed-Size' column not found in CSV")
         return

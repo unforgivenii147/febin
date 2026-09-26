@@ -65,7 +65,7 @@ def gregorian_to_jalali(g, m, d):
     return jy, jm, jd
 
 
-now = datetime.datetime()
+now = datetime.datetime.now()
 jy, jm, jd = gregorian_to_jalali(now.year, now.month, now.day)
 weekday = weekdays[now.weekday()]
 month = months[jm - 1]

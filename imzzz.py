@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import ast
 import multiprocessing as mp
 import os
@@ -99,7 +100,7 @@ def process_file(file_path):
 
 def main() -> None:
     root = Path()
-    python_files = []
+    python_files: list[Any] = []
     for ext in ("*.py", "*"):
         python_files.extend(root.rglob(ext))
     with mp.Pool() as pool:

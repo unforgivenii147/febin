@@ -6,7 +6,7 @@ from multiprocessing import get_context
 from pathlib import Path
 
 import regex as re
-from dh import get_nobinary, is_binary
+from dh import fsz, get_nobinary, gsz, is_binary
 
 
 def process_file(file_path: Path) -> None:

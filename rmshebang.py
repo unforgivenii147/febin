@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import sys
 from collections import deque
 from multiprocessing import get_context
@@ -32,7 +33,7 @@ def main() -> None:
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".py"])
     with get_context("spawn").Pool(8) as pool:
-        pending = deque()
+        pending: deque[Any] = deque()
         for f in files:
             pending.append(pool.apply_async(process_file, (f,)))
             if len(pending) > MAX_QUEUE:

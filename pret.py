@@ -142,7 +142,7 @@ def mpf3(
     context_method: str = "spawn",
 ) -> None:
     with get_context(context_method).Pool(num_processes) as p:
-        pending = deque()
+        pending: deque[Any] = deque()
         for item in items:
             pending.append(p.apply_async(func, (item,)))
             if len(pending) >= max_in_flight:

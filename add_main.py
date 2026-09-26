@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import os
 import sys
 from pathlib import Path
 
 
 def get_files(directory: Path, extensions: list[str]) -> list[Path]:
-    found_files = []
+    found_files: list[Any] = []
     for ext in extensions:
         found_files.extend(directory.rglob(f"*{ext}"))
     return found_files
@@ -24,7 +25,8 @@ def gsz(path: Path) -> int:
     return total_size
 
 
-def fsz(size: int) -> str:
+def fsz(size: float) -> str:
+    """Format a byte count as a human readable string."""
     power = 2**10
     n = 0
     power_labels = {0: "", 1: "K", 2: "M", 3: "G", 4: "T"}

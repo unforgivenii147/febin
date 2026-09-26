@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 from base64 import b64encode
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -33,7 +34,8 @@ class QuickXorHash:
         return b64encode(self.digest()).decode("ascii")
 
 
-def calculate_xorhash(path: Path) -> tuple[str, Path]:
+def calculate_xorhash(path: Path) -> tuple[str | None, Path]:
+    """Return (QuickXorHash hex digest, path); the digest is None on failure."""
     q = QuickXorHash()
     try:
         with path.open("rb") as f:
@@ -49,7 +51,7 @@ def calculate_xorhash(path: Path) -> tuple[str, Path]:
 
 
 def find_dups_optimized(root: Path):
-    file_hashes = {}
+    file_hashes: dict[Any, Any] = {}
     paths_to_process = []
     for path in root.rglob("*"):
         try:
@@ -60,7 +62,7 @@ def find_dups_optimized(root: Path):
             continue
     if not paths_to_process:
         return {}
-    files_by_size = {}
+    files_by_size: dict[Any, Any] = {}
     for path in paths_to_process:
         try:
             size = path.stat().st_size

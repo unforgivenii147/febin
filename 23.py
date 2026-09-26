@@ -42,7 +42,8 @@ def run_command(cmd):
         return -1, "", str(e)
 
 
-def process_file(file_path) -> None:
+def process_file(file_path: Path) -> None:
+    """Run ruff check --fix and ruff format on a single file."""
     print(f"[OK] {file_path.name}")
     check_cmd = [
         "ruff",
@@ -65,7 +66,7 @@ def process_file(file_path) -> None:
     rc_fmt, _out_fmt, err_fmt = run_command(format_cmd)
     output = []
     if rc_check != 0 or err_check.strip():
-        output.append(f"--- Issues fixing {path.name} ---")
+        output.append(f"--- Issues fixing {file_path.name} ---")
         if err_check.strip():
             output.append(err_check.strip())
         if out_check.strip():

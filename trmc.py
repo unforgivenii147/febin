@@ -6,7 +6,7 @@ from multiprocessing import Pool
 from pathlib import Path
 
 import tree_sitter_python as tspython
-from dh import clean_blank_lines, get_files
+from dh import clean_blank_lines, fsz, get_files, gsz
 from termcolor import cprint
 from tree_sitter import Language, Parser
 

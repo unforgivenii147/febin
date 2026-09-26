@@ -48,8 +48,7 @@ def main() -> None:
         name = extract_package_name(line)
         if name:
             packages.append(name)
-    seen = set()
-    cleaned = [p for p in packages if not (p in seen or seen.add(p))]
+    cleaned = list(dict.fromkeys(packages))
     path.write_text(
         "\n".join(cleaned) + "\n",
         encoding="utf-8",

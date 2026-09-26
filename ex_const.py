@@ -41,6 +41,8 @@ def extract_constants(filepath: Path) -> list[tuple[str, str, str]]:
                 # You might want to add more sophisticated checks for class-level constants.
                 if is_simple_assign and isinstance(node.value, ast.Constant):
                     for target in node.targets:
+                        if not isinstance(target, ast.Name):
+                            continue
                         const_name = target.id
                         # Heuristic: Assume uppercase names are constants
                         if const_name.isupper():

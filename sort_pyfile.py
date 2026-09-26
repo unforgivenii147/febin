@@ -12,10 +12,10 @@ def sort_python_script(file_path: Path):
     except SyntaxError as e:
         print(f"Error parsing Python code in {file_path}: {e}")
         return
-    constants = []
-    classes = []
-    functions = []
-    other_nodes = []
+    constants: list[ast.Assign] = []
+    classes: list[ast.ClassDef] = []
+    functions: list[ast.FunctionDef] = []
+    other_nodes: list[ast.stmt] = []
     for node in tree.body:
         if isinstance(node, ast.Assign):
             is_constant = True
@@ -33,17 +33,17 @@ def sort_python_script(file_path: Path):
             functions.append(node)
         else:
             other_nodes.append(node)
-    constants.sort(key=lambda node: node.targets[0].id if node.targets else "")
+    constants.sort(key=lambda node: node.targets[0].id if node.targets and isinstance(node.targets[0], ast.Name) else "")
     classes.sort(key=lambda node: node.name)
     functions.sort(key=lambda node: node.name)
-    imports = []
-    misc_nodes = []
+    imports: list[ast.stmt] = []
+    misc_nodes: list[ast.stmt] = []
     for node in other_nodes:
         if isinstance(node, (ast.Import, ast.ImportFrom)):
             imports.append(node)
         else:
             misc_nodes.append(node)
-    new_body = imports + misc_nodes + constants + classes + functions
+    new_body: list[ast.stmt] = [*imports, *misc_nodes, *constants, *classes, *functions]
     new_tree = ast.Module(body=new_body, type_ignores=[])
     try:
         import astunparse

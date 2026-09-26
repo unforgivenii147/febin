@@ -31,7 +31,7 @@ def translate_python_file(content: str) -> str:
     lines = content.splitlines(keepends=True)
     out = []
     in_docstring = False
-    doc_delim = None
+    doc_delim = ""
     for line in lines:
         stripped = line.strip()
         if not in_docstring and (stripped.startswith(('"""', "'''"))):
@@ -43,7 +43,7 @@ def translate_python_file(content: str) -> str:
                 translated = translate_text_chunked(text) if text else ""
                 out.append(line.replace(text, translated))
                 in_docstring = False
-                doc_delim = None
+                doc_delim = ""
             else:
                 text = inside
                 translated = translate_text_chunked(text) if text else ""
@@ -55,7 +55,7 @@ def translate_python_file(content: str) -> str:
                 translated = translate_text_chunked(text)
                 out.append(f"{translated}{doc_delim}\n")
                 in_docstring = False
-                doc_delim = None
+                doc_delim = ""
             else:
                 translated = translate_text_chunked(line)
                 out.append(translated)

@@ -16,10 +16,11 @@ except ImportError:
 class BashCommentRemover:
     def __init__(self) -> None:
 
-        self.parser = self._setup_parser()
-        if not self.parser:
+        parser = self._setup_parser()
+        if parser is None:
             print("Error: Failed to setup tree-sitter bash grammar")
             sys.exit(1)
+        self.parser: Parser = parser
 
     def _setup_parser(self) -> Parser | None:
         try:

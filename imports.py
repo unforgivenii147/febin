@@ -12,7 +12,7 @@ from dh import STDLIB, get_files, get_installed_pkgs
 
 class ImportVisitor(ast.NodeVisitor):
     def __init__(self) -> None:
-        self.imports = set()
+        self.imports: set[str] = set()
 
     def visit_Import(self, node):
         for node_name in node.names:

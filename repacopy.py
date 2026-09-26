@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import argparse
 import logging
 import shutil
@@ -71,7 +72,7 @@ class PackageRepacker:
         return unique_dirs
 
     def get_package_info_from_dist_info(self, dist_info_dir: Path) -> dict:
-        metadata = {
+        metadata: dict[str, Any] = {
             "name": dist_info_dir.name.split("-")[0],
             "version": None,
             "requires_python": None,

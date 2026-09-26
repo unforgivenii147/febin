@@ -9,15 +9,18 @@ import time
 from pathlib import Path
 
 import lzma_mt
+from dh import fsz
 from loguru import logger
 
 
-def compress_folder(folder_path: Path, output_base_name: str, format="tar"):
+def compress_folder(folder_path: str | Path, output_base_name: str, format: str = "tar") -> bool:
+    """Archive ``folder_path`` into ``output_base_name`` using ``format``."""
     try:
         shutil.make_archive(output_base_name, format, str(folder_path))
-        return True
-    except Exception as e:
+    except Exception as exc:
+        logger.debug(f"Archiving {folder_path} failed: {exc}")
         return False
+    return True
 
 
 def atomic_write(data: bytes, final_path: Path) -> bool:
@@ -92,6 +95,7 @@ def compress_file(path: Path) -> bool:
             return True
     except Exception:
         return False
+    return False
 
 
 def gsz(cwd: Path = Path.cwd()) -> tuple[int, int]:
@@ -172,4 +176,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

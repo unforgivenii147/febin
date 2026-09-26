@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import argparse
 import fnmatch
 import tarfile
@@ -13,7 +14,7 @@ from fastwalk import walk_files
 
 pause_event = threading.Event()
 pause_event.set()
-results_queue = Queue()
+results_queue: Queue[Any] = Queue()
 DEFAULT_EXCLUDED_DIRS = {
     ".git",
 }

@@ -11,7 +11,8 @@ from unidecode import unidecode_expect_ascii as uea
 import unicodedata
 
 
-def process_file(fn: Path, backup=False) -> bool:
+def process_file(fn: Path, backup: bool = False) -> bool:
+    """Rewrite ``fn`` in place (ast round-trip for Python, ASCII folding otherwise)."""
     if is_binary(fn):
         return False
     try:
@@ -34,14 +35,15 @@ def process_file(fn: Path, backup=False) -> bool:
             new_content = unicodedata.normalize("NFKD", content)
             new_content = uea(new_content)
             fn.write_text(new_content, encoding="utf-8")
-    except:
+    except Exception:
         return False
+    return True
 
 
 def main() -> None:
     cwd = Path.cwd()
     args = sys.argv[1:]
-    backup = sys.argv[2] if len(sys.argv) > 2 else False
+    backup = bool(sys.argv[2]) if len(sys.argv) > 2 else False
     files = [Path(arg) for arg in args] if args else get_files(cwd)
     with Pbar("") as pbar:
         for path in pbar.wrap(files):
@@ -49,4 +51,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()

@@ -13,7 +13,7 @@ import markdown
 class GUIFramework:
     def __init__(self) -> None:
         self.session_id = None
-        self.dialogs = {}
+        self.dialogs: dict[str, Any] = {}
 
     def show_dialog(
         self,
@@ -177,7 +177,7 @@ class Document:
         self.file_path = Path(file_path)
         self.format_type = format_type
         self.content = ""
-        self.last_modified = None
+        self.last_modified: datetime | None = None
         self.format_handler = self._get_format_handler()
         self._load()
 
@@ -360,8 +360,8 @@ class TextEditor:
         self.gui = GUIFramework()
         self.file_manager = FileManager()
         self.current_document: Document | None = None
-        self.undo_stack = []
-        self.redo_stack = []
+        self.undo_stack: list[Any] = []
+        self.redo_stack: list[Any] = []
         self.is_modified = False
 
     def run(self):

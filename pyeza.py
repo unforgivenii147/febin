@@ -10,6 +10,7 @@ import shutil
 import stat
 import subprocess
 from pathlib import Path
+from typing import Any
 
 
 def colorize(
@@ -47,7 +48,7 @@ def detect_icon(name: str, mode: int) -> str:
     return "📄"
 
 
-def get_git_status_for_dir(path: str) -> dict[str, dict[str, str]]:
+def get_git_status_for_dir(path: str | Path) -> dict[str, dict[str, str]]:
     try:
         p = subprocess.run(
             [
@@ -88,7 +89,7 @@ def get_git_status_for_dir(path: str) -> dict[str, dict[str, str]]:
 class Entry:
     def __init__(
         self,
-        path: str,
+        path: str | Path,
         name: str,
         stat_obj,
         link_target=None,
@@ -120,7 +121,8 @@ def mode_to_string(mode: int) -> str:
     return "".join(chars)
 
 
-def human_size(n: int) -> str:
+def human_size(n: float) -> str:
+    """Format a byte count using single-letter unit suffixes."""
     for unit in ["B", "K", "M", "G", "T"]:
         if n < 1024:
             return f"{n}{unit}"
@@ -231,7 +233,7 @@ def print_tree(
             print_tree(path, new_prefix, icons, colors)
 
 
-def list_recursive(base: str, args, depth=0) -> None:
+def list_recursive(base: str | Path, args: Any, depth: int = 0) -> None:
     if depth > 0:
         print(f"\n{base}:")
     try:

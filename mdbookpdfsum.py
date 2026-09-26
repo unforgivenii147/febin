@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import argparse
 import os
-import urllib
+import urllib.parse
 from pathlib import Path
 
 import lxml.html
@@ -22,14 +23,14 @@ class Section:
         self.source_file = source_file
         self.depth = depth
         self.index = index
-        self.parent = None
-        self.children = []
-        self.outline_item = None
+        self.parent: Section | None = None
+        self.children: list[Any] = []
+        self.outline_item: Any = None
 
-    def set_parent(self, parent):
+    def set_parent(self, parent: "Section") -> None:
         self.parent = parent
 
-    def add_children(self, child):
+    def add_children(self, child: "Section") -> None:
         self.children.append(child)
 
     def path_to_root(self):
@@ -126,7 +127,7 @@ def add_outline(
         node.outline_item = writer.add_outline_item(
             str(node),
             page,
-            node.parent.outline_item,
+            node.parent.outline_item if node.parent else None,
             fit=fit,
         )
     for child in node.children:

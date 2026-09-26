@@ -61,7 +61,7 @@ def search_file_text_mode(
                 spans: list[tuple[int, int]] = []
                 if regex:
                     spans.extend((m.start(), m.end()) for m in regex.finditer(line))
-                else:
+                elif fixed is not None:
                     hay = line.lower() if ignore_case else line
                     needle = fixed.lower() if ignore_case else fixed
                     start = 0
@@ -227,11 +227,12 @@ def main(argv: list[str] | None = None) -> int:
             color=color,
         )
 
-    with ThreadPoolExecutor(max_workers=args.threads) as ex:
-        futures = {ex.submit(worker, p): p for p in candidates}
+    with ThreadPoolExecutor(max_workers=args.threads) as pool:
+        futures = {pool.submit(worker, p): p for p in candidates}
         try:
             for fut in as_completed(futures):
-                path, matches = fut.result()
+                result_path, matches = fut.result()
+                path = result_path
                 if not matches:
                     continue
                 any_match = True

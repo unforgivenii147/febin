@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
 import sys
-import typing
+from typing import Any
 import zipfile
 from pathlib import Path
 
@@ -10,18 +10,16 @@ class WheelInspector:
     def __init__(self, verbose: bool = False) -> None:
         self.verbose = verbose
 
-    @typing.override
     def log(self, message: str):
         if self.verbose:
             print(f"[INSPECT] {message}")
 
-    @typing.override
     def inspect_wheel(self, wheel_path: Path) -> dict:
         if not wheel_path.exists():
             return {"error": f"File not found: {wheel_path}"}
         try:
             with zipfile.ZipFile(wheel_path, "r") as zf:
-                info = {
+                info: dict[str, Any] = {
                     "filename": wheel_path.name,
                     "size_mb": wheel_path.stat().st_size / (1024 * 1024),
                     "file_count": len(zf.namelist()),
@@ -49,7 +47,6 @@ class WheelInspector:
         except Exception as e:
             return {"error": str(e)}
 
-    @typing.override
     def validate_wheel(self, wheel_path: Path) -> tuple[bool, list[str]]:
         issues = []
         try:
@@ -71,7 +68,6 @@ class WheelInspector:
             issues.append(f"Error reading wheel: {e!s}")
         return len(issues) == 0, issues
 
-    @typing.override
     def inspect_directory(self, directory: Path) -> list[dict]:
         wheels = list(directory.glob("*.whl"))
         results = []
@@ -83,7 +79,6 @@ class WheelInspector:
             results.append(info)
         return results
 
-    @typing.override
     def print_inspection(self, wheel_path: Path):
         info = self.inspect_wheel(wheel_path)
         if "error" in info:

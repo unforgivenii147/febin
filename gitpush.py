@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import os
 import shutil
 import subprocess
@@ -54,7 +55,7 @@ def main() -> None:
         print("Not inside a Git repository. Doing nothing.")
         return
     ensure_gitignore()
-    python_files = []
+    python_files: list[Any] = []
     for root, _, files in os.walk("."):
         python_files.extend(os.path.join(root, f) for f in files if f.endswith(".py"))
     python_files.extend(find_python_scripts_without_extension())

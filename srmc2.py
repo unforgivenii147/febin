@@ -7,7 +7,8 @@ from pathlib import Path
 from dh import DOC_TH1, DOC_TH2, fsz, get_pyfiles, gsz, mpf3
 
 
-def preprocess(orig):
+def preprocess(orig: str) -> str:
+    """Remove comment-only lines, falling back to the original on syntax errors."""
     cleaned = []
     lines = orig.splitlines(keepends=True)
     for line in lines[1:]:
@@ -20,10 +21,10 @@ def preprocess(orig):
             cleaned.append(line)
     code = "".join(cleaned)
     try:
-        _ = ast.parse(code)
-        return code
-    except:
+        ast.parse(code)
+    except SyntaxError:
         return orig
+    return code
 
 
 def process_file(path: Path) -> bool:
@@ -34,8 +35,9 @@ def process_file(path: Path) -> bool:
             return True
         result = preprocess(original)
         path.write_text(result, encoding="utf-8")
-    except:
-        return None
+    except Exception:
+        return False
+    return True
 
 
 def main():

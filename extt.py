@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -64,7 +65,7 @@ def get_relative_path(file_path: Path, base_path: Path) -> Path:
         return file_path
 
 
-folder_definitions = defaultdict(lambda: defaultdict(list))
+folder_definitions: defaultdict[Path, dict[str, dict[str, Any]]] = defaultdict(dict)
 processed_files_count = 0
 folders_found = set()
 total_definitions = 0
@@ -102,7 +103,7 @@ for (
     out_file = OUT_DIR / folder / "definitions.py"
     out_file.parent.mkdir(parents=True, exist_ok=True)
 
-    content_parts = []
+    content_parts: list[Any] = []
 
     content_parts.extend(("#" + "=" * 78, "# TABLE OF CONTENTS", "#" + "=" * 78, ""))
     for file_name, file_data in sorted(files_dict.items()):
@@ -171,7 +172,7 @@ print(
 )
 if folders_found:
     print("📁 Folders:")
-    for folder in sorted(folders_found):
-        def_count = sum(len(f["definitions"]) for f in folder_definitions[Path(folder)].values())
-        file_count = len(folder_definitions[Path(folder)])
-        print(f"   • {folder}: {file_count} files, {def_count} definitions")
+    for folder_name in sorted(folders_found):
+        def_count = sum(len(f["definitions"]) for f in folder_definitions[Path(folder_name)].values())
+        file_count = len(folder_definitions[Path(folder_name)])
+        print(f"   • {folder_name}: {file_count} files, {def_count} definitions")

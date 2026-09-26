@@ -8,7 +8,9 @@ from pathlib import Path
 
 from termcolor import cprint
 
-from dhh import fsz, get_files, gsz, move_file
+import shutil
+
+from dhh import fsz, get_files, gsz
 
 MAX_QUEUE = 16
 
@@ -30,7 +32,7 @@ def process_file(in_file):
             check=True,
             capture_output=True,
         )
-        move_file(tmp_file_path, in_file, overwrite=True)
+        shutil.move(str(tmp_file_path), str(in_file))
         print(f"{in_file.name} updated")
     except subprocess.CalledProcessError as e:
         print(f"Error running svgcleaner: {e.stderr.decode('utf-8')}")

@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import argparse
 import shutil
 from pathlib import Path
@@ -57,8 +58,8 @@ def apply_all_fixes(text):
     return "".join(new_lines), changed
 
 
-changed_files = []
-error_files = []
+changed_files: list[Any] = []
+error_files: list[Any] = []
 
 
 def process_file(path: Path, force=False, apply_all=False) -> None:

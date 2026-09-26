@@ -39,7 +39,8 @@ def remove_patterns_from_content(content: str, patterns: list[str]) -> str:
     return cleaned
 
 
-def process_file(file_path, patterns) -> tuple:
+def process_file(file_path: str | Path, patterns: list[str]) -> None:
+    """Strip license blocks from ``file_path``."""
     path = Path(file_path)
     before = gsz(path)
     original_content = path.read_text(encoding="utf-8")

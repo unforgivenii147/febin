@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import argparse
 import os
 import shutil
@@ -21,8 +22,8 @@ EXCLUDE_DIRS = {
 class FileSimilarityDetector:
     def __init__(self, cwd=".") -> None:
         self.cwd = Path(cwd)
-        self.file_hashes = {}
-        self.duplicates = defaultdict(list)
+        self.file_hashes: dict[Any, Any] = {}
+        self.duplicates: defaultdict[Any, list[Any]] = defaultdict(list)
 
     def scan_files(self):
         for root, dirs, files in os.walk(self.cwd):

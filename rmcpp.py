@@ -4,7 +4,7 @@ from multiprocessing import get_context
 from pathlib import Path
 
 import tree_sitter_cpp as tscpp
-from dh import clean_blank_lines, get_files
+from dh import clean_blank_lines, fsz, get_files, gsz
 from tree_sitter import Language, Parser, Query, QueryCursor
 
 ts_remover = None
@@ -55,8 +55,8 @@ class TSCppRemover:
         new_source = bytearray(source_bytes)
         for start, end in deletions:
             del new_source[start:end]
-        new_source = bytes(new_source)
-        tree = self.parser.parse(new_source)
+        new_source_bytes = bytes(new_source)
+        tree = self.parser.parse(new_source_bytes)
         if tree.root_node.has_error:
             print("Warning: Resulted code has syntax errors, returning original")
             return source, 0

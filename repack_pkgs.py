@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+from typing import Any
 import base64
 import hashlib
 import json
@@ -310,7 +311,7 @@ class VenvRepacker:
         self.dry_run = dry_run
         # Setup site-packages directory
         if site_packages_dir is None:
-            site_packages_dir = Path.cwd()
+            site_packages_dir = str(Path.cwd())
         self.site_packages = Path(site_packages_dir).resolve()
         if not self.site_packages.exists():
             msg = f"Site-packages directory not found: {site_packages_dir}"
@@ -330,7 +331,7 @@ class VenvRepacker:
             "total_size_before": 0,
             "total_size_after": 0,
         }
-        self.results = []
+        self.results: list[Any] = []
 
     def log(self, message: str, level: str = "INFO"):
         if self.verbose or level in {

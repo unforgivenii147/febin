@@ -4,7 +4,7 @@ import glob
 import logging
 import os
 import sys
-from multiprocessing import cpu_count
+from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
 try:

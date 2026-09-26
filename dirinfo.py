@@ -46,7 +46,8 @@ def write_summary(filename: Path) -> None:
     ) = scan_directory()
     with filename.open("w", encoding="utf-8") as f:
         f.write(f"total size: {total_size} bytes\n")
-        f.write(f"extensions:\n{'\n   - '.join(sorted(extensions))}\n")
+        joined_extensions = "\n   - ".join(sorted(extensions))
+        f.write(f"extensions:\n{joined_extensions}\n")
         f.write(f"number of files: {file_count}\n")
         f.write(f"number of folders: {folder_count}\n")
         f.write("size by extension:\n")

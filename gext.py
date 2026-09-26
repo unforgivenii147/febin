@@ -7,6 +7,7 @@ import shutil
 from typing import Any
 from pathlib import Path
 import tarfile
+import zstandard as zstd
 import zipfile
 import subprocess
 from multiprocessing import get_context
@@ -36,12 +37,12 @@ class EntityExtractor(ast.NodeVisitor):
         source_content: str,
         original_path: Path,
     ) -> None:
-        self.entities = []
+        self.entities: list[dict[str, Any]] = []
         self.source_lines = source_content.splitlines(keepends=True)
         self.original_path = original_path
-        self.scope_stack = []
+        self.scope_stack: list[str] = []
 
-    def _get_source_slice(self, node: ast.AST) -> str:
+    def _get_source_slice(self, node: ast.stmt) -> str:
         start_line = node.lineno - 1
         end_line = node.end_lineno or node.lineno
         code_slice = self.source_lines[start_line:end_line]
@@ -54,7 +55,7 @@ class EntityExtractor(ast.NodeVisitor):
 
     def _extract_and_save(
         self,
-        node: ast.AST,
+        node: ast.stmt,
         entity_type: str,
         name: str,
     ):
@@ -216,29 +217,29 @@ def process_archive(path: Path) -> list[dict[str, Any]]:
             ".tar.xz",
         ]
     ):
-        mode_map = {
+        mode_map: dict[str, Any] = {
             ".tar.gz": "r:gz",
             ".tgz": "r:gz",
             ".tar.zst": "r:zst",
             ".tar.xz": "r:xz",
             ".tar": "r",
         }
-        mode = next(
+        mode: Any = next(
             (mode_map[ext] for ext in mode_map if path.name.endswith(ext)),
             "r",
         )
         try:
             with tarfile.open(path, mode) as tf:
-                for member in tf.getmembers():
-                    member_path = Path(member.name)
-                    if member.isfile() and member_path.suffix == ".py":
-                        member_file = tf.extractfile(member)
-                        if member_file:
-                            content = member_file.read().decode(
+                for tar_member in tf.getmembers():
+                    member_path = Path(tar_member.name)
+                    if tar_member.isfile() and member_path.suffix == ".py":
+                        tar_file = tf.extractfile(tar_member)
+                        if tar_file:
+                            content = tar_file.read().decode(
                                 "utf-8",
                                 errors="ignore",
                             )
-                            virtual_path = Path(f"{path}/{member.name}")
+                            virtual_path = Path(f"{path}/{tar_member.name}")
                             entities.extend(
                                 extract_entities_from_content(
                                     content,

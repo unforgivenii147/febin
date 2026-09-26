@@ -61,7 +61,8 @@ def collect_json_files(root: Path):
             yield path
 
 
-def human_readable(n: int) -> str:
+def human_readable(n: float) -> str:
+    """Format a byte count as a human readable string."""
     for unit in ["B", "KB", "MB", "GB", "TB"]:
         if n < 1024:
             return f"{n:.2f} {unit}"

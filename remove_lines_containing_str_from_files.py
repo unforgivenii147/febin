@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
 import sys
+from multiprocessing import Pool
 from pathlib import Path
 
-from dh import get_nobinary
+from dh import fsz, get_nobinary, gsz
 
 STRTOFIND = [
     "dist-info",
@@ -19,7 +20,8 @@ def clean_text(text: str) -> str:
     return "\n".join(line for line in text.splitlines() if not any(s in line for s in STRTOFIND))
 
 
-def clean_file(path: str) -> None:
+def clean_file(path: str | Path) -> None:
+    """Strip unwanted lines from ``path`` in place."""
     try:
         original = Path(path).read_text(encoding="utf-8", errors="ignore")
     except Exception:
@@ -37,11 +39,11 @@ def main() -> None:
     if len(files) == 1:
         clean_file(files[0])
         sys.exit(0)
-    pool = Pool(8)
-    for f in files:
-        p.apply_async(clean_file, (f,))
-    pool.close()
-    pool.join()
+    with Pool(8) as pool:
+        for f in files:
+            pool.apply_async(clean_file, (f,))
+        pool.close()
+        pool.join()
     esz = gsz(root)
     diffsize = isz - esz
     print(f"space freed : {fsz(diffsize)}")

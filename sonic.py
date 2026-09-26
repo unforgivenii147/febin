@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import argparse
 import mmap
 import os
@@ -24,7 +25,8 @@ class LineProcessor:
     def get_file_size(self, file_path: Path) -> int:
         return file_path.stat().st_size
 
-    def fsz(self, size_bytes: int) -> str:
+    def fsz(self, size_bytes: float) -> str:
+        """Format a byte count as a human readable string."""
         for unit in ["B", "KB", "MB", "GB", "TB"]:
             if size_bytes < 1024.0:
                 return f"{size_bytes:.2f} {unit}"
@@ -60,9 +62,9 @@ class MmapReader(LineProcessor):
                             else:
                                 line_bytes = mmapped_file[offset:newline_pos]
                             try:
-                                line = line_bytes.decode(encoding).rstrip("\r\n")
-                                if not skip_empty or line.strip():
-                                    yield line
+                                decoded = line_bytes.decode(encoding).rstrip("\r\n")
+                                if not skip_empty or decoded.strip():
+                                    yield decoded
                             except UnicodeDecodeError as e:
                                 self.log(f"Warning: Encoding error at offset {offset}: {e!s}")
                             offset = newline_pos + 1
@@ -71,7 +73,7 @@ class MmapReader(LineProcessor):
                 else:
                     f.seek(0)
                     for line in f:
-                        decoded_line = line.rstrip("\r\n")
+                        decoded_line = line.decode(encoding).rstrip("\r\n")
                         if not skip_empty or decoded_line.strip():
                             yield decoded_line
         except Exception as e:
@@ -137,7 +139,7 @@ class LineSorter(LineProcessor):
     ) -> list[Path]:
         self.log(f"Sorting large file using external sorting (chunk size: {chunk_size})")
         reader = MmapReader(verbose=self.verbose)
-        temp_files = []
+        temp_files: list[Any] = []
         try:
             chunk = []
             temp_dir = Path(tempfile.gettempdir())
@@ -235,14 +237,12 @@ class FileSorter(LineProcessor):
         if not input_path.exists():
             msg = f"File not found: {file_path}"
             raise FileNotFoundError(msg)
-        if output_path is None:
-            output_path = file_path
-        output_path = Path(output_path)
+        out_path = Path(output_path) if output_path is not None else input_path
         print("\n╔════════════════════════════════════════════════════════════╗")
         print("║              File Line Sorter & Deduplicator               ║")
         print("╚════════════════════════════════════════════════════════════╝\n")
         print(f"Input file: {input_path}")
-        print(f"Output file: {output_path}")
+        print(f"Output file: {out_path}")
         print(f"Mode: {'DRY RUN' if self.dry_run else 'NORMAL'}")
         print("-" * 60)
         start_time = time.time()
@@ -277,18 +277,18 @@ class FileSorter(LineProcessor):
                 unique_count = original_lines - len(lines)
                 self.log(f"Removed {unique_count} duplicate lines")
             if not self.dry_run:
-                if backup and output_path == input_path:
+                if backup and out_path == input_path:
                     backup_path = input_path.with_suffix(input_path.suffix + ".bak")
                     shutil.copy2(input_path, backup_path)
                     self.log(f"Backup created: {backup_path}")
-                output_path.parent.mkdir(parents=True, exist_ok=True)
-                with Path(output_path).open("w", encoding=encoding) as f:
+                out_path.parent.mkdir(parents=True, exist_ok=True)
+                with out_path.open("w", encoding=encoding) as f:
                     f.writelines(line + "\n" for line in lines)
-                self.log(f"Output written: {output_path}")
+                self.log(f"Output written: {out_path}")
             else:
                 self.log("DRY RUN: File not written")
             if not self.dry_run:
-                after = self.get_file_size(output_path)
+                after = self.get_file_size(out_path)
             else:
                 after = sum(len(line.encode(encoding)) + 1 for line in lines)
             elapsed_time = time.time() - start_time

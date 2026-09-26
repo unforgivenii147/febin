@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import sys
 from collections import deque
 from multiprocessing import get_context
@@ -28,7 +29,7 @@ def main() -> None:
         process_file(files[0])
         sys.exit(0)
     with get_context("spawn").Pool(8) as p:
-        pending = deque()
+        pending: deque[Any] = deque()
         for f in files:
             pending.append(p.apply_async(process_file, (f,)))
             if len(pending) > 8:

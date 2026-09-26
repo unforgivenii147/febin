@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 from pathlib import Path
 
 import tree_sitter_cpp as tscpp
@@ -18,7 +19,7 @@ class TSCppRemover:
         source_bytes = source.encode("utf-8")
         tree = self.parser.parse(source_bytes)
         root = tree.root_node
-        to_delete = []
+        to_delete: list[Any] = []
         removed = 0
         for node in root.children:
             self._collect_comments(node, to_delete, source_bytes)
@@ -50,9 +51,7 @@ def validate_with_clang(file_path: Path) -> tuple[bool, str]:
     ret, txt, err = run_command(cmd)
     if ret != 0:
         return False, err
-    if ret == 0:
-        return True, txt
-    return None
+    return True, txt
 
 
 def process_file(fp):

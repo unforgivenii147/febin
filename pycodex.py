@@ -229,15 +229,16 @@ class FileProcessor:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.extractor = CodeBlockExtractor()
 
-    def process_file(self, file_path: str) -> int:
+    def process_file(self, file_path: str | Path) -> int:
+        """Extract code blocks from a single HTML file."""
         try:
-            file_path = Path(file_path)
-            if file_path.suffix.lower() != ".html":
+            html_path = Path(file_path)
+            if html_path.suffix.lower() != ".html":
                 return 0
-            html_content = Path(file_path).read_text(encoding="utf-8", errors="ignore")
-            code_blocks = self.extractor.extract_from_html(html_content, str(file_path))
+            html_content = html_path.read_text(encoding="utf-8", errors="ignore")
+            code_blocks = self.extractor.extract_from_html(html_content, str(html_path))
             if code_blocks:
-                self._save_code_blocks(code_blocks, file_path)
+                self._save_code_blocks(code_blocks, str(file_path))
                 logger.info(f"Extracted {len(code_blocks)} code blocks from {file_path}")
             return len(code_blocks)
         except Exception as e:

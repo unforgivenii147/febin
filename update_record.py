@@ -112,7 +112,8 @@ def update_record_file(record_path: Path, dist_info_dir) -> bool:
         return False
 
 
-def update_record_self_hash(record_path: Path):
+def update_record_self_hash(record_path: Path, dist_info_dir: Path | None = None) -> None:
+    """Refresh the RECORD entry describing the RECORD file itself."""
     try:
         with Path(record_path).open(encoding="utf-8") as f:
             lines = f.readlines()

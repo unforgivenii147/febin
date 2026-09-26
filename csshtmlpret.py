@@ -2,11 +2,14 @@
 import itertools
 import os
 import sys
+import argparse
 from argparse import ArgumentParser
 from datetime import datetime
 from multiprocessing import cpu_count
 from pathlib import Path
 from subprocess import getoutput
+from typing import Any
+from xml.dom import minidom
 from time import sleep
 
 import regex as re
@@ -16,6 +19,7 @@ try:
 except ImportError:
     BeautifulSoup = None
     print("BeautifulSoup4 Not Found, use: pip install BeautifulSoup4")
+args: argparse.Namespace = argparse.Namespace()
 start_time = datetime.now()
 CSS_PROPS_TEXT = """
 alignment-adjust alignment-baseline animation animation-delay
@@ -100,9 +104,11 @@ def _compile_props(props_text: str, grouped: bool = False) -> tuple:
     )
     for propline in props_text.strip().lower().splitlines():
         props += [pre + pro for pro in propline.split(" ") for pre in prefixes]
-    props = filter(
-        lambda line: not line.startswith("#"),
-        props,
+    props = list(
+        filter(
+            lambda line: not line.startswith("#"),
+            props,
+        )
     )
     if not grouped:
         props = list(filter(None, props))
@@ -172,11 +178,11 @@ def sort_properties(css_unsorted_string: str) -> str:
     if len(matched_patterns) != 0:
         for matched_groups in matched_patterns:
             sorted_patterns += matched_groups[0].splitlines(True)
-            props = (line.lstrip("\n") for line in RE_prop.findall(matched_groups[1]))
+            raw_props = (line.lstrip("\n") for line in RE_prop.findall(matched_groups[1]))
             props = list(
                 filter(
                     lambda line: line.strip("\n "),
-                    props,
+                    raw_props,
                 )
             )
             props = _props_grouper(props, css_pgs)
@@ -338,9 +344,9 @@ def walk2list(
     omit: tuple = (),
     showhidden: bool = False,
     topdown: bool = True,
-    onerror: object = None,
+    onerror: Any = None,
     followlinks: bool = False,
-) -> tuple:
+) -> list[Path]:
     oswalk = os.walk(
         folder,
         topdown=topdown,
@@ -479,7 +485,7 @@ def make_arguments_parser():
 def main():
     make_arguments_parser()
     global log
-    if args.before and getoutput:
+    if args.before:
         print(getoutput(str(args.before)))
     if Path(args.fullpath).is_file() and args.fullpath.endswith((".css", ".scss")):
         print("Target is a CSS / SCSS File.")
@@ -504,7 +510,7 @@ def main():
     else:
         print("File or folder not found,or cant be read,or I/O Error.")
         sys.exit(1)
-    if args.after and getoutput:
+    if args.after:
         print(getoutput(str(args.after)))
     print(f"\n {'-' * 80} \n Files Processed: {list_of_files}.")
     print(f"""Number of Files Processed:

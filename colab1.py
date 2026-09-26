@@ -33,7 +33,7 @@ for entry in site_pkgs.iterdir():
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
             for root, _, files in os.walk(entry):
                 for f in files:
-                    if not str(file).endswith(".pyc"):
+                    if not str(f).endswith(".pyc"):
                         fp = Path(root) / f
                         zf.write(
                             fp,

@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import argparse
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -169,7 +170,7 @@ def main() -> None:
                 logger.info(f"Skipping {fpath}: {e}")
     to_delete = []
     for h, entries in full_groups.items():
-        inode_map = {}
+        inode_map: dict[Any, Any] = {}
         for p, stk in entries:
             inode_map.setdefault(stk, []).append(p)
         group_reps = [min(ps) for ps in inode_map.values()]

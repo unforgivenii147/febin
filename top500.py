@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import os
 from collections import Counter
 from pathlib import Path
@@ -11,7 +12,7 @@ def is_text_file(file_path, text_extensions):
 
 def collect_top_lines(directory, text_extensions, top_n=500) -> None:
     for ext in text_extensions:
-        lines_counter = Counter()
+        lines_counter: Counter[Any] = Counter()
         for root, _, files in os.walk(directory):
             for file in files:
                 file_path = Path(root) / file

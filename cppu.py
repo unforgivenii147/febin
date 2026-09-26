@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import subprocess
 import sys
 from collections import deque
@@ -86,7 +87,7 @@ def main() -> None:
     all_count = len(cfiles)
     cprint(f"{all_count} files found...", "cyan")
     with Pool(8) as pool:
-        pending = deque()
+        pending: deque[Any] = deque()
         for f in cfiles:
             pending.append(pool.apply_async(format_file, ((f),)))
             if len(pending) > MAX_QUEUE:

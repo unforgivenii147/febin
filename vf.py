@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 from pathlib import Path
 
 import regex as re
@@ -12,7 +13,7 @@ whl_pattern = re.compile(
 
 def cleanup_wheels(whl_dir: Path):
     deleted_files = 0
-    latest_versions = {}
+    latest_versions: dict[Any, Any] = {}
     for file_path in whl_dir.glob("*.whl"):
         file_name = file_path.name
         match = whl_pattern.match(file_name)

@@ -1,9 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import argparse
 import fnmatch
 import logging
 import mmap
+from multiprocessing import Pool
 from pathlib import Path
 
 from dh import is_binary
@@ -77,7 +79,7 @@ def safe_convert(path: Path, dry_run: bool = False) -> str:
 
 
 def scan_paths(inputs, recursive: bool, excludes) -> list[Path]:
-    result = []
+    result: list[Any] = []
     for inp in inputs:
         p = Path(inp)
         if p.is_dir():

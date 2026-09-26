@@ -8,7 +8,7 @@ from pathlib import Path
 import tree_sitter_python
 from tree_sitter import Node, Parser
 
-_parser = None
+_parser: Parser | None = None
 
 
 def init_worker():
@@ -45,7 +45,11 @@ def collect_nodes_to_remove(source_bytes: bytes, node: Node) -> list[Node]:
 
 
 def process_file(filepath: str) -> tuple[str, bool]:
+    """Strip non-preserved comments from ``filepath``."""
     global _parser
+    if _parser is None:
+        init_worker()
+    assert _parser is not None
     try:
         source_bytes = Path(filepath).read_bytes()
         tree = _parser.parse(source_bytes)

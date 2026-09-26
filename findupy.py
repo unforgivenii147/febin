@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import hashlib
 import json
 import os
@@ -8,10 +9,11 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-SKIPPED_PATHS = []
+SKIPPED_PATHS: list[Any] = []
 
 
-def hash_file(path: Path, chunk_size: int = 8192) -> str:
+def hash_file(path: Path, chunk_size: int = 8192) -> str | None:
+    """Return the SHA-256 hex digest of ``path``, or None when unreadable."""
     sha = hashlib.sha256()
     try:
         get_size = path.stat().st_size
@@ -38,7 +40,8 @@ def hash_file(path: Path, chunk_size: int = 8192) -> str:
     return sha.hexdigest()
 
 
-def collect_all_files(directory: Path):
+def collect_all_files(directory: str | Path) -> list[Path]:
+    """Recursively collect every file below ``directory``."""
     all_files = []
     for root, _dirs, files in os.walk(directory, onerror=lambda e: None):
         for f in files:
@@ -47,12 +50,13 @@ def collect_all_files(directory: Path):
     return all_files
 
 
-def find_duplicate_files(directory: str):
-    directory = Path(directory)
-    if not directory.exists():
-        msg = f"Directory does not exist: {directory}"
+def find_duplicate_files(directory: str | Path) -> dict[str, list[str]]:
+    """Group files under ``directory`` by identical content hash."""
+    root = Path(directory)
+    if not root.exists():
+        msg = f"Directory does not exist: {root}"
         raise ValueError(msg)
-    all_files = collect_all_files(directory)
+    all_files = collect_all_files(root)
     duplicates = defaultdict(list)
     print(f"📁 Scanning {len(all_files)} files...\n")
     for file_path in tqdm(

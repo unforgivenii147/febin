@@ -80,9 +80,9 @@ def crack_zip_password_multiprocess(zip_file_path, password_list_path, extract_d
 
 
 if __name__ == "__main__":
-    zipfile = Path(sys.argv[1])
+    zip_path = Path(sys.argv[1])
     passfile = Path.home() / "isaac" / "wordlist.txt"
-    found_password_mp = crack_zip_password_multiprocess(zipfile, passfile)
+    found_password_mp = crack_zip_password_multiprocess(zip_path, passfile)
     if found_password_mp:
         _print(f"\npassword: {found_password_mp}")
     else:

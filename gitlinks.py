@@ -4,7 +4,7 @@ import contextlib
 import os
 import tarfile
 import zipfile
-from multiprocessing import cpu_count
+from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
 import regex as re

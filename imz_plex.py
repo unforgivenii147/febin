@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import ast
 import operator
 import tarfile
@@ -26,7 +27,7 @@ COMPRESSED_EXTS = {
     ".7z",
 }
 PIP_LIST_PATH = Path("/sdcard/pip.txt")
-KNOWN_PACKAGES = set()
+KNOWN_PACKAGES: set[Any] = set()
 STDLIB_MODULES = STDLIB
 
 

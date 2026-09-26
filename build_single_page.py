@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
+from typing import Any
 import base64
 import hashlib
 import mimetypes
@@ -18,7 +19,7 @@ if not OUTPUT_DIR.exists():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 if not ASSETS_DIR.exists():
     ASSETS_DIR.mkdir(parents=True, exist_ok=True)
-HASH_MAP = {}
+HASH_MAP: dict[Any, Any] = {}
 
 
 def sha256(data: bytes):
@@ -57,7 +58,7 @@ def download_external(url):
         return None
 
 
-processed_html_files = []
+processed_html_files: list[Any] = []
 
 
 def process_html(path: Path):

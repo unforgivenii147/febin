@@ -29,17 +29,18 @@ def install_js2py():
             return False
 
 
-def convert_with_js2py(js_file: Path, outfile: Path) -> bool:
+def convert_with_js2py(js_file: Path, outfile: Path) -> tuple[bool, str]:
+    """Translate ``js_file`` to Python using js2py, writing to ``outfile``."""
     try:
         import js2py
 
-        js2py.translate_file(js_file, out_file)
-        return True
+        js2py.translate_file(str(js_file), str(outfile))  # type: ignore[attr-defined]
     except Exception as e:
         return (
             False,
             f"js2py conversion error: {e!s}",
         )
+    return (True, "")
 
 
 def convert_with_openai(js_code: str, api_key: str | None = None) -> tuple[bool, str]:
@@ -188,8 +189,10 @@ def convert_file(
             method = "simple"
         else:
             output_file = input_file.with_suffix(".py")
-            success = convert_with_js2py(input_file, output_file)
-            return True
+            success, result = convert_with_js2py(input_file, output_file)
+            if not success:
+                print(f"❌ Conversion failed: {result}")
+            return success
     if method == "openai":
         success, result = convert_with_openai(js_code, api_key)
     elif method == "simple":

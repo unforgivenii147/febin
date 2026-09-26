@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+from typing import Any
 import argparse
 import csv
 import os
@@ -16,7 +17,7 @@ except ImportError:
 
 
 def find_dist_info_dirs(site_packages: Path) -> list[Path]:
-    dist_dirs = []
+    dist_dirs: list[Any] = []
     dist_dirs.extend(site_packages.glob("*.dist-info"))
     dist_dirs.extend(site_packages.glob("*.egg-info"))
     return sorted(dist_dirs)

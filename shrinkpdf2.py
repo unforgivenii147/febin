@@ -5,7 +5,8 @@ import sys
 from pathlib import Path
 
 
-def human_size(num_bytes: int) -> str:
+def human_size(num_bytes: float) -> str:
+    """Format a byte count as a human readable string."""
     for unit in ("B", "KB", "MB", "GB"):
         if num_bytes < 1024:
             return f"{num_bytes:.2f} {unit}"
